@@ -8,6 +8,9 @@ const config = require('app/config');
 const rateLimit = require('express-rate-limit');
 const i18n = require('i18n');
 const path = require('path');
+const redis = require('app/lib/redis').client();
+const session = require('express-session');
+const redisStore = require('connect-redis')(session);
 
 i18n.configure({
   locales: ['en', 'vi'],
@@ -15,6 +18,20 @@ i18n.configure({
   directory: path.resolve(__dirname + '/locales'),
 });
 router.use(i18n.init);
+
+router.use(session({
+  key: 'sid',
+  secret: 'secret-session',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 3600000, // 1 hour
+    path: '/',
+    secure: false,
+    httpOnly: false
+  },
+  store: new redisStore({ client: redis }),
+}))
 
 router.use(
   bodyParser.urlencoded({

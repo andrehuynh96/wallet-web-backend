@@ -3,6 +3,7 @@ const router = express.Router();
 
 router.use(require('./login/login.route'));
 router.use(require('./register/register.route'));
+router.use(require('./confirm-2fa/confirm-2fa.route'));
 
 module.exports = router;
 

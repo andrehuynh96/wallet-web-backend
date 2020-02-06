@@ -3,12 +3,14 @@ const config = require("app/config");
 const Member = require("app/model/wallet").members;
 const OTP = require("app/model/wallet/otp").opts;
 const OtpType = require("app/model/staking/value-object/otp-type");
+const memberMapper = require('app/feature/response-schema/member.response-schema');
 const bcrypt = require('bcrypt');
 const mailer = require('app/lib/mailer');
 const database = require('app/lib/database').db().wallet;
 const otplib = require("otplib");
 const Hashids = require('hashids');
 const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+const uuidV4 = require('uuid/v4');
 
 module.exports = async (req, res, next) => {
   const transaction = await database.transaction();
@@ -50,9 +52,10 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
 
+    let verifyToken = Buffer.from(uuidV4()).toString('base64');
     let otpCode = otplib.authenticator.generate(Date.now().toString());
     let today = new Date();
-    today.setHours(today.getHours() + config.expiredVefiryOTP);
+    today.setHours(today.getHours() + config.expiredVefiryToken);
     await OTP.update({
       expired: true
     }, {
@@ -65,6 +68,7 @@ module.exports = async (req, res, next) => {
 
     let otp = await OTP.create({
       code: otpCode,
+      token: verifyToken,
       used: false,
       expired: false,
       expired_at: today,
@@ -77,6 +81,11 @@ module.exports = async (req, res, next) => {
     }
 
     await transaction.commit();
+    let response = memberMapper(member);
+    return res.ok({
+      verify_token: verifyToken,
+      member: response
+    });
 
   }
   catch (err) {

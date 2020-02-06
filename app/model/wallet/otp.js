@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: false
     },
+    token: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     used: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

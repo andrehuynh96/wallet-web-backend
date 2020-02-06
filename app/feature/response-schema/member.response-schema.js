@@ -11,7 +11,17 @@ const destObject = {
     '[].twofa_download_key_flg': '[].twofa_download_key_flg',
     '[].referral_code': '[].referral_code',
     '[].created_at': '[].created_at',
-    '[].member_sts': '[].user_sts'
+    '[].member_sts': '[].member_sts',
+    '[].fullname': '[].fullname',
+    '[].phone': '[].phone',
+    '[].date_of_birth': '[].date_of_birth',
+    '[].address': '[].address',
+    '[].city': '[].city',
+    '[].post_code': '[].post_code',
+    '[].country': '[].country',
+    '[].referral_code': '[].referral_code',
+    '[].referrer_code': '[].referrer_code',
+    '[].infinito_id': '[].infinito_id',
   },
   single: {
     id: 'id',
@@ -23,7 +33,17 @@ const destObject = {
     twofa_download_key_flg: 'twofa_download_key_flg',
     referral_code: 'referral_code',
     created_at: 'created_at',
-    member_sts: 'user_sts'
+    member_sts: 'member_sts',
+    fullname: 'fullname',
+    phone: 'phone',
+    date_of_birth: 'date_of_birth',
+    address: 'address',
+    city: 'city',
+    post_code: 'post_code',
+    country: 'country',
+    referral_code: 'referral_code',
+    referrer_code: 'referrer_code',
+    infinito_id: 'infinito_id',
   }
 };
 module.exports = srcObject => {

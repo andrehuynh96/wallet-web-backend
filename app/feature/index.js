@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.use(require('./login/login.route'));
+router.use(require('./register/register.route'));
 
 module.exports = router;
 

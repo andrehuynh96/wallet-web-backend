@@ -1,5 +1,5 @@
 
-const database = require('app/lib/database').db().staking;
+const database = require('app/lib/database').db().wallet;
 const fs = require('fs');
 const path = require('path');
 

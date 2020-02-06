@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     email: {
       type: DataTypes.STRING(128),
-      allowNull: false
+      allowNull: false,
+      //unique: true
     },
     password_hash: {
       type: DataTypes.STRING(128),
@@ -21,12 +22,33 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: MemberStatus.UNACTIVATED
     },
-    name: {
+    fullname: {
       type: DataTypes.STRING(128),
       allowNull: true
     },
     phone: {
       type: DataTypes.STRING(32),
+      allowNull: false,
+      // unique: true,
+    },
+    date_of_birth: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    address: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    city: {
+      type: DataTypes.STRING(64),
+      allowNull: true
+    },
+    post_code: {
+      type: DataTypes.STRING(64),
+      allowNull: true
+    },
+    country: {
+      type: DataTypes.STRING(64),
       allowNull: true
     },
     twofa_secret: {
@@ -44,6 +66,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     referral_code: {
+      type: DataTypes.STRING(8),
+      allowNull: false
+    },
+    referrer_code: {
       type: DataTypes.STRING(8),
       allowNull: true
     },

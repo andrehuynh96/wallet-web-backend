@@ -60,6 +60,7 @@ const config = {
     fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
+  expiredVefiryOTP: process.env.EXPIRED_VERIFY_OTP ? parseInt(process.env.EXPIRED_VERIFY_OTP) : 2,
 };
 
 module.exports = config;

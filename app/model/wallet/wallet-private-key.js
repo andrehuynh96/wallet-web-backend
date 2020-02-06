@@ -1,31 +1,30 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("wallets", {
+  return sequelize.define("wallet_priv_keys", {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4(),
     },
-    member_id: {
+    wallet_id: {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    default_flg: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
+    platform: {
+      type: DataTypes.STRING(16),
+      allowNull: false
+    },
+    address: {
+      type: DataTypes.STRING(128),
+      allowNull: false
+    },
+    hd_path: {
+      type: DataTypes.STRING(32),
+      allowNull: false
     },
     key_store_path: {
       type: DataTypes.STRING(256),
       allowNull: false
-    },
-    user_wallet_pass_hash: {
-      type: DataTypes.STRING(64),
-      allowNull: true
-    },
-    salt: {
-      type: DataTypes.STRING(64),
-      allowNull: true
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,

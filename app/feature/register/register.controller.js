@@ -2,13 +2,13 @@ const logger = require("app/lib/logger");
 const config = require("app/config");
 const Member = require("app/model/wallet").members;
 const OTP = require("app/model/wallet/otp").opts;
-const OtpType = require("app/model/staking/value-object/otp-type");
+const OtpType = require("app/model/wallet/value-object/otp-type");
 const memberMapper = require('app/feature/response-schema/member.response-schema');
 const bcrypt = require('bcrypt');
 const mailer = require('app/lib/mailer');
 const database = require('app/lib/database').db().wallet;
 const otplib = require("otplib");
-const Hashids = require('hashids');
+const Hashids = require('hashids/cjs');
 const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
 
@@ -81,10 +81,11 @@ module.exports = async (req, res, next) => {
     }
 
     await transaction.commit();
+    _sendEmail(member, otp);
     let response = memberMapper(member);
     return res.ok({
       verify_token: verifyToken,
-      member: response
+      user: response
     });
 
   }
@@ -95,6 +96,20 @@ module.exports = async (req, res, next) => {
   }
 }
 
-async function _sendEmail() {
-
+async function _sendEmail(member, otp) {
+  try {
+    let subject = 'Listco Account - Register Account';
+    let from = `Listco <${config.mailSendAs}>`;
+    let data = {
+      email: member.email,
+      fullname: member.email,
+      site: config.websiteUrl,
+      otp: otp.code,
+      hours: config.expiredVefiryToken
+    }
+    data = Object.assign({}, data, config.email);
+    await mailer.sendWithTemplate(subject, from, user.email, data, "register-member.ejs");
+  } catch (err) {
+    logger.error("send email create account fail", err);
+  }
 }

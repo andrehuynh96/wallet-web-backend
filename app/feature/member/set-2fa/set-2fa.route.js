@@ -14,3 +14,63 @@ router.post(
 
 module.exports = router;
 
+
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/me/2fa:
+ *   post:
+ *     summary: update 2fa
+ *     tags:
+ *       - Accounts
+ *     description:
+ *     parameters:
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to register.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - twofa_secret
+ *            - twofa_code
+  *            properties:
+ *              twofa_secret:
+ *                type: string
+ *              twofa_code:
+ *                type: string
+ *            example:
+ *                  {
+                          "twofa_secret":"AIU45sdsahssdsjYUDHd6",
+                          "twofa_code":"123456",
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+

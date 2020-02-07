@@ -56,12 +56,22 @@ module.exports = router;
                       "twofa":true,
                       "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
                       "user":{
-                        "id": 1,
+                        "id": "ad84f5a2-497d-11ea-b77f-2e728ce88125",
                         "email":"example@gmail.com",
                         "twofa_secret":"sCM87xx",
                         "twofa_enable_flg": true,
                         "create_at":"",
-                        "member_sts":"ACTIVATED"
+                        "member_sts":"ACTIVATED",
+                        "fullname":"Client",
+                        "phone": "0909038232",
+                        "date_of_birth": "22/09/2000",
+                        "address": "123 Rood B",
+                        "city": "HCM",
+                        "post_code": "700000",
+                        "country": "VN",
+                        "referral_code": "RDFCSD4C",
+                        "referrer_code": "WDRF3F1C",
+                        "infinito_id": ""
                       }
                     }
  *             }

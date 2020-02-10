@@ -10,6 +10,7 @@ router.use(require('./member'));
 router.use(require('./set-new-password/set-new-password.route'))
 router.use(require('./forgot-password/forgot-password.route'))
 router.use(require('./logout/logout.route'));
+router.use(require('./get-wallet/get-wallet.route'));
 
 
 module.exports = router;

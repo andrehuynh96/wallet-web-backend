@@ -13,16 +13,13 @@ module.exports = async (req, res, next) => {
   try {
     let otp = await OTP.findOne({
       where: {
-        token: req.body.verify_token,
+        code: req.body.verify_token,
         action_type: OtpType.REGISTER
       }
     });
 
     if (!otp) {
       return res.badRequest(res.__('TOKEN_INVALID'), 'TOKEN_INVALID', { fields: ['verify_token'] });
-    }
-    if (otp.code != req.body.otp) {
-      return res.badRequest(res.__('OTP_INVALID'), 'OTP_INVALID', { fields: ['otp'] });
     }
 
     let today = new Date();

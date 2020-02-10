@@ -67,8 +67,7 @@ module.exports = async (req, res, next) => {
       });
 
     let otp = await OTP.create({
-      code: otpCode,
-      token: verifyToken,
+      code: verifyToken,
       used: false,
       expired: false,
       expired_at: today,
@@ -83,10 +82,7 @@ module.exports = async (req, res, next) => {
     await transaction.commit();
     _sendEmail(member, otp);
     let response = memberMapper(member);
-    return res.ok({
-      verify_token: verifyToken,
-      user: response
-    });
+    return res.ok(response);
 
   }
   catch (err) {
@@ -104,7 +100,7 @@ async function _sendEmail(member, otp) {
       email: member.email,
       fullname: member.email,
       site: config.websiteUrl,
-      otp: otp.code,
+      link: `${config.website.urlActive}/${otp.code}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);

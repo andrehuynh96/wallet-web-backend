@@ -1,11 +1,11 @@
 const express = require("express");
 const validator = require("app/middleware/validator.middleware");
-const schema = require("./resend-otp.request-schema");
-const controller = require('./resend-otp.controller');
+const schema = require("./resend-email.request-schema");
+const controller = require('./resend-email.controller');
 const router = express.Router();
 
 router.post(
-  '/resend-otp',
+  '/resend-email',
   validator(schema),
   controller
 );
@@ -18,7 +18,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/resend-otp:
+ * /web/resend-email:
  *   post:
  *     summary: Resend Otp
  *     tags:
@@ -46,9 +46,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
-                      "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34"
-                    }
+ *                 "data":true
  *             }
  *       400:
  *         description: Error

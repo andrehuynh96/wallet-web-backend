@@ -7,6 +7,7 @@ router.use(require('./confirm-2fa/confirm-2fa.route'));
 router.use(require('./verify-member/verify-member.route'));
 router.use(require('./resend-email/resend-email.route'));
 router.use(require('./member'));
+router.use(require('./logout/logout.route'));
 
 module.exports = router;
 

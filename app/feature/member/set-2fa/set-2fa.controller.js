@@ -12,7 +12,17 @@ module.exports = async (req, res, next) => {
     });
 
     if (!verified) {
-      return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
+      return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT", { fields: ["twofa_secret"] });
+    }
+
+    let result = await Member.findOne({
+      where: {
+        twofa_secret: req.body.twofa_secret
+      }
+    })
+
+    if (result) {
+      return res.badRequest(res.__("TWOFA_EXISTS_ALREADY"), "TWOFA_EXISTS_ALREADY", { fields: ["twofa_secret"] });
     }
 
     let [_, response] = await Member.update({

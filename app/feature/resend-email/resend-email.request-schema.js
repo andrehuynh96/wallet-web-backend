@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const OtpType = require("app/model/staking/value-object/otp-type");
+const OtpType = require("app/model/wallet/value-object/otp-type");
 let keys = Object.values(OtpType);
 
 const schema = Joi.object().keys({

@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0
     },
     member_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     action_type: {

@@ -49,3 +49,5 @@ process.on('unhandledRejection', function (reason, p) {
 process.on('uncaughtException', err => {
   logger.error('uncaughtException', err);
 });
+
+module.exports = app; // for testing

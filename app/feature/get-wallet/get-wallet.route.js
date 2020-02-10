@@ -1,10 +1,24 @@
 const express = require('express');
 const controller = require('./get-wallet.controller');
+const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 
 router.get(
   '/wallets',
+  authenticate,
   controller.getAll
+);
+
+router.get(
+  '/wallets/:wallet_id',
+  authenticate,
+  controller.get
+);
+
+router.get(
+  '/wallets/:wallet_id/keys/:platform',
+  authenticate,
+  controller.getKey
 );
 
 module.exports = router;
@@ -14,13 +28,21 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/wallets?page=[page]&size=[size]:
+ * /web/wallets:
  *   get:
  *     summary: get wallet
  *     tags:
  *       - Wallets
  *     description:
  *     parameters:
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
  *     produces:
  *       - application/json
  *     responses:
@@ -28,8 +50,131 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {
- *                 "data": true
+ *             {  
+               "data": {
+                 "items": [{
+                      "id": 1,
+                      "default_flg": false,
+                      "key_store_path": "",
+                      "created_at": "2020-01-07 20:22:04.728+09"
+                    }],
+                    "offset": 0,
+                    "limit": 10,
+                    "total": 1
+                  }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/wallets/{wallet_id}:
+ *   get:
+ *     summary: get coins of wallet
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true  
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {  
+               "data": {
+                 "items": [{
+                      "id": 1,
+                      "platform": "ATOM",
+                      "address": "",
+                      "hd_path": "",
+                      "key_store_path": "",
+                      "created_at": "2020-01-07 20:22:04.728+09"
+                    }],
+                    "offset": 0,
+                    "limit": 10,
+                    "total": 1
+                  }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/wallets/{wallet_id}/keys/{platform}:
+ *   get:
+ *     summary: get key of coin
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
+ *       - in: path
+ *         name: platform
+ *         type: string
+ *         required: true  
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {  
+               "data": {
+                  "id": 1,
+                  "platform": "ATOM",
+                  "address": "",
+                  "hd_path": "",
+                  "key_store_path": "",
+                  "created_at": "2020-01-07 20:22:04.728+09"
+                }
  *             }
  *       400:
  *         description: Error

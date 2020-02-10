@@ -16,7 +16,7 @@ describe('staking plan', function () {
             chai.request(server)
                 .post('/web/set-new-password')
                 .send({
-                    verify_token: 'token',
+                    verify_token: 'ZTY2NWMxZGItNjI1Yi00NTI3LWI2ZTMtZWUwNDhkYTdmOGJm',
                     password: '123a123'
                 })
                 .end((err, res) => {

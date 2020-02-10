@@ -1,5 +1,5 @@
 const logger = require('app/lib/logger');
-const Members = require("app/model/wallet").members;
+const Member = require("app/model/wallet").members;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const OTP = require("app/model/wallet").otps;
 const OtpType = require("app/model/wallet/value-object/otp-type");
@@ -15,6 +15,7 @@ module.exports = async (req, res, next) => {
         action_type: { [Op.in]: [OtpType.FORGOT_PASSWORD, OtpType.CREATE_ACCOUNT] }
       }
     });
+
     if (!otp) {
       return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ["verify_token"] });
     }
@@ -24,11 +25,12 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED");
     }
 
-    let member = await Members.findOne({
+    let member = await Member.findOne({
       where: {
         id: otp.member_id
       }
     });
+
     if (!member) {
       return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
     }

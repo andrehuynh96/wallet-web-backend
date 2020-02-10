@@ -3,7 +3,7 @@ const Member = require("app/model/wallet").members;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
-const OTP = require("app/model/staking").otps;
+const OTP = require("app/model/wallet").otps;
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
 

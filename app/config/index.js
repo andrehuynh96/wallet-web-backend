@@ -61,6 +61,7 @@ const config = {
   },
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
+  enableSeed: process.env.ENABLE_SEED == "1",
 };
 
 module.exports = config;

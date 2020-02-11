@@ -58,7 +58,6 @@ module.exports = router;
                       "user":{
                         "id": "ad84f5a2-497d-11ea-b77f-2e728ce88125",
                         "email":"example@gmail.com",
-                        "twofa_secret":"sCM87xx",
                         "twofa_enable_flg": true,
                         "create_at":"",
                         "member_sts":"ACTIVATED",

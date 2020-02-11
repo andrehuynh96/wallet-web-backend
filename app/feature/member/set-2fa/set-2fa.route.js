@@ -34,17 +34,20 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - twofa_secret
+ *            - disable
  *            - twofa_code
   *            properties:
  *              twofa_secret:
  *                type: string
  *              twofa_code:
  *                type: string
+ *              disable:
+ *                type: boolean
  *            example:
  *                  {
                           "twofa_secret":"AIU45sdsahssdsjYUDHd6",
                           "twofa_code":"123456",
+                          "disable":false
  *                  }
  *     produces:
  *       - application/json

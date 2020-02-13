@@ -100,7 +100,7 @@ async function _sendEmail(member, otp) {
     let data = {
       email: member.email,
       fullname: member.email,
-      site: config.websiteUrl,
+      site: config.website.url,
       link: `${config.website.urlActive}/${otp.code}`,
       hours: config.expiredVefiryToken
     }

@@ -11,8 +11,8 @@ const router = express.Router();
 router.post(
   '/register',
   validator(schema),
-  recaptcha.middleware.verify,
-  verifyRecaptcha,
+  //recaptcha.middleware.verify,
+  //verifyRecaptcha,
   controller
 );
 
@@ -61,7 +61,7 @@ module.exports = router;
                       "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
                       "user":{
                         "id": "ad84f5a2-497d-11ea-b77f-2e728ce88125",
-                        "email":"example@gmail.com", 
+                        "email":"example@gmail.com",
                         "twofa_enable_flg": true,
                         "create_at":"",
                         "member_sts":"ACTIVATED",

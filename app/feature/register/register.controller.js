@@ -1,7 +1,7 @@
 const logger = require("app/lib/logger");
 const config = require("app/config");
 const Member = require("app/model/wallet").members;
-const OTP = require("app/model/wallet/otp").opts;
+const OTP = require("app/model/wallet").otps;
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const memberMapper = require('app/feature/response-schema/member.response-schema');
 const bcrypt = require('bcrypt');
@@ -36,11 +36,12 @@ module.exports = async (req, res, next) => {
     if (phoneExists) {
       return res.badRequest(res.__("PHONE_EXISTS_ALREADY"), "PHONE_EXISTS_ALREADY", { fields: ['phone'] });
     }
+
     let salt = `${Date.now().toString()}`;
     let hashids = new Hashids(salt, 8, base58chars);
-    let referralCode = hashids.encode(member.id);
+    let referralCode = hashids.encode(1, 2, 3, 4);
     let password = bcrypt.hashSync(req.body.password, 10);
-    let member = await User.create({
+    let member = await Member.create({
       email: req.body.email,
       password_hash: password,
       phone: req.body.phone,

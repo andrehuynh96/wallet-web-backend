@@ -105,7 +105,7 @@ async function _sendEmail(member, otp) {
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "register-member.ejs");
+    await mailer.sendWithTemplate(subject, from, member.email, data, "register-member.ejs");
   } catch (err) {
     logger.error("send email create account fail", err);
   }

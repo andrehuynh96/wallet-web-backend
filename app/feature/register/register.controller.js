@@ -13,7 +13,6 @@ const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
 
 module.exports = async (req, res, next) => {
-  const transaction = await database.transaction();
   try {
     let emailExists = await Member.findOne({
       where: {
@@ -47,9 +46,8 @@ module.exports = async (req, res, next) => {
       phone: req.body.phone,
       referral_code: referralCode,
       referrer_code: req.body.referrer_code || "",
-    }, { transaction });
+    });
     if (!member) {
-      await transaction.rollback();
       return res.serverInternalError();
     }
 
@@ -74,13 +72,11 @@ module.exports = async (req, res, next) => {
       expired_at: today,
       member_id: member.id,
       action_type: OtpType.REGISTER
-    }, { transaction });
+    });
     if (!otp) {
-      await transaction.rollback();
       return res.serverInternalError();
     }
 
-    await transaction.commit();
     _sendEmail(member, otp);
     let response = memberMapper(member);
     return res.ok(response);
@@ -88,7 +84,6 @@ module.exports = async (req, res, next) => {
   }
   catch (err) {
     logger.error('register fail:', err);
-    await transaction.rollback();
     next(err);
   }
 }

@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
     });
 
     if (emailExists) {
-      return res.babRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY", { fields: ['email'] });
+      return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY", { fields: ['email'] });
     }
 
     let phoneExists = await Member.findOne({
@@ -34,7 +34,7 @@ module.exports = async (req, res, next) => {
     });
 
     if (phoneExists) {
-      return res.babRequest(res.__("PHONE_EXISTS_ALREADY"), "PHONE_EXISTS_ALREADY", { fields: ['phone'] });
+      return res.badRequest(res.__("PHONE_EXISTS_ALREADY"), "PHONE_EXISTS_ALREADY", { fields: ['phone'] });
     }
     let salt = `${Date.now().toString()}`;
     let hashids = new Hashids(salt, 8, base58chars);

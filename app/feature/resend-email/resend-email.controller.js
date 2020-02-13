@@ -18,7 +18,7 @@ module.exports = async (req, res, next) => {
     });
 
     if (!member) {
-      return res.babRequest(res.__("NOT_FOUND_USER"), "NOT_FOUND_USER", { fields: ['email'] });
+      return res.badRequest(res.__("NOT_FOUND_USER"), "NOT_FOUND_USER", { fields: ['email'] });
     }
 
     let verifyToken = Buffer.from(uuidV4()).toString('base64');

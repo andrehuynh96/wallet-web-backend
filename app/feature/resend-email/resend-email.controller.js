@@ -65,7 +65,7 @@ const sendEmail = {
         email: member.email,
         fullname: member.email,
         site: config.website.url,
-        link: `${config.website.urlActive}/${otp.code}`,
+        link: `${config.website.urlActive}${otp.code}`,
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);

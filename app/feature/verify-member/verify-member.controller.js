@@ -9,7 +9,6 @@ const MemberActivityLog = require('app/model/wallet').member_activity_logs;
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
 
 module.exports = async (req, res, next) => {
-  const transaction = await database.transaction();
   try {
     let otp = await OTP.findOne({
       where: {
@@ -42,8 +41,7 @@ module.exports = async (req, res, next) => {
         where: {
           id: member.id
         },
-        returning: true,
-        transaction
+        returning: true
       });
 
     await OTP.update({
@@ -54,22 +52,20 @@ module.exports = async (req, res, next) => {
         },
       });
 
-    await transaction.commit();
-    const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
+    // const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
 
-    await MemberActivityLog.create({
-      member_id: member.id,
-      client_ip: registerIp,
-      action: ActionType.VERIFY_ACCOUNT,
-      user_agent: req.headers['user-agent']
-    });
+    // await MemberActivityLog.create({
+    //   member_id: member.id,
+    //   client_ip: registerIp,
+    //   action: ActionType.VERIFY_ACCOUNT,
+    //   user_agent: req.headers['user-agent']
+    // });
 
-    req.session.authenticated = true;
-    req.session.user = member;
+    // req.session.authenticated = true;
+    // req.session.user = member;
     return res.ok(memberMapper(member));
   }
   catch (err) {
-    await transaction.rollback();
     logger.error("verify member fail:", err);
     next(err);
   }

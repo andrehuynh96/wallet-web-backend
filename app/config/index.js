@@ -65,7 +65,7 @@ const config = {
 
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/active-member',
+    urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
   },
 };
 

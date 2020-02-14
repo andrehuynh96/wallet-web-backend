@@ -62,7 +62,7 @@ const config = {
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
   enableSeed: process.env.ENABLE_SEED == "1",
-  linkWebsiteVerify: process.env.WEBSITE_URL + '/set-new-password',
+  linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password',
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/sign-in?token=',

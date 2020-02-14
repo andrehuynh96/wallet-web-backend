@@ -66,7 +66,7 @@ async function _sendEmail(user, verifyToken) {
     let data = {
       email: user.email,
       fullname: user.email,
-      link: `${config.linkWebsiteVerify}/${verifyToken}`,
+      link: `${config.linkWebsiteVerify}?token=${verifyToken}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);

@@ -43,11 +43,14 @@ module.exports = router;
  *                type: string
  *              disable:
  *                type: boolean
+*               disable_twofa_download_key:
+ *                type: boolean
  *            example:
  *                  {
                           "twofa_secret":"AIU45sdsahssdsjYUDHd6",
                           "twofa_code":"123456",
                           "disable":false
+                          "disable_twofa_download_key":false
  *                  }
  *     produces:
  *       - application/json

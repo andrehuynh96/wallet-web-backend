@@ -25,7 +25,8 @@ module.exports = async (req, res, next) => {
       }
 
       let [_, response] = await Member.update({
-        twofa_enable_flg: false
+        twofa_enable_flg: false,
+        twofa_download_key_flg: false
       }, {
           where: {
             id: req.user.id
@@ -49,7 +50,7 @@ module.exports = async (req, res, next) => {
 
       let result = await Member.findOne({
         where: {
-          twofa_secret: req.body.twofa_secret
+          twofa_secret: req.body.twofa_secret,
         }
       })
 
@@ -59,7 +60,8 @@ module.exports = async (req, res, next) => {
 
       let [_, response] = await Member.update({
         twofa_secret: req.body.twofa_secret,
-        twofa_enable_flg: true
+        twofa_enable_flg: true,
+        twofa_download_key_flg: req.body.disable_twofa_download_key
       }, {
           where: {
             id: req.user.id

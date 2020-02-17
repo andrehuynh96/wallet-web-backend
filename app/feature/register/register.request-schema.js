@@ -8,7 +8,7 @@ const schema = Joi.object().keys({
   password: Joi.string()
     .regex(/^[a-zA-Z0-9!@#$%^&*()-_=+]{6,30}$/)
     .required(),
-  phone: Joi.string().required(),
+  phone: Joi.string().optional().allow(""),
   referrer_code: Joi.string().optional().allow("")
 });
 

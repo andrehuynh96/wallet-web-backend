@@ -25,15 +25,17 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("EMAIL_EXISTS_ALREADY"), "EMAIL_EXISTS_ALREADY", { fields: ['email'] });
     }
 
-    let phoneExists = await Member.findOne({
-      where: {
-        deleted_flg: false,
-        phone: req.body.phone
-      }
-    });
+    if (req.body.phone) {
+      let phoneExists = await Member.findOne({
+        where: {
+          deleted_flg: false,
+          phone: req.body.phone
+        }
+      });
 
-    if (phoneExists) {
-      return res.badRequest(res.__("PHONE_EXISTS_ALREADY"), "PHONE_EXISTS_ALREADY", { fields: ['phone'] });
+      if (phoneExists) {
+        return res.badRequest(res.__("PHONE_EXISTS_ALREADY"), "PHONE_EXISTS_ALREADY", { fields: ['phone'] });
+      }
     }
 
     let salt = `${Date.now().toString()}`;
@@ -43,7 +45,7 @@ module.exports = async (req, res, next) => {
     let member = await Member.create({
       email: req.body.email,
       password_hash: password,
-      phone: req.body.phone,
+      phone: req.body.phone || "",
       referral_code: referralCode,
       referrer_code: req.body.referrer_code || "",
     });

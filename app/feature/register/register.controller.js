@@ -17,7 +17,7 @@ module.exports = async (req, res, next) => {
     let emailExists = await Member.findOne({
       where: {
         deleted_flg: false,
-        email: req.body.email
+        email: req.body.email.toLowerCase()
       }
     });
 
@@ -43,7 +43,7 @@ module.exports = async (req, res, next) => {
     let referralCode = hashids.encode(1, 2, 3, 4);
     let password = bcrypt.hashSync(req.body.password, 10);
     let member = await Member.create({
-      email: req.body.email,
+      email: req.body.email.toLowerCase(),
       password_hash: password,
       phone: req.body.phone || "",
       referral_code: referralCode,

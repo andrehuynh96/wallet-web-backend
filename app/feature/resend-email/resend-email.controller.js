@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
     let member = await Member.findOne({
       where: {
         deleted_flg: false,
-        email: req.body.email
+        email: req.body.email.toLowerCase()
       }
     });
 

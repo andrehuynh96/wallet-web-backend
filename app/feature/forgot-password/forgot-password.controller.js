@@ -19,11 +19,11 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ["email"] });
     }
 
-    if (member.status == MemberStatus.UNACTIVATED) {
+    if (member.member_sts == MemberStatus.UNACTIVATED) {
       return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
     }
 
-    if (member.status == MemberStatus.LOCKED) {
+    if (member.member_sts == MemberStatus.LOCKED) {
       return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
     }
 

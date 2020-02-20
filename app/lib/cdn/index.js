@@ -1,1 +1,4 @@
-module.exports = require("./minio")
+module.exports = {
+  s3: require('./aws'),
+  mino: require('./minio')
+}

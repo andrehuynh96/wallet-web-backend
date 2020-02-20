@@ -34,11 +34,11 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__('USER_NOT_FOUND'), 'USER_NOT_FOUND');
     }
 
-    if (user.status == MemberStatus.UNACTIVATED) {
+    if (user.member_sts == MemberStatus.UNACTIVATED) {
       return res.forbidden(res.__('UNCONFIRMED_ACCOUNT', 'UNCONFIRMED_ACCOUNT'));
     }
 
-    if (user.status == MemberStatus.LOCKED) {
+    if (user.member_sts == MemberStatus.LOCKED) {
       return res.forbidden(res.__('ACCOUNT_LOCKED', 'ACCOUNT_LOCKED'));
     }
 

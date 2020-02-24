@@ -100,13 +100,13 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - twofa_code
- *            - disable_twofa_download_key
- *              properties:
- *              twofa_code:
- *                type: string
- *              disable_twofa_download_key:
- *                type: boolean
+ *              - twofa_code
+ *              - disable_twofa_download_key
+ *            properties:
+ *            twofa_code:
+ *              type: string
+ *            disable_twofa_download_key:
+ *              type: boolean
  *            example:
  *                  {
                           "twofa_code":"123456",

@@ -1,35 +1,28 @@
 const express = require('express');
 const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
-const { create, update } = require('./validator');
-const controller = require('./wallet.controller');
+const { create} = require('./validator');
+const controller = require('./wallet-private-key.controller');
 
 const router = express.Router();
 
 router.post(
-  '/wallets',
+  '/wallets/:wallet_id/keys',
   authenticate,
   validator(create),
   controller.create
 );
 
-router.put(
-  '/wallets/:id',
-  authenticate,
-  validator(update),
-  controller.update
-);
-
 router.delete(
-  '/wallets/:id',
+  '/wallets/:wallet_id/keys/:id',
   authenticate,
   controller.delete
 );
 
 router.get(
-  '/wallets/:wallet_id/passphrase',
+  '/wallets/:wallet_id/keys/:id/private',
   authenticate,
-  controller.getPassphrase
+  controller.getPrivKey
 );
 
 module.exports = router;
@@ -38,25 +31,28 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/wallets:
+ * /web/wallets/{wallet_id}/keys:
  *   post:
- *     summary: create / import wallet
+ *     summary: add coins
  *     tags:
  *       - Wallets
  *     description:
  *     parameters:
  *       - in: body
  *         name: data
- *         description: Data for wallet.
+ *         description: Data for wallet private key.
  *         schema:
- *            type: object
+ *            type: array
  *            required:
- *            - passphrase_hash
+ *            - items
  *            - password_hash
  *            example:
- *               {     
-                    "passphrase_hash": "",
-                    "password_hash": ""
+ *               { items: [    
+                    { "private_key_hash": "",
+                    "platform": "",
+                    "address": "",
+                    "hd_path": ""}],
+                  password_hash: ""
                   }
  *     produces:
  *       - application/json
@@ -66,11 +62,13 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
+ *                 "data":[{
                         "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
-                        "default_flg":false,
+                        "platform":false,
+                        "address": "",
+                        "hd_path": "",
                         "created_at":""
-                    }
+                    }]
  *             }
  *       400:
  *         description: Error
@@ -92,66 +90,17 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/wallets/{id}:
- *   put:
- *     summary: update wallet
+ * /web/wallets/{wallet_id}/keys/{id}:
+ *   delete:
+ *     summary: delete coin
  *     tags:
  *       - Wallets
  *     description:
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: wallet_id
  *         type: string
  *         required: true
- *       - in: body
- *         name: data
- *         description: Data for wallet.
- *         schema:
- *            type: object
- *            required:
- *            - password_hash
- *            - default_flg
- *            example:
- *               {   
- *                  "password_hash": "",  
-                    "default_flg": true
-                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data":{
-                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
-                        "default_flg":true,
-                        "created_at":""
-                    }
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- *   delete:
- *     summary: delete wallet
- *     tags:
- *       - Wallets
- *     description:
- *     parameters:
  *       - in: path
  *         name: id
  *         type: string
@@ -199,9 +148,9 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/wallets/{wallet_id}/passphrase:
+ * /web/wallets/{wallet_id}/keys/{id}/private:
  *   get:
- *     summary: get passphrase hash
+ *     summary: get private key hash
  *     tags:
  *       - Wallets
  *     description:
@@ -210,6 +159,10 @@ module.exports = router;
  *         name: wallet_id
  *         type: string
  *         required: true
+ *       - in: path
+ *         name: id
+ *         type: string
+ *         required: true  
  *       - in: query
  *         name: password_hash
  *         type: string
@@ -223,7 +176,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "passphrase_hash": ""
+                        "private_key_hash": ""
                     }
  *             }
  *       400:

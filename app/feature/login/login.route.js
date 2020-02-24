@@ -11,8 +11,6 @@ const router = express.Router();
 router.post(
   '/login',
   validator(loginRequestSchema),
-  recaptcha.middleware.verify,
-  verifyRecaptcha,
   loginController
 );
 

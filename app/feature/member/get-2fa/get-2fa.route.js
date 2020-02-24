@@ -19,10 +19,10 @@ module.exports = router;
  * @swagger
  * /web/me/2fa:
  *   get:
- *     summary: get secret twofa
+ *     summary: get new secret twofa
  *     tags:
  *       - Accounts
- *     description:
+ *     description: get new secret twofa (require user logged in)
  *     parameters:
  *     produces:
  *       - application/json

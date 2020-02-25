@@ -11,6 +11,8 @@ router.use(require('./set-new-password/set-new-password.route'))
 router.use(require('./forgot-password/forgot-password.route'))
 router.use(require('./logout/logout.route'));
 router.use(require('./get-wallet/get-wallet.route'));
+router.use(require('./wallet/wallet.route'));
+router.use(require('./wallet/wallet-private-key/wallet-private-key.route'));
 
 
 module.exports = router;

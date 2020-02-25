@@ -67,6 +67,12 @@ const config = {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
   },
+  aws: {
+    endpoint: process.env.AWS_END_POINT,
+    accessKey: process.env.AWS_ACCESS_KEY,
+    secretKey: process.env.AWS_SECRET_KEY,
+    bucket: process.env.AWS_BUCKET
+  }
 };
 
 module.exports = config;

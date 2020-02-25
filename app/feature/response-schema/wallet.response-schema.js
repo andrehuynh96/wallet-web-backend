@@ -4,13 +4,11 @@ const destObject = {
   array: {
     '[].id': '[].id',
     '[].default_flg': '[].default_flg',
-    '[].key_store_path': '[].key_store_path',
     '[].createdAt': '[].created_at'
   },
   single: {
     id: 'id',
     default_flg: 'default_flg',
-    key_store_path: 'key_store_path',
     createdAt: 'created_at'
   }
 };

@@ -16,7 +16,7 @@ router.get(
 );
 
 router.get(
-  '/wallets/:wallet_id/keys/:platform',
+  '/wallets/:wallet_id/keys/:id',
   authenticate,
   controller.getKey
 );
@@ -55,7 +55,6 @@ module.exports = router;
                  "items": [{
                       "id": 1,
                       "default_flg": false,
-                      "key_store_path": "",
                       "created_at": "2020-01-07 20:22:04.728+09"
                     }],
                     "offset": 0,
@@ -116,7 +115,6 @@ module.exports = router;
                       "platform": "ATOM",
                       "address": "",
                       "hd_path": "",
-                      "key_store_path": "",
                       "created_at": "2020-01-07 20:22:04.728+09"
                     }],
                     "offset": 0,
@@ -144,7 +142,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/wallets/{wallet_id}/keys/{platform}:
+ * /web/wallets/{wallet_id}/keys/{id}:
  *   get:
  *     summary: get key of coin
  *     tags:
@@ -156,7 +154,7 @@ module.exports = router;
  *         type: string
  *         required: true
  *       - in: path
- *         name: platform
+ *         name: id
  *         type: string
  *         required: true  
  *     produces:
@@ -172,7 +170,6 @@ module.exports = router;
                   "platform": "ATOM",
                   "address": "",
                   "hd_path": "",
-                  "key_store_path": "",
                   "created_at": "2020-01-07 20:22:04.728+09"
                 }
  *             }

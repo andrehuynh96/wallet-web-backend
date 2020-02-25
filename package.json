@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aes256": "^1.0.4",
     "aws-sdk": "^2.622.0",
     "axios": "^0.19.2",
     "bcrypt": "^3.0.7",

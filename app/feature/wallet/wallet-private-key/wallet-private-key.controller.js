@@ -4,6 +4,7 @@ const WalletPrivateKey = require('app/model/wallet').wallet_priv_keys;
 const mapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const { put, get} = require('app/service/s3.service');
 const bcrypt = require('bcrypt');
+const aes256 = require('aes256');
 
 var privkey = {};
 
@@ -16,33 +17,26 @@ privkey.create = async (req, res, next) => {
         id: wallet_id
       }
     });
-    const match = await bcrypt.compare(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const decrypted = aes256.decrypt(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const match = await bcrypt.compare(req.body.password_hash, decrypted);
     if (!match) {
       return res.badRequest(res.__("PASSWORD_INCORRECT"), "PASSWORD_INCORRECT");
     }
-    let results = [];
-    for (item in req.body.items) {
-      let  data = {
-        user_wallet_pass_hash: bcrypt.hashSync(req.body.password_hash, 10),
-        member_id: req.user.id,
-        default_flg: req.body.default_flg ? req.body.default_flg: false,
-        key_store_path: 'passphrase'
+    let items = [];
+    for (item of req.body.items) {
+      let key = 'private_key/' + wallet.member_id + '/' + wallet.id + '/' + `${item.platform}_${item.address}`;
+      let data = {
+        wallet_id: wallet_id,
+        platform: item.platform,
+        address: item.address,
+        hd_path: item.hd_path,
+        key_store_path: key
       }
-      let wallet = await Wallet.create(data);
-      let key = 'private_key/' + wallet.member_id + '/' + wallet.id + '/' + req.body.address;
-      let putObject = await put(key, req.body.passphrase_hash, next);
-      if (putObject) {
-        let [_, result] = await Wallet.update({key_store_path: key}, {
-          where: {
-            id: wallet.id
-          }, returning: true
-        });
-        return res.ok(mapper(result));
-      } else {
-        await Wallet.destroy({ where: {id: wallet.id}})
-        return res.ok(null);
-      }
+      items.push(data);
+      let encrypted = aes256.encrypt(decrypted, item.private_key_hash);
+      await put(key, encrypted, next);
     }
+    let results = await WalletPrivateKey.bulkCreate(items);
     return res.ok(mapper(results));
   } catch (ex) {
     logger.error(ex);
@@ -60,7 +54,8 @@ privkey.delete = async (req, res, next) => {
         id: wallet_id
       }
     });
-    const match = await bcrypt.compare(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const decrypted = aes256.decrypt(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const match = await bcrypt.compare(req.body.password_hash, decrypted);
     if (!match) {
       return res.badRequest(res.__("PASSWORD_INCORRECT"), "PASSWORD_INCORRECT");
     }
@@ -80,7 +75,8 @@ privkey.getPrivKey = async (req, res, next) => {
         id: wallet_id
       }
     });
-    const match = await bcrypt.compare(password_hash, wallet.user_wallet_pass_hash);
+    const decrypted = aes256.decrypt(password_hash, wallet.user_wallet_pass_hash);
+    const match = await bcrypt.compare(password_hash, decrypted);
     if (!match) {
       return res.badRequest(res.__("PASSWORD_INCORRECT"), "PASSWORD_INCORRECT");
     }
@@ -94,11 +90,11 @@ privkey.getPrivKey = async (req, res, next) => {
       return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND")
     }
     let getObject = await get(priv.key_store_path, next);
-    return res.ok({private_key_hash: getObject.Body.toString()});
+    return res.ok({private_key_hash: aes256.decrypt(decrypted, getObject.Body.toString())});
   } catch (ex) {
     logger.error(ex);
     next(ex);
   }
 }
 
-module.exports = wallet;
+module.exports = privkey;

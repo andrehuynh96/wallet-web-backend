@@ -5,21 +5,24 @@ const database = require('app/lib/database').db().wallet;
 const mapper = require('app/feature/response-schema/wallet.response-schema');
 const { put, get} = require('app/service/s3.service');
 const bcrypt = require('bcrypt');
+const aes256 = require('aes256');
 
 var wallet = {};
 
 wallet.create = async (req, res, next) => {
   try {
     logger.info('wallet::create');
+    let passHash = bcrypt.hashSync(req.body.password_hash, 10);
     let  data = {
-      user_wallet_pass_hash: bcrypt.hashSync(req.body.password_hash, 10),
+      user_wallet_pass_hash: aes256.encrypt(req.body.password_hash, passHash),
       member_id: req.user.id,
       default_flg: req.body.default_flg ? req.body.default_flg: false,
       key_store_path: 'passphrase'
     }
     let wallet = await Wallet.create(data);
     let key = 'passphrase/' + wallet.member_id + '/' + wallet.id;
-    let putObject = await put(key, req.body.passphrase_hash, next);
+    let encrypted = aes256.encrypt(passHash, req.body.passphrase_hash);
+    let putObject = await put(key, encrypted, next);
     if (putObject) {
       let [_, result] = await Wallet.update({key_store_path: key}, {
         where: {
@@ -47,7 +50,8 @@ wallet.update =  async (req, res, next) => {
         id: id
       }
     });
-    const match = await bcrypt.compare(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const decrypted = aes256.decrypt(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const match = await bcrypt.compare(req.body.password_hash, decrypted);
     if (!match) {
       return res.badRequest(res.__("PASSWORD_INCORRECT"), "PASSWORD_INCORRECT");
     }
@@ -79,7 +83,8 @@ wallet.delete = async (req, res, next) => {
         id: id
       }
     });
-    const match = await bcrypt.compare(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const decrypted = aes256.decrypt(req.body.password_hash, wallet.user_wallet_pass_hash);
+    const match = await bcrypt.compare(req.body.password_hash, decrypted);
     if (!match) {
       return res.badRequest(res.__("PASSWORD_INCORRECT"), "PASSWORD_INCORRECT");
     }
@@ -102,12 +107,13 @@ wallet.getPassphrase = async (req, res, next) => {
         id: wallet_id
       }
     });
-    const match = await bcrypt.compare(password_hash, wallet.user_wallet_pass_hash);
+    const decrypted = aes256.decrypt(password_hash, wallet.user_wallet_pass_hash);
+    const match = await bcrypt.compare(password_hash, decrypted);
     if (!match) {
       return res.badRequest(res.__("PASSWORD_INCORRECT"), "PASSWORD_INCORRECT");
     }
     let getObject = await get(wallet.key_store_path, next);
-    return res.ok({passphrase_hash: getObject.Body.toString()});
+    return res.ok({passphrase_hash: aes256.decrypt(decrypted, getObject.Body.toString())});
   } catch (ex) {
     logger.error(ex);
     next(ex);

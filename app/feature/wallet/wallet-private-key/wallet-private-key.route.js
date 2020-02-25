@@ -38,6 +38,10 @@ module.exports = router;
  *       - Wallets
  *     description:
  *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
  *       - in: body
  *         name: data
  *         description: Data for wallet private key.

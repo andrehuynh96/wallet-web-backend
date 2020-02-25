@@ -21,9 +21,9 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ["email"] });
     }
     const match = await bcrypt.compare(req.body.password, user.password_hash);
-    // if (!match) {
-    //   return res.unauthorized(res.__("LOGIN_FAIL", "LOGIN_FAIL"));
-    // }
+    if (!match) {
+      return res.unauthorized(res.__("LOGIN_FAIL", "LOGIN_FAIL"));
+    }
 
     if (user.member_sts == MemberStatus.UNACTIVATED) {
       return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));

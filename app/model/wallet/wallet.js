@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     user_wallet_pass_hash: {
-      type: DataTypes.STRING(64),
+      type: DataTypes.STRING(256),
       allowNull: true
     },
     salt: {

@@ -171,6 +171,10 @@ module.exports = router;
  *         name: password_hash
  *         type: string
  *         required: true
+ *       - in: query
+ *         name: twofa_code
+ *         type: string
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:

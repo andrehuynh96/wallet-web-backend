@@ -13,6 +13,7 @@ router.use(require('./logout/logout.route'));
 router.use(require('./get-wallet/get-wallet.route'));
 router.use(require('./wallet/wallet.route'));
 router.use(require('./wallet/wallet-private-key/wallet-private-key.route'));
+router.use(require('./staking-platform/staking-platform.route'));
 
 
 module.exports = router;

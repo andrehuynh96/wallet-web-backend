@@ -142,4 +142,22 @@ wallet.getPassphrase = async (req, res, next) => {
   }
 }
 
+wallet.check = async (req, res, next) => {
+  try {
+    const { params: { wallet_id , password_hash} } = req;
+    let wallet = await Wallet.findOne({
+      where: {
+        id: wallet_id,
+        member_id: req.user.id
+      }
+    });
+    const decrypted = aes256.decrypt(password_hash, wallet.user_wallet_pass_hash);
+    const match = await bcrypt.compare(password_hash, decrypted);
+    return res.ok({check: match});
+  } catch (error) {
+    logger.error(error);
+    next(error);
+  }
+}
+
 module.exports = wallet;

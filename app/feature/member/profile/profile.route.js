@@ -6,7 +6,12 @@ const router = express.Router();
 router.get(
   '/me',
   authenticate,
-  controller
+  controller.get
+);
+router.post(
+  '/me/unsubcribe',
+  authenticate,
+  controller.unsubcribe
 );
 
 module.exports = router;

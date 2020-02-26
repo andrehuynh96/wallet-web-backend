@@ -15,7 +15,7 @@ module.exports = {
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 
-      const { count: total, rows: wallets } = await Wallet.findAndCountAll({offset: off, limit: lim, where: where, order: [['name', 'ASC']]});
+      const { count: total, rows: wallets } = await Wallet.findAndCountAll({offset: off, limit: lim, where: where, order: [['created_at', 'DESC']]});
       return res.ok({
         items: walletMapper(wallets),
         offset: off,
@@ -37,7 +37,7 @@ module.exports = {
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 
-      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({offset: off, limit: lim, where: where, order: [['name', 'ASC']]});
+      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({offset: off, limit: lim, where: where, order: [['platform', 'ASC']]});
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),
         offset: off,

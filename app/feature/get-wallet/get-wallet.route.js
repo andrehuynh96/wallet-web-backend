@@ -10,7 +10,7 @@ router.get(
 );
 
 router.get(
-  '/wallets/:wallet_id',
+  '/wallets/:wallet_id/keys',
   authenticate,
   controller.get
 );
@@ -82,7 +82,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/wallets/{wallet_id}:
+ * /web/wallets/{wallet_id}/keys:
  *   get:
  *     summary: get coins of wallet
  *     tags:

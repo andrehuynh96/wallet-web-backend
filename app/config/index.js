@@ -72,7 +72,8 @@ const config = {
     accessKey: process.env.AWS_ACCESS_KEY,
     secretKey: process.env.AWS_SECRET_KEY,
     bucket: process.env.AWS_BUCKET
-  }
+  },
+  appLimit: process.env.APP_LIMIT || 10,
 };
 
 module.exports = config;

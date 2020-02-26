@@ -53,10 +53,10 @@ module.exports = {
   getKey: async (req, res, next) => {
     try {
       logger.info('key::get');
-      const { params: { wallet_id, platform } } = req;
-      const where = { deleted_flg: false, wallet_id: wallet_id, platform: platform };
+      const { params: { wallet_id, id } } = req;
+      const where = { deleted_flg: false, wallet_id: wallet_id, id: id };
       let key = await WalletPrivateKey.findOne({where: where});
-    if (!partner) {
+    if (!key) {
       return res.badRequest();
     } else {
       return res.ok(walletPrivateKeyMapper(key));

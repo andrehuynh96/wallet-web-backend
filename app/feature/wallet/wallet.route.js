@@ -32,6 +32,12 @@ router.get(
   controller.getPassphrase
 );
 
+router.get(
+  '/wallets/:password_hash/check',
+  authenticate,
+  controller.check
+);
+
 module.exports = router;
 
 /*********************************************************************/
@@ -56,7 +62,8 @@ module.exports = router;
  *            example:
  *               {     
                     "passphrase_hash": "",
-                    "password_hash": ""
+                    "password_hash": "",
+                    "default_flg": true
                   }
  *     produces:
  *       - application/json
@@ -68,7 +75,7 @@ module.exports = router;
  *             {
  *                 "data":{
                         "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
-                        "default_flg":false,
+                        "default_flg":true,
                         "created_at":""
                     }
  *             }
@@ -224,6 +231,53 @@ module.exports = router;
  *             {
  *                 "data":{
                         "passphrase_hash": ""
+                    }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/wallets/{wallet_id}/{password_hash}/check:
+ *   get:
+ *     summary: check password hash
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
+ *       - in: path
+ *         name: password_hash
+ *         type: string
+ *         required: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data":{
+                        "check": true
                     }
  *             }
  *       400:

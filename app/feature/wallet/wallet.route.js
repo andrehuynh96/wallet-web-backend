@@ -32,8 +32,8 @@ router.get(
   controller.getPassphrase
 );
 
-router.get(
-  '/wallets/:password_hash/check',
+router.post(
+  '/wallets/:wallet_id/check',
   authenticate,
   controller.check
 );
@@ -253,8 +253,8 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/wallets/{wallet_id}/{password_hash}/check:
- *   get:
+ * /web/wallets/{wallet_id}/check:
+ *   post:
  *     summary: check password hash
  *     tags:
  *       - Wallets
@@ -264,10 +264,17 @@ module.exports = router;
  *         name: wallet_id
  *         type: string
  *         required: true
- *       - in: path
- *         name: password_hash
- *         type: string
- *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - password_hash
+ *            example:
+ *               {   
+ *                  "password_hash": ""
+                  }
  *     produces:
  *       - application/json
  *     responses:

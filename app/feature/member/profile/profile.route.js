@@ -13,7 +13,11 @@ router.post(
   authenticate,
   controller.unsubcribe
 );
-
+router.delete(
+  '/me/unsubcribe/',
+  authenticate,
+  controller.delete
+);
 module.exports = router;
 
 

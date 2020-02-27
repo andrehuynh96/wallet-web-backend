@@ -35,7 +35,7 @@ module.exports = {
         }
       })
       if(!member){
-        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ["email"] });
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
       if(member.twofa_enable_flg){
         let verifyToken = Buffer.from(uuidV4()).toString('base64');
@@ -64,7 +64,7 @@ module.exports = {
   
         await OTP.create({
           code: verifyToken,
-          used: true,
+          used: false,
           expired: false,
           expired_at: today,
           member_id: member.id,
@@ -89,7 +89,7 @@ module.exports = {
   
         await OTP.create({
           code: verifyToken,
-          used: true,
+          used: false,
           expired: false,
           expired_at: today,
           member_id: member.id,
@@ -103,8 +103,57 @@ module.exports = {
       logger.error('unsubcribe account fail:', err);
       next(err);
     }
+  },
+  delete: async (req, res, next) => {
+    try {
+      let today = new Date();
+      today.setHours(today.getHours() + config.expiredVefiryToken);
+      let otp = await OTP.findOne({
+        where: {
+          code: req.body.verify_token,
+        }
+      })
+      if(!otp){
+        return res.badRequest(res.__("TOKEN_INVALID"),"TOKEN_INVALID")
+      }
+      if (otp.expired || otp.used) {
+        return res.badRequest(res.__('TOKEN_EXPIRED'), 'TOKEN_EXPIRED');
+      }
+      let member = await Member.findOne({
+        where: {
+          id: otp.member_id
+        }
+      })
+      if(!member){
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+      }
+      await OTP.update({
+        expired: true
+      }, {
+          where: {
+            member_id: member.id,
+            action_type: OtpType.UNSUBCRIBE
+          },
+          returning: true
+      })
+      await Member.update({
+        deleted_flg:true,
+        updated_by: member.id },
+        {
+          where: {
+            id: member.id,
+          },
+          returning: true
+      })
+      return res.ok(true);
+    } 
+    catch (err) {
+      logger.error('delete account fail:', err);
+      next(err);
+    }
   }
 }
+
 async function _sendEmail(member, verifyToken) {
   try {
     let subject = 'Listco Account - Unsubcribe Account';

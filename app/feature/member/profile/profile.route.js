@@ -13,8 +13,8 @@ router.post(
   authenticate,
   controller.unsubcribe
 );
-router.delete(
-  '/me/unsubcribe/',
+router.post(
+  '/me/confirm-unsubcribe/',
   authenticate,
   controller.delete
 );
@@ -135,8 +135,8 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/me/unsubcribe:
- *   delete:
+ * /web/me/confirm-unsubcribe:
+ *   post:
  *     summary: get proflie
  *     tags:
  *       - Accounts

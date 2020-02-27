@@ -1,11 +1,11 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./staking-platform.controller');
+const controller = require('./currency.controller');
 
 const router = express.Router();
 
 router.get(
-  '/staking-platforms',
+  '/currencies',
   authenticate,
   controller.getAll
 );
@@ -19,11 +19,11 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/staking-platforms:
+ * /web/currencies:
  *   get:
- *     summary: search platform
+ *     summary: currency list
  *     tags:
- *       - Staking Platform
+ *       - Currency
  *     description:
  *     parameters:
  *       - name: offset
@@ -34,6 +34,9 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
+ *       - name: search
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
@@ -45,14 +48,15 @@ module.exports = router;
  *                 "data": {
                       "items": [
                         {
-                          "id":"96b7f440-1a3b-11ea-978f-2e728ce88125",
+                          "id":"2",
                           "name":"Ethereum",
                           "symbol":"ETH",
+                          "decimals": 18,
                           "icon":"https://static.chainservices.info/staking/platforms/eth.png",
                           "description":"AWS token",
-                          "order_index":99,
-                          "staking_type":"CONTRACT",
-                          "sc_lookup_addr":"0x1716a6f9D3917966d934Ce7837113A30dFFda9F4",
+                          "order_index":1,
+                          "type":"NATIVE",
+                          "platform": "ETH",
                           "sc_token_address":"0x423822D571Bb697dDD993c04B507dD40E754cF05",
                           "created_at":"2020-01-13T06:47:41.248Z",
                           "updated_at":"2020-01-13T06:47:41.248Z"

@@ -8,9 +8,5 @@ module.exports = {
       logger.info('Resync wallet data model and do not drop any data');
       require('app/model/wallet/seed');
     });
-    require("./staking");
-    database.db().staking.sync({ force: false }).then(() => {
-      logger.info('Resync staking data model and do not drop any data');
-    });
   }
 }

@@ -107,7 +107,6 @@ module.exports = {
   delete: async (req, res, next) => {
     try {
       let today = new Date();
-      today.setHours(today.getHours() + config.expiredVefiryToken);
       let otp = await OTP.findOne({
         where: {
           code: req.body.verify_token,
@@ -116,7 +115,7 @@ module.exports = {
       if(!otp){
         return res.badRequest(res.__("TOKEN_INVALID"),"TOKEN_INVALID")
       }
-      if (otp.expired || otp.used) {
+      if (otp.expired_at < today || otp.expired || otp.used) {
         return res.badRequest(res.__('TOKEN_EXPIRED'), 'TOKEN_EXPIRED');
       }
       let member = await Member.findOne({

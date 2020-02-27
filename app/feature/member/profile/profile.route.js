@@ -31,7 +31,7 @@ module.exports = router;
  *     tags:
  *       - Accounts
  *     description:
- *     parameters:
+ *     parameters: 
  *     produces:
  *       - application/json
  *     responses:
@@ -58,6 +58,114 @@ module.exports = router;
                         "infinito_id": ""
                     }
 
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ 
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/me/unsubcribe:
+ *   post:
+ *     summary: get proflie
+ *     tags:
+ *       - Accounts
+ *     description:
+ *     parameters:
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to switch 2fa code.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - twofa_code
+  *            properties:
+ *              twofa_code:
+ *                type: string
+ *            example:
+ *                  {
+                          "twofa_code":"123456"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/me/unsubcribe:
+ *   delete:
+ *     summary: get proflie
+ *     tags:
+ *       - Accounts
+ *     description:
+ *     parameters:
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to unsubcribe account with verify_token.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - verify_token
+  *            properties:
+ *              verify_token:
+ *                type: string
+ *            example:
+ *                  {
+                        "verify_token":"NWVjZGE5ODctNzRjZS00YzkxLTgzOTMtOTBjYWNlOTQyOTBm"
+ *                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
  *             }
  *       400:
  *         description: Error

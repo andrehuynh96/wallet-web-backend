@@ -14,7 +14,11 @@ const destObject = {
 };
 module.exports = srcObject => {
   if (Array.isArray(srcObject)) {
-    return objectMapper(srcObject, destObject.array);
+    if (srcObject === undefined || srcObject.length == 0) {
+      return srcObject;
+    } else {
+      return objectMapper(srcObject, destObject.array);
+    }
   }
   else {
     return objectMapper(srcObject, destObject.single);

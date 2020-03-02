@@ -70,7 +70,7 @@ async function _sendEmail(user, verifyToken) {
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, user.email, data, "forgot-password.ejs");
+    await mailer.sendWithTemplate(subject, from, user.email, data, "reset-password.ejs");
   } catch (err) {
     logger.error("send email forgot password fail", err);
   }

@@ -18,7 +18,9 @@ module.exports = async (req, res, next) => {
     if (!match) {
       return res.badRequest(res.__("PASSWORD_INVALID", "PASSWORD_INVALID"));
     }
-
+    if(req.body.new_password == req.body.password) {
+      return res.badRequest(res.__("NEW_PASSWORD_SAME_CURRENT_PASSWORD", "NEW_PASSWORD_SAME_CURRENT_PASSWORD"));
+    }
     let passWord = bcrypt.hashSync(req.body.new_password, 10);
     let [_, user] = await Member.update({
       password_hash: passWord

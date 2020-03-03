@@ -75,11 +75,11 @@ const config = {
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
   enableSeed: process.env.ENABLE_SEED == "1",
   linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password',
-  clientUrl: process.env.CLIENT_URL + '/image',
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
-    urlUnsubcribe: process.env.WEBSITE_URL +'/confirm-unsubcribe'
+    urlUnsubcribe: process.env.WEBSITE_URL +'/confirm-unsubcribe',
+    urlImages: process.env.WEBSITE_URL + '/images'
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,

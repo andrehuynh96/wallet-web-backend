@@ -64,10 +64,11 @@ async function _sendEmail(member, verifyToken) {
     let subject = 'Moonstake - Reset Password';
     let from = `Moonstake <${config.mailSendAs}>`;
     let data = {
-      imageUrl: config.website.imageUrl,
+      imageUrl: config.website.urlImages,
       link: `${config.linkWebsiteVerify}?token=${verifyToken}`,
       hours: config.expiredVefiryToken
     }
+    console.log(config.website.urlImages)
     data = Object.assign({}, data, config.email);
     await mailer.sendWithTemplate(subject, from, member.email, data, "reset-password.ejs");
   } catch (err) {

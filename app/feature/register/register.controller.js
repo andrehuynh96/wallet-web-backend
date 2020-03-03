@@ -94,7 +94,7 @@ async function _sendEmail(member, otp) {
     let subject = 'Moonstake - Activate Account';
     let from = `Moonstake <${config.mailSendAs}>`;
     let data = {
-      imageUrl: config.website.imageUrl,
+      imageUrl: config.website.urlImages,
       site: config.website.url,
       link: `${config.website.urlActive}${otp.code}`,
       hours: config.expiredVefiryToken

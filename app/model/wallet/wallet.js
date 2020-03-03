@@ -15,16 +15,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
-    key_store_path: {
+    passphrase_hash: {
       type: DataTypes.STRING(256),
-      allowNull: false
-    },
-    user_wallet_pass_hash: {
-      type: DataTypes.STRING(256),
-      allowNull: true
-    },
-    salt: {
-      type: DataTypes.STRING(64),
       allowNull: true
     },
     deleted_flg: {

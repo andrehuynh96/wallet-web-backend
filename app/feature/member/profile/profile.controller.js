@@ -1,8 +1,11 @@
 const logger = require('app/lib/logger');
 const Member = require('app/model/wallet').members;
+const Wallet = require('app/model/wallet').wallets;
+const WalletPrivateKey = require('app/model/wallet').wallet_priv_keys;
 const memberMapper = require('app/feature/response-schema/member.response-schema');
 const mailer = require('app/lib/mailer');
 const OTP = require("app/model/wallet").otps;
+const database = require('app/lib/database').db().wallet;
 const config = require("app/config");
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
@@ -105,7 +108,9 @@ module.exports = {
     }
   },
   delete: async (req, res, next) => {
+    const transaction = await database.transaction();
     try {
+      logger.info('profile::delete');
       let today = new Date();
       let otp = await OTP.findOne({
         where: {
@@ -135,19 +140,17 @@ module.exports = {
           },
           returning: true
       })
-      await Member.update({
-        deleted_flg:true,
-        updated_by: member.id },
-        {
-          where: {
-            id: member.id,
-          },
-          returning: true
-      })
+      await Member.destroy({ where: { id: member.id }}, { transaction })
+      let wallet = await Wallet.findOne({ where: { member_id: member.id }},{transaction })
+      if(wallet){
+        await Wallet.destroy({ where: { member_id: wallet.member_id }},{ transaction })
+        await WalletPrivateKey.destroy({ where: { wallet_id: wallet.id }},{ transaction })
+      }
       return res.ok(true);
     } 
     catch (err) {
       logger.error('delete account fail:', err);
+      await transaction.rollback();
       next(err);
     }
   }

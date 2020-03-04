@@ -67,7 +67,7 @@ const config = {
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
-    urlUnsubcribe: process.env.WEBSITE_URL +'/confirm-unsubcribe',
+    urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
     urlImages: process.env.WEBSITE_URL + '/images'
   },
   aws: {

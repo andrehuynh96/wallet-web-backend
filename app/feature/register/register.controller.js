@@ -91,7 +91,7 @@ module.exports = async (req, res, next) => {
 
 async function _sendEmail(member, otp) {
   try {
-    let subject = 'Moonstake - Activate Account';
+    let subject = 'Moonstake - Email Verification';
     let from = `Moonstake <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
@@ -100,7 +100,7 @@ async function _sendEmail(member, otp) {
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, "activate-account.ejs");
+    await mailer.sendWithTemplate(subject, from, member.email, data, "verify-email.ejs");
   } catch (err) {
     logger.error("send email create account fail", err);
   }

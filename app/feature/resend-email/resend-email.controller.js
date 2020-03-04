@@ -59,8 +59,8 @@ module.exports = async (req, res, next) => {
 const sendEmail = {
   [OtpType.REGISTER]: async (member, otp) => {
     try {
-      let subject = 'Listco Account - Register Account';
-      let from = `Listco <${config.mailSendAs}>`;
+      let subject = 'Moonstake - Email Verification';
+      let from = `Moonstake <${config.mailSendAs}>`;
       let data = {
         email: member.email,
         fullname: member.email,
@@ -70,7 +70,7 @@ const sendEmail = {
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, "activate-account.ejs");
+      await mailer.sendWithTemplate(subject, from, member.email, data, "verify-email.ejs");
     } catch (err) {
       logger.error("send email create account fail", err);
     }

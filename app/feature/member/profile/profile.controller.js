@@ -141,10 +141,12 @@ module.exports = {
           returning: true
       })
       await Member.destroy({ where: { id: member.id }}, { transaction })
-      let wallet = await Wallet.findOne({ where: { member_id: member.id }},{transaction })
+      let wallet = await Wallet.findAll({ where: { member_id: member.id }},{transaction })
       if(wallet){
-        await Wallet.destroy({ where: { member_id: wallet.member_id }},{ transaction })
-        await WalletPrivateKey.destroy({ where: { wallet_id: wallet.id }},{ transaction })
+        await Wallet.destroy({ where: { member_id: member.id }},{ transaction })
+        for(let i=0; i<wallet.length; i++){
+        await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id }},{ transaction })
+        }
       }
       return res.ok(true);
     } 

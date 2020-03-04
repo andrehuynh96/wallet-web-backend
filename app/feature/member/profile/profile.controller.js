@@ -148,6 +148,7 @@ module.exports = {
         await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id }},{ transaction })
         }
       }
+      await transaction.commit();
       return res.ok(true);
     } 
     catch (err) {

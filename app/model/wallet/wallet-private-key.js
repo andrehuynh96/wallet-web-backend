@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(32),
       allowNull: false
     },
-    private_key_hash: {
+    encrypted_private_key: {
       type: DataTypes.STRING(256),
       allowNull: false
     },

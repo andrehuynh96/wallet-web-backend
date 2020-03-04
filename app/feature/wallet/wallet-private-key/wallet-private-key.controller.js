@@ -27,7 +27,7 @@ privkey.create = async (req, res, next) => {
         platform: item.platform,
         address: item.address,
         hd_path: item.hd_path,
-        private_key_hash: item.private_key_hash
+        encrypted_private_key: item.encrypted_private_key
       }
       items.push(data);
     }
@@ -99,7 +99,7 @@ privkey.getPrivKey = async (req, res, next) => {
     if (!priv) {
       return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND")
     }
-    return res.ok({private_key_hash: priv.private_key_hash});
+    return res.ok({encrypted_private_key: priv.encrypted_private_key});
   } catch (ex) {
     logger.error(ex);
     next(ex);

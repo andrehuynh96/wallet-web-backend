@@ -51,11 +51,10 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - passphrase_hash
- *            - password_hash
+ *            - encrypted_passphrase
  *            example:
  *               {     
-                    "passphrase_hash": "",
+                    "encrypted_passphrase": "",
                     "default_flg": true
                   }
  *     produces:
@@ -188,7 +187,7 @@ module.exports = router;
  * @swagger
  * /web/wallets/{wallet_id}/passphrase:
  *   get:
- *     summary: get passphrase hash
+ *     summary: get encrypted passphrase
  *     tags:
  *       - Wallets
  *     description:
@@ -206,7 +205,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "passphrase_hash": ""
+                        "encrypted_passphrase": ""
                     }
  *             }
  *       400:

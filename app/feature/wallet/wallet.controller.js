@@ -4,9 +4,6 @@ const WalletPrivateKey = require('app/model/wallet').wallet_priv_keys;
 const database = require('app/lib/database').db().wallet;
 const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/wallet.response-schema');
-const { put, get} = require('app/service/s3.service');
-const bcrypt = require('bcrypt');
-const aes256 = require('aes256');
 
 var wallet = {};
 
@@ -25,7 +22,7 @@ wallet.create = async (req, res, next) => {
     let  data = {
       member_id: req.user.id,
       default_flg: req.body.default_flg ? req.body.default_flg: false,
-      passphrase_hash: req.body.passphrase_hash
+      encrypted_passphrase: req.body.encrypted_passphrase
     }
     let wallet = await Wallet.create(data);
     return res.ok(mapper(wallet));
@@ -104,7 +101,7 @@ wallet.getPassphrase = async (req, res, next) => {
     if (!wallet) {
       return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
     }
-    return res.ok({passphrase_hash: wallet.passphrase_hash});
+    return res.ok({encrypted_passphrase: wallet.encrypted_passphrase});
   } catch (ex) {
     logger.error(ex);
     next(ex);

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
-    passphrase_hash: {
+    encrypted_passphrase: {
       type: DataTypes.STRING(256),
       allowNull: true
     },

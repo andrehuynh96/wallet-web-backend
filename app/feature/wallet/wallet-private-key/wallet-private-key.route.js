@@ -51,7 +51,7 @@ module.exports = router;
  *            - items
  *            example:
  *               { items: [    
-                    { "private_key_hash": "",
+                    { "encrypted_private_key": "",
                     "platform": "",
                     "address": "",
                     "hd_path": ""}]
@@ -141,7 +141,7 @@ module.exports = router;
  * @swagger
  * /web/wallets/{wallet_id}/keys/{id}/private:
  *   post:
- *     summary: get private key hash
+ *     summary: get encrypted private key
  *     tags:
  *       - Wallets
  *     description:
@@ -174,7 +174,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "private_key_hash": ""
+                        "encrypted_private_key": ""
                     }
  *             }
  *       400:

@@ -78,7 +78,6 @@ module.exports = async (req, res, next) => {
     if (!otp) {
       return res.serverInternalError();
     }
-
     _sendEmail(member, otp);
     let response = memberMapper(member);
     return res.ok(response);
@@ -92,17 +91,16 @@ module.exports = async (req, res, next) => {
 
 async function _sendEmail(member, otp) {
   try {
-    let subject = 'Listco Account - Register Account';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = 'Moonstake - Activate Account';
+    let from = `Moonstake <${config.mailSendAs}>`;
     let data = {
-      email: member.email,
-      fullname: member.email,
+      imageUrl: config.website.urlImages,
       site: config.website.url,
       link: `${config.website.urlActive}${otp.code}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, "register-member.ejs");
+    await mailer.sendWithTemplate(subject, from, member.email, data, "activate-account.ejs");
   } catch (err) {
     logger.error("send email create account fail", err);
   }

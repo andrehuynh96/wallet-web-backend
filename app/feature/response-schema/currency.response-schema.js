@@ -5,11 +5,12 @@ const destObject = {
     '[].id': '[].id',
     '[].name': '[].name',
     '[].symbol': '[].symbol',
+    '[].decimals': '[].decimals',
     '[].icon': '[].icon',
     '[].description': '[].description',
     '[].order_index': '[].order_index',
-    '[].staking_type': '[].staking_type',
-    '[].sc_lookup_addr': '[].sc_lookup_addr',
+    '[].type': '[].type',
+    '[].platform': '[].platform',
     '[].sc_token_address': '[].sc_token_address',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at'
@@ -18,11 +19,12 @@ const destObject = {
     id: 'id',
     name: 'name',
     symbol: 'symbol',
+    decimals: 'decimals',
     icon: 'icon',
     description: 'description',
     order_index: 'order_index',
-    staking_type: 'staking_type',
-    sc_lookup_addr: 'sc_lookup_addr',
+    type: 'type',
+    platform: 'platform',
     sc_token_address: 'sc_token_address',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
@@ -30,7 +32,11 @@ const destObject = {
 };
 module.exports = srcObject => {
   if (Array.isArray(srcObject)) {
-    return objectMapper(srcObject, destObject.array);
+    if (srcObject === undefined || srcObject.length == 0) {
+      return srcObject;
+    } else {
+      return objectMapper(srcObject, destObject.array);
+    }
   }
   else {
     return objectMapper(srcObject, destObject.single);

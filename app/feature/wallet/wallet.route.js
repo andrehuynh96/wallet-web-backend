@@ -32,12 +32,6 @@ router.get(
   controller.getPassphrase
 );
 
-router.post(
-  '/wallets/:wallet_id/check',
-  authenticate,
-  controller.check
-);
-
 module.exports = router;
 
 /*********************************************************************/
@@ -57,12 +51,10 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - passphrase_hash
- *            - password_hash
+ *            - encrypted_passphrase
  *            example:
  *               {     
-                    "passphrase_hash": "",
-                    "password_hash": "",
+                    "encrypted_passphrase": "",
                     "default_flg": true
                   }
  *     produces:
@@ -116,11 +108,9 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - password_hash
  *            - default_flg
  *            example:
- *               {   
- *                  "password_hash": "",  
+ *               {     
                     "default_flg": true
                   }
  *     produces:
@@ -163,17 +153,6 @@ module.exports = router;
  *         name: id
  *         type: string
  *         required: true
- *       - in: body
- *         name: data
- *         description: Data for wallet.
- *         schema:
- *            type: object
- *            required:
- *            - password_hash
- *            example:
- *               {   
- *                  "password_hash": ""
-                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -208,17 +187,13 @@ module.exports = router;
  * @swagger
  * /web/wallets/{wallet_id}/passphrase:
  *   get:
- *     summary: get passphrase hash
+ *     summary: get encrypted passphrase
  *     tags:
  *       - Wallets
  *     description:
  *     parameters:
  *       - in: path
  *         name: wallet_id
- *         type: string
- *         required: true
- *       - in: query
- *         name: password_hash
  *         type: string
  *         required: true
  *     produces:
@@ -230,7 +205,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "passphrase_hash": ""
+                        "encrypted_passphrase": ""
                     }
  *             }
  *       400:
@@ -251,56 +226,3 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/wallets/{wallet_id}/check:
- *   post:
- *     summary: check password hash
- *     tags:
- *       - Wallets
- *     description:
- *     parameters:
- *       - in: path
- *         name: wallet_id
- *         type: string
- *         required: true
- *       - in: body
- *         name: data
- *         description: Data for wallet.
- *         schema:
- *            type: object
- *            required:
- *            - password_hash
- *            example:
- *               {   
- *                  "password_hash": ""
-                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data":{
-                        "check": true
-                    }
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */

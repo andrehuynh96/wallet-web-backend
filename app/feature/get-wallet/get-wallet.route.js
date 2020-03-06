@@ -43,6 +43,9 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
+ *       - name: default_flg
+ *         in: query
+ *         type: boolean
  *     produces:
  *       - application/json
  *     responses:

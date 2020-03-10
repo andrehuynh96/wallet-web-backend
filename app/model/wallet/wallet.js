@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     encrypted_passphrase: {
-      type: DataTypes.STRING(256),
+      type: DataTypes.STRING(512),
       allowNull: true
     },
     deleted_flg: {

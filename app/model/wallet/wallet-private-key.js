@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     encrypted_private_key: {
-      type: DataTypes.STRING(256),
+      type: DataTypes.STRING(512),
       allowNull: false
     },
     deleted_flg: {

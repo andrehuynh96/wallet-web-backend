@@ -159,7 +159,7 @@ module.exports = router;
  *         description: Data for wallet.
  *         schema:
  *            type: object
- *            required:
+ *            optional:
  *            - twofa_code
  *            example:
  *               {     

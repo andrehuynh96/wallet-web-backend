@@ -49,6 +49,12 @@ const config = {
     pass: process.env.SMTP_PASS
   },
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
+  emailTemplate: {
+    partnerName: "Moonstake",
+    verifyEmail: "Moonstake/verify-email.ejs",
+    resetPassword: "Moonstake/reset-password.ejs",
+    deactiveAccount: "Moonstake/deactive-account.ejs"
+  },
   disableRecaptcha: true,
   CDN: {
     url: process.env.CDN_URL,
@@ -68,7 +74,7 @@ const config = {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
     urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
-    urlImages: process.env.WEBSITE_URL + '/images'
+    urlImages: process.env.WEBSITE_URL + '/images/moonstake'
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,

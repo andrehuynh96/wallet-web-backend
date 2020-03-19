@@ -145,7 +145,7 @@ module.exports = {
       if(wallet){
         await Wallet.destroy({ where: { member_id: member.id }},{ transaction })
         for(let i=0; i<wallet.length; i++){
-        await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id }},{ transaction })
+          await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id }},{ transaction })
         }
       }
       await transaction.commit();
@@ -161,16 +161,15 @@ module.exports = {
 
 async function _sendEmail(member, verifyToken) {
   try {
-    let subject = 'Listco Account - Unsubcribe Account';
-    let from = `Listco <${config.mailSendAs}>`;
+    let subject = ` ${config.emailTemplate.partnerName} - Delete account`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
-      email: member.email,
-      fullname: member.email,
-      link: `${config.website.urlUnsubcribe}?token=${verifyToken}`,
+      imageUrl: config.website.urlImages,
+      link: `${config.linkWebsiteVerify}?token=${verifyToken}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, "unsubcribe-account.ejs");
+    await mailer.sendWithTemplate(subject, from, member.email, data,config.emailTemplate.deactiveAccount );
   } catch (err) {
     logger.error("send email unsubcribe account fail", err);
   }

@@ -50,10 +50,10 @@ const config = {
   },
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
   emailTemplate: {
-    partnerName: "Moonstake",
-    verifyEmail: "Moonstake/verify-email.ejs",
-    resetPassword: "Moonstake/reset-password.ejs",
-    deactiveAccount: "Moonstake/deactive-account.ejs"
+    partnerName: process.env.PARTNER_NAME,
+    verifyEmail: process.env.PARTNER_NAME + "/verify-email.ejs",
+    resetPassword: process.env.PARTNER_NAME + "/reset-password.ejs",
+    deactiveAccount: process.env.PARTNER_NAME + "/deactive-account.ejs"
   },
   disableRecaptcha: true,
   CDN: {
@@ -72,9 +72,9 @@ const config = {
   linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password',
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
+    urlActive: process.env.WEBSITE_URL + '/sign-in',
     urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
-    urlImages: process.env.WEBSITE_URL + '/images/moonstake'
+    urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,

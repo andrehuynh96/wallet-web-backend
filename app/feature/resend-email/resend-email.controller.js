@@ -46,7 +46,7 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
 
-    _sendEmail[req.body.type](member, otp);
+    sendEmail[req.body.type](member, otp);
     return res.ok(true);
 
   }
@@ -56,18 +56,50 @@ module.exports = async (req, res, next) => {
   }
 }
 
-async function _sendEmail(member, otp){
+const sendEmail = {
+  [OtpType.REGISTER]: async (member, otp) => {
     try {
-      let subject = `${config.emailTemplate.partnerName} - Verify email`;
-    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-    let data = {
-      imageUrl: config.website.urlImages,
-      link: `${config.linkWebsiteVerify}?token=${verifyToken}`,
-      hours: config.expiredVefiryToken
-    }
-    data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
+      let subject = `${config.emailTemplate.partnerName} - Create Account`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let data = {
+        imageUrl: config.website.urlImages,
+        link: `${config.website.urlActive}?token=${otp.code}`,
+        hours: config.expiredVefiryToken
+      }
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
     } catch (err) {
-      logger.error("send email verify fail", err);
+      logger.error("resend email create account fail", err);
     }
-}
+  },
+  [OtpType.FORGOT_PASSWORD]: async (member, otp) => {
+    try {
+      let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let data = {
+        imageUrl: config.website.urlImages,
+        link: `${config.linkWebsiteVerify}?token=${otp.code}`,
+        hours: config.expiredVefiryToken
+      }
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
+    } catch (err) {
+      logger.error("resend email forgot password fail", err);
+    }
+  },
+  [OtpType.UNSUBCRIBE]: async (member, otp) => {
+    try {
+      let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let data = {
+        imageUrl: config.website.urlImages,
+        link: `${config.website.urlUnsubcribe}?token=${otp.code}`,
+        hours: config.expiredVefiryToken
+      }
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
+    } catch (err) {
+      logger.error("resend email forgot password fail", err);
+    }
+  }
+} 

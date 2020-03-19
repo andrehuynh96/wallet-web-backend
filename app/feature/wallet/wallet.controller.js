@@ -16,8 +16,8 @@ wallet.create = async (req, res, next) => {
         deleted_flg: false
       }
     });
-    if (!user.twofa_enable_flg) {
-      return res.forbidden(res.__("TWOFA_NOT_ACTIVE", "TWOFA_NOT_ACTIVE"));
+    if (!user) {
+      return res.badRequest(res.__('USER_NOT_FOUND'), 'USER_NOT_FOUND');
     }
     let  data = {
       member_id: req.user.id,

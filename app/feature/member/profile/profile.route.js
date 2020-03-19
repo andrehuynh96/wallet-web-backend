@@ -15,7 +15,7 @@ router.post(
 );
 router.post(
   '/me/confirm-unsubcribe/',
-  authenticate,
+  //authenticate,
   controller.delete
 );
 module.exports = router;

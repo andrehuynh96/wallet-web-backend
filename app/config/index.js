@@ -32,17 +32,6 @@ const config = {
         dialect: 'postgres',
         logging: false
       }
-    },
-    staking: {
-      database: process.env.STAKING_DB_NAME,
-      username: process.env.STAKING_DB_USER,
-      password: process.env.STAKING_DB_PASS,
-      options: {
-        host: process.env.STAKING_DB_HOST,
-        port: process.env.STAKING_DB_PORT,
-        dialect: 'postgres',
-        logging: false
-      }
     }
   },
   redis: {
@@ -60,6 +49,12 @@ const config = {
     pass: process.env.SMTP_PASS
   },
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
+  emailTemplate: {
+    partnerName: "Moonstake",
+    verifyEmail: "Moonstake/verify-email.ejs",
+    resetPassword: "Moonstake/reset-password.ejs",
+    deactiveAccount: "Moonstake/deactive-account.ejs"
+  },
   disableRecaptcha: true,
   CDN: {
     url: process.env.CDN_URL,
@@ -78,8 +73,8 @@ const config = {
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
-    urlUnsubcribe: process.env.WEBSITE_URL +'/confirm-unsubcribe',
-    urlImages: process.env.WEBSITE_URL + '/images'
+    urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
+    urlImages: process.env.WEBSITE_URL + '/images/moonstake'
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,

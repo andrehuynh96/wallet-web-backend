@@ -46,7 +46,7 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
 
-    sendEmail[req.body.type](member, otp);
+    _sendEmail[req.body.type](member, otp);
     return res.ok(true);
 
   }
@@ -56,22 +56,18 @@ module.exports = async (req, res, next) => {
   }
 }
 
-const sendEmail = {
-  [OtpType.REGISTER]: async (member, otp) => {
+async function _sendEmail(member, otp){
     try {
-      let subject = 'Listco Account - Register Account';
-      let from = `Listco <${config.mailSendAs}>`;
-      let data = {
-        email: member.email,
-        fullname: member.email,
-        site: config.website.url,
-        link: `${config.website.urlActive}${otp.code}`,
-        hours: config.expiredVefiryToken
-      }
-      data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, "register-member.ejs");
-    } catch (err) {
-      logger.error("send email create account fail", err);
+      let subject = `${config.emailTemplate.partnerName} - Verify email`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+    let data = {
+      imageUrl: config.website.urlImages,
+      link: `${config.linkWebsiteVerify}?token=${verifyToken}`,
+      hours: config.expiredVefiryToken
     }
-  }
-} 
+    data = Object.assign({}, data, config.email);
+    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
+    } catch (err) {
+      logger.error("send email verify fail", err);
+    }
+}

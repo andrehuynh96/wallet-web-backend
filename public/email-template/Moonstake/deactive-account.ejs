@@ -3,8 +3,9 @@
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Welcome</title>
+    <title>Deactivate Acount</title>
     <style>
+      @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
       img {
         border: none;
         -ms-interpolation-mode: bicubic;
@@ -14,16 +15,16 @@
         text-decoration: none !important;
       }
       body{
-        font-family: sans-serif;
+        font-family: 'Montserrat', sans-serif;
         -webkit-font-smoothing: antialiased;
         font-size: 14px;
-        line-height: 1.4;
+        line-height: 20px;
         margin: 0;
         padding: 0;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
         background: #fff;
-        color: #3C4B64;
+        color: #676767;
       }
 
       table {
@@ -36,7 +37,7 @@
         clear: both;
       }
       table td {
-        font-family: sans-serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 14px;
         vertical-align: top;
       }
@@ -50,14 +51,10 @@
         display: block;
         margin: 0 auto !important;
         /* makes it centered */
-        max-width: 580px;
-        width: 580px;
-        border: 1px solid #D7DBE0;
-        border-radius: 4px;
-        -webkit-border-radius: 4px;
-        -moz-border-radius: 4px;
+        max-width: 600px;
+        width: 600px;
         text-align: center;
-        padding: 50px;
+        /* padding: 50px; */
       }
 
       /* -------------------------------------
@@ -68,17 +65,22 @@
       }
 
       p, ul, ol {
-        font-family: sans-serif;
+        font-family: 'Montserrat', sans-serif;
         font-size: 14px;
         font-weight: normal;
         padding-left: 0;
         margin: 0;
-        line-height: 21px;
+        line-height: 20px;
       }
       ul li,
       ol li {
         list-style-position: inside;
         margin-left: 5px;
+      }
+      .head-logo{
+        text-align: left;
+        background-color: #182850;
+        padding: 35px 65px 20px;
       }
       a {
         color: #3498db;
@@ -107,24 +109,26 @@
           <div class="content">
             <table class="main">
               <tr>
-                <td>
-                  <img src="<%=imageUrl%>/logo-moonstake.svg" alt="">
-                  <span style="width: 100%;height: 1px; background: #CACACC; margin: 30px 0; display: block;"></span>
+                <td class="head-logo">
+                  <img src="<%=imageUrl%>/moon-logo.png" alt="">
                 </td>
               </tr>
               <tr>
-                <td><p style="font-size: 24px;font-weight: 500;margin-bottom: 20px; line-height: 30px">Hello! Welcome to Moonstake</p></td>
-              </tr>
-              <tr>
-                <td>
-                  <p style="margin-bottom: 8px"><span style="font-weight: bold">Name</span> added you as a new Moonstake <span style="font-weight: bold">role</span>.</p>
-                  <p style="margin-bottom: 8px">Activate your account by clicking the button below.</p>
-                  <p style="margin-bottom: 8px;font-weight: bold">This button is only valid for the next <%hours%> hours.</p>
+                <td style="padding-top: 87px">
+                  <img src="<%=imageUrl%>/moon-deactive.png" alt="" style="margin-bottom: 20px">
+                  <p  style="font-size: 18px;font-weight: 500;margin-bottom: -3px; line-height: 30px; color: #182850">Please confirm  </p>
+                  <p style="font-size: 18px;font-weight: 500;margin-bottom: 15px; line-height: 30px; color: #182850">you want to close your Moonstake account.</p>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <a href="<%=link%>" style="background: linear-gradient(90deg, #2C75BF 0%, #55BF92 100%); border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; color: #fff; padding: 10px 20px; display: inline-block; margin: 10px 0 0 0">Activate account</a>
+                  <p style="margin-bottom: 3px">Please click the button below within 1 hour</p>
+                  <p style="margin-bottom: 3px">to delete your Moonstake account.</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="" style="  background: linear-gradient(209.27deg, #00E093 0%, #007CFF 100%); border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; color: #fff; padding: 13px 18px; display: inline-block; margin: 18px 0 0 0;font-weight: 600;">Delete my account                  </a>
                 </td>
               </tr>
             </table>

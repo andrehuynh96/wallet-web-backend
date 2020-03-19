@@ -19,7 +19,7 @@ router.delete(
   controller.delete
 );
 
-router.get(
+router.post(
   '/wallets/:wallet_id/keys/:id/private',
   authenticate,
   controller.getPrivKey
@@ -49,14 +49,12 @@ module.exports = router;
  *            type: array
  *            required:
  *            - items
- *            - password_hash
  *            example:
  *               { items: [    
-                    { "private_key_hash": "",
+                    { "encrypted_private_key": "",
                     "platform": "",
                     "address": "",
-                    "hd_path": ""}],
-                  password_hash: ""
+                    "hd_path": ""}]
                   }
  *     produces:
  *       - application/json
@@ -109,17 +107,6 @@ module.exports = router;
  *         name: id
  *         type: string
  *         required: true
- *       - in: body
- *         name: data
- *         description: Data for wallet.
- *         schema:
- *            type: object
- *            required:
- *            - password_hash
- *            example:
- *               {   
- *                  "password_hash": ""
-                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -153,8 +140,8 @@ module.exports = router;
  /**
  * @swagger
  * /web/wallets/{wallet_id}/keys/{id}/private:
- *   get:
- *     summary: get private key hash
+ *   post:
+ *     summary: get encrypted private key
  *     tags:
  *       - Wallets
  *     description:
@@ -166,15 +153,18 @@ module.exports = router;
  *       - in: path
  *         name: id
  *         type: string
- *         required: true  
- *       - in: query
- *         name: password_hash
- *         type: string
  *         required: true
- *       - in: query
- *         name: twofa_code
- *         type: string
- *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - twofa_code
+ *            example:
+ *               {     
+                    "twofa_code": "123456"
+                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -184,7 +174,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "private_key_hash": ""
+                        "encrypted_private_key": ""
                     }
  *             }
  *       400:

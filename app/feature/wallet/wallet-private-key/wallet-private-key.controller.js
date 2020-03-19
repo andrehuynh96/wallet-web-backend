@@ -70,18 +70,17 @@ privkey.getPrivKey = async (req, res, next) => {
         deleted_flg: false
       }
     });
-    if (!user.twofa_enable_flg) {
-      return res.forbidden(res.__("TWOFA_NOT_ACTIVE", "TWOFA_NOT_ACTIVE"));
+    if (user.twofa_enable_flg) {
+      var verified = speakeasy.totp.verify({
+        secret: user.twofa_secret,
+        encoding: 'base32',
+        token: twofa_code,
+      });
+      if (!verified) {
+        return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });
+      }
     }
-    var verified = speakeasy.totp.verify({
-      secret: user.twofa_secret,
-      encoding: 'base32',
-      token: twofa_code,
-    });
-
-    if (!verified) {
-      return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });
-    }
+    
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,

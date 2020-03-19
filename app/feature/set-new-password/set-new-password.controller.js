@@ -46,6 +46,7 @@ module.exports = async (req, res, next) => {
     let passWord = bcrypt.hashSync(req.body.password, 10);
     let [_, response] = await Member.update({
       password_hash: passWord,
+      attempt_login_number: 0 // reset attempt login number after password resetting
     }, {
         where: {
           id: member.id

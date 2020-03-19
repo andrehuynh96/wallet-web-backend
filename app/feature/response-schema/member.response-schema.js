@@ -22,6 +22,7 @@ const destObject = {
     '[].referral_code': '[].referral_code',
     '[].referrer_code': '[].referrer_code',
     '[].infinito_id': '[].infinito_id',
+    '[].latest_login_at': '[].latest_login_at'
   },
   single: {
     id: 'id',
@@ -44,6 +45,7 @@ const destObject = {
     referral_code: 'referral_code',
     referrer_code: 'referrer_code',
     infinito_id: 'infinito_id',
+    latest_login_at: 'latest_login_at'
   }
 };
 module.exports = srcObject => {

@@ -24,7 +24,7 @@ module.exports = async (req, res, next) => {
 
     if (user.member_sts == MemberStatus.LOCKED) {
       let nextAcceptableLogin = new Date(user.updatedAt);
-      nextAcceptableLogin.setSeconds(nextAcceptableLogin.getSeconds() + parseInt(config.lockUser.lockTime));
+      nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
       let rightNow = new Date();
       if (nextAcceptableLogin >= rightNow) // don't forbid if lock time has passed
         return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));

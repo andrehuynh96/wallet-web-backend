@@ -39,10 +39,6 @@ module.exports = async (req, res, next) => {
       return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
     }
 
-    if (member.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
-    }
-
     let passWord = bcrypt.hashSync(req.body.password, 10);
     let [_, response] = await Member.update({
       password_hash: passWord,

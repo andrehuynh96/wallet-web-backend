@@ -1,0 +1,49 @@
+stages:
+ - build
+ - test
+ - deploy   
+variables:
+ ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
+ 
+###
+.BuildJSApp:
+ stage: build
+ script:
+  - cd ${ANSIBLE_DIR}
+  - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV}`
+  - sudo su ubuntu -c "ansible-playbook $ansible_file"
+  
+.OnlyStagingMS:
+ only:
+  - /^.*-ms-rc$/
+ except:
+  - branches
+
+.OnlyStagingBS:
+ only:
+  - /^.*-bs-rc$/
+ except:
+  - branches
+
+.OnlyProductionMS:
+ only:
+  - /^.*-ms$/
+ except:
+  - branches
+
+.OnlyProductionBS:
+ only:
+  - /^.*-bs$/
+ except:
+  - branches
+
+Node01Build:
+ variables:
+  _ENV: "stage" 
+ extends:
+  - .BuildJSApp
+  - .OnlyStagingBS
+ tags:
+  - stage-stak-ap-bs-ansible
+
+  

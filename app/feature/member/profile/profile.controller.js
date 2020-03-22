@@ -108,7 +108,7 @@ module.exports = {
     }
   },
   delete: async (req, res, next) => {
-    const transaction = await database.transaction();
+    let transaction;
     try {
       logger.info('profile::delete');
       let today = new Date();
@@ -131,6 +131,9 @@ module.exports = {
       if(!member){
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
+
+      transaction = await database.transaction();
+
       await OTP.update({
         expired: true
       }, {
@@ -153,7 +156,7 @@ module.exports = {
     } 
     catch (err) {
       logger.error('delete account fail:', err);
-      await transaction.rollback();
+      if (transaction) await transaction.rollback();
       next(err);
     }
   }

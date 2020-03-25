@@ -74,7 +74,7 @@ const sendEmail = {
   },
   [OtpType.FORGOT_PASSWORD]: async (member, otp) => {
     try {
-      let subject = ` ${config.emailTemplate.partnerName} - Resend Email`;
+      let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,

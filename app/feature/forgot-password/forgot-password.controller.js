@@ -20,11 +20,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (member.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
+      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
     }
 
     if (member.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
     let verifyToken = Buffer.from(uuidV4()).toString('base64');

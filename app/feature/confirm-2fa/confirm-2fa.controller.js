@@ -22,7 +22,7 @@ module.exports = async (req, res, next) => {
 
     let today = new Date();
     if (otp.expired_at < today || otp.expired || otp.used) {
-      return res.badRequest(res.__('TOKEN_EXPIRED'), 'TOKEN_EXPIRED');
+      return res.badRequest(res.__('TOKEN_EXPIRED'), 'TOKEN_EXPIRED', { fields: ['verify_token'] });
     }
 
     let user = await Member.findOne({
@@ -35,11 +35,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (user.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__('UNCONFIRMED_ACCOUNT', 'UNCONFIRMED_ACCOUNT'));
+      return res.forbidden(res.__('UNCONFIRMED_ACCOUNT'), 'UNCONFIRMED_ACCOUNT');
     }
 
     if (user.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__('ACCOUNT_LOCKED', 'ACCOUNT_LOCKED'));
+      return res.forbidden(res.__('ACCOUNT_LOCKED'), 'ACCOUNT_LOCKED');
     }
 
     var verified = speakeasy.totp.verify({

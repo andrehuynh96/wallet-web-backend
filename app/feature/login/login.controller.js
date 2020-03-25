@@ -23,11 +23,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (user.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
     if (user.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
+      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
     }
 
     const match = await bcrypt.compare(req.body.password, user.password_hash);
@@ -43,7 +43,7 @@ module.exports = async (req, res, next) => {
         })
         if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
           return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
-        else return res.unauthorized(res.__("LOGIN_FAIL", "LOGIN_FAIL"));
+        else return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
       }
       else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
     }

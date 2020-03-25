@@ -74,7 +74,7 @@ const sendEmail = {
   },
   [OtpType.FORGOT_PASSWORD]: async (member, otp) => {
     try {
-      let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+      let subject = ` ${config.emailTemplate.partnerName} - Resend Email`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -89,7 +89,7 @@ const sendEmail = {
   },
   [OtpType.UNSUBCRIBE]: async (member, otp) => {
     try {
-      let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+      let subject = ` ${config.emailTemplate.partnerName} - Delete Account`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -99,7 +99,7 @@ const sendEmail = {
       data = Object.assign({}, data, config.email);
       await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
     } catch (err) {
-      logger.error("resend email forgot password fail", err);
+      logger.error("resend email delete account fail", err);
     }
   }
 } 

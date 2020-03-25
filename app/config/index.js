@@ -83,6 +83,10 @@ const config = {
     bucket: process.env.AWS_BUCKET
   },
   appLimit: process.env.APP_LIMIT || 10,
+  lockUser: {
+    maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
+    lockTime: process.env.LOCK_TIME
+  }
 };
 
 module.exports = config;

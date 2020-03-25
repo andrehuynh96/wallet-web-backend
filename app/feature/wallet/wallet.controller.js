@@ -33,7 +33,7 @@ wallet.create = async (req, res, next) => {
 }
 
 wallet.update =  async (req, res, next) => {
-  const transaction = await database.transaction();
+  let transaction;
   try {
     logger.info('wallet::update');
     const { params: { id}, body } = req;
@@ -46,6 +46,9 @@ wallet.update =  async (req, res, next) => {
     if (!wallet) {
       return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
     }
+
+    transaction = await database.transaction();
+
     if (body.default_flg) {
       await Wallet.update({default_flg: false}, {where: {
         member_id: req.user.id, 
@@ -59,13 +62,13 @@ wallet.update =  async (req, res, next) => {
     return res.ok(mapper(result));
   } catch (ex) {
     logger.error(ex);
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     next(ex);
   }
 }
 
 wallet.delete = async (req, res, next) => {
-  const transaction = await database.transaction();
+  let transaction;
   try {
     logger.info('wallet::delete');
     const { params: { id }} = req;
@@ -78,13 +81,16 @@ wallet.delete = async (req, res, next) => {
     if (!wallet) {
       return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
     }
+
+    transaction = await database.transaction();
+
     await WalletPrivateKey.update({deleted_flg: true}, {where: {wallet_id: id}}, {transaction});
     await Wallet.update({ deleted_flg: true}, { where: { id: id } }, { transaction});
     await transaction.commit();
     return res.ok({ deleted: true });
   } catch (error) {
     logger.error(error);
-    await transaction.rollback();
+    if (transaction) await transaction.rollback();
     next(error);
   }
 };

@@ -94,6 +94,7 @@ router.get('/', function (req, res) {
 router.get('/health', (req, res) => res.send('OK!'));
 require('app/config/swagger')(router, '/web');
 router.use('/web', require('app/feature'));
+router.use('/api', require('app/feature/api'));
 
 router.use(function (req, res) {
   res.notFound('Not Found');

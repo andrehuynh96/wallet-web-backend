@@ -86,6 +86,10 @@ const config = {
   lockUser: {
     maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
     lockTime: process.env.LOCK_TIME
+  },
+  kyc: {
+    baseUrl: process.env.KYC_URL,
+    authUrl: process.env.KYC_URL + '/token?='
   }
 };
 

@@ -1,4 +1,5 @@
 const MemberStatus = require("./value-object/member-status");
+const KycStatus = require('./value-object/kyc-status');
 
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define("members", {
@@ -76,6 +77,21 @@ module.exports = (sequelize, DataTypes) => {
     infinito_id: {
       type: DataTypes.STRING(32),
       allowNull: true
+    },
+    kyc_id: {
+      type: DataTypes.STRING(32),
+      allowNull: false,
+      defaultValue: '0'
+    },
+    kyc_level: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
+    },
+    kyc_status: {
+      type: DataTypes.STRING(16),
+      allowNull: false,
+      defaultValue: KycStatus.APPROVED
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,

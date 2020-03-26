@@ -23,7 +23,7 @@ module.exports = router;
  *     summary: tracking API
  *     tags:
  *       - Tracking
- *     description: send email to user when they do actions related to COIN/TOKEN
+ *     description: record members' action such as send coin/token, confirm/cancel transaction
  *     parameters:
  *       - in: body
  *         name: data
@@ -32,14 +32,17 @@ module.exports = router;
  *            type: object
  *            required:
  *            - tx_id
- *            - platform
  *            - symbol
- *            - amount
+ *            - action
  *            example:
  *               {
-                        "g-recaptcha-response":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
-                        "email":"example@gmail.com",
-                        "password":"abc123456"
+                        "tx_id":"0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                        "platform":"ETH",
+                        "symbol":"IFNT",
+                        "amount":10,
+                        "action":"SEND",
+                        "send_email_flg":true,
+                        "memo":"memo"
                   }
  *     produces:
  *       - application/json
@@ -49,28 +52,19 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
-                      "twofa":true,
-                      "verify_token":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
-                      "user":{
-                        "id": "ad84f5a2-497d-11ea-b77f-2e728ce88125",
-                        "email":"example@gmail.com",
-                        "twofa_enable_flg": true,
-                        "create_at":"",
-                        "member_sts":"ACTIVATED",
-                        "fullname":"Client",
-                        "phone": "0909038232",
-                        "date_of_birth": "22/09/2000",
-                        "address": "123 Rood B",
-                        "city": "HCM",
-                        "post_code": "700000",
-                        "country": "VN",
-                        "referral_code": "RDFCSD4C",
-                        "referrer_code": "WDRF3F1C",
-                        "infinito_id": "",
-			                  "latest_login_at":"2020-02-11T16:03:09.497Z"
-                      }
-                    }
+ *                 "data": {
+                      "id": "1",
+                      "member_id": "fc59fa67-c05a-493b-bba5-1a1d823f1aad",
+                      "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                      "platform": "ETH",
+                      "symbol": "IFNT",
+                      "amount": 10,
+                      "action": "SEND",
+                      "send_email_flg": true,
+                      "memo": "memo",
+                      "updatedAt": "2020-03-26T14:43:55.174Z",
+                      "createdAt": "2020-03-26T14:43:55.174Z"
+                  }
  *             }
  *       400:
  *         description: Error

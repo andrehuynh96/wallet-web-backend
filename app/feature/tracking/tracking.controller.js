@@ -6,40 +6,76 @@ const ActionType = require('app/model/wallet/value-object/member-activity-action
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
 
-module.exports = async (req, res, next) => {
-  try {
-    let user = await Member.findOne({
-      where: {
-        id: req.user.id
+module.exports = {
+  tracking: async (req, res, next) => {
+    try {
+      let user = await Member.findOne({
+        where: {
+          id: req.user.id
+        }
+      })
+
+      if (!user) {
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-    })
 
-    if (!user) {
-      return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+      if (user.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+
+      if (user.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(
+          res.__("UNCONFIRMED_ACCOUNT"),
+          "UNCONFIRMED_ACCOUNT"
+        );
+      }
+
+      let response = await MemberTransactionHis.create({
+        member_id: user.id,
+        ...req.body
+      });
+
+      if (req.body.send_email_flg) await sendEmail[req.body.action](user, req.body);
+
+      return res.ok(response);
+    } catch (err) {
+      logger.error("alert send coin/token fail: ", err);
+      next(err);
     }
+  },
+  getHis: async (req, res, next) => {
+    try {
+      let limit = req.query.limit ? parseInt(req.query.limit) : 10;
+      let offset = req.query.offset ? parseInt(req.query.offset) : 0;
+      let where = {};
+      if (req.query.platform) {
+        where.platform = req.query.platform;
+      }
+      if (req.query.tx_id) {
+        where.tx_id = req.query.tx_id;
+      }
 
-    if (user.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      const {
+        count: total,
+        rows: items
+      } = await MemberTransactionHis.findAndCountAll({
+        limit,
+        offset,
+        where: where,
+        order: [["created_at", "DESC"]]
+      });
+
+      return res.ok({
+        items: items,
+        offset: offset,
+        limit: limit,
+        total: total
+      });
     }
-
-    if (user.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(
-        res.__("UNCONFIRMED_ACCOUNT"),
-        "UNCONFIRMED_ACCOUNT"
-      );
+    catch (err) {
+      logger.error("get transaction history fail: ", err);
+      next(err);
     }
-
-    let response = await MemberTransactionHis.create({
-      member_id: user.id,
-      ...req.body
-    });
-
-    if (req.body.send_email_flg) await sendEmail[req.body.action](user, req.body);
-
-    return res.ok(response);
-  } catch (err) {
-    logger.error("login fail: ", err);
-    next(err);
   }
 };
 

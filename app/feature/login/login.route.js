@@ -71,7 +71,10 @@ module.exports = router;
                         "referral_code": "RDFCSD4C",
                         "referrer_code": "WDRF3F1C",
                         "infinito_id": "",
-			                  "latest_login_at":"2020-02-11T16:03:09.497Z"
+                        "latest_login_at":"2020-02-11T16:03:09.497Z",
+                        "kyc_id": "123",
+                        "kyc_level": 1,
+                        "kyc_status": "APPROVED"
                       }
                     }
  *             }

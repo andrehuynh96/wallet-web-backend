@@ -6,5 +6,6 @@ router.use(require('./set-2fa/set-2fa.route'));
 router.use(require('./profile/profile.route'));
 router.use(require('./login-history/login-history.route'));
 router.use(require('./change-password/change-password.route'));
+router.use(require('./kyc-link/kyc-link.route'));
 
 module.exports = router;

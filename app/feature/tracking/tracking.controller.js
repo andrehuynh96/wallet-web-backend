@@ -5,6 +5,8 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 module.exports = {
   tracking: async (req, res, next) => {
@@ -47,12 +49,12 @@ module.exports = {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      let where = {};
+      let where = [];
       if (req.query.platform) {
-        where.platform = req.query.platform;
+        where.push({ platform: req.query.platform });
       }
       if (req.query.tx_id) {
-        where.tx_id = req.query.tx_id;
+        where.push({ tx_id: req.query.tx_id });
       }
 
       const {
@@ -61,7 +63,7 @@ module.exports = {
       } = await MemberTransactionHis.findAndCountAll({
         limit,
         offset,
-        where: where,
+        where: { [Op.or]: where },
         order: [["created_at", "DESC"]]
       });
 

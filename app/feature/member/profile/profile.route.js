@@ -31,7 +31,7 @@ module.exports = router;
  *     tags:
  *       - Accounts
  *     description:
- *     parameters: 
+ *     parameters:
  *     produces:
  *       - application/json
  *     responses:
@@ -55,7 +55,11 @@ module.exports = router;
                         "country": "VN",
                         "referral_code": "RDFCSD4C",
                         "referrer_code": "WDRF3F1C",
-                        "infinito_id": ""
+                        "infinito_id": "",
+                        "latest_login_at":"2020-02-11T16:03:09.497Z",
+                        "kyc_id": "123",
+                        "kyc_level": 1,
+                        "kyc_status": "APPROVED"
                     }
 
  *             }
@@ -77,7 +81,7 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- 
+
 /*********************************************************************/
 
 /**

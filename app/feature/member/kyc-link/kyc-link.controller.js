@@ -4,7 +4,6 @@ const Member = require("app/model/wallet").members;
 const OTP = require("app/model/wallet").otps;
 const MemberStatus = require('app/model/wallet/value-object/member-status');
 const OtpType = require("app/model/wallet/value-object/otp-type");
-const otplib = require("otplib");
 const uuidV4 = require('uuid/v4');
 
 module.exports = async (req, res, next) => {
@@ -61,7 +60,7 @@ module.exports = async (req, res, next) => {
 
   }
   catch (err) {
-    logger.error('resend email fail:', err);
+    logger.error('create link kyc fail:', err);
     next(err);
   }
 }

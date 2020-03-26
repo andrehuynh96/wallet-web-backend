@@ -39,7 +39,7 @@ module.exports = async (req, res, next) => {
       return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
     }
 
-    if (user.member_sts == MemberStatus.LOCKED) {
+    if (member.member_sts == MemberStatus.LOCKED) {
       return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 

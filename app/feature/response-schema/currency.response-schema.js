@@ -13,7 +13,8 @@ const destObject = {
     '[].platform': '[].platform',
     '[].sc_token_address': '[].sc_token_address',
     '[].createdAt': '[].created_at',
-    '[].updatedAt': '[].updated_at'
+    '[].updatedAt': '[].updated_at',
+    '[].stake_flg': '[].stake_flg'
   },
   single: {
     id: 'id',
@@ -27,7 +28,8 @@ const destObject = {
     platform: 'platform',
     sc_token_address: 'sc_token_address',
     createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    updatedAt: 'updated_at',
+    stake_flg: 'stake_flg'
   }
 };
 module.exports = srcObject => {

@@ -31,9 +31,6 @@ module.exports = router;
  *     tags:
  *       - Accounts
  *     description:
- *     parameters:
- *     produces:
- *       - application/json
  *     responses:
  *       200:
  *         description: Ok

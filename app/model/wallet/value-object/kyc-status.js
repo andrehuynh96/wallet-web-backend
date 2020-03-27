@@ -1,5 +1,7 @@
 module.exports = {
-  "APPROVED": "APPROVED",
-  "INCOMPLETE": "INCOMPLETE",
-  "DECLINED": "DECLINED"
+  "IN_REVIEW": "In Review",
+  "APPROVED": "Approved",
+  "INSUFFICIENT": "Insufficient",
+  "DECLINED": "Declined",
+  "EXPIRED": "Expired"
 }

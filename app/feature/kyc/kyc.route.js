@@ -4,7 +4,7 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 
 router.get(
-  '/kyc/permissions',
+  '/kycs/permissions',
   authenticate,
   controller.get
 );
@@ -15,7 +15,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/kyc/permissions:
+ * /web/kycs/permissions:
  *   get:
  *     summary: get kyc permissions
  *     tags:

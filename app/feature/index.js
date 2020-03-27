@@ -15,6 +15,7 @@ router.use(require('./wallet/wallet.route'));
 router.use(require('./wallet/wallet-private-key/wallet-private-key.route'));
 router.use(require('./currency/currency.route'));
 router.use(require('./kyc/kyc.route'));
+router.use(require('./tracking/tracking.route'));
 
 
 module.exports = router;

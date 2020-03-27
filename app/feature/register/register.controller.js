@@ -11,6 +11,7 @@ const otplib = require("otplib");
 const Hashids = require('hashids/cjs');
 const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
+const Axios = require('axios');
 
 module.exports = async (req, res, next) => {
   try {
@@ -79,6 +80,7 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
     _sendEmail(member, otp);
+    _createKyc(member.id, req.body.email.toLowerCase());
     let response = memberMapper(member);
     return res.ok(response);
 
@@ -102,5 +104,58 @@ async function _sendEmail(member, otp) {
     await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
   } catch (err) {
     logger.error("send email create account fail", err);
+  }
+}
+
+async function _createKyc(member_id, email) {
+  try {
+    /** create kyc */
+    let params = {body: {email: email, type: 'Staking'}}
+    let kyc = await _makeRequest('/api/kycs/me/customers', params, 'post');
+    _updateStatus(kyc.id, 'APPROVE');
+    await Member.update({
+      kyc_id: kyc.id
+    }, {
+        where: {
+          id: member_id,
+        },
+        returning: true
+      });
+  } catch (err) {
+    logger.error("create kyc account fail", err);
+  }
+}
+
+async function _updateStatus(kyc_id, action) {
+  try {
+    let params = {body: {level: 1, expiry: 60000, comment: "update level 1"}}
+    await _makeRequest(`/api/kycs/me/customers/${kyc_id}/${action}`, params, 'put');
+  } catch(err) {
+    logger.error("update kyc account fail", err);
+  }
+} 
+
+async function _makeRequest(path, params, method) {
+  try {
+    let data = params ? params.body || {} : params;
+    let header = {"x-user": config.kyc.name};
+    let url = path ? config.kyc.baseUrl + path : config.kyc.baseUrl;
+    let config = {
+      method: method,
+      url: url,
+      data: data,
+      headers: header,
+    };
+
+    let res = await Axios(config).catch(e => {
+      return { data: e.response.data };
+    });
+    if (res.data.error) {
+      return { error: res.data.error, data: null };
+    } else {
+      return { error: null, data: res.data };
+    }
+  } catch (err) {
+    return { error: err, data: null };
   }
 }

@@ -11,7 +11,6 @@ const router = express.Router();
 router.post(
   '/wallets',
   authenticate,
-  authority(Permission.GENERATE_WALLET),
   validator(create),
   controller.create
 );

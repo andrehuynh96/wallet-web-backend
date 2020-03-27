@@ -7,6 +7,7 @@ const config = require("app/config");
 const mailer = require('app/lib/mailer');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const memberTrackingHisMapper = require('../response-schema/member-tracking-his.response-schema');
 
 module.exports = {
   tracking: async (req, res, next) => {
@@ -39,7 +40,7 @@ module.exports = {
 
       if (req.body.send_email_flg) await sendEmail[req.body.action](user, req.body);
 
-      return res.ok(response);
+      return res.ok(memberTrackingHisMapper(response));
     } catch (err) {
       logger.error("alert send coin/token fail: ", err);
       next(err);
@@ -68,7 +69,7 @@ module.exports = {
       });
 
       return res.ok({
-        items: items,
+        items: memberTrackingHisMapper(items),
         offset: offset,
         limit: limit,
         total: total

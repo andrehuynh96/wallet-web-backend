@@ -13,7 +13,8 @@ module.exports = {
   },
   getKycInfo: async (data) => {
     try {
-      return await _makeRequest(`api/kycs/me/customers/${data.kycId}`, null, 'get');
+      let params = {headers: {'Content-Type': 'application/json'}};
+      return await _makeRequest(`/api/kycs/me/customers/${data.kycId}`, params, 'get');
     } catch (err) {
       throw err;
     }

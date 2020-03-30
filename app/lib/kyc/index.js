@@ -54,12 +54,12 @@ async function _makeRequest(path, params, method) {
     });
     logger.info(res.data);
     if (res.data.error) {
-      return { error: res.data.error, data: null };
+      return { error: res.data.error};
     } else {
-      return { error: null, data: res.data.data };
+      return { data: res.data.data };
     }
   } catch (err) {
     logger.error(err);
-    return { error: err, data: null };
+    return { error: err };
   }
 }

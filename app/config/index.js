@@ -51,9 +51,9 @@ const config = {
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
   emailTemplate: {
     partnerName: process.env.PARTNER_NAME,
-    verifyEmail: process.env.PARTNER_NAME + "/verify-email.ejs",
-    resetPassword: process.env.PARTNER_NAME + "/reset-password.ejs",
-    deactiveAccount: process.env.PARTNER_NAME + "/deactive-account.ejs"
+    verifyEmail: process.env.PARTNER_NAME.toLowerCase() + "/verify-email.ejs",
+    resetPassword: process.env.PARTNER_NAME.toLowerCase() + "/reset-password.ejs",
+    deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs"
   },
   disableRecaptcha: true,
   CDN: {

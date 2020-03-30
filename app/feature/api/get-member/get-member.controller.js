@@ -54,6 +54,9 @@ module.exports = {
             }
           })
         } 
+        if (req.session.authenticated && req.session.user.id == member.id) {
+          req.session.user.kyc_level = data.kyc.level;
+        }
       }
       return res.ok(true);
     } catch (error) {

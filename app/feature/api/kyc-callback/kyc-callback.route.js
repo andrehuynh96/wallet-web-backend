@@ -29,9 +29,6 @@ module.exports = router;
 *       - name: x-checksum
 *         in: header
 *         type: string
-*       - name: token
-*         in: query
-*         type: string
 *       - in: body
 *         name: data
 *         description: Data for callback.

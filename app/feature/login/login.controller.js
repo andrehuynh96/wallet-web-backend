@@ -49,11 +49,8 @@ module.exports = async (req, res, next) => {
     }
     else {
       let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
-      console.log(nextAcceptableLogin)
       nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
       let rightNow = new Date();
-      console.log(nextAcceptableLogin)
-      console.log(rightNow)
       if (nextAcceptableLogin >= rightNow && user.attempt_login_number >= config.lockUser.maximumTriesLogin) // don't forbid if lock time has passed
         return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
       await Member.update({

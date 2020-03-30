@@ -27,7 +27,7 @@ module.exports = async (req, res, next) => {
     }
 
     if (!member.kyc_id) {
-      //TODO: Create KYC Account if not exists
+      return res.badRequest(res.__("NOT_FOUND_KYC_ACCOUNT"), "NOT_FOUND_KYC_ACCOUNT");
     }
 
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
@@ -63,8 +63,4 @@ module.exports = async (req, res, next) => {
     logger.error('create link kyc fail:', err);
     next(err);
   }
-}
-
-async function _createKycAccount(member) {
-
-}
+} 

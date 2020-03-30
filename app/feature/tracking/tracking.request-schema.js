@@ -10,7 +10,7 @@ const schema = Joi.object().keys({
 	amount: Joi.number().optional(),
 	action: Joi.string().valid(types).required(),
 	send_email_flg: Joi.boolean().optional(),
-	memo: Joi.string().optional()
+	memo: Joi.string().optional().allow("")
 });
 
 module.exports = schema;

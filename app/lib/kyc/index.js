@@ -1,6 +1,7 @@
 const config = require('app/config');
 const Axios = require('axios');
 const logger = require("app/lib/logger");
+const FormData = require('form-data');
 
 module.exports = {
   createAccount: async (data) => {
@@ -29,8 +30,10 @@ module.exports = {
   },
   submit: async (data) => {
     try {
-      let params = {...data, headers: {'Content-Type': 'multipart/form-data'}};
-      return await _makeRequest(`/api/kyc/me/customers/${data.kycId}/submit`, params, 'post');
+      var formData = new FormData();
+      formData.append('information', JSON.stringify(data.body));
+      let params = {body: formData, headers: formData.getHeaders()};
+      return await _makeRequest(`/api/kycs/me/customers/${data.kycId}/submit`, params, 'post');
     } catch (err) {
       throw err;
     }
@@ -52,7 +55,6 @@ async function _makeRequest(path, params, method) {
     let res = await Axios(options).catch(e => {
       throw e;
     });
-    logger.info(res.data);
     if (res.data.error) {
       return { error: res.data.error};
     } else {

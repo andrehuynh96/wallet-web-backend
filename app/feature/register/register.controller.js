@@ -114,14 +114,13 @@ async function _createKyc(memberId, email) {
     /** create kyc */
     let params = {body: {email: email, type: 'Staking'}};
     let kyc = await Kyc.createAccount(params);
-    console.log(kyc);
     let id = null;
     if (kyc.data && kyc.data.id) {
       id = kyc.data.id;
-      // let submit = await _submitKyc(kyc.data.id, email);
-      // if (submit.data && submit.data.id) {
-      //   _updateStatus(kyc.data.id, 'APPROVE');
-      // }
+      let submit = await _submitKyc(kyc.data.id, email);
+      if (submit.data && submit.data.id) {
+        _updateStatus(kyc.data.id, 'APPROVE');
+      }
       await Member.update({
         kyc_id: kyc.data.id
       }, {
@@ -138,7 +137,7 @@ async function _createKyc(memberId, email) {
 }
 async function _submitKyc(kycId, email) {
   try {
-    let params = {body: {level: 1, content: {email: email}}, kycId: kycId };
+    let params = {body: [{level: 1, content: {kyc1: {email: email}}}], kycId: kycId };
     return await Kyc.submit(params);;
   } catch (err) {
     logger.error(err);

@@ -58,6 +58,7 @@ module.exports = router;
  *            example:
  *               {     
                     "encrypted_passphrase": "",
+                    "name": "thangdv",
                     "default_flg": true
                   }
  *     produces:
@@ -69,7 +70,8 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
+                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
+                        "name": "thangdv",     
                         "default_flg":true,
                         "created_at":""
                     }
@@ -110,10 +112,9 @@ module.exports = router;
  *         description: Data for wallet.
  *         schema:
  *            type: object
- *            required:
- *            - default_flg
  *            example:
  *               {     
+ *                  "name": "wallet",
                     "default_flg": true
                   }
  *     produces:
@@ -125,7 +126,8 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
+                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
+                        "name": "wallet",     
                         "default_flg":true,
                         "created_at":""
                     }

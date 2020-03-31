@@ -126,36 +126,27 @@ module.exports = router;
  *             {
  *                 "data": {
                       "items": [
-                        {
-                          "id":"96b7f440-1a3b-11ea-978f-2e728ce88125",
-                          "platform": "ETH",
-                          "name":"Ethereum",
-                          "symbol":"ETH",
-                          "icon":"https://static.chainservices.info/staking/platforms/eth.png",
-                          "description":"AWS token",
-                          "order_index":99,
-                          "estimate_earn_per_year":"10",
-                          "lockup_unvote":21,
-                          "lockup_unvote_unit":"DAY",
-                          "payout_reward":0,
-                          "payout_reward_unit":"DAY",
-                          "status":1,
-                          "confirmation_block":5,
-                          "staking_type":"CONTRACT",
-                          "sc_lookup_addr":"0x1716a6f9D3917966d934Ce7837113A30dFFda9F4",
-                          "sc_token_address":"0x423822D571Bb697dDD993c04B507dD40E754cF05",
-                          "validator_address":null,
-                          "deleted_flg":false,
-                          "created_by":0,
-                          "updated_by":0,
-                          "createdAt":"2020-01-13T06:47:41.248Z",
-                          "updatedAt":"2020-01-13T06:47:41.248Z"
-                        }
+                          {
+                              "tx_id": "0x825131d19407748d576509f148bcec203313577b7220c3110d1f414b81469c11",
+                              "platform": "ETH",
+                              "symbol": "ETH",
+                              "amount": 0.0005,
+                              "action": "SEND",
+                              "memo": ""
+                          },
+                          {
+                              "tx_id": "0xa406d485ea33241bcf91590da4023b841155d1e15894ccce3c82739a3f6a37b5",
+                              "platform": "ETH",
+                              "symbol": "ETH",
+                              "amount": 0.0003,
+                              "action": "SEND",
+                              "memo": ""
+                          }
                       ],
                       "offset": 0,
-                      "limit": 10,
-                      "total": 4
- *                 }
+                      "limit": 2,
+                      "total": 18
+                  }
  *             }
  *       400:
  *         description: Error

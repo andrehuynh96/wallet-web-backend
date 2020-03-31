@@ -7,6 +7,7 @@ const OTP = require('app/model/wallet').otps;
 const OtpType = require('app/model/wallet/value-object/otp-type');
 const MemberActivityLog = require('app/model/wallet').member_activity_logs;
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
+const Kyc = require('app/lib/kyc');
 
 module.exports = async (req, res, next) => {
   try {
@@ -68,7 +69,8 @@ module.exports = async (req, res, next) => {
       action: ActionType.LOGIN,
       user_agent: req.headers['user-agent']
     });
-
+    let kyc = await Kyc.getKycInfo({ kycId: user.kyc_id });
+    user.kyc = kyc.data ? kyc.data.customer.kyc : null;
     req.session.authenticated = true;
     req.session.user = user;
     return res.ok(memberMapper(user));

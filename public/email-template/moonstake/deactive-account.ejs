@@ -48,10 +48,13 @@
 
       /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
       .container {
-        display: block; 
+        display: block;
         margin: 0 auto !important;
+        /* makes it centered */
         max-width: 600px;
         width: 600px;
+        text-align: center;
+        /* padding: 50px; */
       }
 
       /* -------------------------------------
@@ -101,11 +104,11 @@
     </style>
   </head>
   <body>
-    <table border="0" cellpadding="0" cellspacing="0" class="body">
+    <table border="0" cellpadding="0" cellspacing="0" class="body" align="center">
       <tr>
-        <td class="container" style="text-align: center;">
+        <td class="container">
           <div class="content">
-            <table class="main">
+            <table class="main" style="text-align: center;" align="center">
               <tr>
                 <td class="head-logo">
                   <img src="<%=imageUrl%>/moon-logo.png" alt="">
@@ -120,14 +123,13 @@
               </tr>
               <tr>
                 <td>
-                  <p style="font-family: 'Montserrat', sans-serif; color: #676767; margin: 0 0 3px">Please click the button below within 1 hour</p>
-                  <p style="font-family: 'Montserrat', sans-serif; color: #676767; margin: 0">to delete your Moonstake account.</p>
+                  <p style="margin-bottom: 3px">Please click the button below within 1 hour</p>
+                  <p style="margin-bottom: 3px">to delete your Moonstake account.</p>
                 </td>
               </tr>
               <tr>
-                <td>                 
-                  <img src="<%=imageUrl%>/button.png" style="background-size: cover; width: 166px; smargin: 18px auto;">
-                  <a href="<%=link%>" style="font-family: 'Montserrat', sans-serif; font-size: 14px; color: #3498db; text-decoration: none; border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; color: #fff; display: inline-block; margin: 35px 0 0 -150px; font-weight: 600; position: absolute;">Delete my account</a>
+                <td style="background: url();">
+                  <a href="<%=link%>" style="border-radius: 8px; background-image: url('<%=imageUrl%>/button.png' ); background-size: cover; -webkit-border-radius: 8px; -moz-border-radius: 8px; color: #fff; padding: 13px 18px; display: inline-block; margin: 18px 0 0 0; font-weight: 600;">Delete my account </a>
                 </td>
               </tr>
             </table>

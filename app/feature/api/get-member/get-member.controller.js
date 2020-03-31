@@ -31,4 +31,4 @@ module.exports = async (req, res, next) => {
     logger.error('get member fail: ', err);
     next(err);
   }
-};
+} 

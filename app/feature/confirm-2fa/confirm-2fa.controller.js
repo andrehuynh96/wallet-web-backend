@@ -69,8 +69,8 @@ module.exports = async (req, res, next) => {
       action: ActionType.LOGIN,
       user_agent: req.headers['user-agent']
     });
-    let kyc = await Kyc.getKycInfo({kycId: user.kyc_id});
-    user.kyc = kyc.data ? kyc.data.customer.kyc: null;
+    let kyc = await Kyc.getKycInfo({ kycId: user.kyc_id });
+    user.kyc = kyc.data ? kyc.data.customer.kyc : null;
     req.session.authenticated = true;
     req.session.user = user;
     return res.ok(memberMapper(user));

@@ -3,14 +3,22 @@ const objectMapper = require('object-mapper');
 const destObject = {
   array: {
     '[].id': '[].id',
+    '[].platform': '[].platform',
+    '[].sc_token_address': '[].sc_token_address',
+    '[].symbol': '[].symbol',
     '[].name': '[].name',
-    '[].default_flg': '[].default_flg',
+    '[].decimals': '[].decimals',
+    '[].icon': '[].icon',
     '[].createdAt': '[].created_at'
   },
   single: {
     id: 'id',
+    platform: 'platform',
+    sc_token_address: 'sc_token_address',
+    symbol: 'symbol',
     name: 'name',
-    default_flg: 'default_flg',
+    decimals: 'decimals',
+    icon: 'icon',
     createdAt: 'created_at'
   }
 };

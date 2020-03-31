@@ -21,6 +21,7 @@ wallet.create = async (req, res, next) => {
     }
     let  data = {
       member_id: req.user.id,
+      name: req.body.name,
       default_flg: req.body.default_flg ? req.body.default_flg: false,
       encrypted_passphrase: req.body.encrypted_passphrase
     }

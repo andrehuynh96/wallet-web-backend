@@ -89,7 +89,7 @@ const config = {
   },
   kyc: {
     baseUrl: process.env.KYC_URL,
-    authUrl: process.env.KYC_URL + '/token?=',
+    authUrl: process.env.KYC_URL + `/web/kycs/${process.env.KYC_NAME}/customers/login?token=`,
     name: process.env.KYC_NAME,
     type: process.env.KYC_TYPE
   },

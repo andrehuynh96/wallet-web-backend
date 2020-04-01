@@ -23,8 +23,8 @@ module.exports = {
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-      let kyc = await Kyc.getKycInfo({kycId: result.kyc_id});
-      result.kyc = kyc.data ? kyc.data.customer.kyc: null;
+      let kyc = result.kyc_id && result.kyc_id != '0' ? await Kyc.getKycInfo({kycId: result.kyc_id}) : null;
+      result.kyc = kyc && kyc.data ? kyc.data.customer.kyc: null;
       return res.ok(memberMapper(result));
     }
     catch (err) {

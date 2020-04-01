@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("./kyc-callback.controller");
-const verifyChecksum = require('app/middleware/verify-checksum.middleware');
+const callbackAuthenticate = require('app/middleware/callback-authenticate.middleware');
 
-router.post("/kycs/callback", verifyChecksum, controller)
+router.post("/kycs/callback", callbackAuthenticate, controller)
 module.exports = router;
 
 
@@ -20,13 +20,6 @@ module.exports = router;
 *     description:
 *     parameters:
 *       - name: api-key
-*         in: header
-*         type: string
-*       - name: x-time
-*         in: header
-*         type: integer
-*         format: int32
-*       - name: x-checksum
 *         in: header
 *         type: string
 *       - in: body

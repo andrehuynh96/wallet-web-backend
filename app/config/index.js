@@ -32,17 +32,6 @@ const config = {
         dialect: 'postgres',
         logging: false
       }
-    },
-    staking: {
-      database: process.env.STAKING_DB_NAME,
-      username: process.env.STAKING_DB_USER,
-      password: process.env.STAKING_DB_PASS,
-      options: {
-        host: process.env.STAKING_DB_HOST,
-        port: process.env.STAKING_DB_PORT,
-        dialect: 'postgres',
-        logging: false
-      }
     }
   },
   redis: {
@@ -103,6 +92,13 @@ const config = {
     authUrl: process.env.KYC_URL + '/token?=',
     name: process.env.KYC_NAME,
     type: process.env.KYC_TYPE
+  },
+  stakingApi: {
+    url: process.env.STAKING_API_URL,
+    key: process.env.STAKING_API_KEY,
+    secret: process.env.STAKING_API_SECRET,
+    jwksUrl: process.env.STAKING_API_JWK_URL,
+    kid: process.env.STAKING_API_KID,
   }
 };
 

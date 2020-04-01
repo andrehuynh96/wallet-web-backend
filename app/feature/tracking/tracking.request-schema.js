@@ -11,7 +11,7 @@ const schema = Joi.object().keys({
 	action: Joi.string().valid(types).required(),
 	send_email_flg: Joi.boolean().optional(),
 	memo: Joi.string().optional().allow(""),
-	plan_id: Joi.string().optional().allow("")
+	plan_id: Joi.string().optional().allow("").uuid()
 });
 
 module.exports = schema;

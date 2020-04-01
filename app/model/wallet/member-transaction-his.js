@@ -1,5 +1,5 @@
 const ActionType = require("./value-object/member-activity-action-type");
-const timeUnit = require("../staking/value-object/time-unit");
+const timeUnit = require("./value-object/time-unit");
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define("member_transaction_his", {
 		member_id: {

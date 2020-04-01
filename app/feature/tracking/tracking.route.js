@@ -18,6 +18,12 @@ router.get(
   controller.getHis
 );
 
+router.get(
+  '/tracking/:platform/:tx_id',
+  authenticate,
+  controller.getTxDetail
+);
+
 module.exports = router;
 
 /*********************************************************************/
@@ -146,6 +152,59 @@ module.exports = router;
                       "offset": 0,
                       "limit": 2,
                       "total": 18
+                  }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+
+/**
+ * @swagger
+ * /web/tracking/{platform}/{tx_id}:
+ *   get:
+ *     summary: get transaction detail
+ *     tags:
+ *       - Tracking
+ *     description: get one transaction detail based on platform and tx_id
+ *     parameters:
+ *       - name: platform
+ *         in: path
+ *         type: string
+ *       - name: tx_id
+ *         in: path
+ *         type: string
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+                      "tx_id": "530D7E3F7E6FB305805D83744B739D6CF5A224073C3E1EB01AF0A4EF6E0A8FF8",
+                      "platform": "IRIS",
+                      "symbol": "IRIS",
+                      "amount": 3,
+                      "action": "SEND",
+                      "memo": "a"
                   }
  *             }
  *       400:

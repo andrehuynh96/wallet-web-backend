@@ -55,7 +55,11 @@ module.exports = {
         where.push({ platform: req.query.platform });
       }
       if (req.query.tx_id) {
-        where.push({ tx_id: req.query.tx_id });
+        where.push({
+          tx_id: {
+            [Op.iLike]: req.query.tx_id
+          }
+        });
       }
 
       const {
@@ -77,6 +81,23 @@ module.exports = {
     }
     catch (err) {
       logger.error("get transaction history fail: ", err);
+      next(err);
+    }
+  },
+  getTxDetail: async (req, res, next) => {
+    try {
+      let response = await MemberTransactionHis.findOne({
+        where: {
+          platform: req.params.platform,
+          tx_id: {
+            [Op.iLike]: req.params.tx_id
+          }
+        }
+      });
+      return res.ok(memberTrackingHisMapper(response));
+    }
+    catch (err) {
+      logger.error("get transaction detail fail: ", err);
       next(err);
     }
   }

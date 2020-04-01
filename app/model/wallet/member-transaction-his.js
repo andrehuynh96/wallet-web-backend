@@ -1,4 +1,5 @@
 const ActionType = require("./value-object/member-activity-action-type");
+const timeUnit = require("./value-object/time-unit");
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define("member_transaction_his", {
 		member_id: {
@@ -35,6 +36,30 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING(256),
 			allowNull: true
 		},
+		staking_platform_id: {
+			type: DataTypes.UUID,
+			allowNull: true
+		},
+		plan_id: {
+			type: DataTypes.UUID,
+			allowNull: true
+		},
+		duration: {
+			type: DataTypes.INTEGER,
+			allowNull: true
+		},
+		duration_type: {
+			type: DataTypes.STRING(8),
+			allowNull: true
+		},
+		reward_percentage: {
+			type: DataTypes.DOUBLE(4, 2),
+			allowNull: true
+		},
+		validator_fee: {
+			type: DataTypes.INTEGER,
+			allowNull: true
+		}
 	}, {
 		underscored: true,
 		timestamps: true,

@@ -1,6 +1,8 @@
 const logger = require("app/lib/logger");
 const Member = require("app/model/wallet").members;
 const MemberTransactionHis = require("app/model/wallet").member_transaction_his;
+const StakingPlans = require("app/model/staking").staking_plans;
+const StakingPlatforms = require("app/model/staking").staking_platforms;
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
 const config = require("app/config");
@@ -33,9 +35,33 @@ module.exports = {
         );
       }
 
+      let additionalInfo = {}
+      if (req.body.plan_id && req.body.plan_id.length > 0) {
+        plan = await StakingPlans.findOne({
+          where: {
+            id: req.body.plan_id
+          }
+        })
+        if (plan) {
+          additionalInfo.plan_id = req.body.plan_id;
+          additionalInfo.staking_platform_id = plan.staking_platform_id;
+          additionalInfo.duration = plan.duration;
+          additionalInfo.duration_type = plan.duration_type;
+          additionalInfo.reward_percentage = plan.reward_percentage;
+          additionalInfo.validator_fee = plan.staking_platform_id;
+          let platform = await StakingPlatforms.findOne({
+            where: {
+              id: plan.staking_platform_id
+            }
+          })
+          if (platform) additionalInfo.validator_fee = platform.erc20_validator_fee;
+        }
+      }
+      delete req.body.plan_id;
       let response = await MemberTransactionHis.create({
         member_id: user.id,
-        ...req.body
+        ...req.body,
+        ...additionalInfo
       });
 
       if (req.body.send_email_flg) await sendEmail[req.body.action](user, req.body);

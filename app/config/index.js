@@ -32,6 +32,17 @@ const config = {
         dialect: 'postgres',
         logging: false
       }
+    },
+    staking: {
+      database: process.env.STAKING_DB_NAME,
+      username: process.env.STAKING_DB_USER,
+      password: process.env.STAKING_DB_PASS,
+      options: {
+        host: process.env.STAKING_DB_HOST,
+        port: process.env.STAKING_DB_PORT,
+        dialect: 'postgres',
+        logging: false
+      }
     }
   },
   redis: {

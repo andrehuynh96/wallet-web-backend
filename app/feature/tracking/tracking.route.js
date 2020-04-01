@@ -48,14 +48,15 @@ module.exports = router;
  *            - action
  *            example:
  *               {
-                        "tx_id":"0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
-                        "platform":"ETH",
-                        "symbol":"IFNT",
-                        "amount":10,
-                        "action":"SEND",
-                        "send_email_flg":true,
-                        "memo":"memo"
-                  }
+                    "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                    "platform": "ETH",
+                    "symbol": "IFNT",
+                    "amount": 10,
+                    "action": "SEND",
+                    "send_email_flg": true,
+                    "memo": "memo",
+                    "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6"
+                }
  *     produces:
  *       - application/json
  *     responses:
@@ -65,17 +66,18 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data": {
-                      "id": "1",
-                      "member_id": "fc59fa67-c05a-493b-bba5-1a1d823f1aad",
                       "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                       "platform": "ETH",
                       "symbol": "IFNT",
                       "amount": 10,
                       "action": "SEND",
-                      "send_email_flg": true,
                       "memo": "memo",
-                      "updatedAt": "2020-03-26T14:43:55.174Z",
-                      "createdAt": "2020-03-26T14:43:55.174Z"
+                      "staking_platform_id": "96b7f440-1a3b-11ea-978f-2e728ce88125",
+                      "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6",
+                      "duration": 69,
+                      "duration_type": "DAY",
+                      "reward_percentage": 10,
+                      "validator_fee": 20
                   }
  *             }
  *       400:
@@ -133,21 +135,27 @@ module.exports = router;
  *                 "data": {
                       "items": [
                           {
-                              "tx_id": "0x825131d19407748d576509f148bcec203313577b7220c3110d1f414b81469c11",
+                              "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                               "platform": "ETH",
-                              "symbol": "ETH",
-                              "amount": 0.0005,
+                              "symbol": "IFNT",
+                              "amount": 10,
                               "action": "SEND",
-                              "memo": ""
+                              "memo": "memo"
                           },
                           {
-                              "tx_id": "0xa406d485ea33241bcf91590da4023b841155d1e15894ccce3c82739a3f6a37b5",
+                              "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                               "platform": "ETH",
-                              "symbol": "ETH",
-                              "amount": 0.0003,
+                              "symbol": "IFNT",
+                              "amount": 10,
                               "action": "SEND",
-                              "memo": ""
-                          }
+                              "memo": "memo",
+                              "staking_platform_id": "96b7f440-1a3b-11ea-978f-2e728ce88125",
+                              "plan_id": "950002a9-07b4-41c1-990c-9290e5b73596",
+                              "duration": 69,
+                              "duration_type": "DAY",
+                              "reward_percentage": 10,
+                              "validator_fee": 20
+                          },
                       ],
                       "offset": 0,
                       "limit": 2,
@@ -199,12 +207,18 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data": {
-                      "tx_id": "530D7E3F7E6FB305805D83744B739D6CF5A224073C3E1EB01AF0A4EF6E0A8FF8",
-                      "platform": "IRIS",
-                      "symbol": "IRIS",
-                      "amount": 3,
+                      "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                      "platform": "ETH",
+                      "symbol": "IFNT",
+                      "amount": 10,
                       "action": "SEND",
-                      "memo": "a"
+                      "memo": "memo",
+                      "staking_platform_id": "96b7f440-1a3b-11ea-978f-2e728ce88125",
+                      "plan_id": "950002a9-07b4-41c1-990c-9290e5b73596",
+                      "duration": 69,
+                      "duration_type": "DAY",
+                      "reward_percentage": 10,
+                      "validator_fee": 20
                   }
  *             }
  *       400:

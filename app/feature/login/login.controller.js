@@ -127,7 +127,7 @@ module.exports = async (req, res, next) => {
 async function _createKyc(memberId, email) {
   try {
     /** create kyc */
-    let params = {body: {email: email, type: 'Staking'}};
+    let params = {body: {email: email, type: config.kyc.type}};
     let kyc = await Kyc.createAccount(params);
     let id = null;
     if (kyc.data && kyc.data.id) {

@@ -70,7 +70,7 @@ privkey.getPrivKey = async (req, res, next) => {
         deleted_flg: false
       }
     });
-    if (user.twofa_enable_flg) {
+    if (user.twofa_download_key_flg) {
       var verified = speakeasy.totp.verify({
         secret: user.twofa_secret,
         encoding: 'base32',

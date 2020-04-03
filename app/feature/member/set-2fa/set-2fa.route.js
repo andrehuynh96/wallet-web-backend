@@ -103,12 +103,15 @@ module.exports = router;
  *              - twofa_code
  *              - disable_twofa_download_key
  *            properties:
+ *            twofa_secret:
+ *                type: string
  *            twofa_code:
  *              type: string
  *            disable_twofa_download_key:
  *              type: boolean
  *            example:
- *                  {
+ *                  {     
+ *                        "twofa_secret":"AIU45sdsahssdsjYUDHd6",
                           "twofa_code":"123456",
                           "disable_twofa_download_key":false
  *                  }

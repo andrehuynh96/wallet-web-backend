@@ -13,7 +13,8 @@ variables:
  script:
   # Update new ansible source
   - cd ${ANSIBLE_REPO}
-  - sudo su ubuntu -c "export GIT_SSH_COMMAND='ssh -i /home/ubuntu/staking-iac/ansible/id_rsa';git checkout -f remotes/origin/terraform"
+  - sudo su ubuntu -c "git reset --hard HEAD"
+  - sudo su ubuntu -c "export GIT_SSH_COMMAND='ssh -i /home/ubuntu/staking-iac/ansible/id_rsa';git pull"
   # Run ansible-playbook
   - cd ${ANSIBLE_DIR}
   - project=`echo ${CI_COMMIT_TAG} | awk -F'-' '{print $2}'`

@@ -1,18 +1,25 @@
 stages:
  - build
  - test
- - deploy   
-variables:
- ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
+ - deploy
  
-###
+variables:
+ GIT_STRATEGY: none
+ ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
+ ANSIBLE_REPO: "/home/ubuntu/staking-iac/"
+
 .BuildJSApp:
  stage: build
  script:
+  # Update new ansible source
+  - cd ${ANSIBLE_REPO}
+  - sudo su ubuntu -c "export GIT_SSH_COMMAND='ssh -i /home/ubuntu/staking-iac/ansible/id_rsa';git checkout -f remotes/origin/terraform"
+  # Run ansible-playbook
   - cd ${ANSIBLE_DIR}
-  - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV}`
-  - sudo su ubuntu -c "ansible-playbook $ansible_file"
-  
+  - project=`echo ${CI_COMMIT_TAG} | awk -F'-' '{print $2}'`
+  - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV} | grep $project`
+  - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
+
 .OnlyStagingMS:
  only:
   - /^.*-ms-rc$/
@@ -37,7 +44,7 @@ variables:
  except:
   - branches
 
-Node01Build:
+StageBinaryStarDappApi:
  variables:
   _ENV: "stage" 
  extends:
@@ -46,4 +53,29 @@ Node01Build:
  tags:
   - stage-stak-ap-bs-ansible
 
-  
+StageMoonStakeDAppApi:
+ variables:
+  _ENV: "stage" 
+ extends:
+  - .BuildJSApp
+  - .OnlyStagingMS
+ tags:
+  - stage-stak-ap-ms-ansible
+
+ProdBinaryStarDappApi:
+ variables:
+  _ENV: "prod" 
+ extends:
+  - .BuildJSApp
+  - .OnlyProductionBS
+ tags:
+  - prod-stak-ap-bs-ansible
+
+ProdMoonStakeDAppApi:
+ variables:
+  _ENV: "prod" 
+ extends:
+  - .BuildJSApp
+  - .OnlyProductionMS
+ tags:
+  - prod-stak-ap-ms-ansible 

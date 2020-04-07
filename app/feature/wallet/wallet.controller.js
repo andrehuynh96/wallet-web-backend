@@ -8,6 +8,7 @@ const mapper = require('app/feature/response-schema/wallet.response-schema');
 var wallet = {};
 
 wallet.create = async (req, res, next) => {
+  let transaction;
   try {
     logger.info('wallet::create');
     let user = await Member.findOne({
@@ -19,16 +20,28 @@ wallet.create = async (req, res, next) => {
     if (!user) {
       return res.badRequest(res.__('USER_NOT_FOUND'), 'USER_NOT_FOUND');
     }
-    let  data = {
+
+    transaction = await database.transaction();
+
+    if (req.body.default_flg) {
+      await Wallet.update({default_flg: false}, {where: {
+        member_id: req.user.id, 
+        default_flg: true
+      }, returning: true}, { transaction});
+    }
+
+    let data = {
       member_id: req.user.id,
       name: req.body.name,
       default_flg: req.body.default_flg ? req.body.default_flg: false,
       encrypted_passphrase: req.body.encrypted_passphrase
     }
-    let wallet = await Wallet.create(data);
+    let wallet = await Wallet.create(data, { transaction});
+    await transaction.commit();
     return res.ok(mapper(wallet));
   } catch (ex) {
     logger.error(ex);
+    if (transaction) await transaction.rollback();
     next(ex);
   }
 }

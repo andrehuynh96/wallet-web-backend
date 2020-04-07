@@ -1,6 +1,7 @@
 const logger = require('app/lib/logger');
 const Wallet = require('app/model/wallet').wallets;
 const WalletPrivateKey = require('app/model/wallet').wallet_priv_keys;
+const WalletToken = require('app/model/wallet').wallet_tokens;
 const database = require('app/lib/database').db().wallet;
 const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/wallet.response-schema');
@@ -99,6 +100,7 @@ wallet.delete = async (req, res, next) => {
     transaction = await database.transaction();
 
     await WalletPrivateKey.update({deleted_flg: true}, {where: {wallet_id: id}}, {transaction});
+    await WalletToken.update({deleted_flg: true}, {where: {wallet_id: id}}, {transaction});
     await Wallet.update({ deleted_flg: true}, { where: { id: id } }, { transaction});
     await transaction.commit();
     return res.ok({ deleted: true });

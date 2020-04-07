@@ -1,6 +1,7 @@
 const logger = require('app/lib/logger');
 const Wallet = require('app/model/wallet').wallets;
 const WalletPrivateKey = require('app/model/wallet').wallet_priv_keys;
+const WalletToken = require('app/model/wallet').wallet_tokens;
 const database = require('app/lib/database').db().wallet;
 const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/wallet.response-schema');
@@ -8,6 +9,7 @@ const mapper = require('app/feature/response-schema/wallet.response-schema');
 var wallet = {};
 
 wallet.create = async (req, res, next) => {
+  let transaction;
   try {
     logger.info('wallet::create');
     let user = await Member.findOne({
@@ -19,16 +21,28 @@ wallet.create = async (req, res, next) => {
     if (!user) {
       return res.badRequest(res.__('USER_NOT_FOUND'), 'USER_NOT_FOUND');
     }
-    let  data = {
+
+    transaction = await database.transaction();
+
+    if (req.body.default_flg) {
+      await Wallet.update({default_flg: false}, {where: {
+        member_id: req.user.id, 
+        default_flg: true
+      }, returning: true}, { transaction});
+    }
+
+    let data = {
       member_id: req.user.id,
       name: req.body.name,
       default_flg: req.body.default_flg ? req.body.default_flg: false,
       encrypted_passphrase: req.body.encrypted_passphrase
     }
-    let wallet = await Wallet.create(data);
+    let wallet = await Wallet.create(data, { transaction});
+    await transaction.commit();
     return res.ok(mapper(wallet));
   } catch (ex) {
     logger.error(ex);
+    if (transaction) await transaction.rollback();
     next(ex);
   }
 }
@@ -86,6 +100,7 @@ wallet.delete = async (req, res, next) => {
     transaction = await database.transaction();
 
     await WalletPrivateKey.update({deleted_flg: true}, {where: {wallet_id: id}}, {transaction});
+    await WalletToken.update({deleted_flg: true}, {where: {wallet_id: id}}, {transaction});
     await Wallet.update({ deleted_flg: true}, { where: { id: id } }, { transaction});
     await transaction.commit();
     return res.ok({ deleted: true });

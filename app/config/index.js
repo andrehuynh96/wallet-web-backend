@@ -53,7 +53,9 @@ const config = {
     partnerName: process.env.PARTNER_NAME,
     verifyEmail: process.env.PARTNER_NAME.toLowerCase() + "/verify-email.ejs",
     resetPassword: process.env.PARTNER_NAME.toLowerCase() + "/reset-password.ejs",
-    deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs"
+    deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
+    txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
+    txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
   },
   disableRecaptcha: true,
   CDN: {
@@ -75,6 +77,7 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/sign-in',
     urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
+    urlIcon: process.env.WEBSITE_URL + '/images/'
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,

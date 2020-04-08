@@ -48,14 +48,15 @@ module.exports = router;
  *            - action
  *            example:
  *               {
-                    "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                    "tx_id": "0xaa99f3f35274d58ad22584d04d935a540ceb14a627578be5adc0fb1b6978772b",
                     "platform": "ETH",
                     "symbol": "IFNT",
-                    "amount": 10,
+                    "amount": 1.8987398240000002,
+                    "address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                     "action": "SEND",
                     "send_email_flg": true,
                     "memo": "memo",
-                    "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6"
+                    "plan_id":"6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6"
                 }
  *     produces:
  *       - application/json

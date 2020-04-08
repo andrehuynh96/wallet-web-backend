@@ -125,15 +125,33 @@ const sendEmail = {
     try {
       let subject = `${config.emailTemplate.partnerName} - Send coin/token alert`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let platform;
+      switch (content.platform) {
+        case "ETH":
+          platform = 'Ethereum';
+          break;
+        case "XTZ":
+          platform = 'Tezos';
+          break;
+        case "IRIS":
+          platform = 'Iris';
+          break;
+        case "ATOM":
+          platform = 'Cosmos';
+          break;
+      }
       let data = {
-        imageUrl: config.website.urlImages,
-        link: `${content.toString()}`,
-        hours: config.expiredVefiryToken
+        imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
+        platform: platform,
+        tx_id: content.tx_id,
+        address: content.address,
+        amount: content.amount,
+        symbol: content.symbol
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.txSent);
     } catch (err) {
-      logger.error("send coin/token alert email create account fail", err);
+      logger.error("send coin/token alert email fail", err);
     }
   }
 }

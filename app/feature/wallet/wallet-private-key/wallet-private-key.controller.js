@@ -4,6 +4,8 @@ const WalletPrivateKey = require('app/model/wallet').wallet_priv_keys;
 const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const speakeasy = require('speakeasy');
+const database = require('app/lib/database').db().wallet;
+const WalletToken = require('app/model/wallet').wallet_tokens;
 
 var privkey = {};
 
@@ -41,6 +43,7 @@ privkey.create = async (req, res, next) => {
 
 
 privkey.delete = async (req, res, next) => {
+  let transaction;
   try {
     logger.info('wallet private key::delete');
     const { params: { wallet_id, id }} = req;
@@ -53,10 +56,23 @@ privkey.delete = async (req, res, next) => {
     if (!wallet) {
       return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
     }
-    await WalletPrivateKey.update({deleted_flg: true}, {where: {id: id}});
+
+    let key = await WalletPrivateKey.findOne({
+      where: {
+        id: id
+      }
+    });
+    if (!key) {
+      return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND")
+    }
+    transaction = await database.transaction();
+    await WalletToken.update({deleted_flg: true}, {where: {wallet_id: wallet_id, platform: key.platform}}, {transaction});
+    await WalletPrivateKey.update({deleted_flg: true}, {where: {id: id}}, {transaction});
+    await transaction.commit();
     return res.ok({ deleted: true });
   } catch (error) {
     logger.error(error);
+    if (transaction) await transaction.rollback();
     next(error);
   }
 };
@@ -70,7 +86,7 @@ privkey.getPrivKey = async (req, res, next) => {
         deleted_flg: false
       }
     });
-    if (user.twofa_enable_flg) {
+    if (user.twofa_download_key_flg) {
       var verified = speakeasy.totp.verify({
         secret: user.twofa_secret,
         encoding: 'base32',

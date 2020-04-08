@@ -63,6 +63,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    default_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   }, {
       underscored: true,

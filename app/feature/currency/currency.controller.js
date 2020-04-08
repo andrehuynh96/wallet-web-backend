@@ -25,6 +25,9 @@ module.exports = {
           platform: { [Op.iLike]: `%${search}%`}
         }]}
       }
+      if (req.query.default != undefined) {
+        where.default_flg = req.query.default;
+      }
       where.status = CurrencyStatus.ENABLED;
       const { count: total, rows: items } = await Currency.findAndCountAll({ limit, offset, where: where, order: [['order_index', 'ASC']] });
 

@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
+
 module.exports = async (req, res, next) => {
   try {
     let user = await Member.findOne({

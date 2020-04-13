@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING(128),
       allowNull: false,
-      //unique: true
+      unique: true
     },
     password_hash: {
       type: DataTypes.STRING(128),

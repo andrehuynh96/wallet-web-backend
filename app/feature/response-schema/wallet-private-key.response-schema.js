@@ -6,6 +6,7 @@ const destObject = {
     '[].platform': '[].platform',
     '[].address': '[].address',
     '[].hd_path': '[].hd_path',
+    '[].encrypted_private_key': '[].encrypted_private_key',
     '[].createdAt': '[].created_at'
   },
   single: {
@@ -13,6 +14,7 @@ const destObject = {
     platform: 'platform',
     address: 'address',
     hd_path: 'hd_path',
+    encrypted_private_key: 'encrypted_private_key',
     createdAt: 'created_at'
   }
 };

@@ -134,13 +134,14 @@ const sendEmail = {
           platform = 'Tezos';
           break;
         case "IRIS":
-          platform = 'Iris';
+          platform = 'IRISnet';
           break;
         case "ATOM":
           platform = 'Cosmos';
           break;
       }
       let data = {
+        banner: config.website.urlImages,
         imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
         platform: platform,
         tx_id: content.tx_id,

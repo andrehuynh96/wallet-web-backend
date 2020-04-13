@@ -39,7 +39,7 @@ module.exports = {
       }
       else {
         var verified = speakeasy.totp.verify({
-          secret: member.twofa_secret ? member.twofa_secret : req.body.twofa_secret,
+          secret: req.body.twofa_secret ? req.body.twofa_secret :  member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
         });
@@ -49,7 +49,7 @@ module.exports = {
         }
 
         let [_, response] = await Member.update({
-          twofa_secret: member.twofa_secret ? member.twofa_secret : req.body.twofa_secret,
+          twofa_secret: req.body.twofa_secret ? req.body.twofa_secret :  member.twofa_secret,
           twofa_enable_flg: true
         }, {
             where: {
@@ -106,7 +106,7 @@ module.exports = {
       }
       else {
         var verified = speakeasy.totp.verify({
-          secret: member.twofa_secret ? member.twofa_secret : req.body.twofa_secret,
+          secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
         });
@@ -116,7 +116,7 @@ module.exports = {
         }
 
         let [_, response] = await Member.update({
-          twofa_secret: member.twofa_secret ? member.twofa_secret : req.body.twofa_secret,
+          twofa_secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           twofa_download_key_flg: true
         }, {
             where: {

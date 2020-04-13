@@ -201,6 +201,9 @@ module.exports = router;
  *         name: wallet_id
  *         type: string
  *         required: true
+ *       - in: query
+ *         name: twofa_code
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:

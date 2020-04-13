@@ -14,7 +14,6 @@ const destObject = {
     '[].sc_token_address': '[].sc_token_address',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
-    '[].stake_flg': '[].stake_flg',
     '[].default_flg': '[].default_flg'
   },
   single: {
@@ -30,7 +29,6 @@ const destObject = {
     sc_token_address: 'sc_token_address',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
-    stake_flg: 'stake_flg',
     default_flg: 'default_flg'
   }
 };

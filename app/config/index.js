@@ -102,7 +102,9 @@ const config = {
     secret: process.env.STAKING_API_SECRET,
     jwksUrl: process.env.STAKING_API_JWK_URL,
     kid: process.env.STAKING_API_KID,
-  }
+  },
+  testnet: process.env.TESTNET
 };
 
 module.exports = config;
+console.log(typeof config,this.testnet)

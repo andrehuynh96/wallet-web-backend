@@ -80,10 +80,10 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
     _sendEmail(member, otp);
-    let id = await _createKyc(member.id, req.body.email.toLowerCase());
-    if (id) {
-      member.kyc_id = id;
-    }
+    // let id = await _createKyc(member.id, req.body.email.toLowerCase());
+    // if (id) {
+    //   member.kyc_id = id;
+    // }
     let response = memberMapper(member);
     return res.ok(response);
   }
@@ -112,7 +112,7 @@ async function _sendEmail(member, otp) {
 async function _createKyc(memberId, email) {
   try {
     /** create kyc */
-    let params = {body: {email: email, type: config.kyc.type}};
+    let params = { body: { email: email, type: config.kyc.type } };
     let kyc = await Kyc.createAccount(params);
     let id = null;
     if (kyc.data && kyc.data.id) {
@@ -137,7 +137,7 @@ async function _createKyc(memberId, email) {
 }
 async function _submitKyc(kycId, email) {
   try {
-    let params = {body: [{level: 1, content: {kyc1: {email: email}}}], kycId: kycId };
+    let params = { body: [{ level: 1, content: { kyc1: { email: email } } }], kycId: kycId };
     return await Kyc.submit(params);;
   } catch (err) {
     logger.error(err);
@@ -146,10 +146,10 @@ async function _submitKyc(kycId, email) {
 }
 async function _updateStatus(kycId, action) {
   try {
-    let params = {body: {level: 1, expiry: 60000, comment: "update level 1"}, kycId: kycId, action: action};
+    let params = { body: { level: 1, expiry: 60000, comment: "update level 1" }, kycId: kycId, action: action };
     await Kyc.updateStatus(params);
-  } catch(err) {
+  } catch (err) {
     logger.error("update kyc account fail", err);
   }
-} 
+}
 

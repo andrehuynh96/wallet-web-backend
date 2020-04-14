@@ -115,7 +115,8 @@ module.exports = router;
  *            example:
  *               {     
  *                  "name": "wallet",
-                    "default_flg": true
+                    "default_flg": true,
+                    "encrypted_passphrase": ""
                   }
  *     produces:
  *       - application/json

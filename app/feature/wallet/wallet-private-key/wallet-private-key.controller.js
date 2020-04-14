@@ -55,12 +55,13 @@ privkey.update = async (req, res, next) => {
     if (!wallet) {
       return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
     }
+    transaction = await database.transaction();
     for (item of req.body.items) {
       let data = {
         encrypted_private_key: item.encrypted_private_key
       }
       await WalletPrivateKey.update(data, {where: {id: item.id, wallet_id: wallet_id, platform: item.platform}}, {transaction});
-    }
+    } 
     await transaction.commit();
     return res.ok(true);
   } catch (ex) {

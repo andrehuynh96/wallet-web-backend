@@ -125,49 +125,16 @@ const sendEmail = {
     try {
       let subject = `${config.emailTemplate.partnerName} - Send coin/token alert`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-      let platform, txIdLink, addressLink;
-      switch (content.platform) {
-        case "ETH":
-          platform = 'Ethereum';
-          txIdLink = `https://etherscan.io/tx/`;
-          addressLink = `https://etherscan.io/address/`;
-          break;
-        case "IRIS":
-          platform = 'IRISnet';
-          txIdLink = `https://www.irisplorer.io/#/tx?txHash=`;
-          addressLink = `https://www.irisplorer.io/#/address/`;
-          break;
-        case "ATOM":
-          platform = 'Cosmos';
-          txIdLink = `https://www.mintscan.io/txs/`;
-          addressLink = `https://www.mintscan.io/account/`;
-          break;
-        case "BTC":
-          platform = 'Bitcoin';
-          txIdLink = `https://www.blockchain.com/btc/tx/`;
-          addressLink = `https://www.blockchain.com/btc/address/`;
-          break;
-        case "ONT":
-          platform = 'Ontology';
-          txIdLink = `https://explorer.ont.io/transaction/`;
-          addressLink = `https://explorer.ont.io/address/`;
-          break;
-        case "ADA":
-          platform = 'Cardano';
-          txIdLink = `https://adascan.net/transaction/`;
-          addressLink = `https://adascan.net/address/`;
-          break;
-      }
       let data = {
         banner: config.website.urlImages,
         imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
-        platform: platform,
+        platform: config.explorer[content.platform].platformName,
         tx_id: content.tx_id,
         address: content.address,
         amount: content.amount,
         symbol: content.symbol,
-        txIdLink: txIdLink + content.tx_id,
-        addressLink: addressLink + content.address
+        txIdLink: config.explorer[content.platform].txIdLink + content.tx_id,
+        addressLink: config.explorer[content.platform].addressLink + content.address
       }
       data = Object.assign({}, data, config.email);
       await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.txSent);

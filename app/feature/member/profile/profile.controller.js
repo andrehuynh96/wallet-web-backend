@@ -11,6 +11,8 @@ const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
 const speakeasy = require("speakeasy");
 const Kyc = require('app/lib/kyc');
+const Webhook = require('app/lib/webhook');
+
 module.exports = {
   get: async (req, res, next) => {
     try {
@@ -19,12 +21,12 @@ module.exports = {
           id: req.user.id
         }
       })
-  
+
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-      let kyc = result.kyc_id && result.kyc_id != '0' ? await Kyc.getKycInfo({kycId: result.kyc_id}) : null;
-      result.kyc = kyc && kyc.data ? kyc.data.customer.kyc: null;
+      let kyc = result.kyc_id && result.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: result.kyc_id }) : null;
+      result.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
       return res.ok(memberMapper(result));
     }
     catch (err) {
@@ -33,20 +35,20 @@ module.exports = {
     }
   },
   unsubcribe: async (req, res, next) => {
-    try{
+    try {
       let member = await Member.findOne({
         where: {
           id: req.user.id
         }
       })
-      if(!member){
+      if (!member) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-      if(member.twofa_enable_flg){
+      if (member.twofa_enable_flg) {
         let verifyToken = Buffer.from(uuidV4()).toString('base64');
         let today = new Date();
         today.setHours(today.getHours() + config.expiredVefiryToken);
-        if(!req.body.twofa_code){
+        if (!req.body.twofa_code) {
           return res.badRequest(res.__("NOT_TWOFA_CODE"), "NOT_TWOFA_CODE")
         }
         var verified = speakeasy.totp.verify({
@@ -55,7 +57,7 @@ module.exports = {
           token: req.body.twofa_code,
         });
         if (!verified) {
-            return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT", { fields: ["twofa_code"] });
+          return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT", { fields: ["twofa_code"] });
         }
         await OTP.update({
           expired: true
@@ -66,7 +68,7 @@ module.exports = {
             },
             returning: true
           })
-  
+
         await OTP.create({
           code: verifyToken,
           used: false,
@@ -91,7 +93,7 @@ module.exports = {
             },
             returning: true
           })
-  
+
         await OTP.create({
           code: verifyToken,
           used: false,
@@ -104,7 +106,7 @@ module.exports = {
         return res.ok(true);
       }
     }
-    catch(err){
+    catch (err) {
       logger.error('unsubcribe account fail:', err);
       next(err);
     }
@@ -119,8 +121,8 @@ module.exports = {
           code: req.body.verify_token,
         }
       })
-      if(!otp){
-        return res.badRequest(res.__("TOKEN_INVALID"),"TOKEN_INVALID")
+      if (!otp) {
+        return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID")
       }
       if (otp.expired_at < today || otp.expired || otp.used) {
         return res.badRequest(res.__('TOKEN_EXPIRED'), 'TOKEN_EXPIRED');
@@ -130,7 +132,7 @@ module.exports = {
           id: otp.member_id
         }
       })
-      if(!member){
+      if (!member) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
 
@@ -144,18 +146,31 @@ module.exports = {
             action_type: OtpType.UNSUBCRIBE
           },
           returning: true
-      })
-      await Member.destroy({ where: { id: member.id }}, { transaction })
-      let wallet = await Wallet.findAll({ where: { member_id: member.id }},{transaction })
-      if(wallet){
-        await Wallet.destroy({ where: { member_id: member.id }},{ transaction })
-        for(let i=0; i<wallet.length; i++){
-          await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id }},{ transaction })
+        })
+
+      let privateKeys = [];
+      await Member.destroy({ where: { id: member.id } }, { transaction })
+      let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
+      if (wallet) {
+        await Wallet.destroy({ where: { member_id: member.id } }, { transaction })
+        for (let i = 0; i < wallet.length; i++) {
+          let keys = await WalletPrivateKey.findAll({
+            where: {
+              wallet_id: wallet[i].id
+            }
+          });
+          privateKeys.push(...keys);
+          await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id } }, { transaction })
         }
       }
       await transaction.commit();
+      if (privateKeys.length > 0) {
+        for (let key of privateKeys) {
+          Webhook.removeAddresses(key.platform, key.address);
+        }
+      }
       return res.ok(true);
-    } 
+    }
     catch (err) {
       logger.error('delete account fail:', err);
       if (transaction) await transaction.rollback();
@@ -174,7 +189,7 @@ async function _sendEmail(member, verifyToken) {
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data,config.emailTemplate.deactiveAccount );
+    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.deactiveAccount);
   } catch (err) {
     logger.error("send email unsubcribe account fail", err);
   }

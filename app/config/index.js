@@ -3,10 +3,11 @@ require('dotenv').config();
 const logFolder = process.env.LOG_FOLDER || './public/logs';
 
 const config = {
+  level: process.env.LOG_LEVEL,
   logger: {
     console: {
       enable: true,
-      level: 'debug',
+      level: process.env.LOG_LEVEL,
     },
     defaultLevel: 'debug',
     file: {
@@ -102,6 +103,11 @@ const config = {
     secret: process.env.STAKING_API_SECRET,
     jwksUrl: process.env.STAKING_API_JWK_URL,
     kid: process.env.STAKING_API_KID,
+  },
+  sdk: {
+    baseUrl: process.env.SDK_URL,
+    apiKey: process.env.SDK_API_KEY,
+    secretKey: process.env.SDK_SECRET_KEY
   }
 };
 

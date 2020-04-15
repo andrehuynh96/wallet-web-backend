@@ -77,7 +77,7 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/sign-in',
     urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
-    urlIcon: process.env.WEBSITE_URL + '/images/'
+    urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,

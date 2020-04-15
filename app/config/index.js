@@ -78,7 +78,7 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/sign-in',
     urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
-    urlIcon: process.env.WEBSITE_URL + '/images/'
+    urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,
@@ -103,6 +103,38 @@ const config = {
     secret: process.env.STAKING_API_SECRET,
     jwksUrl: process.env.STAKING_API_JWK_URL,
     kid: process.env.STAKING_API_KID,
+  },
+  explorer: {
+    ETH: {
+      platformName: "Ethereum",
+      txIdLink: process.env.ETH_TX_ID_LINK,
+      addressLink: process.env.ETH_ADDRESS_LINK
+    },
+    IRIS: {
+      platformName: "IRISnet",
+      txIdLink: process.env.IRIS_TX_ID_LINK,
+      addressLink: process.env.IRIS_ADDRESS_LINK
+    },
+    ATOM: {
+      platformName: "Cosmos",
+      txIdLink: process.env.ATOM_TX_ID_LINK,
+      addressLink: process.env.ATOM_ADDRESS_LINK
+    },
+    BTC: {
+      platformName: "Bitcoin",
+      txIdLink: process.env.BTC_TX_ID_LINK,
+      addressLink: process.env.BTC_ADDRESS_LINK
+    },
+    ONT: {
+      platformName: "Ontology",
+      txIdLink: process.env.ONT_TX_ID_LINK,
+      addressLink: process.env.ONT_ADDRESS_LINK
+    },
+    ADA: {
+      platformName: "Cardano",
+      txIdLink: process.env.ADA_TX_ID_LINK,
+      addressLink: process.env.ADA_ADDRESS_LINK
+    },
   },
   sdk: {
     baseUrl: process.env.SDK_URL,

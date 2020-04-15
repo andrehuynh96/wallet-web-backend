@@ -125,29 +125,16 @@ const sendEmail = {
     try {
       let subject = `${config.emailTemplate.partnerName} - Send coin/token alert`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-      let platform;
-      switch (content.platform) {
-        case "ETH":
-          platform = 'Ethereum';
-          break;
-        case "XTZ":
-          platform = 'Tezos';
-          break;
-        case "IRIS":
-          platform = 'IRISnet';
-          break;
-        case "ATOM":
-          platform = 'Cosmos';
-          break;
-      }
       let data = {
         banner: config.website.urlImages,
         imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
-        platform: platform,
+        platform: config.explorer[content.platform].platformName,
         tx_id: content.tx_id,
         address: content.address,
         amount: content.amount,
-        symbol: content.symbol
+        symbol: content.symbol,
+        txIdLink: config.explorer[content.platform].txIdLink + content.tx_id,
+        addressLink: config.explorer[content.platform].addressLink + content.address
       }
       data = Object.assign({}, data, config.email);
       await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.txSent);

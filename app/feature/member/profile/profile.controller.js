@@ -2,6 +2,7 @@ const logger = require('app/lib/logger');
 const Member = require('app/model/wallet').members;
 const Wallet = require('app/model/wallet').wallets;
 const WalletPrivateKey = require('app/model/wallet').wallet_priv_keys;
+const WalletToken = require('app/model/wallet').wallet_tokens;
 const memberMapper = require('app/feature/response-schema/member.response-schema');
 const mailer = require('app/lib/mailer');
 const OTP = require("app/model/wallet").otps;
@@ -149,10 +150,8 @@ module.exports = {
         })
 
       let privateKeys = [];
-      await Member.destroy({ where: { id: member.id } }, { transaction })
       let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
       if (wallet) {
-        await Wallet.destroy({ where: { member_id: member.id } }, { transaction })
         for (let i = 0; i < wallet.length; i++) {
           let keys = await WalletPrivateKey.findAll({
             where: {
@@ -160,9 +159,12 @@ module.exports = {
             }
           });
           privateKeys.push(...keys);
-          await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id } }, { transaction })
+          await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id } }, { transaction });
+          await WalletToken.destroy({ where: { wallet_id: wallet[i].id } }, { transaction })
         }
+        await Wallet.destroy({ where: { member_id: member.id } }, { transaction })
       }
+      await Member.destroy({ where: { id: member.id } }, { transaction })
       await transaction.commit();
       if (privateKeys.length > 0) {
         for (let key of privateKeys) {

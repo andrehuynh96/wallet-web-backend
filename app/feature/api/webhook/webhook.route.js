@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const controller = require("./webhook.controller");
 
-router.post("/webhook/callback/:platform", controller)
+router.all("/webhook/callback/:platform", controller)
 module.exports = router;
 
 

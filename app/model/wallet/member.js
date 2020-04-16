@@ -2,7 +2,7 @@ const MemberStatus = require("./value-object/member-status");
 const KycStatus = require('./value-object/kyc-status');
 
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("members", {
+  const Member = sequelize.define("members", {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -111,4 +111,11 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: true,
     });
+
+
+  Member.associate = (models) => {
+    Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" })
+  };
+
+  return Member;
 } 

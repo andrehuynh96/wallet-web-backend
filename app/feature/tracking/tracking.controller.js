@@ -51,6 +51,7 @@ module.exports = {
       delete req.body.plan_id;
       let response = await MemberTransactionHis.create({
         member_id: user.id,
+        to_address: req.body.address,
         ...req.body,
         ...additionalInfo
       });

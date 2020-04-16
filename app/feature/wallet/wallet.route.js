@@ -3,12 +3,15 @@ const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
 const { create, update } = require('./validator');
 const controller = require('./wallet.controller');
+const authority = require('app/middleware/authority.middleware');
+const Permission = require('app/model/wallet/value-object/permission-key');
 
 const router = express.Router();
 
 router.post(
   '/wallets',
   authenticate,
+  authority(Permission.GENERATE_WALLET), 
   validator(create),
   controller.create
 );
@@ -55,6 +58,7 @@ module.exports = router;
  *            example:
  *               {     
                     "encrypted_passphrase": "",
+                    "name": "thangdv",
                     "default_flg": true
                   }
  *     produces:
@@ -66,7 +70,8 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
+                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
+                        "name": "thangdv",     
                         "default_flg":true,
                         "created_at":""
                     }
@@ -107,11 +112,11 @@ module.exports = router;
  *         description: Data for wallet.
  *         schema:
  *            type: object
- *            required:
- *            - default_flg
  *            example:
  *               {     
-                    "default_flg": true
+ *                  "name": "wallet",
+                    "default_flg": true,
+                    "encrypted_passphrase": ""
                   }
  *     produces:
  *       - application/json
@@ -122,7 +127,8 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
+                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
+                        "name": "wallet",     
                         "default_flg":true,
                         "created_at":""
                     }
@@ -196,6 +202,9 @@ module.exports = router;
  *         name: wallet_id
  *         type: string
  *         required: true
+ *       - in: query
+ *         name: twofa_code
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:

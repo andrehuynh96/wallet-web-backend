@@ -51,9 +51,11 @@ const config = {
   mailSendAs: process.env.MAIL_SEND_AS || 'no-reply@infinito.io',
   emailTemplate: {
     partnerName: process.env.PARTNER_NAME,
-    verifyEmail: process.env.PARTNER_NAME + "/verify-email.ejs",
-    resetPassword: process.env.PARTNER_NAME + "/reset-password.ejs",
-    deactiveAccount: process.env.PARTNER_NAME + "/deactive-account.ejs"
+    verifyEmail: process.env.PARTNER_NAME.toLowerCase() + "/verify-email.ejs",
+    resetPassword: process.env.PARTNER_NAME.toLowerCase() + "/reset-password.ejs",
+    deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
+    txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
+    txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
   },
   disableRecaptcha: true,
   CDN: {
@@ -75,6 +77,7 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/sign-in',
     urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
+    urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,
@@ -86,6 +89,51 @@ const config = {
   lockUser: {
     maximumTriesLogin: process.env.MAXIMUM_TRIES_LOGIN,
     lockTime: process.env.LOCK_TIME
+  },
+  kyc: {
+    baseUrl: process.env.KYC_URL,
+    authUrl: process.env.KYC_WEBSITE_URL + `/${process.env.KYC_NAME}?token=`,
+    name: process.env.KYC_NAME,
+    type: process.env.KYC_TYPE
+  },
+  stakingApi: {
+    url: process.env.STAKING_API_URL,
+    key: process.env.STAKING_API_KEY,
+    secret: process.env.STAKING_API_SECRET,
+    jwksUrl: process.env.STAKING_API_JWK_URL,
+    kid: process.env.STAKING_API_KID,
+  },
+  explorer: {
+    ETH: {
+      platformName: "Ethereum",
+      txIdLink: process.env.ETH_TX_ID_LINK,
+      addressLink: process.env.ETH_ADDRESS_LINK
+    },
+    IRIS: {
+      platformName: "IRISnet",
+      txIdLink: process.env.IRIS_TX_ID_LINK,
+      addressLink: process.env.IRIS_ADDRESS_LINK
+    },
+    ATOM: {
+      platformName: "Cosmos",
+      txIdLink: process.env.ATOM_TX_ID_LINK,
+      addressLink: process.env.ATOM_ADDRESS_LINK
+    },
+    BTC: {
+      platformName: "Bitcoin",
+      txIdLink: process.env.BTC_TX_ID_LINK,
+      addressLink: process.env.BTC_ADDRESS_LINK
+    },
+    ONT: {
+      platformName: "Ontology",
+      txIdLink: process.env.ONT_TX_ID_LINK,
+      addressLink: process.env.ONT_ADDRESS_LINK
+    },
+    ADA: {
+      platformName: "Cardano",
+      txIdLink: process.env.ADA_TX_ID_LINK,
+      addressLink: process.env.ADA_ADDRESS_LINK
+    },
   }
 };
 

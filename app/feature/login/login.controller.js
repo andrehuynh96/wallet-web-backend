@@ -10,6 +10,8 @@ const memberMapper = require('app/feature/response-schema/member.response-schema
 const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
+const Kyc = require('app/lib/kyc');
+
 module.exports = async (req, res, next) => {
   try {
     let user = await Member.findOne({
@@ -23,11 +25,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (user.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
     if (user.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
+      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
     }
 
     const match = await bcrypt.compare(req.body.password, user.password_hash);
@@ -43,17 +45,14 @@ module.exports = async (req, res, next) => {
         })
         if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
           return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
-        else return res.unauthorized(res.__("LOGIN_FAIL", "LOGIN_FAIL"));
+        else return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
       }
       else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
     }
     else {
       let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
-      console.log(nextAcceptableLogin)
       nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
       let rightNow = new Date();
-      console.log(nextAcceptableLogin)
-      console.log(rightNow)
       if (nextAcceptableLogin >= rightNow && user.attempt_login_number >= config.lockUser.maximumTriesLogin) // don't forbid if lock time has passed
         return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
       await Member.update({
@@ -66,7 +65,13 @@ module.exports = async (req, res, next) => {
       })
     }
 
-    
+    /**create kyc account if not exist */
+    if (!user.kyc_id || user.kyc_id == '0'){
+      let id = await _createKyc(user.id, req.body.email.toLowerCase());
+      if (id) {
+        user.kyc_id = id;
+      }
+    }
     if (user.twofa_enable_flg) {
       let verifyToken = Buffer.from(uuidV4()).toString('base64');
       let today = new Date();
@@ -104,7 +109,8 @@ module.exports = async (req, res, next) => {
         action: ActionType.LOGIN,
         user_agent: req.headers['user-agent']
       });
-
+      let kyc = user.kyc_id && user.kyc_id != '0' ? await Kyc.getKycInfo({kycId: user.kyc_id}) : null;
+      user.kyc = kyc && kyc.data ? kyc.data.customer.kyc: null;
       req.session.authenticated = true;
       req.session.user = user;
       return res.ok({
@@ -118,3 +124,47 @@ module.exports = async (req, res, next) => {
     next(err);
   }
 };
+
+async function _createKyc(memberId, email) {
+  try {
+    /** create kyc */
+    let params = {body: {email: email, type: config.kyc.type}};
+    let kyc = await Kyc.createAccount(params);
+    let id = null;
+    if (kyc.data && kyc.data.id) {
+      id = kyc.data.id;
+      let submit = await _submitKyc(kyc.data.id, email);
+      if (submit.data && submit.data.id) {
+        _updateStatus(kyc.data.id, 'APPROVE');
+      }
+      await Member.update({
+        kyc_id: kyc.data.id
+      }, {
+          where: {
+            id: memberId,
+          },
+          returning: true
+        });
+    }
+    return id;
+  } catch (err) {
+    logger.error("create kyc account fail", err);
+  }
+}
+async function _submitKyc(kycId, email) {
+  try {
+    let params = {body: [{level: 1, content: {kyc1: {email: email}}}], kycId: kycId };
+    return await Kyc.submit(params);;
+  } catch (err) {
+    logger.error(err);
+    throw err;
+  }
+}
+async function _updateStatus(kycId, action) {
+  try {
+    let params = {body: {level: 1, expiry: 60000, comment: "update level 1"}, kycId: kycId, action: action};
+    await Kyc.updateStatus(params);
+  } catch(err) {
+    logger.error("update kyc account fail", err);
+  }
+} 

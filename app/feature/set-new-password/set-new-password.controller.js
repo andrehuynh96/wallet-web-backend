@@ -36,11 +36,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (member.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
+      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
     }
 
-    if (user.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+    if (member.member_sts == MemberStatus.LOCKED) {
+      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
     let passWord = bcrypt.hashSync(req.body.password, 10);

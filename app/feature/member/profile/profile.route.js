@@ -31,33 +31,58 @@ module.exports = router;
  *     tags:
  *       - Accounts
  *     description:
- *     parameters: 
- *     produces:
- *       - application/json
  *     responses:
  *       200:
  *         description: Ok
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
-                        "id": "ad84f5a2-497d-11ea-b77f-2e728ce88125",
-                        "email":"example@gmail.com",
-                        "twofa_enable_flg": true,
-                        "create_at":"",
-                        "member_sts":"ACTIVATED",
-                        "fullname":"Client",
-                        "phone": "0909038232",
-                        "date_of_birth": "22/09/2000",
-                        "address": "123 Rood B",
-                        "city": "HCM",
-                        "post_code": "700000",
-                        "country": "VN",
-                        "referral_code": "RDFCSD4C",
-                        "referrer_code": "WDRF3F1C",
-                        "infinito_id": ""
-                    }
-
+ *                 "data": {
+                        "id": "341e6439-b918-4b9a-89cb-c6325d01f79d",
+                        "email": "thangdv@blockchainlabs.asia",
+                        "phone": "",
+                        "twofa_enable_flg": false,
+                        "twofa_download_key_flg": true,
+                        "member_sts": "ACTIVATED",
+                        "referral_code": "45UPFGTW",
+                        "referrer_code": "",
+                        "latest_login_at": "2020-03-29T10:50:23.236Z",
+                        "kyc_id": "0",
+                        "kyc_level": 1,
+                        "kyc_status": "Approved",
+                        "kyc": {
+                          "1": {
+                            "updateAt": "2020-03-26T10:20:34.487Z",
+                            "status": "Approved",
+                            "content": {
+                              "kyc1": {
+                                "email": "sontt@blockchainlabs.asia"
+                              }
+                            },
+                            "expiryDate": "2023-03-27T04:28:49.681Z"
+                          },
+                          "2": {
+                            "updateAt": "2020-03-26T10:20:49.223Z",
+                            "status": "Insufficient",
+                            "content": {
+                              "kyc2": {
+                                "phoneNumber": "0901234567"
+                              }
+                            }
+                          },
+                          "3": {
+                            "updateAt": "2020-03-26T10:26:44.122Z",
+                            "status": "In Review",
+                            "content": {
+                              "kyc3": {
+                                "proofOfResidence": "1585218404031.jpeg",
+                                "passport": "1585218404016.jpeg",
+                                "selfieWithPassport": "1585218404028.jpeg"
+                              }
+                            }
+                          }
+                        }
+                      }
  *             }
  *       400:
  *         description: Error
@@ -77,7 +102,7 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- 
+
 /*********************************************************************/
 
 /**

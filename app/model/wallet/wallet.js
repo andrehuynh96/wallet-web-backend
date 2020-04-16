@@ -1,10 +1,15 @@
+const { Temporalize } = require('sequelize-temporalize');
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("wallets", {
+  const Wallet = sequelize.define("wallets", {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4(),
+    },
+    name: {
+      type: DataTypes.STRING(256),
+      allowNull: true
     },
     member_id: {
       type: DataTypes.UUID,
@@ -28,4 +33,14 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: true,
     });
+    Temporalize({
+      model: Wallet,
+      sequelize,
+      temporalizeOptions: {
+        blocking: false,
+        full: false,
+        modelSuffix: "_his"
+      }
+    });
+  return Wallet;
 } 

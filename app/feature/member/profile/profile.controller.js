@@ -10,6 +10,7 @@ const config = require("app/config");
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
 const speakeasy = require("speakeasy");
+const Kyc = require('app/lib/kyc');
 module.exports = {
   get: async (req, res, next) => {
     try {
@@ -22,7 +23,8 @@ module.exports = {
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-  
+      let kyc = result.kyc_id && result.kyc_id != '0' ? await Kyc.getKycInfo({kycId: result.kyc_id}) : null;
+      result.kyc = kyc && kyc.data ? kyc.data.customer.kyc: null;
       return res.ok(memberMapper(result));
     }
     catch (err) {

@@ -86,6 +86,7 @@
         color: #3498db;
         text-decoration: underline;
       }
+      
       /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
       ------------------------------------- */
@@ -103,11 +104,11 @@
     </style>
   </head>
   <body>
-    <table border="0" cellpadding="0" cellspacing="0" class="body">
+    <table border="0" cellpadding="0" cellspacing="0" class="body" align="center">
       <tr>
         <td class="container">
           <div class="content">
-            <table class="main">
+            <table class="main" style="text-align: center;" align="center">
               <tr>
                 <td class="head-logo">
                   <img src="<%=imageUrl%>/moon-logo.png" alt="">
@@ -127,9 +128,17 @@
                 </td>
               </tr>
               <tr>
-                <td>
-                  <a href="<%=link%>" style="  background: linear-gradient(209.27deg, #00E093 0%, #007CFF 100%); border-radius: 8px; -webkit-border-radius: 8px; -moz-border-radius: 8px; color: #fff; padding: 13px 18px; display: inline-block; margin: 18px 0 0 0;font-weight: 600;">Delete my account                  </a>
-                </td>
+                  <td>
+                    <div>
+                      <!--[if mso]>
+                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%=link%>" style="height:36px;v-text-anchor:middle;width:150px;" arcsize="5%" strokecolor="#00ABCD" fillcolor="#00ABCD">
+                          <w:anchorlock/>
+                          <center style="color:#ffffff;font-family: 'Montserrat', sans-serif;font-size:14px; font-weight: 600; ">Delete account</center>
+                        </v:roundrect>
+                      <![endif]-->
+                      <a href="<%=link%>" style="background: rgb(0,224,147); background: -moz-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: -webkit-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%);border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18px; margin: 18px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">Delete account</a>
+                    </div>                    
+                  </td>
               </tr>
             </table>
           </div>

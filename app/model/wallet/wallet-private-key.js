@@ -1,5 +1,6 @@
+const { Temporalize } = require('sequelize-temporalize');
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("wallet_priv_keys", {
+  const WalletPrivKey = sequelize.define("wallet_priv_keys", {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -35,4 +36,14 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: true,
     });
+  Temporalize({
+      model: WalletPrivKey,
+      sequelize,
+      temporalizeOptions: {
+        blocking: false,
+        full: false,
+        modelSuffix: "_his"
+      }
+    });
+  return WalletPrivKey;
 } 

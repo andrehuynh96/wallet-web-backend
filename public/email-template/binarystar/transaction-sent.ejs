@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Transaction sent</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;600&display=swap');
+    img {
+        border: none;
+        -ms-interpolation-mode: bicubic;
+        max-width: 100%;
+      }
+      a{
+        text-decoration: none !important;
+      }
+      body{
+        font-family: 'Raleway', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 20px;
+        margin: 0;
+        padding: 0;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+        background: #fff;
+        color: #676767;
+      }
+
+      table {
+        border-collapse: collapse;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+        width: 100%;
+      }
+      table tr{
+        clear: both;
+        padding-bottom: 26px;
+      }
+      table tr td{
+        padding-bottom: 26px;
+      }
+      table{
+        font-family: 'Raleway', sans-serif;
+        font-size: 14px;
+        vertical-align: top;
+        background-color: #fff;
+      }
+      table span{
+        color: #6D7278;
+        font-family: 'Raleway', sans-serif;
+        font-size: 14px;
+        letter-spacing: 0;
+        line-height: 16px;
+      }
+
+      /* -------------------------------------
+          BODY & CONTAINER
+      ------------------------------------- */
+
+      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+      .container {
+        display: block;
+        margin: 0 auto !important;
+        /* makes it centered */
+        max-width: 600px;
+        width: 600px;
+        background-color: #F1F1F1;
+        text-align: left;
+        
+      }
+
+      /* -------------------------------------
+          HEADER, FOOTER, MAIN
+      ------------------------------------- */
+      .main {
+        width: 100%;
+        min-height: 308px;
+      }
+      .main{
+        padding-left: 37px;
+        box-shadow: 1px 2px 2px 0 rgba(138,138,138,0.49);
+      }
+      .main span{
+        padding-left: 10px;
+      }
+      .content{
+        padding: 60px 70px;
+      }
+      p, ul, ol {
+        font-family: 'Raleway', sans-serif;
+        font-size: 14px;
+        font-weight: 300;
+        padding-left: 32px;
+        margin: 0;
+        line-height: 20px;
+      }
+      ul li,
+      ol li {
+        list-style-position: inside;
+        margin-left: 5px;
+      }
+      .head-logo{
+        text-align: left;
+        background-color: #F1F1F1;
+        padding: 0 37px 20px;
+        box-shadow: none !important;
+      }
+      a {
+        color: #3498db;
+        text-decoration: underline;
+      }
+      /* -------------------------------------
+          RESPONSIVE AND MOBILE FRIENDLY STYLES
+      ------------------------------------- */
+      @media only screen and (max-width: 620px) {
+        .container{
+          width: 100%;
+          max-width: 100%;
+          padding: 0;
+        }
+        .content{
+          padding: 30px;
+        }
+
+      }
+    </style>
+  </head>
+  <body>
+    <table border="0" cellpadding="0" cellspacing="0" class="body">
+      <tr>
+        <td class="container">
+          <div class="content">
+            <table>
+              <tr>
+                <td class="head-logo">
+                  <img src="<%=banner%>/Binary_star.svg" alt="">
+                </td>
+              </tr>
+            </table>
+            <table class="main">
+              <tr>
+                <td style="padding-top: 37px; padding-bottom: 47px;">                  
+                  <p style="color: #07668C; font-family: 'Raleway', sans-serif; font-size: 25px; font-weight: 600; letter-spacing: 0; line-height: 22px;">Transaction Sent</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="display: inline-block;">                  
+                  <p style="color: #07668C; font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 20px;">Platform: </p>
+                </td>
+                <td style="display: inline-block;">
+                  <span><img src="<%=imageUrl%>" style="vertical-align: middle; padding-right: 5px;"><%=platform%></span>
+                </td>
+              </tr>
+              <tr>
+                <td style="display: inline-block;">                  
+                  <p style="color: #07668C; font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 20px;">Transaction ID: </p>
+                </td>
+                <td style="display: inline-block;">
+                  <span style="color: #00ABCD"> <a href="<%=txIdLink%>"><%=tx_id%></a></span>
+                </td>
+              </tr>
+              <tr>
+                <td style="display: inline-block;">                  
+                  <p style="color: #07668C; font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 20px;">Sent to: </p>
+                </td>
+                <td style="display: inline-block;">
+                  <span style="color: #00ABCD"> <a href="<%=addressLink%>"><%=address%></a></span>
+                </td>
+              </tr>
+              <tr>
+                <td style="display: inline-block;">                  
+                  <p style="color: #07668C; font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 20px;">Amount sent: </p>
+                </td>
+                <td style="display: inline-block;">
+                  <span><strong style="font-weight: 600; color: #000;"><%=amount%></strong> <%=symbol%></span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+
+    </table>
+  </body>
+</html>

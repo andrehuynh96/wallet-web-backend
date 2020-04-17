@@ -18,7 +18,6 @@ module.exports = async (req, res, next) => {
       if (!data) {
         continue;
       }
-
       let member = await _getMemberFromAddress(req.params.platform.toUpperCase(), data.to_address);
       if (!member || member.length == 0) {
         continue;

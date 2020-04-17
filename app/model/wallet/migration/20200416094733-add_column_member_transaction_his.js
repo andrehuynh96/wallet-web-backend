@@ -12,10 +12,12 @@ module.exports = {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
         queryInterface.addColumn('member_transaction_his', 'from_address', {
-          type: Sequelize.DataTypes.STRING(128)
+          type: Sequelize.DataTypes.STRING(128),
+          allowNull: true
         }, { transaction: t }),
         queryInterface.addColumn('member_transaction_his', 'to_address', {
-          type: Sequelize.DataTypes.STRING(128)
+          type: Sequelize.DataTypes.STRING(128),
+          allowNull: true
         }, { transaction: t })
       ]);
     });

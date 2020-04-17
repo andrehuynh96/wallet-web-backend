@@ -38,11 +38,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     from_address: {
       type: DataTypes.STRING(128),
-      allowNull: false
+      allowNull: true
     },
     to_address: {
       type: DataTypes.STRING(128),
-      allowNull: false
+      allowNull: true
     },
     staking_platform_id: {
       type: DataTypes.UUID,

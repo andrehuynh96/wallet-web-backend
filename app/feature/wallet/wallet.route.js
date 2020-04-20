@@ -59,7 +59,8 @@ module.exports = router;
  *               {     
                     "encrypted_passphrase": "",
                     "name": "thangdv",
-                    "default_flg": true
+                    "default_flg": true,
+                    "backup_passphrase_flg": true
                   }
  *     produces:
  *       - application/json
@@ -73,6 +74,7 @@ module.exports = router;
                         "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
                         "name": "thangdv",     
                         "default_flg":true,
+                        "backup_passphrase_flg": true,
                         "created_at":""
                     }
  *             }
@@ -116,7 +118,8 @@ module.exports = router;
  *               {     
  *                  "name": "wallet",
                     "default_flg": true,
-                    "encrypted_passphrase": ""
+                    "encrypted_passphrase": "",
+                    "backup_passphrase_flg": true
                   }
  *     produces:
  *       - application/json
@@ -130,6 +133,7 @@ module.exports = router;
                         "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
                         "name": "wallet",     
                         "default_flg":true,
+                        "backup_passphrase_flg": true,
                         "created_at":""
                     }
  *             }

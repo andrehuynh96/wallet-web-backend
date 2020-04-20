@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(512),
       allowNull: true
     },
+    backup_passphrase_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

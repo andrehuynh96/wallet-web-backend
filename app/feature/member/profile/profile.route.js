@@ -1,6 +1,8 @@
 const express = require("express");
 const controller = require('./profile.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
+const validator = require("app/middleware/validator.middleware");
+const schema = require("./profile.request-schema");
 const router = express.Router();
 
 router.get(
@@ -11,11 +13,12 @@ router.get(
 router.post(
   '/me/unsubcribe',
   authenticate,
+  validator(schema),
   controller.unsubcribe
 );
 router.post(
   '/me/confirm-unsubcribe/',
-  //authenticate,
+  authenticate,
   controller.delete
 );
 module.exports = router;
@@ -127,7 +130,8 @@ module.exports = router;
  *                type: string
  *            example:
  *                  {
-                          "twofa_code":"123456"
+                          "twofa_code":"123456",
+                          "reseans":[]
  *                  }
  *     produces:
  *       - application/json

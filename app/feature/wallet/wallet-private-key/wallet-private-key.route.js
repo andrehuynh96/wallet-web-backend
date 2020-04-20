@@ -1,7 +1,7 @@
 const express = require('express');
 const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
-const { create} = require('./validator');
+const { create, update} = require('./validator');
 const controller = require('./wallet-private-key.controller');
 
 const router = express.Router();
@@ -13,13 +13,19 @@ router.post(
   controller.create
 );
 
+router.put(
+  '/wallets/:wallet_id/keys',
+  authenticate,
+  validator(update),
+  controller.update
+)
 router.delete(
   '/wallets/:wallet_id/keys/:id',
   authenticate,
   controller.delete
 );
 
-router.get(
+router.post(
   '/wallets/:wallet_id/keys/:id/private',
   authenticate,
   controller.getPrivKey
@@ -49,14 +55,12 @@ module.exports = router;
  *            type: array
  *            required:
  *            - items
- *            - password_hash
  *            example:
  *               { items: [    
-                    { "private_key_hash": "",
+                    { "encrypted_private_key": "",
                     "platform": "",
                     "address": "",
-                    "hd_path": ""}],
-                  password_hash: ""
+                    "hd_path": ""}]
                   }
  *     produces:
  *       - application/json
@@ -68,11 +72,66 @@ module.exports = router;
  *             {
  *                 "data":[{
                         "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
-                        "platform":false,
+                        "platform":"",
                         "address": "",
                         "hd_path": "",
                         "created_at":""
                     }]
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/wallets/{wallet_id}/keys:
+ *   put:
+ *     summary: update coins
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet private key.
+ *         schema:
+ *            type: array
+ *            required:
+ *            - items
+ *            example:
+ *               { items: [    
+                    { "id": "",
+                      "encrypted_private_key": "",
+                      "platform": ""
+                  }]
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
  *             }
  *       400:
  *         description: Error
@@ -109,17 +168,6 @@ module.exports = router;
  *         name: id
  *         type: string
  *         required: true
- *       - in: body
- *         name: data
- *         description: Data for wallet.
- *         schema:
- *            type: object
- *            required:
- *            - password_hash
- *            example:
- *               {   
- *                  "password_hash": ""
-                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -153,8 +201,8 @@ module.exports = router;
  /**
  * @swagger
  * /web/wallets/{wallet_id}/keys/{id}/private:
- *   get:
- *     summary: get private key hash
+ *   post:
+ *     summary: get encrypted private key
  *     tags:
  *       - Wallets
  *     description:
@@ -166,15 +214,18 @@ module.exports = router;
  *       - in: path
  *         name: id
  *         type: string
- *         required: true  
- *       - in: query
- *         name: password_hash
- *         type: string
  *         required: true
- *       - in: query
- *         name: twofa_code
- *         type: string
- *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet.
+ *         schema:
+ *            type: object
+ *            optional:
+ *            - twofa_code
+ *            example:
+ *               {     
+                    "twofa_code": "123456"
+                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -184,7 +235,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "private_key_hash": ""
+                        "encrypted_private_key": ""
                     }
  *             }
  *       400:

@@ -14,6 +14,10 @@ router.use(require('./get-wallet/get-wallet.route'));
 router.use(require('./wallet/wallet.route'));
 router.use(require('./wallet/wallet-private-key/wallet-private-key.route'));
 router.use(require('./currency/currency.route'));
+router.use(require('./kyc/kyc.route'));
+router.use(require('./tracking/tracking.route'));
+router.use(require('./wallet/wallet-token/wallet-token.route'));
+router.use(require('./get-contract-testnet/get-contract-testnet.route'));
 
 
 module.exports = router;

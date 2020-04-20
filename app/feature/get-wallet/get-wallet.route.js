@@ -43,6 +43,9 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
+ *       - name: default_flg
+ *         in: query
+ *         type: boolean
  *     produces:
  *       - application/json
  *     responses:
@@ -54,7 +57,9 @@ module.exports = router;
                "data": {
                  "items": [{
                       "id": 1,
+                      "name": "wallet",
                       "default_flg": false,
+                      "backup_passphrase_flg": true,
                       "created_at": "2020-01-07 20:22:04.728+09"
                     }],
                     "offset": 0,

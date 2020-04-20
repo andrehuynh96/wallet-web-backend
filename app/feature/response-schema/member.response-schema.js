@@ -9,7 +9,6 @@ const destObject = {
     //'[].twofa_secret': '[].twofa_secret',
     '[].twofa_enable_flg': '[].twofa_enable_flg',
     '[].twofa_download_key_flg': '[].twofa_download_key_flg',
-    '[].referral_code': '[].referral_code',
     '[].created_at': '[].created_at',
     '[].member_sts': '[].member_sts',
     '[].fullname': '[].fullname',
@@ -22,6 +21,11 @@ const destObject = {
     '[].referral_code': '[].referral_code',
     '[].referrer_code': '[].referrer_code',
     '[].infinito_id': '[].infinito_id',
+    '[].latest_login_at': '[].latest_login_at',
+    '[].kyc_id': '[].kyc_id',
+    '[].kyc_level': '[].kyc_level',
+    '[].kyc_status': '[].kyc_status',
+    '[].kyc': '[].kyc'
   },
   single: {
     id: 'id',
@@ -31,7 +35,6 @@ const destObject = {
    // twofa_secret: 'twofa_secret',
     twofa_enable_flg: 'twofa_enable_flg',
     twofa_download_key_flg: 'twofa_download_key_flg',
-    referral_code: 'referral_code',
     created_at: 'created_at',
     member_sts: 'member_sts',
     fullname: 'fullname',
@@ -44,6 +47,11 @@ const destObject = {
     referral_code: 'referral_code',
     referrer_code: 'referrer_code',
     infinito_id: 'infinito_id',
+    latest_login_at: 'latest_login_at',
+    kyc_id: 'kyc_id',
+    kyc_level: 'kyc_level',
+    kyc_status: 'kyc_status',
+    kyc: 'kyc'
   }
 };
 module.exports = srcObject => {

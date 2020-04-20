@@ -7,6 +7,7 @@ const OTP = require('app/model/wallet').otps;
 const OtpType = require('app/model/wallet/value-object/otp-type');
 const MemberActivityLog = require('app/model/wallet').member_activity_logs;
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
+const Kyc = require('app/lib/kyc');
 
 module.exports = async (req, res, next) => {
   try {
@@ -22,7 +23,7 @@ module.exports = async (req, res, next) => {
 
     let today = new Date();
     if (otp.expired_at < today || otp.expired || otp.used) {
-      return res.badRequest(res.__('TOKEN_EXPIRED'), 'TOKEN_EXPIRED');
+      return res.badRequest(res.__('TOKEN_EXPIRED'), 'TOKEN_EXPIRED', { fields: ['verify_token'] });
     }
 
     let user = await Member.findOne({
@@ -35,11 +36,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (user.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__('UNCONFIRMED_ACCOUNT', 'UNCONFIRMED_ACCOUNT'));
+      return res.forbidden(res.__('UNCONFIRMED_ACCOUNT'), 'UNCONFIRMED_ACCOUNT');
     }
 
     if (user.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__('ACCOUNT_LOCKED', 'ACCOUNT_LOCKED'));
+      return res.forbidden(res.__('ACCOUNT_LOCKED'), 'ACCOUNT_LOCKED');
     }
 
     var verified = speakeasy.totp.verify({
@@ -68,7 +69,8 @@ module.exports = async (req, res, next) => {
       action: ActionType.LOGIN,
       user_agent: req.headers['user-agent']
     });
-
+    let kyc = user.kyc_id && user.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: user.kyc_id }) : null;
+    user.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
     req.session.authenticated = true;
     req.session.user = user;
     return res.ok(memberMapper(user));
@@ -77,4 +79,4 @@ module.exports = async (req, res, next) => {
     logger.error('login fail: ', err);
     next(err);
   }
-};
+}; 

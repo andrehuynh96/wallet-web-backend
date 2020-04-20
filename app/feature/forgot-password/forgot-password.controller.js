@@ -20,11 +20,11 @@ module.exports = async (req, res, next) => {
     }
 
     if (member.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT", "UNCONFIRMED_ACCOUNT"));
+      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
     }
 
     if (member.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED", "ACCOUNT_LOCKED"));
+      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
@@ -61,16 +61,15 @@ module.exports = async (req, res, next) => {
 
 async function _sendEmail(member, verifyToken) {
   try {
-    let subject = 'Moonstake - Reset Password';
-    let from = `Moonstake <${config.mailSendAs}>`;
+    let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+    let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
       link: `${config.linkWebsiteVerify}?token=${verifyToken}`,
       hours: config.expiredVefiryToken
     }
-    console.log(config.website.urlImages)
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, "reset-password.ejs");
+    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
   } catch (err) {
     logger.error("send email forgot password fail", err);
   }

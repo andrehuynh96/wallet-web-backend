@@ -3,12 +3,15 @@ const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
 const { create, update } = require('./validator');
 const controller = require('./wallet.controller');
+const authority = require('app/middleware/authority.middleware');
+const Permission = require('app/model/wallet/value-object/permission-key');
 
 const router = express.Router();
 
 router.post(
   '/wallets',
   authenticate,
+  authority(Permission.GENERATE_WALLET), 
   validator(create),
   controller.create
 );
@@ -32,12 +35,6 @@ router.get(
   controller.getPassphrase
 );
 
-router.post(
-  '/wallets/:wallet_id/check',
-  authenticate,
-  controller.check
-);
-
 module.exports = router;
 
 /*********************************************************************/
@@ -57,13 +54,13 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - passphrase_hash
- *            - password_hash
+ *            - encrypted_passphrase
  *            example:
  *               {     
-                    "passphrase_hash": "",
-                    "password_hash": "",
-                    "default_flg": true
+                    "encrypted_passphrase": "",
+                    "name": "thangdv",
+                    "default_flg": true,
+                    "backup_passphrase_flg": true
                   }
  *     produces:
  *       - application/json
@@ -74,8 +71,10 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
+                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
+                        "name": "thangdv",     
                         "default_flg":true,
+                        "backup_passphrase_flg": true,
                         "created_at":""
                     }
  *             }
@@ -115,13 +114,12 @@ module.exports = router;
  *         description: Data for wallet.
  *         schema:
  *            type: object
- *            required:
- *            - password_hash
- *            - default_flg
  *            example:
- *               {   
- *                  "password_hash": "",  
-                    "default_flg": true
+ *               {     
+ *                  "name": "wallet",
+                    "default_flg": true,
+                    "encrypted_passphrase": "",
+                    "backup_passphrase_flg": true
                   }
  *     produces:
  *       - application/json
@@ -132,8 +130,10 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",     
+                        "id": "656b6f1c-1039-11ea-8d71-362b9e155667",
+                        "name": "wallet",     
                         "default_flg":true,
+                        "backup_passphrase_flg": true,
                         "created_at":""
                     }
  *             }
@@ -163,17 +163,6 @@ module.exports = router;
  *         name: id
  *         type: string
  *         required: true
- *       - in: body
- *         name: data
- *         description: Data for wallet.
- *         schema:
- *            type: object
- *            required:
- *            - password_hash
- *            example:
- *               {   
- *                  "password_hash": ""
-                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -208,7 +197,7 @@ module.exports = router;
  * @swagger
  * /web/wallets/{wallet_id}/passphrase:
  *   get:
- *     summary: get passphrase hash
+ *     summary: get encrypted passphrase
  *     tags:
  *       - Wallets
  *     description:
@@ -218,9 +207,8 @@ module.exports = router;
  *         type: string
  *         required: true
  *       - in: query
- *         name: password_hash
+ *         name: twofa_code
  *         type: string
- *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -230,7 +218,7 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data":{
-                        "passphrase_hash": ""
+                        "encrypted_passphrase": ""
                     }
  *             }
  *       400:
@@ -251,56 +239,3 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/wallets/{wallet_id}/check:
- *   post:
- *     summary: check password hash
- *     tags:
- *       - Wallets
- *     description:
- *     parameters:
- *       - in: path
- *         name: wallet_id
- *         type: string
- *         required: true
- *       - in: body
- *         name: data
- *         description: Data for wallet.
- *         schema:
- *            type: object
- *            required:
- *            - password_hash
- *            example:
- *               {   
- *                  "password_hash": ""
-                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data":{
-                        "check": true
-                    }
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */

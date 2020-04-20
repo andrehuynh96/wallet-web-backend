@@ -59,19 +59,47 @@ module.exports = async (req, res, next) => {
 const sendEmail = {
   [OtpType.REGISTER]: async (member, otp) => {
     try {
-      let subject = 'Listco Account - Register Account';
-      let from = `Listco <${config.mailSendAs}>`;
+      let subject = `${config.emailTemplate.partnerName} - Create Account`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
-        email: member.email,
-        fullname: member.email,
-        site: config.website.url,
-        link: `${config.website.urlActive}${otp.code}`,
+        imageUrl: config.website.urlImages,
+        link: `${config.website.urlActive}?token=${otp.code}`,
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, "register-member.ejs");
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
     } catch (err) {
-      logger.error("send email create account fail", err);
+      logger.error("resend email create account fail", err);
+    }
+  },
+  [OtpType.FORGOT_PASSWORD]: async (member, otp) => {
+    try {
+      let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let data = {
+        imageUrl: config.website.urlImages,
+        link: `${config.linkWebsiteVerify}?token=${otp.code}`,
+        hours: config.expiredVefiryToken
+      }
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
+    } catch (err) {
+      logger.error("resend email forgot password fail", err);
+    }
+  },
+  [OtpType.UNSUBCRIBE]: async (member, otp) => {
+    try {
+      let subject = ` ${config.emailTemplate.partnerName} - Delete Account`;
+      let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      let data = {
+        imageUrl: config.website.urlImages,
+        link: `${config.website.urlUnsubcribe}?token=${otp.code}`,
+        hours: config.expiredVefiryToken
+      }
+      data = Object.assign({}, data, config.email);
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
+    } catch (err) {
+      logger.error("resend email delete account fail", err);
     }
   }
 } 

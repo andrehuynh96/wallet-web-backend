@@ -9,9 +9,11 @@ module.exports = {
   getAll: async (req, res, next) => {
     try {
       logger.info('wallet::all');
-      const { query: { offset, limit}, user} = req;
+      const { query: { offset, limit, default_flg}, user} = req;
       const where = { deleted_flg: false, member_id: user.id };
-
+      if (default_flg != undefined) {
+        where.default_flg = default_flg;
+      }
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 

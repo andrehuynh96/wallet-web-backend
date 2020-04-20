@@ -37,7 +37,8 @@ wallet.create = async (req, res, next) => {
     let data = {
       member_id: req.user.id,
       name: req.body.name,
-      default_flg: req.body.default_flg ? req.body.default_flg : false,
+      default_flg: req.body.default_flg ? req.body.default_flg: false,
+      backup_passphrase_flg: req.body.backup_passphrase_flg ? req.body.backup_passphrase_flg: false,
       encrypted_passphrase: req.body.encrypted_passphrase
     }
     let wallet = await Wallet.create(data, { transaction });

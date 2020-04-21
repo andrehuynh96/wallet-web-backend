@@ -19,6 +19,7 @@ module.exports = {
           secret: member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
+          window: 10
         });
 
         if (!verified) {
@@ -42,6 +43,7 @@ module.exports = {
           secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
+          window: 10
         });
 
         if (!verified) {
@@ -85,6 +87,7 @@ module.exports = {
           secret: member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
+          window: 10
         });
         var verified = true;
 
@@ -110,6 +113,7 @@ module.exports = {
           secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
+          window: 10
         });
 
         if (!verified) {

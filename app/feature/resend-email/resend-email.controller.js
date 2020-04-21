@@ -46,7 +46,7 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
 
-    sendEmail[req.body.type](member, otp);
+    _sendEmail[req.body.type](member, otp);
     return res.ok(true);
 
   }
@@ -56,14 +56,14 @@ module.exports = async (req, res, next) => {
   }
 }
 
-const sendEmail = {
+const _sendEmail = {
   [OtpType.REGISTER]: async (member, otp) => {
     try {
       let subject = `${config.emailTemplate.partnerName} - Create Account`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.website.urlActive}?token=${otp.code}`,
+        link: `${config.website.urlActive}${otp.code}`,
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
@@ -78,7 +78,7 @@ const sendEmail = {
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.linkWebsiteVerify}?token=${otp.code}`,
+        link: `${config.linkWebsiteVerify}${otp.code}`,
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
@@ -93,7 +93,7 @@ const sendEmail = {
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.website.urlUnsubscribe}?token=${otp.code}`,
+        link: `${config.website.urlUnsubscribe}${otp.code}`,
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);

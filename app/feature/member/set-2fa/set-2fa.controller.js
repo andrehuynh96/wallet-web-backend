@@ -21,11 +21,23 @@ module.exports = {
           token: req.body.twofa_code,
         });
 
+        verified = speakeasy.totp.verify({
+          secret: member.twofa_secret,
+          encoding: 'base32',
+          token: req.body.twofa_code,
+        });
+
+        verified = speakeasy.totp.verify({
+          secret: member.twofa_secret,
+          encoding: 'base32',
+          token: req.body.twofa_code,
+        });
+
         if (!verified) {
           return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
         }
         let [_, response] = await Member.update({
-          twofa_secret: member.twofa_download_key_flg ? member.twofa_secret : null,
+          // twofa_secret: member.twofa_download_key_flg ? member.twofa_secret : null,
           twofa_enable_flg: false
         }, {
             where: {
@@ -81,11 +93,11 @@ module.exports = {
       }
 
       if (req.body.disable_twofa_download_key) {
-        // var verified = speakeasy.totp.verify({
-        //   secret: member.twofa_secret,
-        //   encoding: 'base32',
-        //   token: req.body.twofa_code,
-        // });
+        var verified = speakeasy.totp.verify({
+          secret: member.twofa_secret,
+          encoding: 'base32',
+          token: req.body.twofa_code,
+        });
         var verified = true;
 
         if (!verified) {
@@ -93,7 +105,7 @@ module.exports = {
         }
 
         let [_, response] = await Member.update({
-          twofa_secret: member.twofa_enable_flg ? member.twofa_secret : null,
+          //twofa_secret: member.twofa_enable_flg ? member.twofa_secret : null,
           twofa_download_key_flg: false
         }, {
             where: {

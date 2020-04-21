@@ -5,12 +5,14 @@ const destObject = {
     '[].id': '[].id',
     '[].name': '[].name',
     '[].default_flg': '[].default_flg',
+    '[].backup_passphrase_flg': '[].backup_passphrase_flg',
     '[].createdAt': '[].created_at'
   },
   single: {
     id: 'id',
     name: 'name',
     default_flg: 'default_flg',
+    backup_passphrase_flg: 'backup_passphrase_flg',
     createdAt: 'created_at'
   }
 };

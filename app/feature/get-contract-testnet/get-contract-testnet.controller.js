@@ -26,7 +26,7 @@ module.exports = {
         cmc_id: '2046',
         ref_id: 'infinito' 
       },
-       { address: '0xe6f34f4d95e72b9c0de87bfdb9edaa2aeb8f1721',
+      { address: '0xe6f34f4d95e72b9c0de87bfdb9edaa2aeb8f1721',
         name: 'Binary star',
         symbol: 'BNR',
         decimals: 18,
@@ -36,6 +36,17 @@ module.exports = {
         is_popular: false,
         cmc_id: '2047',
         ref_id: 'binarystar' 
+      },
+      { address: '0x0736d0c130b2ead47476cc262dbed90d7c4eeabd',
+        name: 'USDT',
+        symbol: 'USDT',
+        decimals: 6,
+        total_supply: '37200000',
+        offical_site: 'https://usdt.com/',
+        is_verified: true,
+        is_popular: false,
+        cmc_id: '2048',
+        ref_id: 'usdt' 
       }
     ]
 

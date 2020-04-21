@@ -76,7 +76,7 @@ const config = {
   website: {
     url: process.env.WEBSITE_URL,
     urlActive: process.env.WEBSITE_URL + '/sign-in',
-    urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
+    urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
   },

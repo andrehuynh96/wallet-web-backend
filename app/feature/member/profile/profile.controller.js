@@ -6,6 +6,7 @@ const WalletToken = require('app/model/wallet').wallet_tokens;
 const memberMapper = require('app/feature/response-schema/member.response-schema');
 const mailer = require('app/lib/mailer');
 const OTP = require("app/model/wallet").otps;
+const UnsubscribeReason = require("app/model/wallet").member_unsubscribe_reasons;
 const database = require('app/lib/database').db().wallet;
 const config = require("app/config");
 const OtpType = require("app/model/wallet/value-object/otp-type");
@@ -35,8 +36,10 @@ module.exports = {
       next(err);
     }
   },
-  unsubcribe: async (req, res, next) => {
+  unsubscribe: async (req, res, next) => {
+    let transaction
     try {
+      let reasons = req.body.reasons
       let member = await Member.findOne({
         where: {
           id: req.user.id
@@ -45,12 +48,21 @@ module.exports = {
       if (!member) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
+      
+      let verifyToken = Buffer.from(uuidV4()).toString('base64');
+      let today = new Date();
+      today.setHours(today.getHours() + config.expiredVefiryToken);
+      
+      transaction = await database.transaction();
+
+      reasons.map(ele => {
+        ele.member_id = member.id,
+        ele.token = verifyToken,
+        confirm_flg = true
+      })
       if (member.twofa_enable_flg) {
-        let verifyToken = Buffer.from(uuidV4()).toString('base64');
-        let today = new Date();
-        today.setHours(today.getHours() + config.expiredVefiryToken);
-        if (!req.body.twofa_code) {
-          return res.badRequest(res.__("NOT_TWOFA_CODE"), "NOT_TWOFA_CODE")
+        if(!req.body.twofa_code){
+          return res.badRequest(res.__("NOT_TWOFA_CODE"), "NOT_TWOFA_CODE", { fields: ["twofa_code"] });
         }
         var verified = speakeasy.totp.verify({
           secret: member.twofa_secret,
@@ -63,12 +75,12 @@ module.exports = {
         await OTP.update({
           expired: true
         }, {
-            where: {
-              member_id: member.id,
-              action_type: OtpType.UNSUBCRIBE
-            },
-            returning: true
-          })
+          where: {
+            member_id: member.id,
+            action_type: OtpType.UNSUBSCRIBE
+          },
+          returning: true
+        }, { transaction })
 
         await OTP.create({
           code: verifyToken,
@@ -76,24 +88,25 @@ module.exports = {
           expired: false,
           expired_at: today,
           member_id: member.id,
-          action_type: OtpType.UNSUBCRIBE
-        })
+          action_type: OtpType.UNSUBSCRIBE
+        }, { transaction })
+
+        let results = await UnsubscribeReason.bulkCreate(reasons,{transaction})
+        logger.info('create::member unsubscribe reasons::create not fa ',JSON.stringify(results))
+        await transaction.commit();
         _sendEmail(member, verifyToken);
         return res.ok(true);
       }
       else {
-        let verifyToken = Buffer.from(uuidV4()).toString('base64');
-        let today = new Date();
-        today.setHours(today.getHours() + config.expiredVefiryToken);
         await OTP.update({
           expired: true
         }, {
-            where: {
-              member_id: member.id,
-              action_type: OtpType.UNSUBCRIBE
-            },
-            returning: true
-          })
+          where: {
+            member_id: member.id,
+            action_type: OtpType.UNSUBSCRIBE
+          },
+          returning: true
+        }, { transaction })
 
         await OTP.create({
           code: verifyToken,
@@ -101,14 +114,19 @@ module.exports = {
           expired: false,
           expired_at: today,
           member_id: member.id,
-          action_type: OtpType.UNSUBCRIBE
-        })
+          action_type: OtpType.UNSUBSCRIBE
+        }, { transaction })
+
+        let results = await UnsubscribeReason.bulkCreate(reasons,{transaction})
+        logger.info('create::member unsubscribe reasons::create not 2fa',JSON.stringify(results))
+        await transaction.commit();
         _sendEmail(member, verifyToken);
         return res.ok(true);
       }
     }
     catch (err) {
-      logger.error('unsubcribe account fail:', err);
+      logger.error('unsubscribe account fail:', err);
+      if (transaction) await transaction.rollback();
       next(err);
     }
   },
@@ -142,12 +160,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.UNSUBCRIBE
-          },
-          returning: true
-        })
+        where: {
+          member_id: member.id,
+          action_type: OtpType.UNSUBSCRIBE
+        },
+        returning: true
+      })
 
       let privateKeys = [];
       let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
@@ -187,12 +205,12 @@ async function _sendEmail(member, verifyToken) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.website.urlUnsubcribe}?token=${verifyToken}`,
+      link: `${config.website.urlUnsubscribe}?token=${verifyToken}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
     await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.deactiveAccount);
   } catch (err) {
-    logger.error("send email unsubcribe account fail", err);
+    logger.error("send email unsubscribe account fail", err);
   }
 }

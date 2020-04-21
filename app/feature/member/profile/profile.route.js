@@ -11,13 +11,13 @@ router.get(
   controller.get
 );
 router.post(
-  '/me/unsubcribe',
+  '/me/unsubscribe',
   authenticate,
   validator(schema),
-  controller.unsubcribe
+  controller.unsubscribe
 );
 router.post(
-  '/me/confirm-unsubcribe/',
+  '/me/confirm-unsubscribe/',
   authenticate,
   controller.delete
 );
@@ -110,7 +110,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/me/unsubcribe:
+ * /web/me/unsubscribe:
  *   post:
  *     summary: get proflie
  *     tags:
@@ -130,9 +130,19 @@ module.exports = router;
  *                type: string
  *            example:
  *                  {
-                          "twofa_code":"123456",
-                          "reseans":[]
- *                  }
+                      "twofa_code":"613075",
+                      "reasons":
+                      [
+                        {
+                          "question":"question1",
+                          "answer":"answer1"
+                        },
+                        {
+                          "question":"question2",
+                          "answer":"answer2"
+                        }
+                      ]
+                    }
  *     produces:
  *       - application/json
  *     responses:
@@ -164,7 +174,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/me/confirm-unsubcribe:
+ * /web/me/confirm-unsubscribe:
  *   post:
  *     summary: get proflie
  *     tags:
@@ -174,7 +184,7 @@ module.exports = router;
  *       - name: data
  *         in: body
  *         required: true
- *         description: submit data JSON to unsubcribe account with verify_token.
+ *         description: submit data JSON to unsubscribe account with verify_token.
  *         schema:
  *            type: object
  *            required:

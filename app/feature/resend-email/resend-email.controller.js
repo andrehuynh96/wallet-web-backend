@@ -87,13 +87,13 @@ const sendEmail = {
       logger.error("resend email forgot password fail", err);
     }
   },
-  [OtpType.UNSUBCRIBE]: async (member, otp) => {
+  [OtpType.UNSUBSCRIBE]: async (member, otp) => {
     try {
       let subject = ` ${config.emailTemplate.partnerName} - Delete Account`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
-        link: `${config.website.urlUnsubcribe}?token=${otp.code}`,
+        link: `${config.website.urlUnsubscribe}?token=${otp.code}`,
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);

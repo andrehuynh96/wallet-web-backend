@@ -21,18 +21,6 @@ module.exports = {
           token: req.body.twofa_code,
         });
 
-        verified = speakeasy.totp.verify({
-          secret: member.twofa_secret,
-          encoding: 'base32',
-          token: req.body.twofa_code,
-        });
-
-        verified = speakeasy.totp.verify({
-          secret: member.twofa_secret,
-          encoding: 'base32',
-          token: req.body.twofa_code,
-        });
-
         if (!verified) {
           return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
         }

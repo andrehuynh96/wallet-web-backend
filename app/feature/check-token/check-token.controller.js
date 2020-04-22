@@ -1,5 +1,5 @@
 const logger = require('app/lib/logger');
-const User = require("app/model/wallet").member;
+const Member = require("app/model/wallet").members;
 const OTP = require("app/model/wallet").otps;
 
 module.exports = async (req, res, next) => {
@@ -21,13 +21,13 @@ module.exports = async (req, res, next) => {
     if (otp.used) {
       tokenStatus = "USED";
     }
-    let member = await member.findOne({
+    let member = await Member.findOne({
       where: {
         id: otp.member_id
       }
     });
-    if (!user) {
-      return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
+    if (!member) {
+      return res.badRequest(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND");
     }
 
     return res.ok({

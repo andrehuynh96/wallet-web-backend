@@ -36,7 +36,7 @@ module.exports = router;
  *            example:
  *               {
                         "email":"example@gmail.com",
-                        "type":"REGISTER|FORGOT_PASSWORD|UNSUBCRIBE"
+                        "type":"REGISTER|FORGOT_PASSWORD|UNSUBSCRIBE"
                   }
  *     produces:
  *       - application/json

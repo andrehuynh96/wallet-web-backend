@@ -56,6 +56,7 @@ module.exports = {
           secret: member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
+          window: 10
         });
         if (!verified) {
           return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT", { fields: ["twofa_code"] });

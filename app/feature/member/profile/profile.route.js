@@ -112,7 +112,7 @@ module.exports = router;
  * @swagger
  * /web/me/unsubscribe:
  *   post:
- *     summary: get proflie
+ *     summary: unsubscribe account
  *     tags:
  *       - Accounts
  *     description:
@@ -136,10 +136,6 @@ module.exports = router;
                         {
                           "question":"question1",
                           "answer":"answer1"
-                        },
-                        {
-                          "question":"question2",
-                          "answer":"answer2"
                         }
                       ]
                     }
@@ -176,7 +172,7 @@ module.exports = router;
  * @swagger
  * /web/me/confirm-unsubscribe:
  *   post:
- *     summary: get proflie
+ *     summary: confirm unsubscribe
  *     tags:
  *       - Accounts
  *     description:

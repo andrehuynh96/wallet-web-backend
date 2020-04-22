@@ -17,7 +17,7 @@ router.post(
   controller.unsubscribe
 );
 router.post(
-  '/me/confirm-unsubscribe/',
+  '/me/confirm-unsubscribe',
   authenticate,
   controller.delete
 );

@@ -55,11 +55,12 @@ module.exports = {
       today.setHours(today.getHours() + config.expiredVefiryToken);
 
       transaction = await database.transaction();
-
       reasons.map(ele => {
         ele.member_id = member.id,
-          ele.token = verifyToken,
-          confirm_flg = true
+        ele.token = verifyToken,
+        ele.confirm_flg = false,
+        ele.email = member.email,
+        ele.fullname = member.fullname
       })
       if (member.twofa_enable_flg) {
         if (!req.body.twofa_code) {
@@ -91,9 +92,14 @@ module.exports = {
           member_id: member.id,
           action_type: OtpType.UNSUBSCRIBE
         }, { transaction })
-
+        await UnsubscribeReason.destroy({
+          where: {
+            member_id: member.id,
+            confirm_flg: false
+          }
+        }, { transaction })
         let results = await UnsubscribeReason.bulkCreate(reasons, { transaction })
-        logger.info('create::member unsubscribe reasons::create not fa ', JSON.stringify(results))
+        logger.info('create::member unsubscribe reasons::create 2fa ', JSON.stringify(results))
         await transaction.commit();
         _sendEmail(member, verifyToken);
         return res.ok(true);
@@ -116,6 +122,13 @@ module.exports = {
           expired_at: today,
           member_id: member.id,
           action_type: OtpType.UNSUBSCRIBE
+        }, { transaction })
+
+        await UnsubscribeReason.destroy({
+          where: {
+            member_id: member.id,
+            confirm_flg: false
+          }
         }, { transaction })
 
         let results = await UnsubscribeReason.bulkCreate(reasons, { transaction })
@@ -141,6 +154,7 @@ module.exports = {
           code: req.body.verify_token,
         }
       })
+
       if (!otp) {
         return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID")
       }
@@ -155,7 +169,6 @@ module.exports = {
       if (!member) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-
       transaction = await database.transaction();
 
       await OTP.update({
@@ -193,23 +206,29 @@ module.exports = {
         await Wallet.destroy({ where: { member_id: member.id } }, { transaction })
       }
       await Member.destroy({ where: { id: member.id } }, { transaction })
-      
+
       let enableSendEmail = await Setting.findOne({
         where: {
           key: "SEND_EMAIL"
         }
       })
-      if(enableSendEmail.value==1){
+      if (enableSendEmail.value == 1) {
         let adminEmailAddress = await Setting.findOne({
           where: {
             key: "ADMIN_EMAIL_ADDRESS"
           }
         })
-        if(adminEmailAddress.value){
-          // await _sendAdminEmail(member)
+        if (adminEmailAddress.value) {
+          let resons = await UnsubscribeReason.findOne({
+            where: {
+              member_id: member.id
+            },
+            order: [['created_at', 'DESC']]
+          })
+          await _sendAdminEmail(member.email, adminEmailAddress.value, resons)
         }
       }
-      await transaction.commit();
+      await transaction.rollback();
       if (privateKeys.length > 0) {
         for (let key of privateKeys) {
           Webhook.removeAddresses(key.platform, key.address);
@@ -240,18 +259,18 @@ async function _sendEmail(member, verifyToken) {
     logger.error("send email unsubscribe account fail", err);
   }
 }
-async function _sendAdminEmail(member) {
+async function _sendAdminEmail(member, adminAddress, resons) {
   try {
-    console.log("Send email to admin pending")
     let subject = ` ${config.emailTemplate.partnerName} - Delete account`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      // link: `${config.website.urlUnsubscribe}${verifyToken}`,
-      // hours: config.expiredVefiryToken
+      email: member,
+      question: resons.question,
+      answer: resons.answer
     }
-    // data = Object.assign({}, data, config.email);
-    // await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.deactiveAccount);
+    data = Object.assign({}, data, config.email);
+    await mailer.sendWithTemplate(subject, from, adminAddress, data, config.emailTemplate.deactiveAccountToAdmin);
   } catch (err) {
     logger.error("send email unsubscribe account fail", err);
   }

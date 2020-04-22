@@ -57,6 +57,7 @@ const config = {
     deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
     txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
+    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
   },
   disableRecaptcha: true,
   CDN: {

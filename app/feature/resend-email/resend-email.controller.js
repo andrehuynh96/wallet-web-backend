@@ -97,7 +97,7 @@ const _sendEmail = {
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
+      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.deactiveAccount);
     } catch (err) {
       logger.error("resend email delete account fail", err);
     }

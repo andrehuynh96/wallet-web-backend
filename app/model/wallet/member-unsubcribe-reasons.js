@@ -25,6 +25,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    email:{
+      type: DataTypes.STRING(64),
+      allowNull: false
+    },
+    fullname:{
+      type: DataTypes.STRING(64),
+      allowNull: true
     }
   }, {
     underscored: true,

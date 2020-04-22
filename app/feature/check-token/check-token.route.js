@@ -1,12 +1,10 @@
-const express = require("express");
-const validator = require("app/middleware/validator.middleware");
-const schema = require("./resend-email.request-schema");
-const controller = require('./resend-email.controller');
+const express = require('express');
+const controller = require('./check-token.controller');
+
 const router = express.Router();
 
-router.post(
-  '/resend-email',
-  validator(schema),
+router.get(
+  '/check-token/:token',
   controller
 );
 
@@ -18,26 +16,17 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/resend-email:
- *   post:
- *     summary: Resend Otp
+ * /web/check-token/{token}:
+ *   get:
+ *     summary: check token
  *     tags:
- *       - Accounts
- *     description: Resend Otp
+ *       - Token
+ *     description:
  *     parameters:
- *       - in: body
- *         name: data
- *         description: Data for register.
- *         schema:
- *            type: object
- *            required:
- *            - email
- *            - type
- *            example:
- *               {
-                        "email":"example@gmail.com",
-                        "type":"REGISTER|FORGOT_PASSWORD|UNSUBSCRIBE"
-                  }
+ *       - in: path
+ *         name: token
+ *         type: string
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -46,7 +35,10 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":true
+ *                 "data":{
+                        "token_sts":"VALID|EXPIRED|USED",
+                        "user_sts":"ACTIVATED|UNACTIVATED|LOCKED"
+                    }
  *             }
  *       400:
  *         description: Error

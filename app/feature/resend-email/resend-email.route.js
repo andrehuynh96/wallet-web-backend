@@ -1,13 +1,19 @@
 const express = require("express");
 const validator = require("app/middleware/validator.middleware");
-const schema = require("./resend-email.request-schema");
+const { resendEmail, resendVerify } = require("./validator");
 const controller = require('./resend-email.controller');
 const router = express.Router();
 
 router.post(
   '/resend-email',
-  validator(schema),
-  controller
+  validator(resendEmail),
+  controller.resend
+);
+
+router.post(
+  '/resend-verify-email',
+  validator(resendVerify),
+  controller.resendVerify
 );
 
 module.exports = router;

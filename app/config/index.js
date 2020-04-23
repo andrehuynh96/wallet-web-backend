@@ -76,7 +76,7 @@ const config = {
   linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password?token=',
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
+    urlActive: process.env.WEBSITE_URL + '/email-verification?token=',
     urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/'

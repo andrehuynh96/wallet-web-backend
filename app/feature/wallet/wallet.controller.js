@@ -6,6 +6,7 @@ const database = require('app/lib/database').db().wallet;
 const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/wallet.response-schema');
 const speakeasy = require('speakeasy');
+const Webhook = require('app/lib/webhook');
 var wallet = {};
 
 wallet.create = async (req, res, next) => {
@@ -25,19 +26,22 @@ wallet.create = async (req, res, next) => {
     transaction = await database.transaction();
 
     if (req.body.default_flg) {
-      await Wallet.update({default_flg: false}, {where: {
-        member_id: req.user.id, 
-        default_flg: true
-      }, returning: true}, { transaction});
+      await Wallet.update({ default_flg: false }, {
+        where: {
+          member_id: req.user.id,
+          default_flg: true
+        }, returning: true
+      }, { transaction });
     }
 
     let data = {
       member_id: req.user.id,
       name: req.body.name,
       default_flg: req.body.default_flg ? req.body.default_flg: false,
+      backup_passphrase_flg: req.body.backup_passphrase_flg ? req.body.backup_passphrase_flg: false,
       encrypted_passphrase: req.body.encrypted_passphrase
     }
-    let wallet = await Wallet.create(data, { transaction});
+    let wallet = await Wallet.create(data, { transaction });
     await transaction.commit();
     return res.ok(mapper(wallet));
   } catch (ex) {
@@ -47,11 +51,11 @@ wallet.create = async (req, res, next) => {
   }
 }
 
-wallet.update =  async (req, res, next) => {
+wallet.update = async (req, res, next) => {
   let transaction;
   try {
     logger.info('wallet::update');
-    const { params: { id}, body } = req;
+    const { params: { id }, body } = req;
     let wallet = await Wallet.findOne({
       where: {
         id: id,
@@ -65,14 +69,18 @@ wallet.update =  async (req, res, next) => {
     transaction = await database.transaction();
 
     if (body.default_flg) {
-      await Wallet.update({default_flg: false}, {where: {
-        member_id: req.user.id, 
-        default_flg: true
-      }, returning: true}, { transaction});
+      await Wallet.update({ default_flg: false }, {
+        where: {
+          member_id: req.user.id,
+          default_flg: true
+        }, returning: true
+      }, { transaction });
     }
-    let [_, [result]] = await Wallet.update(body, { where: {
-      id: id
-    }, returning: true}, { transaction});
+    let [_, [result]] = await Wallet.update(body, {
+      where: {
+        id: id
+      }, returning: true
+    }, { transaction });
     await transaction.commit();
     return res.ok(mapper(result));
   } catch (ex) {
@@ -86,7 +94,7 @@ wallet.delete = async (req, res, next) => {
   let transaction;
   try {
     logger.info('wallet::delete');
-    const { params: { id }} = req;
+    const { params: { id } } = req;
     let wallet = await Wallet.findOne({
       where: {
         id: id,
@@ -99,10 +107,21 @@ wallet.delete = async (req, res, next) => {
 
     transaction = await database.transaction();
 
-    await WalletPrivateKey.update({deleted_flg: true}, {where: {wallet_id: id}}, {transaction});
-    await WalletToken.update({deleted_flg: true}, {where: {wallet_id: id}}, {transaction});
-    await Wallet.update({ deleted_flg: true}, { where: { id: id } }, { transaction});
+    let keys = await WalletPrivateKey.findAll({
+      where: {
+        wallet_id: id
+      }
+    });
+
+    await WalletPrivateKey.update({ deleted_flg: true }, { where: { wallet_id: id } }, { transaction });
+    await WalletToken.update({ deleted_flg: true }, { where: { wallet_id: id } }, { transaction });
+    await Wallet.update({ deleted_flg: true }, { where: { id: id } }, { transaction });
     await transaction.commit();
+
+    for (let key of keys) {
+      Webhook.removeAddresses(key.platform, key.address);
+    }
+
     return res.ok({ deleted: true });
   } catch (error) {
     logger.error(error);
@@ -113,7 +132,7 @@ wallet.delete = async (req, res, next) => {
 
 wallet.getPassphrase = async (req, res, next) => {
   try {
-    const { params: { wallet_id }, query: {twofa_code} } = req;
+    const { params: { wallet_id }, query: { twofa_code } } = req;
 
     let user = await Member.findOne({
       where: {
@@ -127,6 +146,7 @@ wallet.getPassphrase = async (req, res, next) => {
         secret: user.twofa_secret,
         encoding: 'base32',
         token: twofa_code,
+        window: 10
       });
       if (!verified) {
         return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });
@@ -142,8 +162,8 @@ wallet.getPassphrase = async (req, res, next) => {
     if (!wallet) {
       return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
     }
-    
-    return res.ok({encrypted_passphrase: wallet.encrypted_passphrase});
+
+    return res.ok({ encrypted_passphrase: wallet.encrypted_passphrase });
   } catch (ex) {
     logger.error(ex);
     next(ex);

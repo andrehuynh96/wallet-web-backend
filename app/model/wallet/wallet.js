@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(512),
       allowNull: true
     },
+    backup_passphrase_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -33,14 +38,20 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: true,
     });
-    Temporalize({
-      model: Wallet,
-      sequelize,
-      temporalizeOptions: {
-        blocking: false,
-        full: false,
-        modelSuffix: "_his"
-      }
-    });
+  Temporalize({
+    model: Wallet,
+    sequelize,
+    temporalizeOptions: {
+      blocking: false,
+      full: false,
+      modelSuffix: "_his"
+    }
+  });
+
+  Wallet.associate = (models) => {
+    Wallet.hasMany(models.wallet_tokens, { foreignKey: 'wallet_id', as: "tokens" });
+    Wallet.hasMany(models.wallet_priv_keys, { foreignKey: 'wallet_id', as: "privKeys" });
+    Wallet.belongsTo(models.members, { foreignKey: 'member_id', targetKey: 'id' });
+  };
   return Wallet;
 } 

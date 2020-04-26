@@ -3,10 +3,11 @@ require('dotenv').config();
 const logFolder = process.env.LOG_FOLDER || './public/logs';
 
 const config = {
+  level: process.env.LOG_LEVEL,
   logger: {
     console: {
       enable: true,
-      level: 'debug',
+      level: process.env.LOG_LEVEL,
     },
     defaultLevel: 'debug',
     file: {
@@ -56,6 +57,7 @@ const config = {
     deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
     txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
+    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
   },
   disableRecaptcha: true,
   CDN: {
@@ -71,11 +73,11 @@ const config = {
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
   enableSeed: process.env.ENABLE_SEED == "1",
-  linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password',
+  linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password?token=',
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/sign-in',
-    urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
+    urlActive: process.env.WEBSITE_URL + '/email-verification?token=',
+    urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
   },
@@ -134,6 +136,11 @@ const config = {
       txIdLink: process.env.ADA_TX_ID_LINK,
       addressLink: process.env.ADA_ADDRESS_LINK
     },
+  },
+  sdk: {
+    baseUrl: process.env.SDK_URL,
+    apiKey: process.env.SDK_API_KEY,
+    secretKey: process.env.SDK_SECRET_KEY
   }
 };
 

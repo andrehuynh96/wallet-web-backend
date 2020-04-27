@@ -75,8 +75,11 @@ module.exports = {
           id: otp.member_id
         }
       })
-      if(member.member_sts !== MemberStatus.UNACTIVATED){
-        return res.badRequest(res.__("MEMBER_IS_NOT_UNACTIVATED"), "MEMBER_IS_NOT_UNACTIVATED")
+      if(member.member_sts == MemberStatus.LOCKED){
+        return res.badRequest(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED")
+      }
+      if(member.member_sts == MemberStatus.ACTIVATED){
+        return res.badRequest(res.__("ACCOUNT_ACTIVATED"), "ACCOUNT_ACTIVATED")
       }
       let verifyToken = Buffer.from(uuidV4()).toString('base64');
       let today = new Date();

@@ -68,7 +68,7 @@ module.exports = {
         return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ['verify_token'] })
       }
       if(otp.action_type !== OtpType.REGISTER){
-        return res.badRequest(res.__("TOKEN_IS_NOT_REGISTER"), "TOKEN_IS_NOT_REGISTER", { fields: ['verify_token'] })
+        return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ['verify_token'] })
       }
       let member = await Member.findOne({
         where: {

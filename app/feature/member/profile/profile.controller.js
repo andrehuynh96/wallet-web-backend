@@ -57,10 +57,10 @@ module.exports = {
       transaction = await database.transaction();
       reasons.map(ele => {
         ele.member_id = member.id,
-        ele.token = verifyToken,
-        ele.confirm_flg = false,
-        ele.email = member.email,
-        ele.fullname = member.fullname
+          ele.token = verifyToken,
+          ele.confirm_flg = false,
+          ele.email = member.email,
+          ele.fullname = member.fullname
       })
       if (member.twofa_enable_flg) {
         if (!req.body.twofa_code) {
@@ -70,6 +70,7 @@ module.exports = {
           secret: member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
+          window: 10
         });
         if (!verified) {
           return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT", { fields: ["twofa_code"] });
@@ -77,12 +78,12 @@ module.exports = {
         await OTP.update({
           expired: true
         }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.UNSUBSCRIBE
-          },
-          returning: true
-        }, { transaction })
+            where: {
+              member_id: member.id,
+              action_type: OtpType.UNSUBSCRIBE
+            },
+            returning: true
+          }, { transaction })
 
         await OTP.create({
           code: verifyToken,
@@ -108,12 +109,12 @@ module.exports = {
         await OTP.update({
           expired: true
         }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.UNSUBSCRIBE
-          },
-          returning: true
-        }, { transaction })
+            where: {
+              member_id: member.id,
+              action_type: OtpType.UNSUBSCRIBE
+            },
+            returning: true
+          }, { transaction })
 
         await OTP.create({
           code: verifyToken,
@@ -174,20 +175,20 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-        where: {
-          member_id: member.id,
-          action_type: OtpType.UNSUBSCRIBE
-        },
-        returning: true
-      }, { transaction })
+          where: {
+            member_id: member.id,
+            action_type: OtpType.UNSUBSCRIBE
+          },
+          returning: true
+        }, { transaction })
       await UnsubscribeReason.update({
         confirm_flg: true
       }, {
-        where: {
-          member_id: member.id
-        },
-        returning: true
-      }, { transaction }
+          where: {
+            member_id: member.id
+          },
+          returning: true
+        }, { transaction }
       )
 
       let privateKeys = [];
@@ -209,16 +210,17 @@ module.exports = {
 
       let enableSendEmail = await Setting.findOne({
         where: {
-          key: "SEND_EMAIL"
+          key: "SEND_EMAIL_UNSUBCRIBE"
         }
       })
-      if (enableSendEmail.value == 1) {
+      if (enableSendEmail && enableSendEmail.value == 1) {
         let adminEmailAddress = await Setting.findOne({
           where: {
             key: "ADMIN_EMAIL_ADDRESS"
           }
         })
-        if (adminEmailAddress.value) {
+        if (adminEmailAddress && adminEmailAddress.value) {
+          //TODO: Will handle case many reason in future
           let resons = await UnsubscribeReason.findOne({
             where: {
               member_id: member.id

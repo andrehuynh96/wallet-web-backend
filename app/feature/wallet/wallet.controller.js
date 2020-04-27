@@ -146,6 +146,7 @@ wallet.getPassphrase = async (req, res, next) => {
         secret: user.twofa_secret,
         encoding: 'base32',
         token: twofa_code,
+        window: 10
       });
       if (!verified) {
         return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });

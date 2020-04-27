@@ -65,8 +65,8 @@ privkey.update = async (req, res, next) => {
       let data = {
         encrypted_private_key: item.encrypted_private_key
       }
-      await WalletPrivateKey.update(data, {where: {id: item.id, wallet_id: wallet_id, platform: item.platform}}, {transaction});
-    } 
+      await WalletPrivateKey.update(data, { where: { id: item.id, wallet_id: wallet_id, platform: item.platform } }, { transaction });
+    }
     await transaction.commit();
     return res.ok(true);
   } catch (ex) {
@@ -127,6 +127,7 @@ privkey.getPrivKey = async (req, res, next) => {
         secret: user.twofa_secret,
         encoding: 'base32',
         token: twofa_code,
+        window: 10
       });
       if (!verified) {
         return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });

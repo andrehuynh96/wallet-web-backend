@@ -59,7 +59,7 @@ const config = {
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
     deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
   },
-  disableRecaptcha: true,
+  disableRecaptcha: process.env.DISABLE_RECAPTCHA == "1",
   CDN: {
     url: process.env.CDN_URL,
     accessKey: process.env.CDN_ACCESS_KEY,
@@ -76,7 +76,7 @@ const config = {
   linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password?token=',
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/sign-in?token=',
+    urlActive: process.env.WEBSITE_URL + '/email-verification?token=',
     urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/'

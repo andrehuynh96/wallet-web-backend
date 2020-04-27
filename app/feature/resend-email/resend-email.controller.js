@@ -61,15 +61,14 @@ module.exports = {
     try {
       let otp = await OTP.findOne({
         where: {
-          code: req.body.verify_token
+          code: req.body.verify_token,
+          action_type: OtpType.REGISTER
         }
       })
       if (!otp) {
         return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ['verify_token'] })
       }
-      if(otp.action_type !== OtpType.REGISTER){
-        return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ['verify_token'] })
-      }
+     
       let member = await Member.findOne({
         where: {
           id: otp.member_id

@@ -47,15 +47,16 @@ module.exports = router;
  *            - symbol
  *            - action
  *            example:
- *               {
-                    "tx_id": "0xaa99f3f35274d58ad22584d04d935a540ceb14a627578be5adc0fb1b6978772b",
+ *                {
+                    "tx_id": "5a427cfb6ad59d49205bc6665c12fbc0e323b74662370da67ce5c1fbf04819d4",
                     "platform": "ETH",
                     "symbol": "IFNT",
                     "amount": 1.8987398240000002,
-                    "address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                    "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                    "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                     "action": "SEND",
                     "send_email_flg": true,
-                    "memo": "memo",
+                    "note": "test create tracking",
                     "plan_id":"6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6"
                 }
  *     produces:
@@ -66,21 +67,20 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": {
-                      "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                  "data": {
+                      "tx_id": "5a427cfb6ad59d49205bc6665c12fbc0e323b74662370da67ce5c1fbf04819d4",
                       "platform": "ETH",
                       "symbol": "IFNT",
-                      "amount": 10,
+                      "amount": 1.898739824,
                       "action": "SEND",
-                      "memo": "memo",
-                      "staking_platform_id": "96b7f440-1a3b-11ea-978f-2e728ce88125",
+                      "staking_platform_id": "160a08f8-3519-4573-90e4-08f832b518d2",
                       "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6",
-                      "duration": 69,
+                      "duration": 21,
                       "duration_type": "DAY",
-                      "reward_percentage": 10,
-                      "validator_fee": 20
+                      "reward_percentage": 3.5,
+                      "validator_fee": 1
                   }
- *             }
+              }
  *       400:
  *         description: Error
  *         schema:

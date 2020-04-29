@@ -169,7 +169,9 @@ async function _createKyc(memberId, email) {
 }
 async function _submitKyc(kycId, email) {
   try {
-    let params = { body: [{ level: 1, content: { kyc1: { email: email } } }], kycId: kycId };
+    let content = {};
+    content[`${config.kyc.schema}`] = { email: email };
+    let params = { body: [{ level: 1, content: content }], kycId: kycId };
     return await Kyc.submit(params);;
   } catch (err) {
     logger.error(err);
@@ -178,7 +180,7 @@ async function _submitKyc(kycId, email) {
 }
 async function _updateStatus(kycId, action) {
   try {
-    let params = { body: { level: 1, expiry: 60000, comment: "update level 1" }, kycId: kycId, action: action };
+    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
     await Kyc.updateStatus(params);
   } catch (err) {
     logger.error("update kyc account fail", err);

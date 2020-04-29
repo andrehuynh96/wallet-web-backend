@@ -61,22 +61,24 @@ module.exports = {
     try {
       let otp = await OTP.findOne({
         where: {
-          code: req.body.verify_token
+          code: req.body.verify_token,
+          action_type: OtpType.REGISTER
         }
       })
       if (!otp) {
         return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ['verify_token'] })
       }
-      if(otp.action_type !== OtpType.REGISTER){
-        return res.badRequest(res.__("TOKEN_IS_NOT_REGISTER"), "TOKEN_IS_NOT_REGISTER", { fields: ['verify_token'] })
-      }
+     
       let member = await Member.findOne({
         where: {
           id: otp.member_id
         }
       })
-      if(member.member_sts !== MemberStatus.UNACTIVATED){
-        return res.badRequest(res.__("MEMBER_IS_NOT_UNACTIVATED"), "MEMBER_IS_NOT_UNACTIVATED")
+      if(member.member_sts == MemberStatus.LOCKED){
+        return res.badRequest(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED")
+      }
+      if(member.member_sts == MemberStatus.ACTIVATED){
+        return res.badRequest(res.__("ACCOUNT_ACTIVATED"), "ACCOUNT_ACTIVATED")
       }
       let verifyToken = Buffer.from(uuidV4()).toString('base64');
       let today = new Date();

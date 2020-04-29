@@ -39,25 +39,26 @@ module.exports = {
         plan = await getStakingPlan(req.body.plan_id);
         if (plan) {
           additionalInfo.plan_id = req.body.plan_id;
+          additionalInfo.sender_note = req.body.note;
+          additionalInfo.receiver_note = req.body.note;
           additionalInfo.staking_platform_id = plan.staking_platform_id;
           additionalInfo.duration = plan.duration;
           additionalInfo.duration_type = plan.duration_type;
           additionalInfo.reward_percentage = plan.reward_percentage;
-          additionalInfo.validator_fee = plan.staking_platform_id;
+          additionalInfo.validator_fee = 0;
           let platform = await getStakingPlatform(plan.staking_platform_id);
           if (platform) additionalInfo.validator_fee = platform.erc20_validator_fee;
         }
       }
       delete req.body.plan_id;
+      delete req.body.note;
       let response = await MemberTransactionHis.create({
         member_id: user.id,
-        to_address: req.body.address,
         ...req.body,
         ...additionalInfo
       });
-
       if (req.body.send_email_flg) await sendEmail[req.body.action](user, req.body);
-
+      logger.info("create::tracking::create",JSON.stringify(response))
       return res.ok(memberTrackingHisMapper(response));
     } catch (err) {
       logger.error("alert send coin/token fail: ", err);
@@ -131,7 +132,7 @@ const sendEmail = {
         imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
         platform: config.explorer[content.platform].platformName,
         tx_id: content.tx_id,
-        address: content.address,
+        address: content.to_address,
         amount: content.amount,
         symbol: content.symbol,
         txIdLink: config.explorer[content.platform].txIdLink + content.tx_id,

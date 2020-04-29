@@ -32,15 +32,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
-    memo: {
-      type: DataTypes.STRING(256),
-      allowNull: true
-    },
     from_address: {
       type: DataTypes.STRING(128),
       allowNull: true
     },
     to_address: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    sender_note: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    receiver_note: {
       type: DataTypes.STRING(128),
       allowNull: true
     },

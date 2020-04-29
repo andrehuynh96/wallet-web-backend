@@ -8,6 +8,7 @@ const config = require("app/config");
 const mailer = require('app/lib/mailer');
 const db = require("app/model/wallet");
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const memberTrackingHisMapper = require('../response-schema/member-tracking-his.response-schema');
 
 module.exports = {

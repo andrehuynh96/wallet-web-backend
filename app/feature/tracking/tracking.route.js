@@ -1,14 +1,14 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require('app/middleware/validator.middleware');
-const schema = require('./tracking.request-schema');
+const {create, update} = require('./validator');
 const controller = require('./tracking.controller');
 const router = express.Router();
 
 router.post(
   '/tracking',
   authenticate,
-  validator(schema),
+  validator(create),
   controller.tracking
 );
 
@@ -22,6 +22,13 @@ router.get(
   '/tracking/:platform/:tx_id',
   authenticate,
   controller.getTxDetail
+);
+
+router.put(
+  '/tracking/:platform/:tx_id',
+  authenticate,
+  validator(update),
+  controller.update
 );
 
 module.exports = router;

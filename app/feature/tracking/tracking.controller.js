@@ -6,8 +6,8 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
 const config = require("app/config");
 const mailer = require('app/lib/mailer');
+const db = require("app/model/wallet");
 const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 const memberTrackingHisMapper = require('../response-schema/member-tracking-his.response-schema');
 
 module.exports = {
@@ -58,7 +58,7 @@ module.exports = {
         ...additionalInfo
       });
       if (req.body.send_email_flg) await sendEmail[req.body.action](user, req.body);
-      logger.info("create::tracking::create",JSON.stringify(response))
+      logger.info("create::tracking::create", JSON.stringify(response))
       return res.ok(memberTrackingHisMapper(response));
     } catch (err) {
       logger.error("alert send coin/token fail: ", err);
@@ -119,6 +119,47 @@ module.exports = {
       logger.error("get transaction detail fail: ", err);
       next(err);
     }
+  },
+  update: async (req, res, next) => {
+    try {
+      let address = req.params.tx_id
+      let platform = req.params.platform
+      let member_id = req.user.id
+      let result = await _getMemberFromAddress(address, platform, member_id)
+      let response
+      if (result.length > 0) {
+        response = await MemberTransactionHis.update({
+          sender_note: req.body.note
+        }, {
+          where: {
+            tx_id: address,
+            platform: platform,
+            member_id: member_id
+          },
+        });
+      }
+      else {
+        response = await MemberTransactionHis.update({
+          receiver_note: req.body.note
+        }, {
+          where: {
+            tx_id: address,
+            platform: platform,
+            member_id: member_id
+          },
+        });
+      }
+      console.log(result, response)
+      if (!response) {
+        return res.serverInternalError();
+      }
+      logger.info('update::member transaction history::update')
+      return res.ok(true)
+    }
+    catch (err) {
+      logger.error("update transaction detail fail: ", err);
+      next(err);
+    }
   }
 };
 
@@ -144,4 +185,13 @@ const sendEmail = {
       logger.error("send coin/token alert email fail", err);
     }
   }
+}
+async function _getMemberFromAddress(address, platform, member_id) {
+  var sql = `
+  SELECT w.*
+      FROM wallet_priv_keys as k INNER JOIN wallets as w on k.wallet_id = w.id
+      WHERE k.address ILIKE '${address}' AND k.platform='${platform}' AND w.member_id='${member_id}' 
+    `;
+  var rs = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
+  return rs;
 }

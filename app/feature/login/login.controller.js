@@ -80,7 +80,21 @@ module.exports = async (req, res, next) => {
           }
         })
     }
-
+    /** update domain name */
+    if (user.domain_name == null) {
+      let length = config.plutx.format.length - user.domain_id.toString().length;
+      let domainName = config.plutx.format.substr(1, length) + user.domain_id.toString() + `.${config.plutx.domain}`;
+      let [_, updatedUser] = await Member.update({
+        domain_name: domainName
+      }, {
+          where: {
+            id: user.id
+          },
+          returning: true
+        });
+      user = updatedUser;
+    }
+    /** */
     /**create kyc account if not exist */
     if (!user.kyc_id || user.kyc_id == '0') {
       let id = await _createKyc(user.id, req.body.email.toLowerCase());

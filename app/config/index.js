@@ -59,7 +59,7 @@ const config = {
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
     deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
   },
-  disableRecaptcha: true,
+  disableRecaptcha: process.env.DISABLE_RECAPTCHA == "1",
   CDN: {
     url: process.env.CDN_URL,
     accessKey: process.env.CDN_ACCESS_KEY,
@@ -142,6 +142,10 @@ const config = {
     baseUrl: process.env.SDK_URL,
     apiKey: process.env.SDK_API_KEY,
     secretKey: process.env.SDK_SECRET_KEY
+  },
+  plutx: {
+    domain: process.env.PLUTX_DOMAIN,
+    format: process.env.PLUTX_FORMAT
   }
 };
 

@@ -2,7 +2,7 @@ const express = require("express");
 const controller = require('./profile.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require("app/middleware/validator.middleware");
-const schema = require("./profile.request-schema");
+const {unsubscribe, confirmUnsubscribe} = require("./validator");
 const router = express.Router();
 
 router.get(
@@ -13,12 +13,12 @@ router.get(
 router.post(
   '/me/unsubscribe',
   authenticate,
-  validator(schema),
+  validator(unsubscribe),
   controller.unsubscribe
 );
 router.post(
   '/me/confirm-unsubscribe',
-  authenticate,
+  validator(confirmUnsubscribe),
   controller.delete
 );
 module.exports = router;

@@ -121,34 +121,49 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      let address = req.params.tx_id
+      let tx_id = req.params.tx_id
       let platform = req.params.platform
       let member_id = req.user.id
-      let result = await _getMemberFromAddress(address, platform, member_id)
+      let memberTransactionHis = await MemberTransactionHis.findOne({
+        where: {
+          tx_id: tx_id,
+          platform: platform,
+          member_id: member_id
+        }
+      })
+      if(!memberTransactionHis) {
+        return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
+      }
+      let fromAddress = await _getMemberFromAddress(memberTransactionHis.from_address, platform, member_id)
       let response
-      if (result.length > 0) {
+      if (fromAddress.length > 0) {
         response = await MemberTransactionHis.update({
           sender_note: req.body.note
         }, {
           where: {
-            tx_id: address,
+            tx_id: tx_id,
             platform: platform,
             member_id: member_id
           },
         });
       }
       else {
-        response = await MemberTransactionHis.update({
-          receiver_note: req.body.note
-        }, {
-          where: {
-            tx_id: address,
-            platform: platform,
-            member_id: member_id
-          },
-        });
+        let toAddress = await _getMemberFromAddress(memberTransactionHis.to_address, platform, member_id)
+        if(toAddress.length>0){
+          response = await MemberTransactionHis.update({
+            receiver_note: req.body.note
+          }, {
+            where: {
+              tx_id: tx_id,
+              platform: platform,
+              member_id: member_id
+            },
+          });
+        }
+        else {
+          return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
+        }
       }
-      console.log(result, response)
       if (!response) {
         return res.serverInternalError();
       }

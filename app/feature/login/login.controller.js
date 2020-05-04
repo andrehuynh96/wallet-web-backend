@@ -80,7 +80,21 @@ module.exports = async (req, res, next) => {
           }
         })
     }
-
+    /** update domain name */
+    if (user.domain_name == null) {
+      let length = config.plutx.format.length - user.domain_id.toString().length;
+      let domainName = config.plutx.format.substr(1, length) + user.domain_id.toString() + `.${config.plutx.domain}`;
+      let [_, updatedUser] = await Member.update({
+        domain_name: domainName
+      }, {
+          where: {
+            id: user.id
+          },
+          returning: true
+        });
+      user = updatedUser;
+    }
+    /** */
     /**create kyc account if not exist */
     if (!user.kyc_id || user.kyc_id == '0') {
       let id = await _createKyc(user.id, req.body.email.toLowerCase());
@@ -169,7 +183,9 @@ async function _createKyc(memberId, email) {
 }
 async function _submitKyc(kycId, email) {
   try {
-    let params = { body: [{ level: 1, content: { kyc1: { email: email } } }], kycId: kycId };
+    let content = {};
+    content[`${config.kyc.schema}`] = { email: email };
+    let params = { body: [{ level: 1, content: content }], kycId: kycId };
     return await Kyc.submit(params);;
   } catch (err) {
     logger.error(err);
@@ -178,7 +194,7 @@ async function _submitKyc(kycId, email) {
 }
 async function _updateStatus(kycId, action) {
   try {
-    let params = { body: { level: 1, expiry: 60000, comment: "update level 1" }, kycId: kycId, action: action };
+    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
     await Kyc.updateStatus(params);
   } catch (err) {
     logger.error("update kyc account fail", err);

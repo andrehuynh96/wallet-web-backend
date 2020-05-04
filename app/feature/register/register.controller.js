@@ -53,7 +53,18 @@ module.exports = async (req, res, next) => {
     if (!member) {
       return res.serverInternalError();
     }
-
+    /** update domain name */
+    let length = config.plutx.format.length - member.domain_id.toString().length;
+    let domainName = config.plutx.format.substr(1, length) + member.domain_id.toString() + `.${config.plutx.domain}`;
+    let [_, user] = await Member.update({
+      domain_name: domainName
+    }, {
+        where: {
+          id: member.id
+        },
+        returning: true
+      });
+    /** */
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
     let otpCode = otplib.authenticator.generate(Date.now().toString());
     let today = new Date();
@@ -84,7 +95,7 @@ module.exports = async (req, res, next) => {
     // if (id) {
     //   member.kyc_id = id;
     // }
-    let response = memberMapper(member);
+    let response = memberMapper(user);
     return res.ok(response);
   }
   catch (err) {
@@ -137,7 +148,9 @@ async function _createKyc(memberId, email) {
 }
 async function _submitKyc(kycId, email) {
   try {
-    let params = { body: [{ level: 1, content: { kyc1: { email: email } } }], kycId: kycId };
+    let content = {};
+    content[`${config.kyc.schema}`] = { email: email };
+    let params = { body: [{ level: 1, content: content }], kycId: kycId };
     return await Kyc.submit(params);;
   } catch (err) {
     logger.error(err);
@@ -146,7 +159,7 @@ async function _submitKyc(kycId, email) {
 }
 async function _updateStatus(kycId, action) {
   try {
-    let params = { body: { level: 1, expiry: 60000, comment: "update level 1" }, kycId: kycId, action: action };
+    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
     await Kyc.updateStatus(params);
   } catch (err) {
     logger.error("update kyc account fail", err);

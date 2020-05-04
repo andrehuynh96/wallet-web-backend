@@ -57,6 +57,7 @@ const config = {
     deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
     txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
+    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
   },
   disableRecaptcha: true,
   CDN: {
@@ -72,11 +73,11 @@ const config = {
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
   enableSeed: process.env.ENABLE_SEED == "1",
-  linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password',
+  linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password?token=',
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/sign-in',
-    urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
+    urlActive: process.env.WEBSITE_URL + '/email-verification?token=',
+    urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
   },

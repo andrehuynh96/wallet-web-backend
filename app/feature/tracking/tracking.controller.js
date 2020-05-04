@@ -81,7 +81,6 @@ module.exports = {
           }
         });
       }
-
       const {
         count: total,
         rows: items
@@ -90,8 +89,7 @@ module.exports = {
         offset,
         where: { [Op.or]: where },
         order: [["created_at", "DESC"]]
-      });
-
+      });   
       return res.ok({
         items: memberTrackingHisMapper(items),
         offset: offset,

@@ -1,19 +1,19 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require('app/middleware/validator.middleware');
-const schema = require('./tracking.request-schema');
+const {create, update} = require('./validator');
 const controller = require('./tracking.controller');
 const router = express.Router();
 
 router.post(
   '/tracking',
   authenticate,
-  validator(schema),
+  validator(create),
   controller.tracking
 );
 
 router.get(
-  '/tracking/history',
+  '/tracking/histories',
   authenticate,
   controller.getHis
 );
@@ -22,6 +22,13 @@ router.get(
   '/tracking/:platform/:tx_id',
   authenticate,
   controller.getTxDetail
+);
+
+router.put(
+  '/tracking/:platform/:tx_id',
+  authenticate,
+  validator(update),
+  controller.update
 );
 
 module.exports = router;
@@ -104,7 +111,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/tracking/history:
+ * /Web/tracking/histories:
  *   get:
  *     summary: get transaction history
  *     tags:
@@ -133,36 +140,48 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": {
+                  "data": {
                       "items": [
                           {
-                              "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "tx_id": "0xf4c130082d64b9bc8ea25240e5873067613ed778c8d76905cfd5999e8ab9b63a",
                               "platform": "ETH",
                               "symbol": "IFNT",
-                              "amount": 10,
+                              "amount": 1.898739824,
                               "action": "SEND",
-                              "memo": "memo"
+                              "staking_platform_id": "160a08f8-3519-4573-90e4-08f832b518d2",
+                              "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6",
+                              "duration": 21,
+                              "duration_type": "DAY",
+                              "sender_note": "test create tracking",
+                              "receiver_note": "test create tracking",
+                              "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "reward_percentage": 3.5,
+                              "validator_fee": 1
                           },
                           {
-                              "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "tx_id": "0xf4c130082d64b9bc8ea25240e5873067613ed778c8d76905cfd5999e8ab9b63a",
                               "platform": "ETH",
                               "symbol": "IFNT",
-                              "amount": 10,
+                              "amount": 1.898739824,
                               "action": "SEND",
-                              "memo": "memo",
-                              "staking_platform_id": "96b7f440-1a3b-11ea-978f-2e728ce88125",
-                              "plan_id": "950002a9-07b4-41c1-990c-9290e5b73596",
-                              "duration": 69,
+                              "staking_platform_id": "160a08f8-3519-4573-90e4-08f832b518d2",
+                              "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6",
+                              "duration": 21,
                               "duration_type": "DAY",
-                              "reward_percentage": 10,
-                              "validator_fee": 20
-                          },
+                              "sender_note": "test create tracking",
+                              "receiver_note": "test create tracking",
+                              "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "reward_percentage": 3.5,
+                              "validator_fee": 1
+                          }
                       ],
                       "offset": 0,
-                      "limit": 2,
-                      "total": 18
+                      "limit": 10,
+                      "total": 2
                   }
- *             }
+ *            }
  *       400:
  *         description: Error
  *         schema:
@@ -207,21 +226,24 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": {
-                      "tx_id": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                  "data": {
+                      "tx_id": "0xf4c130082d64b9bc8ea25240e5873067613ed778c8d76905cfd5999e8ab9b63a",
                       "platform": "ETH",
                       "symbol": "IFNT",
-                      "amount": 10,
+                      "amount": 1.898739824,
                       "action": "SEND",
-                      "memo": "memo",
-                      "staking_platform_id": "96b7f440-1a3b-11ea-978f-2e728ce88125",
-                      "plan_id": "950002a9-07b4-41c1-990c-9290e5b73596",
-                      "duration": 69,
+                      "staking_platform_id": "160a08f8-3519-4573-90e4-08f832b518d2",
+                      "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6",
+                      "duration": 21,
                       "duration_type": "DAY",
-                      "reward_percentage": 10,
-                      "validator_fee": 20
+                      "sender_note": "test create tracking",
+                      "receiver_note": "test create tracking",
+                      "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                      "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                      "reward_percentage": 3.5,
+                      "validator_fee": 1
                   }
- *             }
+ *            }
  *       400:
  *         description: Error
  *         schema:

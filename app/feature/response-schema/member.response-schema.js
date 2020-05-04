@@ -53,7 +53,7 @@ const destObject = {
     kyc_level: 'kyc_level',
     kyc_status: 'kyc_status',
     kyc: 'kyc',
-    domain_name: 'domain_id'
+    domain_name: 'domain_name'
   }
 };
 module.exports = srcObject => {

@@ -56,7 +56,7 @@ module.exports = async (req, res, next) => {
     /** update domain name */
     let length = config.plutx.format.length - member.domain_id.toString().length;
     let domainName = config.plutx.format.substr(1, length) + member.domain_id.toString() + `.${config.plutx.domain}`;
-    let [_, user] = await Member.update({
+    let [_, [user]] = await Member.update({
       domain_name: domainName
     }, {
         where: {

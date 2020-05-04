@@ -4,7 +4,7 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 
 router.get(
-  '/plutxs',
+  '/member-plutxs',
   authenticate,
   controller.getAll
 );
@@ -17,11 +17,11 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/wallets:
+ * /web/member-plutxs:
  *   get:
  *     summary: get member plutxs
  *     tags:
- *       - Plutxs
+ *       - Member Plutx
  *     description:
  *     parameters:
  *       - name: offset

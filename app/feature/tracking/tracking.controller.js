@@ -36,12 +36,12 @@ module.exports = {
       }
 
       let additionalInfo = {}
+      additionalInfo.sender_note = req.body.note;
+      additionalInfo.receiver_note = req.body.note;
       if (req.body.plan_id && req.body.plan_id.length > 0) {
         plan = await getStakingPlan(req.body.plan_id);
         if (plan) {
           additionalInfo.plan_id = req.body.plan_id;
-          additionalInfo.sender_note = req.body.note;
-          additionalInfo.receiver_note = req.body.note;
           additionalInfo.staking_platform_id = plan.staking_platform_id;
           additionalInfo.duration = plan.duration;
           additionalInfo.duration_type = plan.duration_type;
@@ -89,7 +89,7 @@ module.exports = {
         offset,
         where: { [Op.or]: where },
         order: [["created_at", "DESC"]]
-      });   
+      });
       return res.ok({
         items: memberTrackingHisMapper(items),
         offset: offset,
@@ -131,7 +131,7 @@ module.exports = {
           member_id: member_id
         }
       })
-      if(!memberTransactionHis) {
+      if (!memberTransactionHis) {
         return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
       }
       let fromAddress = await _getMemberFromAddress(memberTransactionHis.from_address, platform, member_id)
@@ -149,7 +149,7 @@ module.exports = {
       }
       else {
         let toAddress = await _getMemberFromAddress(memberTransactionHis.to_address, platform, member_id)
-        if(toAddress.length>0){
+        if (toAddress.length > 0) {
           response = await MemberTransactionHis.update({
             receiver_note: req.body.note
           }, {

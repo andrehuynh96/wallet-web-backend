@@ -1,7 +1,7 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require('app/middleware/validator.middleware');
-const {create, update} = require('./validator');
+const { create, update } = require('./validator');
 const controller = require('./tracking.controller');
 const router = express.Router();
 
@@ -261,3 +261,55 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+/**
+* @swagger
+* /web/tracking/{platform}/{tx_id}:
+*   put:
+*     summary: edit note
+*     tags:
+*       - Tracking
+*     description: edit note of member transaction on platform and tx_id
+*     parameters:
+*       - name: platform
+*         in: path
+*         type: string
+*       - name: tx_id
+*         in: path
+*         type: string
+*       - in: body
+*         name: data
+*         description: Data for wallet.
+*         schema:
+*            type: object
+*            example:
+*               {
+*                  "NOTE": "TEST SENDER NOTE"
+                 }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/

@@ -142,6 +142,10 @@ const config = {
     baseUrl: process.env.SDK_URL,
     apiKey: process.env.SDK_API_KEY,
     secretKey: process.env.SDK_SECRET_KEY
+  },
+  plutx: {
+    domain: process.env.PLUTX_DOMAIN,
+    format: process.env.PLUTX_FORMAT
   }
 };
 

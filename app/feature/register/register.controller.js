@@ -53,7 +53,18 @@ module.exports = async (req, res, next) => {
     if (!member) {
       return res.serverInternalError();
     }
-
+    /** update domain name */
+    let length = config.plutx.format.length - member.domain_id.toString().length;
+    let domainName = config.plutx.format.substr(1, length) + member.domain_id.toString() + `.${config.plutx.domain}`;
+    let [_, [user]] = await Member.update({
+      domain_name: domainName
+    }, {
+        where: {
+          id: member.id
+        },
+        returning: true
+      });
+    /** */
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
     let otpCode = otplib.authenticator.generate(Date.now().toString());
     let today = new Date();
@@ -84,7 +95,7 @@ module.exports = async (req, res, next) => {
     // if (id) {
     //   member.kyc_id = id;
     // }
-    let response = memberMapper(member);
+    let response = memberMapper(user);
     return res.ok(response);
   }
   catch (err) {

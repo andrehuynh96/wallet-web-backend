@@ -1,6 +1,6 @@
 
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("member_plutxs", {
+  const MemberPlutxs = sequelize.define("member_plutxs", {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     domain_name: {
       type: DataTypes.STRING(256),
       allowNull: false
-    },  
+    },
     member_id: {
       type: DataTypes.UUID,
       allowNull: false
@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     member_domain_name: {
       type: DataTypes.STRING(256),
       allowNull: false
-    }, 
+    },
     wallet_id: {
       type: DataTypes.UUID,
       allowNull: false
@@ -37,7 +37,12 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
+  MemberPlutxs.associate = (models) => {
+    // associations can be defined here
+    MemberPlutxs.hasMany(models.member_transaction_his, { foreignKey: 'domain_name' })
+  };
+  return MemberPlutxs;
 } 

@@ -137,6 +137,11 @@ const config = {
       txIdLink: process.env.ADA_TX_ID_LINK,
       addressLink: process.env.ADA_ADDRESS_LINK
     },
+    ONG: {
+      platformName: "Ontology Gas",
+      txIdLink: process.env.ONG_TX_ID_LINK,
+      addressLink: process.env.ONG_ADDRESS_LINK
+    }
   },
   sdk: {
     baseUrl: process.env.SDK_URL,

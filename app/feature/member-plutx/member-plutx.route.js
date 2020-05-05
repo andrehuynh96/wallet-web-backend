@@ -1,6 +1,8 @@
 const express = require('express');
 const controller = require('./member-plutx.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
+const validator = require('app/middleware/validator.middleware');
+const { update } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -9,6 +11,12 @@ router.get(
   controller.getAll
 );
 
+router.post(
+  '/member-plutxs',
+  authenticate,
+  validator(update),
+  controller.update
+)
 
 module.exports = router;
 
@@ -57,6 +65,56 @@ module.exports = router;
                     "limit": 10,
                     "total": 1
                   }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/member-plutxs:
+ *   post:
+ *     summary: update member plutxs
+ *     tags:
+ *       - Member Plutx
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data for update member plutxs.
+ *         schema:
+ *            type: array
+ *            required:
+ *            - items
+ *            example:
+ *               { items: [    
+                    { "platform": "",
+                    "wallet_id": "",
+                    "address": ""}]
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {  
+               "data": true
  *             }
  *       400:
  *         description: Error

@@ -145,7 +145,8 @@ const config = {
   },
   plutx: {
     domain: process.env.PLUTX_DOMAIN,
-    format: process.env.PLUTX_FORMAT
+    format: process.env.PLUTX_FORMAT,
+    url: process.env.PLUTX_URL
   }
 };
 

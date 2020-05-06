@@ -10,7 +10,7 @@ module.exports = {
   getAll: async (req, res, next) => {
     try {
       logger.info('member_plutxs::all');
-      const { query: { offset, limit}, user} = req;
+      const { query: { offset, limit }, user } = req;
       const where = { member_id: user.id, active_flg: true };
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
@@ -50,43 +50,43 @@ module.exports = {
         })
         if (plutx) {
           if (plutx.active_flg == false) {
-            await MemberPlutx.update({active_flg: false}, {
+            await MemberPlutx.update({ active_flg: false }, {
               where: {
                 member_id: req.user.id,
                 platform: e.platform,
                 active_flg: true
               }
-            }, {transaction});
-            await MemberPlutx.update({active_flg: true}, {
+            }, { transaction });
+            await MemberPlutx.update({ active_flg: true }, {
               where: {
                 id: plutx.id
               }
-            }, {transaction});
+            }, { transaction });
           }
         } else {
-          await MemberPlutx.update({active_flg: false}, {
+          await MemberPlutx.update({ active_flg: false }, {
             where: {
               member_id: req.user.id,
               platform: e.platform,
               active_flg: true
             }
-          }, {transaction});
+          }, { transaction });
           e.member_id = req.user.id;
           e.member_domain_name = member.domain_name;
           e.active_flg = true;
           e.domain_name = `${e.platform}.${e.wallet_id.replace(/-/g, '')}.${member.domain_id}`.toLowerCase();
-           /** create plutx domain */
+          /** create plutx domain */
           let params = { body: { domainName: e.domain_name, domainOwnerAddress: e.address } };
           let result = await Plutx.registerDomain(params);
           if (result.data) {
             newDatas.push(e);
           } else {
             logger.error(`can't register domain member plutxs --domainName::${e.domain_name} --domainOwnerAddress::${e.address}: `, result.error);
-          } 
+          }
         }
       }
-      if (newDatas.length > 0 ) {
-        await MemberPlutx.bulkCreate(newDatas, {transaction});
+      if (newDatas.length > 0) {
+        await MemberPlutx.bulkCreate(newDatas, { transaction });
       }
       await transaction.commit();
       return res.ok(true);
@@ -106,7 +106,7 @@ module.exports = {
         active_flg: true
       };
 
-      const response = await MemberPlutx.findAll({
+      const response = await MemberPlutx.findOne({
         where
       });
       return res.ok(mapper(response));

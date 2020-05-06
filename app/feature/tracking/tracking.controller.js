@@ -58,14 +58,16 @@ module.exports = {
       let domain = await MemberPlutx.findOne({
         attributes: ["domain_name", "member_domain_name", "address"],
         where: {
-          domain_name: req.body.to_address,
+          member_domain_name: req.body.to_address,
+          platform: req.body.platform,
           active_flg: true
         }
       })
       if (domain) {
-        Object.assign(req.body, domain.dataValues);
-        req.body.to_address = req.body.address;
-        delete req.body.address;
+        req.body.to_address = domain.address;
+        req.body.domain_name = domain.domain_name;
+        req.body.member_domain_name = domain.member_domain_name;
+
       }
 
       let response = await MemberTransactionHis.create({
@@ -108,7 +110,7 @@ module.exports = {
       });
       return res.ok({
         items: memberTrackingHisMapper(items.map(ele => {
-          if (!ele.member_plutx.active_flg) {
+          if (ele.member_plutx && !ele.member_plutx.active_flg) {
             ele.domain_name = null;
             ele.member_domain_name = null;
           }
@@ -135,7 +137,7 @@ module.exports = {
           }
         }
       });
-      if (!response.member_plutx.active_flg) {
+      if (response.member_plutx && !response.member_plutx.active_flg) {
         response.domain_name = null;
         response.member_domain_name = null;
       }
@@ -167,12 +169,12 @@ module.exports = {
         response = await MemberTransactionHis.update({
           sender_note: req.body.note
         }, {
-          where: {
-            tx_id: tx_id,
-            platform: platform,
-            member_id: member_id
-          },
-        });
+            where: {
+              tx_id: tx_id,
+              platform: platform,
+              member_id: member_id
+            },
+          });
       }
       else {
         let toAddress = await _getMemberFromAddress(memberTransactionHis.to_address, platform, member_id)
@@ -180,12 +182,12 @@ module.exports = {
           response = await MemberTransactionHis.update({
             receiver_note: req.body.note
           }, {
-            where: {
-              tx_id: tx_id,
-              platform: platform,
-              member_id: member_id
-            },
-          });
+              where: {
+                tx_id: tx_id,
+                platform: platform,
+                member_id: member_id
+              },
+            });
         }
         else {
           return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');

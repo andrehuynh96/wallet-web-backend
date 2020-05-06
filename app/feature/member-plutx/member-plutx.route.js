@@ -17,7 +17,7 @@ router.post(
   validator(update),
   controller.update
 )
-router.get(
+router.post(
   '/member-plutxs/:domain_name/:platform',
   authenticate,
   controller.checkId
@@ -107,7 +107,7 @@ module.exports = router;
  *            required:
  *            - items
  *            example:
- *               { items: [    
+ *               { items: [
                     { "platform": "",
                     "wallet_id": "",
                     "address": ""}]
@@ -119,7 +119,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": true
  *             }
  *       400:
@@ -145,7 +145,7 @@ module.exports = router;
 /**
  * @swagger
  * /web/member-plutxs/{domain_name}/{platform}:
- *   get:
+ *   post:
  *     summary: check plutx id
  *     tags:
  *       - Member Plutx
@@ -165,7 +165,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                  "data": [
+                  "data":
                       {
                           "id": "b74b4731-106e-4abf-a0e5-f6163e5dfa14",
                           "domain_name": "a",
@@ -178,7 +178,6 @@ module.exports = router;
                           "created_at": "2020-04-29T08:26:25.355Z",
                           "updated_at": "2020-04-29T08:26:25.355Z"
                       }
-                  ]
               }
  *       400:
  *         description: Error

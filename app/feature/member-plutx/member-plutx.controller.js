@@ -2,6 +2,7 @@ const logger = require('app/lib/logger');
 const config = require('app/config');
 const MemberPlutx = require('app/model/wallet').member_plutxs;
 const Member = require('app/model/wallet').members;
+const WalletPrivKey = require('app/model/wallet').wallet_priv_keys;
 const mapper = require('app/feature/response-schema/member-plutx.response-schema');
 const database = require('app/lib/database').db().wallet;
 const Plutx = require('app/lib/plutx');
@@ -40,16 +41,39 @@ module.exports = {
       });
       let newDatas = [];
       for (let e of req.body.items) {
-        let plutx = await MemberPlutx.findOne({
+        let priv = await WalletPrivKey.findOne({
           where: {
-            member_id: req.user.id,
-            platform: e.platform,
             wallet_id: e.wallet_id,
-            address: e.address
+            platform: e.platform,
+            deleted_flg: false
           }
-        })
-        if (plutx) {
-          if (plutx.active_flg == false) {
+        });
+        if (priv) {
+          e.address = priv.address;
+          let plutx = await MemberPlutx.findOne({
+            where: {
+              member_id: req.user.id,
+              platform: e.platform,
+              wallet_id: e.wallet_id,
+              address: e.address
+            }
+          })
+          if (plutx) {
+            if (plutx.active_flg == false) {
+              await MemberPlutx.update({active_flg: false}, {
+                where: {
+                  member_id: req.user.id,
+                  platform: e.platform,
+                  active_flg: true
+                }
+              }, {transaction});
+              await MemberPlutx.update({active_flg: true}, {
+                where: {
+                  id: plutx.id
+                }
+              }, {transaction});
+            }
+          } else {
             await MemberPlutx.update({active_flg: false}, {
               where: {
                 member_id: req.user.id,
@@ -57,34 +81,21 @@ module.exports = {
                 active_flg: true
               }
             }, {transaction});
-            await MemberPlutx.update({active_flg: true}, {
-              where: {
-                id: plutx.id
-              }
-            }, {transaction});
+            e.member_id = req.user.id;
+            e.member_domain_name = member.domain_name;
+            e.active_flg = true;
+            e.domain_name = `${e.platform}.${e.wallet_id.replace(/-/g, '')}.${member.domain_id}`.toLowerCase();
+             /** create plutx domain */
+            let params = { body: { domainName: e.domain_name, domainOwnerAddress: e.address } };
+            let result = await Plutx.registerDomain(params);
+            if (result.data) {
+              newDatas.push(e);
+            } else {
+              logger.error(`can't register domain member plutxs --domainName::${e.domain_name} --domainOwnerAddress::${e.address}: `, result.error);
+            } 
           }
-        } else {
-          await MemberPlutx.update({active_flg: false}, {
-            where: {
-              member_id: req.user.id,
-              platform: e.platform,
-              active_flg: true
-            }
-          }, {transaction});
-          e.member_id = req.user.id;
-          e.member_domain_name = member.domain_name;
-          e.active_flg = true;
-          e.domain_name = `${e.platform}.${e.wallet_id.replace(/-/g, '')}.${member.domain_id}`.toLowerCase();
-           /** create plutx domain */
-          let params = { body: { domainName: e.domain_name, domainOwnerAddress: e.address } };
-          let result = await Plutx.registerDomain(params);
-          if (result.data) {
-            newDatas.push(e);
-          } else {
-            logger.error(`can't register domain member plutxs --domainName::${e.domain_name} --domainOwnerAddress::${e.address}: `, result.error);
-          } 
         }
-      }
+      }  
       if (newDatas.length > 0 ) {
         await MemberPlutx.bulkCreate(newDatas, {transaction});
       }

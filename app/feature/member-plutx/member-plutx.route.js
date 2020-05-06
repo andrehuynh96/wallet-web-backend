@@ -109,8 +109,7 @@ module.exports = router;
  *            example:
  *               { items: [
                     { "platform": "",
-                    "wallet_id": "",
-                    "address": ""}]
+                    "wallet_id": ""}]
                   }
  *     produces:
  *       - application/json

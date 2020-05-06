@@ -47,6 +47,7 @@ module.exports = async (req, res, next) => {
       secret: user.twofa_secret,
       encoding: 'base32',
       token: req.body.twofa_code,
+      window: 10
     });
 
     if (!verified) {
@@ -69,8 +70,8 @@ module.exports = async (req, res, next) => {
       action: ActionType.LOGIN,
       user_agent: req.headers['user-agent']
     });
-    let kyc = await Kyc.getKycInfo({ kycId: user.kyc_id });
-    user.kyc = kyc.data ? kyc.data.customer.kyc : null;
+    let kyc = user.kyc_id && user.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: user.kyc_id }) : null;
+    user.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
     req.session.authenticated = true;
     req.session.user = user;
     return res.ok(memberMapper(user));
@@ -79,4 +80,4 @@ module.exports = async (req, res, next) => {
     logger.error('login fail: ', err);
     next(err);
   }
-};
+}; 

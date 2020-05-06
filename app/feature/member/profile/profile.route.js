@@ -1,6 +1,8 @@
 const express = require("express");
 const controller = require('./profile.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
+const validator = require("app/middleware/validator.middleware");
+const {unsubscribe, confirmUnsubscribe} = require("./validator");
 const router = express.Router();
 
 router.get(
@@ -9,13 +11,14 @@ router.get(
   controller.get
 );
 router.post(
-  '/me/unsubcribe',
+  '/me/unsubscribe',
   authenticate,
-  controller.unsubcribe
+  validator(unsubscribe),
+  controller.unsubscribe
 );
 router.post(
-  '/me/confirm-unsubcribe/',
-  //authenticate,
+  '/me/confirm-unsubscribe',
+  validator(confirmUnsubscribe),
   controller.delete
 );
 module.exports = router;
@@ -107,9 +110,9 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/me/unsubcribe:
+ * /web/me/unsubscribe:
  *   post:
- *     summary: get proflie
+ *     summary: unsubscribe account
  *     tags:
  *       - Accounts
  *     description:
@@ -127,8 +130,15 @@ module.exports = router;
  *                type: string
  *            example:
  *                  {
-                          "twofa_code":"123456"
- *                  }
+                      "twofa_code":"613075",
+                      "reasons":
+                      [
+                        {
+                          "question":"question1",
+                          "answer":"answer1"
+                        }
+                      ]
+                    }
  *     produces:
  *       - application/json
  *     responses:
@@ -160,9 +170,9 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/me/confirm-unsubcribe:
+ * /web/me/confirm-unsubscribe:
  *   post:
- *     summary: get proflie
+ *     summary: confirm unsubscribe
  *     tags:
  *       - Accounts
  *     description:
@@ -170,7 +180,7 @@ module.exports = router;
  *       - name: data
  *         in: body
  *         required: true
- *         description: submit data JSON to unsubcribe account with verify_token.
+ *         description: submit data JSON to unsubscribe account with verify_token.
  *         schema:
  *            type: object
  *            required:

@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
+
 module.exports = async (req, res, next) => {
   try {
     let user = await Member.findOne({
@@ -20,7 +21,7 @@ module.exports = async (req, res, next) => {
       }
     });
     if (!user) {
-      return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND", { fields: ["email"] });
+      return res.badRequest(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
     }
 
     if (user.member_sts == MemberStatus.LOCKED) {
@@ -38,15 +39,31 @@ module.exports = async (req, res, next) => {
           attempt_login_number: user.attempt_login_number + 1, // increase attempt_login_number in case wrong password
           latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
         }, {
-          where: {
-            id: user.id
-          }
-        })
+            where: {
+              id: user.id
+            }
+          })
         if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
           return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
         else return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
       }
-      else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+      else {
+        let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
+        nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
+        let rightNow = new Date();
+        if (nextAcceptableLogin < rightNow) { // don't forbid if lock time has passed
+          await Member.update({
+            attempt_login_number: 1,
+            latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
+          }, {
+              where: {
+                id: user.id
+              }
+            });
+          return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+        }
+        else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+      }
     }
     else {
       let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
@@ -55,17 +72,31 @@ module.exports = async (req, res, next) => {
       if (nextAcceptableLogin >= rightNow && user.attempt_login_number >= config.lockUser.maximumTriesLogin) // don't forbid if lock time has passed
         return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
       await Member.update({
-        attempt_login_number: 0, 
+        attempt_login_number: 0,
         latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
       }, {
-        where: {
-          id: user.id
-        }
-      })
+          where: {
+            id: user.id
+          }
+        })
     }
-
+    /** update domain name */
+    if (user.domain_name == null) {
+      let length = config.plutx.format.length - user.domain_id.toString().length;
+      let domainName = config.plutx.format.substr(1, length) + user.domain_id.toString() + `.${config.plutx.domain}`;
+      let [_, [updatedUser]] = await Member.update({
+        domain_name: domainName
+      }, {
+          where: {
+            id: user.id
+          },
+          returning: true
+        });
+      user = updatedUser;
+    }
+    /** */
     /**create kyc account if not exist */
-    if (!user.kyc_id || user.kyc_id == '0'){
+    if (!user.kyc_id || user.kyc_id == '0') {
       let id = await _createKyc(user.id, req.body.email.toLowerCase());
       if (id) {
         user.kyc_id = id;
@@ -108,8 +139,8 @@ module.exports = async (req, res, next) => {
         action: ActionType.LOGIN,
         user_agent: req.headers['user-agent']
       });
-      let kyc = await Kyc.getKycInfo({kycId: user.kyc_id});
-      user.kyc = kyc.data ? kyc.data.customer.kyc: null;
+      let kyc = user.kyc_id && user.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: user.kyc_id }) : null;
+      user.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
       req.session.authenticated = true;
       req.session.user = user;
       return res.ok({
@@ -127,7 +158,7 @@ module.exports = async (req, res, next) => {
 async function _createKyc(memberId, email) {
   try {
     /** create kyc */
-    let params = {body: {email: email, type: 'Staking'}};
+    let params = { body: { email: email, type: config.kyc.type } };
     let kyc = await Kyc.createAccount(params);
     let id = null;
     if (kyc.data && kyc.data.id) {
@@ -152,7 +183,9 @@ async function _createKyc(memberId, email) {
 }
 async function _submitKyc(kycId, email) {
   try {
-    let params = {body: [{level: 1, content: {kyc1: {email: email}}}], kycId: kycId };
+    let content = {};
+    content[`${config.kyc.schema}`] = { email: email };
+    let params = { body: [{ level: 1, content: content }], kycId: kycId };
     return await Kyc.submit(params);;
   } catch (err) {
     logger.error(err);
@@ -161,9 +194,9 @@ async function _submitKyc(kycId, email) {
 }
 async function _updateStatus(kycId, action) {
   try {
-    let params = {body: {level: 1, expiry: 60000, comment: "update level 1"}, kycId: kycId, action: action};
+    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
     await Kyc.updateStatus(params);
-  } catch(err) {
+  } catch (err) {
     logger.error("update kyc account fail", err);
   }
 } 

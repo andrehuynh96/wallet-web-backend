@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
-    stake_flg: {
+    default_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false

@@ -7,6 +7,8 @@ const OtpType = require('app/model/wallet/value-object/otp-type');
 const database = require('app/lib/database').db().wallet;
 const MemberActivityLog = require('app/model/wallet').member_activity_logs;
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
+const Kyc = require('app/lib/kyc');
+const config = require("app/config");
 
 module.exports = async (req, res, next) => {
   try {
@@ -63,6 +65,10 @@ module.exports = async (req, res, next) => {
 
     // req.session.authenticated = true;
     // req.session.user = member;
+    let id = await _createKyc(member.id, member.email);
+    if (id) {
+      member.kyc_id = id;
+    }
     return res.ok(memberMapper(member));
   }
   catch (err) {
@@ -70,3 +76,50 @@ module.exports = async (req, res, next) => {
     next(err);
   }
 }
+
+
+async function _createKyc(memberId, email) {
+  try {
+    /** create kyc */
+    let params = { body: { email: email, type: config.kyc.type } };
+    let kyc = await Kyc.createAccount(params);
+    let id = null;
+    if (kyc.data && kyc.data.id) {
+      id = kyc.data.id;
+      let submit = await _submitKyc(kyc.data.id, email);
+      if (submit.data && submit.data.id) {
+        _updateStatus(kyc.data.id, 'APPROVE');
+      }
+      await Member.update({
+        kyc_id: kyc.data.id
+      }, {
+          where: {
+            id: memberId,
+          },
+          returning: true
+        });
+    }
+    return id;
+  } catch (err) {
+    logger.error("create kyc account fail", err);
+  }
+}
+async function _submitKyc(kycId, email) {
+  try {
+    let content = {};
+    content[`${config.kyc.schema}`] = { email: email };
+    let params = { body: [{ level: 1, content: content }], kycId: kycId };
+    return await Kyc.submit(params);;
+  } catch (err) {
+    logger.error(err);
+    throw err;
+  }
+}
+async function _updateStatus(kycId, action) {
+  try {
+    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
+    await Kyc.updateStatus(params);
+  } catch (err) {
+    logger.error("update kyc account fail", err);
+  }
+} 

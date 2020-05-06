@@ -25,6 +25,13 @@ module.exports = async (req, res, next) => {
         id: otp.member_id
       }
     });
+    await OTP.update({
+      used: true
+    }, {
+        where: {
+          id: otp.id
+        },
+      });
     return res.ok(memberMapper(member));
   }
   catch (err) {

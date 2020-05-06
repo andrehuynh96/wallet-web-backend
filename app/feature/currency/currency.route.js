@@ -37,6 +37,9 @@ module.exports = router;
  *       - name: search
  *         in: query
  *         type: string
+ *       - name: default
+ *         in: query
+ *         type: boolean
  *     produces:
  *       - application/json
  *     responses:
@@ -60,7 +63,7 @@ module.exports = router;
                           "sc_token_address":"0x423822D571Bb697dDD993c04B507dD40E754cF05",
                           "created_at":"2020-01-13T06:47:41.248Z",
                           "updated_at":"2020-01-13T06:47:41.248Z",
-                          "stake_flg": false
+                          "default_flg": true
                         }
                       ],
                       "offset": 0,

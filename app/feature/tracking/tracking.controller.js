@@ -1,6 +1,7 @@
 const logger = require("app/lib/logger");
 const Member = require("app/model/wallet").members;
 const MemberTransactionHis = require("app/model/wallet").member_transaction_his;
+const MemberPlutx = require('app/model/wallet').member_plutxs;
 const { getStakingPlan, getStakingPlatform } = require("app/lib/staking-api");
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
@@ -53,6 +54,22 @@ module.exports = {
       }
       delete req.body.plan_id;
       delete req.body.note;
+
+      let domain = await MemberPlutx.findOne({
+        attributes: ["domain_name", "member_domain_name", "address"],
+        where: {
+          member_domain_name: req.body.to_address,
+          platform: req.body.platform,
+          active_flg: true
+        }
+      })
+      if (domain) {
+        req.body.to_address = domain.address;
+        req.body.domain_name = domain.domain_name;
+        req.body.member_domain_name = domain.member_domain_name;
+
+      }
+
       let response = await MemberTransactionHis.create({
         member_id: user.id,
         ...req.body,
@@ -87,11 +104,18 @@ module.exports = {
       } = await MemberTransactionHis.findAndCountAll({
         limit,
         offset,
+        include: [MemberPlutx],
         where: { [Op.or]: where },
         order: [["created_at", "DESC"]]
       });
       return res.ok({
-        items: memberTrackingHisMapper(items),
+        items: memberTrackingHisMapper(items.map(ele => {
+          if (ele.member_plutx && !ele.member_plutx.active_flg) {
+            ele.domain_name = null;
+            ele.member_domain_name = null;
+          }
+          return ele;
+        })),
         offset: offset,
         limit: limit,
         total: total
@@ -105,6 +129,7 @@ module.exports = {
   getTxDetail: async (req, res, next) => {
     try {
       let response = await MemberTransactionHis.findOne({
+        include: [MemberPlutx],
         where: {
           platform: req.params.platform,
           tx_id: {
@@ -112,6 +137,10 @@ module.exports = {
           }
         }
       });
+      if (response.member_plutx && !response.member_plutx.active_flg) {
+        response.domain_name = null;
+        response.member_domain_name = null;
+      }
       return res.ok(memberTrackingHisMapper(response));
     }
     catch (err) {
@@ -140,12 +169,12 @@ module.exports = {
         response = await MemberTransactionHis.update({
           sender_note: req.body.note
         }, {
-          where: {
-            tx_id: tx_id,
-            platform: platform,
-            member_id: member_id
-          },
-        });
+            where: {
+              tx_id: tx_id,
+              platform: platform,
+              member_id: member_id
+            },
+          });
       }
       else {
         let toAddress = await _getMemberFromAddress(memberTransactionHis.to_address, platform, member_id)
@@ -153,12 +182,12 @@ module.exports = {
           response = await MemberTransactionHis.update({
             receiver_note: req.body.note
           }, {
-            where: {
-              tx_id: tx_id,
-              platform: platform,
-              member_id: member_id
-            },
-          });
+              where: {
+                tx_id: tx_id,
+                platform: platform,
+                member_id: member_id
+              },
+            });
         }
         else {
           return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');

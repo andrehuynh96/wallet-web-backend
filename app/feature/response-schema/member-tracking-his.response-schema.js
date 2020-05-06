@@ -18,7 +18,9 @@ const destObject = {
         '[].sender_to': '[].sender_to',
         '[].receiver_to': '[].receiver_to',
         '[].reward_percentage': '[].reward_percentage',
-        '[].validator_fee': '[].validator_fee'
+        '[].validator_fee': '[].validator_fee',
+        '[].domain_name': '[].domain_name',
+        '[].member_domain_name': '[].member_domain_name'
     },
     single: {
         tx_id: 'tx_id',
@@ -37,7 +39,9 @@ const destObject = {
         sender_to: 'sender_to',
         receiver_to: 'receiver_to',
         reward_percentage: 'reward_percentage',
-        validator_fee: 'validator_fee'
+        validator_fee: 'validator_fee',
+        domain_name: 'domain_name',
+        member_domain_name: 'member_domain_name'
     }
 };
 module.exports = srcObject => {

@@ -17,6 +17,12 @@ router.post(
   validator(update),
   controller.update
 )
+router.post(
+  '/member-plutxs/:domain_name/:platform',
+  authenticate,
+  controller.checkId
+);
+
 
 module.exports = router;
 
@@ -47,9 +53,9 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
-               "data": {
-                 "items": [{
+ *             {
+                "data": {
+                  "items": [{
                       "id": 1,
                       "member_id": "",
                       "domain_name": "",
@@ -101,7 +107,7 @@ module.exports = router;
  *            required:
  *            - items
  *            example:
- *               { items: [    
+ *               { items: [
                     { "platform": "",
                     "wallet_id": ""}]
                   }
@@ -112,9 +118,66 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": true
  *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/member-plutxs/{domain_name}/{platform}:
+ *   post:
+ *     summary: check plutx id
+ *     tags:
+ *       - Member Plutx
+ *     description:
+ *     parameters:
+ *       - name: domain_name
+ *         in: path
+ *         type: string
+ *       - name: platform
+ *         in: path
+ *         type: string
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data":
+                      {
+                          "id": "b74b4731-106e-4abf-a0e5-f6163e5dfa14",
+                          "domain_name": "a",
+                          "member_id": "b74b4731-106e-4abf-a0e5-f6163e5dfa14",
+                          "wallet_id": "b74b4731-106e-4abf-a0e5-f6163e5dfa14",
+                          "member_domain_name": "a",
+                          "platform": "a",
+                          "address": "aaa",
+                          "active_flg": true,
+                          "created_at": "2020-04-29T08:26:25.355Z",
+                          "updated_at": "2020-04-29T08:26:25.355Z"
+                      }
+              }
  *       400:
  *         description: Error
  *         schema:

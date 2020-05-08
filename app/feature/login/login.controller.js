@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
+const Affiliate = require('app/lib/affiliate');
 
 module.exports = async (req, res, next) => {
   try {
@@ -88,6 +89,8 @@ module.exports = async (req, res, next) => {
         user.kyc_id = id;
       }
     }
+    user = await _tryCreateAffiliate(user);
+
     if (user.twofa_enable_flg) {
       let verifyToken = Buffer.from(uuidV4()).toString('base64');
       let today = new Date();
@@ -185,4 +188,29 @@ async function _updateStatus(kycId, action) {
   } catch (err) {
     logger.error("update kyc account fail", err);
   }
-} 
+}
+
+async function _tryCreateAffiliate(member) {
+  try {
+    if (member.referral_code) {
+      return member;
+    }
+    let result = await Affiliate.register({ email: member.email });
+    if (result.httpCode == 200) {
+      const [_, m] = await Member.update({
+        referral_code: result.data.data.code,
+        affiliate_id: result.data.data.client_affiliate_id
+      }, {
+          where: {
+            id: member.id
+          },
+          returning: true,
+          plain: true
+        })
+      return m;
+    }
+    return member;
+  } catch (err) {
+    logger.error("_create Affiliate fail", err);
+  }
+}

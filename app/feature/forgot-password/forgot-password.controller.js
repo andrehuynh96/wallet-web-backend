@@ -65,7 +65,7 @@ async function _sendEmail(member, verifyToken) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.linkWebsiteVerify}?token=${verifyToken}`,
+      link: `${config.linkWebsiteVerify}${verifyToken}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);

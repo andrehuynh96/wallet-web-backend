@@ -1,7 +1,7 @@
 const ActionType = require("./value-object/member-activity-action-type");
 const timeUnit = require("./value-object/time-unit");
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("member_transaction_his", {
+  const MemberTransactionHis = sequelize.define("member_transaction_his", {
     member_id: {
       type: DataTypes.UUID,
       allowNull: false
@@ -32,15 +32,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
-    memo: {
-      type: DataTypes.STRING(256),
-      allowNull: true
-    },
     from_address: {
       type: DataTypes.STRING(128),
       allowNull: true
     },
     to_address: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    sender_note: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    receiver_note: {
       type: DataTypes.STRING(128),
       allowNull: true
     },
@@ -67,9 +71,22 @@ module.exports = (sequelize, DataTypes) => {
     validator_fee: {
       type: DataTypes.INTEGER,
       allowNull: true
-    }
+    },
+    domain_name: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    member_domain_name: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
+  MemberTransactionHis.associate = (models) => {
+    // associations can be defined here
+    MemberTransactionHis.belongsTo(models.member_plutxs, { foreignKey: 'domain_name', targetKey: 'domain_name' })
+  };
+  return MemberTransactionHis;
 } 

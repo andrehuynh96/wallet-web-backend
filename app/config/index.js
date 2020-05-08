@@ -57,8 +57,9 @@ const config = {
     deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
     txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
+    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
   },
-  disableRecaptcha: true,
+  disableRecaptcha: process.env.DISABLE_RECAPTCHA == "1",
   CDN: {
     url: process.env.CDN_URL,
     accessKey: process.env.CDN_ACCESS_KEY,
@@ -72,11 +73,11 @@ const config = {
   enableDocsLink: process.env.ENABLE_DOCS_LINK == "1",
   expiredVefiryToken: process.env.EXPIRED_VERIFY_TOKEN ? parseInt(process.env.EXPIRED_VERIFY_TOKEN) : 2,
   enableSeed: process.env.ENABLE_SEED == "1",
-  linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password',
+  linkWebsiteVerify: process.env.WEBSITE_URL + '/reset-password/set-new-password?token=',
   website: {
     url: process.env.WEBSITE_URL,
-    urlActive: process.env.WEBSITE_URL + '/sign-in',
-    urlUnsubcribe: process.env.WEBSITE_URL + '/confirm-unsubcribe',
+    urlActive: process.env.WEBSITE_URL + '/email-verification?token=',
+    urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
   },
@@ -136,6 +137,11 @@ const config = {
       txIdLink: process.env.ADA_TX_ID_LINK,
       addressLink: process.env.ADA_ADDRESS_LINK
     },
+    ONG: {
+      platformName: "Ontology Gas",
+      txIdLink: process.env.ONG_TX_ID_LINK,
+      addressLink: process.env.ONG_ADDRESS_LINK
+    }
   },
   sdk: {
     baseUrl: process.env.SDK_URL,
@@ -147,6 +153,11 @@ const config = {
     apiKey: process.env.AFFILIATE_API_KEY,
     secretKey: process.env.AFFILIATE_SECRET_KEY,
     typeId: process.env.AFFILIATE_TYPE_ID,
+  },
+  plutx: {
+    domain: process.env.PLUTX_DOMAIN,
+    format: process.env.PLUTX_FORMAT,
+    url: process.env.PLUTX_URL
   }
 };
 

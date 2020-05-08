@@ -67,11 +67,11 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     referral_code: {
-      type: DataTypes.STRING(8),
+      type: DataTypes.STRING(12),
       allowNull: false
     },
     referrer_code: {
-      type: DataTypes.STRING(8),
+      type: DataTypes.STRING(12),
       allowNull: true
     },
     infinito_id: {
@@ -107,14 +107,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
-    domain_id: {
+     affiliate_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
+     domain_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true
     },
     domain_name: {
       type: DataTypes.STRING(256)
     }
-  }, {
+   }, {
       underscored: true,
       timestamps: true,
     });

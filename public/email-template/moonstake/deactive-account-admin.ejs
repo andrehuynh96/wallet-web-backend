@@ -4,7 +4,7 @@
 <head>
   <meta name="viewport" content="width=device-width" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title>Confirm</title>
+  <title>Deactivate Acount</title>
   <style>
     @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
 
@@ -36,7 +36,6 @@
       mso-table-lspace: 0pt;
       mso-table-rspace: 0pt;
       width: 100%;
-      text-align: center;
     }
 
     table tr {
@@ -99,9 +98,6 @@
       text-decoration: underline;
     }
 
-    /* .btn-cf a,.x_btn-cf a{
-        background: linear-gradient(209.27deg, #00E093 0%, #007CFF 100%);
-      } */
     /* -------------------------------------
           RESPONSIVE AND MOBILE FRIENDLY STYLES
       ------------------------------------- */
@@ -132,47 +128,21 @@
               </td>
             </tr>
             <tr>
-              <td style="padding-top: 108px">
-                <img src="<%=imageUrl%>/moon-confirm.png" alt="" style="margin-bottom: 20px">
+              <td style="padding-top: 87px">
+                <img src="<%=imageUrl%>/moon-deactive.png" alt="" style="margin-bottom: 20px">
+                <p style="font-size: 18px;font-weight: 500;margin-bottom: -3px; line-height: 30px; color: #182850">
+                  Unsubribed Account </p>
                 <p style="font-size: 18px;font-weight: 500;margin-bottom: 15px; line-height: 30px; color: #182850">
-                  Verify your email address
-                </p>
+                  Email: <%=email%></p>
               </td>
             </tr>
             <tr>
-              <td>
-                <p style="margin-bottom: 3px">Help us secure your Moonstake account.</p>
-                <p style="margin-bottom: 3px">Please click the button below within 24 hours</p>
-                <p style="margin-bottom: 3px;">to confirm your email address.</p>
+              <td style="margin-left: 50px;text-align: left;">
+                  <p style="margin-bottom: 3px;padding-left: 30px;">Questionare:</p>
+                  <p style="padding: 0 0 30px 50px;"><%=question%>: <%=answer%></p>
               </td>
-            </tr>
-            <tr>
-              <td>
-                <div>
-                  <!--[if mso]>
-                        <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="<%=link%>" style="height:36px;v-text-anchor:middle;width:150px;" arcsize="5%" strokecolor="#00ABCD" fillcolor="#00ABCD">
-                          <w:anchorlock/>
-                          <center style="color:#ffffff;font-family: 'Montserrat', sans-serif;font-size:14px; font-weight: 600; ">Verify email</center>
-                        </v:roundrect>
-                      <![endif]-->
-                  <a href="<%=link%>"
-                    style="background: rgb(0,224,147); background: -moz-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: -webkit-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%);border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18px; margin: 18px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">Verify
-                    email</a>
-                </div>
-                <p style="margin-top: 18px;">If you did not create an account using this address, 
-                </p>
-                <p>please ignore this
-                  email.
-                </p>
-              </td>
-
             </tr>
           </table>
         </div>
       </td>
     </tr>
-
-  </table>
-</body>
-
-</html>

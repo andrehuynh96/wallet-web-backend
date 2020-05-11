@@ -166,13 +166,12 @@ module.exports = {
       if (!memberTransactionHis) {
         return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
       }
-      //TODO: 
       let memberFromAddress = await _getMemberFromAddress(address, platform, member_id)
-      if(!memberFromAddress){
+      if (!memberFromAddress) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }
       let response
-      if(memberTransactionHis.from_address == address){
+      if (memberTransactionHis.from_address == address) {
         response = await MemberTransactionHis.update({
           sender_note: req.body.note
         }, {
@@ -183,7 +182,7 @@ module.exports = {
           },
         });
       }
-      if(memberTransactionHis.to_address == address){
+      if (memberTransactionHis.to_address == address) {
         response = await MemberTransactionHis.update({
           receiver_note: req.body.note
         }, {
@@ -194,7 +193,7 @@ module.exports = {
           },
         });
       }
-      console.log(memberTransactionHis,address)
+      console.log(memberTransactionHis, address)
       if (!response) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }

@@ -16,11 +16,22 @@ token.create = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
       return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
+    }
+    let priv = await WalletPrivateKey.findOne({
+      where: {
+        wallet_id: wallet_id,
+        platform: req.body.platform,
+        deleted_flg: false
+      }
+    });
+    if (!priv) {
+      return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND");
     }
     let data = {
       ...req.body,
@@ -42,7 +53,8 @@ token.delete = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -80,7 +92,8 @@ token.getPrivKey = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -88,7 +101,8 @@ token.getPrivKey = async (req, res, next) => {
     }
     let token = await WalletToken.findOne({
       where: {
-        id: id
+        id: id,
+        deleted_flg: false
       }
     })
     if (!token) {
@@ -97,7 +111,8 @@ token.getPrivKey = async (req, res, next) => {
     let priv = await WalletPrivateKey.findOne({
       where: {
         platform: token.platform,
-        wallet_id: token.wallet_id
+        wallet_id: token.wallet_id,
+        deleted_flg: false
       }
     })
     if (!priv) {

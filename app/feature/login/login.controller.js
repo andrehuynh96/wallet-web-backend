@@ -173,7 +173,9 @@ async function _createKyc(memberId, email) {
 }
 async function _submitKyc(kycId, email) {
   try {
-    let params = { body: [{ level: 1, content: { kyc1: { email: email } } }], kycId: kycId };
+    let content = {};
+    content[`${config.kyc.schema}`] = { email: email };
+    let params = { body: [{ level: 1, content: content }], kycId: kycId };
     return await Kyc.submit(params);;
   } catch (err) {
     logger.error(err);

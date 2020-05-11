@@ -95,7 +95,8 @@ const config = {
     baseUrl: process.env.KYC_URL,
     authUrl: process.env.KYC_WEBSITE_URL + `/${process.env.KYC_NAME}?token=`,
     name: process.env.KYC_NAME,
-    type: process.env.KYC_TYPE
+    type: process.env.KYC_TYPE,
+    schema: process.env.KYC_SCHEMA
   },
   stakingApi: {
     url: process.env.STAKING_API_URL,

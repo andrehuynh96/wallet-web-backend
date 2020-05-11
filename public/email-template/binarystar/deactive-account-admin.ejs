@@ -1,0 +1,171 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Deactivate Account</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap');
+
+    img {
+      border: none;
+      -ms-interpolation-mode: bicubic;
+      max-width: 100%;
+    }
+
+    a {
+      text-decoration: none !important;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+      line-height: 20px;
+      margin: 0;
+
+      padding: 0;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+      background: #F1F1F1;
+      color: #676767;
+    }
+
+    table {
+      border-collapse: collapse;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+      width: 100%;
+    }
+
+    table tr {
+      clear: both;
+    }
+
+    table td {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      vertical-align: top;
+      background-color: #fff;
+    }
+
+    /* -------------------------------------
+          BODY & CONTAINER
+      ------------------------------------- */
+
+    /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+    .container {
+      display: block;
+      margin: 0 auto !important;
+      /* makes it centered */
+      max-width: 600px;
+      width: 600px;
+      background-color: #F1F1F1;
+      text-align: left;
+
+    }
+
+    /* -------------------------------------
+          HEADER, FOOTER, MAIN
+      ------------------------------------- */
+    .main {
+      width: 100%;
+    }
+
+    .main td {
+      padding-left: 37px;
+      box-shadow: 1px 2px 2px 0 rgba(138, 138, 138, 0.49);
+
+    }
+
+    .content {
+      padding: 60px 70px;
+    }
+
+    p,
+    ul,
+    ol {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      padding-left: 0;
+      margin: 0;
+      line-height: 20px;
+    }
+
+    ul li,
+    ol li {
+      list-style-position: inside;
+      margin-left: 5px;
+    }
+
+    .head-logo {
+      text-align: left;
+      background-color: #F1F1F1;
+      padding: 0 37px 20px;
+      box-shadow: none !important;
+    }
+
+    a {
+      color: #3498db;
+      text-decoration: underline;
+    }
+
+    /* -------------------------------------
+          RESPONSIVE AND MOBILE FRIENDLY STYLES
+      ------------------------------------- */
+    @media only screen and (max-width: 620px) {
+      .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <table border="0" cellpadding="0" cellspacing="0" class="body">
+    <tr>
+      <td class="container">
+        <div class="content">
+          <table class="main">
+            <tr>
+              <td class="head-logo">
+                <img src="<%=imageUrl%>/Binary_star.png" alt="">
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top: 37px">
+                <img src="<%=imageUrl%>/Binary_star_Deactivate_Account.png" alt="" style="margin-bottom: 10px">
+                <p style="font-size: 18px;font-weight: 600;margin-bottom: -2px; color: #07668C">Unsubscribe Account</p>
+                <p style="font-size: 18px;font-weight: 600;margin-bottom: 10px; line-height: 30px; color: #07668C">
+                  Email: <%=email%></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-left: 50px;text-align: left;">
+                <p style="margin-bottom: 3px;padding-left: 30px;">Questionare:</p>
+                <p style="padding: 0 0 30px 50px;"><%=question%>: <%=answer%></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+</body>
+
+</html>
+
+</table>
+</body>
+
+</html>

@@ -137,6 +137,8 @@ module.exports = {
           }
         }
       });
+      if (!response)
+        return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
       if (response.member_plutx && !response.member_plutx.active_flg) {
         response.domain_name = null;
         response.member_domain_name = null;
@@ -169,12 +171,12 @@ module.exports = {
         response = await MemberTransactionHis.update({
           sender_note: req.body.note
         }, {
-            where: {
-              tx_id: tx_id,
-              platform: platform,
-              member_id: member_id
-            },
-          });
+          where: {
+            tx_id: tx_id,
+            platform: platform,
+            member_id: member_id
+          },
+        });
       }
       else {
         let toAddress = await _getMemberFromAddress(memberTransactionHis.to_address, platform, member_id)
@@ -182,12 +184,12 @@ module.exports = {
           response = await MemberTransactionHis.update({
             receiver_note: req.body.note
           }, {
-              where: {
-                tx_id: tx_id,
-                platform: platform,
-                member_id: member_id
-              },
-            });
+            where: {
+              tx_id: tx_id,
+              platform: platform,
+              member_id: member_id
+            },
+          });
         }
         else {
           return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');

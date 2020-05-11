@@ -148,6 +148,12 @@ const config = {
     apiKey: process.env.SDK_API_KEY,
     secretKey: process.env.SDK_SECRET_KEY
   },
+  affiliate: {
+    url: process.env.AFFILIATE_URL,
+    apiKey: process.env.AFFILIATE_API_KEY,
+    secretKey: process.env.AFFILIATE_SECRET_KEY,
+    typeId: process.env.AFFILIATE_TYPE_ID,
+  },
   plutx: {
     domain: process.env.PLUTX_DOMAIN,
     format: process.env.PLUTX_FORMAT,

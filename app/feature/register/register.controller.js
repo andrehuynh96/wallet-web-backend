@@ -12,6 +12,7 @@ const Hashids = require('hashids/cjs');
 const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
+const Affiliate = require('app/lib/affiliate');
 
 module.exports = async (req, res, next) => {
   try {
@@ -39,16 +40,20 @@ module.exports = async (req, res, next) => {
       }
     }
 
-    let salt = `${Date.now().toString()}`;
-    let hashids = new Hashids(salt, 8, base58chars);
-    let referralCode = hashids.encode(1, 2, 3, 4);
+    let affiliateInfo = {};
+    let createAffiliate = await Affiliate.register({ email: req.body.email.toLowerCase(), referrerCode: req.body.referrer_code || "" });
+    if (createAffiliate.httpCode == 200) {
+      affiliateInfo.referral_code = createAffiliate.data.data.code;
+      affiliateInfo.referrer_code = req.body.referrer_code || "";
+      affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
+    }
+
     let password = bcrypt.hashSync(req.body.password, 10);
     let member = await Member.create({
       email: req.body.email.toLowerCase(),
       password_hash: password,
       phone: req.body.phone || "",
-      referral_code: referralCode,
-      referrer_code: req.body.referrer_code || "",
+      ...affiliateInfo
     });
     if (!member) {
       return res.serverInternalError();
@@ -66,7 +71,6 @@ module.exports = async (req, res, next) => {
       });
     /** */
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
-    let otpCode = otplib.authenticator.generate(Date.now().toString());
     let today = new Date();
     today.setHours(today.getHours() + config.expiredVefiryToken);
     await OTP.update({

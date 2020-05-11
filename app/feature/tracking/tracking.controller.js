@@ -155,6 +155,7 @@ module.exports = {
       let tx_id = req.params.tx_id
       let platform = req.params.platform
       let member_id = req.user.id
+      let address = req.body.address
       let memberTransactionHis = await MemberTransactionHis.findOne({
         where: {
           tx_id: tx_id,
@@ -165,9 +166,13 @@ module.exports = {
       if (!memberTransactionHis) {
         return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
       }
-      let fromAddress = await _getMemberFromAddress(memberTransactionHis.from_address, platform, member_id)
+      //TODO: 
+      let memberFromAddress = await _getMemberFromAddress(address, platform, member_id)
+      if(!memberFromAddress){
+        return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
+      }
       let response
-      if (fromAddress.length > 0) {
+      if(memberTransactionHis.from_address == address){
         response = await MemberTransactionHis.update({
           sender_note: req.body.note
         }, {
@@ -178,25 +183,20 @@ module.exports = {
           },
         });
       }
-      else {
-        let toAddress = await _getMemberFromAddress(memberTransactionHis.to_address, platform, member_id)
-        if (toAddress.length > 0) {
-          response = await MemberTransactionHis.update({
-            receiver_note: req.body.note
-          }, {
-            where: {
-              tx_id: tx_id,
-              platform: platform,
-              member_id: member_id
-            },
-          });
-        }
-        else {
-          return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
-        }
+      if(memberTransactionHis.to_address == address){
+        response = await MemberTransactionHis.update({
+          receiver_note: req.body.note
+        }, {
+          where: {
+            tx_id: tx_id,
+            platform: platform,
+            member_id: member_id
+          },
+        });
       }
+      console.log(memberTransactionHis,address)
       if (!response) {
-        return res.serverInternalError();
+        return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }
       logger.info('update::member transaction history::update')
       return res.ok(true)

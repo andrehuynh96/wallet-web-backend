@@ -12,6 +12,7 @@ const Hashids = require('hashids/cjs');
 const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
+const Affiliate = require('app/lib/affiliate');
 
 module.exports = async (req, res, next) => {
   try {
@@ -39,23 +40,37 @@ module.exports = async (req, res, next) => {
       }
     }
 
-    let salt = `${Date.now().toString()}`;
-    let hashids = new Hashids(salt, 8, base58chars);
-    let referralCode = hashids.encode(1, 2, 3, 4);
+    let affiliateInfo = {};
+    let createAffiliate = await Affiliate.register({ email: req.body.email.toLowerCase(), referrerCode: req.body.referrer_code || "" });
+    if (createAffiliate.httpCode == 200) {
+      affiliateInfo.referral_code = createAffiliate.data.data.code;
+      affiliateInfo.referrer_code = req.body.referrer_code || "";
+      affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
+    }
+
     let password = bcrypt.hashSync(req.body.password, 10);
     let member = await Member.create({
       email: req.body.email.toLowerCase(),
       password_hash: password,
       phone: req.body.phone || "",
-      referral_code: referralCode,
-      referrer_code: req.body.referrer_code || "",
+      ...affiliateInfo
     });
     if (!member) {
       return res.serverInternalError();
     }
-
+    /** update domain name */
+    let length = config.plutx.format.length - member.domain_id.toString().length;
+    let domainName = config.plutx.format.substr(1, length) + member.domain_id.toString() + `.${config.plutx.domain}`;
+    let [_, [user]] = await Member.update({
+      domain_name: domainName
+    }, {
+        where: {
+          id: member.id
+        },
+        returning: true
+      });
+    /** */
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
-    let otpCode = otplib.authenticator.generate(Date.now().toString());
     let today = new Date();
     today.setHours(today.getHours() + config.expiredVefiryToken);
     await OTP.update({
@@ -84,7 +99,7 @@ module.exports = async (req, res, next) => {
     // if (id) {
     //   member.kyc_id = id;
     // }
-    let response = memberMapper(member);
+    let response = memberMapper(user);
     return res.ok(response);
   }
   catch (err) {
@@ -99,7 +114,7 @@ async function _sendEmail(member, otp) {
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.website.urlActive}?token=${otp.code}`,
+      link: `${config.website.urlActive}${otp.code}`,
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
@@ -148,10 +163,9 @@ async function _submitKyc(kycId, email) {
 }
 async function _updateStatus(kycId, action) {
   try {
-    let params = { body: { level: 1, expiry: 60000, comment: "update level 1" }, kycId: kycId, action: action };
+    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
     await Kyc.updateStatus(params);
   } catch (err) {
     logger.error("update kyc account fail", err);
   }
 }
-

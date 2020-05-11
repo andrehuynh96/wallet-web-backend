@@ -11,6 +11,7 @@ const bcrypt = require('bcrypt');
 const config = require("app/config");
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
+const Affiliate = require('app/lib/affiliate');
 
 module.exports = async (req, res, next) => {
   try {
@@ -80,7 +81,21 @@ module.exports = async (req, res, next) => {
           }
         })
     }
-
+    /** update domain name */
+    if (user.domain_name == null) {
+      let length = config.plutx.format.length - user.domain_id.toString().length;
+      let domainName = config.plutx.format.substr(1, length) + user.domain_id.toString() + `.${config.plutx.domain}`;
+      let [_, [updatedUser]] = await Member.update({
+        domain_name: domainName
+      }, {
+          where: {
+            id: user.id
+          },
+          returning: true
+        });
+      user = updatedUser;
+    }
+    /** */
     /**create kyc account if not exist */
     if (!user.kyc_id || user.kyc_id == '0') {
       let id = await _createKyc(user.id, req.body.email.toLowerCase());
@@ -88,6 +103,8 @@ module.exports = async (req, res, next) => {
         user.kyc_id = id;
       }
     }
+    user = await _tryCreateAffiliate(user);
+
     if (user.twofa_enable_flg) {
       let verifyToken = Buffer.from(uuidV4()).toString('base64');
       let today = new Date();
@@ -185,4 +202,29 @@ async function _updateStatus(kycId, action) {
   } catch (err) {
     logger.error("update kyc account fail", err);
   }
-} 
+}
+
+async function _tryCreateAffiliate(member) {
+  try {
+    if (member.referral_code) {
+      return member;
+    }
+    let result = await Affiliate.register({ email: member.email });
+    if (result.httpCode == 200) {
+      const [_, m] = await Member.update({
+        referral_code: result.data.data.code,
+        affiliate_id: result.data.data.client_affiliate_id
+      }, {
+          where: {
+            id: member.id
+          },
+          returning: true,
+          plain: true
+        })
+      return m;
+    }
+    return member;
+  } catch (err) {
+    logger.error("_create Affiliate fail", err);
+  }
+}

@@ -85,7 +85,9 @@ module.exports = router;
                       "duration": 21,
                       "duration_type": "DAY",
                       "reward_percentage": 3.5,
-                      "validator_fee": 1
+                      "validator_fee": 1,
+                      "domain_name": "a",
+                      "member_domain_name": "a"
                   }
               }
  *       400:
@@ -111,7 +113,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /Web/tracking/histories:
+ * /web/tracking/histories:
  *   get:
  *     summary: get transaction history
  *     tags:
@@ -143,38 +145,28 @@ module.exports = router;
                   "data": {
                       "items": [
                           {
-                              "tx_id": "0xf4c130082d64b9bc8ea25240e5873067613ed778c8d76905cfd5999e8ab9b63a",
+                              "tx_id": "5a427cfb6ad59d49205bc6665c12fbc0e323b74662370da67ce5c1fbf04819e3",
                               "platform": "ETH",
                               "symbol": "IFNT",
                               "amount": 1.898739824,
                               "action": "SEND",
-                              "staking_platform_id": "160a08f8-3519-4573-90e4-08f832b518d2",
-                              "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6",
-                              "duration": 21,
-                              "duration_type": "DAY",
                               "sender_note": "test create tracking",
                               "receiver_note": "test create tracking",
                               "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
-                              "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
-                              "reward_percentage": 3.5,
-                              "validator_fee": 1
+                              "to_address": "aaa",
+                              "domain_name": "a",
+                              "member_domain_name": "a"
                           },
                           {
-                              "tx_id": "0xf4c130082d64b9bc8ea25240e5873067613ed778c8d76905cfd5999e8ab9b63a",
+                              "tx_id": "5a427cfb6ad59d49205bc6665c12fbc0e323b74662370da67ce5c1fbf04819e3",
                               "platform": "ETH",
                               "symbol": "IFNT",
                               "amount": 1.898739824,
                               "action": "SEND",
-                              "staking_platform_id": "160a08f8-3519-4573-90e4-08f832b518d2",
-                              "plan_id": "6d50c43f-b3d9-492a-a5b2-d1490dfcfdf6",
-                              "duration": 21,
-                              "duration_type": "DAY",
                               "sender_note": "test create tracking",
                               "receiver_note": "test create tracking",
                               "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
-                              "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
-                              "reward_percentage": 3.5,
-                              "validator_fee": 1
+                              "to_address": "aaa"
                           }
                       ],
                       "offset": 0,
@@ -241,7 +233,9 @@ module.exports = router;
                       "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                       "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                       "reward_percentage": 3.5,
-                      "validator_fee": 1
+                      "validator_fee": 1,
+                      "domain_name": "a",
+                      "member_domain_name": "a"
                   }
  *            }
  *       400:
@@ -284,8 +278,8 @@ module.exports = router;
 *            type: object
 *            example:
 *               {
-*                  "NOTE": "TEST SENDER NOTE"
-                 }
+*                  "note": "TEST SENDER NOTE"
+                }
 *     produces:
 *       - application/json
 *     responses:
@@ -294,7 +288,7 @@ module.exports = router;
 *         examples:
 *           application/json:
 *             {
-*                 "data": true
+*                 "data": true"
 *             }
 *       400:
 *         description: Error

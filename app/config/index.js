@@ -137,11 +137,27 @@ const config = {
       txIdLink: process.env.ADA_TX_ID_LINK,
       addressLink: process.env.ADA_ADDRESS_LINK
     },
+    ONG: {
+      platformName: "Ontology Gas",
+      txIdLink: process.env.ONG_TX_ID_LINK,
+      addressLink: process.env.ONG_ADDRESS_LINK
+    }
   },
   sdk: {
     baseUrl: process.env.SDK_URL,
     apiKey: process.env.SDK_API_KEY,
     secretKey: process.env.SDK_SECRET_KEY
+  },
+  affiliate: {
+    url: process.env.AFFILIATE_URL,
+    apiKey: process.env.AFFILIATE_API_KEY,
+    secretKey: process.env.AFFILIATE_SECRET_KEY,
+    typeId: process.env.AFFILIATE_TYPE_ID,
+  },
+  plutx: {
+    domain: process.env.PLUTX_DOMAIN,
+    format: process.env.PLUTX_FORMAT,
+    url: process.env.PLUTX_URL
   }
 };
 

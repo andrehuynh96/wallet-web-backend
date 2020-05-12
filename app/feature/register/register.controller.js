@@ -47,6 +47,9 @@ module.exports = async (req, res, next) => {
       affiliateInfo.referrer_code = req.body.referrer_code || "";
       affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
     }
+     else {
+      return res.status(createAffiliate.httpCode).send(createAffiliate.data);
+    } 
 
     let password = bcrypt.hashSync(req.body.password, 10);
     let member = await Member.create({
@@ -169,4 +172,3 @@ async function _updateStatus(kycId, action) {
     logger.error("update kyc account fail", err);
   }
 }
-

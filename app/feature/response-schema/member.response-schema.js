@@ -25,7 +25,8 @@ const destObject = {
     '[].kyc_id': '[].kyc_id',
     '[].kyc_level': '[].kyc_level',
     '[].kyc_status': '[].kyc_status',
-    '[].kyc': '[].kyc'
+    '[].kyc': '[].kyc',
+    '[].domain_name': '[].domain_id'
   },
   single: {
     id: 'id',
@@ -51,7 +52,8 @@ const destObject = {
     kyc_id: 'kyc_id',
     kyc_level: 'kyc_level',
     kyc_status: 'kyc_status',
-    kyc: 'kyc'
+    kyc: 'kyc',
+    domain_name: 'domain_name'
   }
 };
 module.exports = srcObject => {

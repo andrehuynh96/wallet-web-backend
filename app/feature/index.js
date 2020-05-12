@@ -18,6 +18,8 @@ router.use(require('./kyc/kyc.route'));
 router.use(require('./tracking/tracking.route'));
 router.use(require('./wallet/wallet-token/wallet-token.route'));
 router.use(require('./get-contract-testnet/get-contract-testnet.route'));
+router.use(require('./check-token/check-token.route'));
+router.use(require('./member-plutx/member-plutx.route'));
 
 
 module.exports = router;

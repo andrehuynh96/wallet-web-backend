@@ -278,8 +278,9 @@ module.exports = router;
 *            type: object
 *            example:
 *               {
-*                  "note": "TEST SENDER NOTE"
-                }
+                   "note": "TEST SENDER NOTE",
+                   "address":"cosmos1cle6lwa6tmdt2kf7087fqtsucer386wj9j0d4w"
+*               }
 *     produces:
 *       - application/json
 *     responses:

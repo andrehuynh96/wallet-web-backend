@@ -59,7 +59,8 @@ wallet.update = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -98,7 +99,8 @@ wallet.delete = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -156,7 +158,8 @@ wallet.getPassphrase = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {

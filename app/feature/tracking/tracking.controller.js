@@ -159,7 +159,7 @@ module.exports = {
       let memberTransactionHis = await MemberTransactionHis.findOne({
         where: {
           tx_id: tx_id,
-          platform: platform,
+          // platform: platform,
           member_id: member_id
         }
       })
@@ -177,7 +177,7 @@ module.exports = {
         }, {
             where: {
               tx_id: tx_id,
-              platform: platform,
+              // platform: platform,
               member_id: member_id
             },
           });
@@ -188,7 +188,7 @@ module.exports = {
         }, {
             where: {
               tx_id: tx_id,
-              platform: platform,
+              //  platform: platform,
               member_id: member_id
             },
           });
@@ -231,10 +231,11 @@ const sendEmail = {
   }
 }
 async function _getMemberFromAddress(address, platform, member_id) {
+  ///AND k.platform='${platform}'
   var sql = `
   SELECT w.*
       FROM wallet_priv_keys as k INNER JOIN wallets as w on k.wallet_id = w.id
-      WHERE k.address ILIKE '${address}' AND k.platform='${platform}' AND w.member_id='${member_id}' 
+      WHERE k.address ILIKE '${address}' AND w.member_id='${member_id}' 
     `;
   var rs = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
   return rs;

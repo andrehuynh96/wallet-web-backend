@@ -61,18 +61,7 @@ module.exports = async (req, res, next) => {
     if (!member) {
       return res.serverInternalError();
     }
-    /** update domain name */
-    let length = config.plutx.format.length - member.domain_id.toString().length;
-    let domainName = config.plutx.format.substr(1, length) + member.domain_id.toString() + `.${config.plutx.domain}`;
-    let [_, [user]] = await Member.update({
-      domain_name: domainName
-    }, {
-        where: {
-          id: member.id
-        },
-        returning: true
-      });
-    /** */
+
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
     let today = new Date();
     today.setHours(today.getHours() + config.expiredVefiryToken);
@@ -102,7 +91,7 @@ module.exports = async (req, res, next) => {
     // if (id) {
     //   member.kyc_id = id;
     // }
-    let response = memberMapper(user);
+    let response = memberMapper(member);
     return res.ok(response);
   }
   catch (err) {

@@ -56,7 +56,27 @@ module.exports = {
       logger.error("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  }
+  },
+
+  getReferrals: async ({ email, offset = 0, limit = 10 }) => {
+    try {
+      let accessToken = await _getToken();
+      let result = await axios.get(`${config.affiliate.url}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.affiliate.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
 }
 
 async function _getToken() {
@@ -73,6 +93,6 @@ async function _getToken() {
     }
   );
 
-  await cache.setAsync(redisResource.affiliate.token, result.data.data.access_token, "EX", parseInt(result.data.data.expires_in) - 10);
+  await cache.setAsync(redisResource.affiliate.token, result.data.data.access_token, "EX", 3600);
   return result.data.data.access_token;
 }

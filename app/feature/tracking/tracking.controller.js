@@ -152,10 +152,11 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      let tx_id = req.params.tx_id
-      let platform = req.params.platform
-      let member_id = req.user.id
-      let address = req.body.address
+      let tx_id = req.params.tx_id;
+      let platform = req.params.platform;
+      let member_id = req.user.id;
+      let address = req.body.address;
+      let note = req.body.note || "";
       let memberTransactionHis = await MemberTransactionHis.findOne({
         where: {
           tx_id: tx_id,
@@ -173,7 +174,7 @@ module.exports = {
       let response
       if (memberTransactionHis.from_address == address) {
         response = await MemberTransactionHis.update({
-          sender_note: req.body.note
+          sender_note: note
         }, {
             where: {
               tx_id: tx_id,
@@ -184,7 +185,7 @@ module.exports = {
       }
       if (memberTransactionHis.to_address == address) {
         response = await MemberTransactionHis.update({
-          receiver_note: req.body.note
+          receiver_note: note
         }, {
             where: {
               tx_id: tx_id,
@@ -193,7 +194,6 @@ module.exports = {
             },
           });
       }
-      console.log(memberTransactionHis, address)
       if (!response) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }

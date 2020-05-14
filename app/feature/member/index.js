@@ -8,5 +8,6 @@ router.use(require('./login-history/login-history.route'));
 router.use(require('./change-password/change-password.route'));
 router.use(require('./kyc-link/kyc-link.route'));
 router.use(require('./update-referrer/update-referrer.route'));
+router.use(require('./list-referral/list-referral.route'));
 
 module.exports = router;

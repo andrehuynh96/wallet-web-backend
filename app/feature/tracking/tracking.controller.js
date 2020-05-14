@@ -131,7 +131,7 @@ module.exports = {
       let response = await MemberTransactionHis.findOne({
         include: [MemberPlutx],
         where: {
-          platform: req.params.platform,
+          // platform: req.params.platform,
           tx_id: {
             [Op.iLike]: req.params.tx_id
           }
@@ -175,23 +175,23 @@ module.exports = {
         response = await MemberTransactionHis.update({
           sender_note: req.body.note
         }, {
-          where: {
-            tx_id: tx_id,
-            platform: platform,
-            member_id: member_id
-          },
-        });
+            where: {
+              tx_id: tx_id,
+              platform: platform,
+              member_id: member_id
+            },
+          });
       }
       if (memberTransactionHis.to_address == address) {
         response = await MemberTransactionHis.update({
           receiver_note: req.body.note
         }, {
-          where: {
-            tx_id: tx_id,
-            platform: platform,
-            member_id: member_id
-          },
-        });
+            where: {
+              tx_id: tx_id,
+              platform: platform,
+              member_id: member_id
+            },
+          });
       }
       console.log(memberTransactionHis, address)
       if (!response) {

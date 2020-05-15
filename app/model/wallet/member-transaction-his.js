@@ -81,9 +81,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
   MemberTransactionHis.associate = (models) => {
     // associations can be defined here
     MemberTransactionHis.belongsTo(models.member_plutxs, { foreignKey: 'domain_name', targetKey: 'domain_name' })

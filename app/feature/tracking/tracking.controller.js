@@ -131,7 +131,7 @@ module.exports = {
       let response = await MemberTransactionHis.findOne({
         include: [MemberPlutx],
         where: {
-          platform: req.params.platform,
+          // platform: req.params.platform,
           tx_id: {
             [Op.iLike]: req.params.tx_id
           }
@@ -152,14 +152,15 @@ module.exports = {
   },
   update: async (req, res, next) => {
     try {
-      let tx_id = req.params.tx_id
-      let platform = req.params.platform
-      let member_id = req.user.id
-      let address = req.body.address
+      let tx_id = req.params.tx_id;
+      let platform = req.params.platform;
+      let member_id = req.user.id;
+      let address = req.body.address;
+      let note = req.body.note || "";
       let memberTransactionHis = await MemberTransactionHis.findOne({
         where: {
           tx_id: tx_id,
-          platform: platform,
+          // platform: platform,
           member_id: member_id
         }
       })
@@ -173,27 +174,26 @@ module.exports = {
       let response
       if (memberTransactionHis.from_address == address) {
         response = await MemberTransactionHis.update({
-          sender_note: req.body.note
+          sender_note: note
         }, {
-          where: {
-            tx_id: tx_id,
-            platform: platform,
-            member_id: member_id
-          },
-        });
+            where: {
+              tx_id: tx_id,
+              // platform: platform,
+              member_id: member_id
+            },
+          });
       }
       if (memberTransactionHis.to_address == address) {
         response = await MemberTransactionHis.update({
-          receiver_note: req.body.note
+          receiver_note: note
         }, {
-          where: {
-            tx_id: tx_id,
-            platform: platform,
-            member_id: member_id
-          },
-        });
+            where: {
+              tx_id: tx_id,
+              //  platform: platform,
+              member_id: member_id
+            },
+          });
       }
-      console.log(memberTransactionHis, address)
       if (!response) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }
@@ -231,10 +231,11 @@ const sendEmail = {
   }
 }
 async function _getMemberFromAddress(address, platform, member_id) {
+  ///AND k.platform='${platform}'
   var sql = `
   SELECT w.*
       FROM wallet_priv_keys as k INNER JOIN wallets as w on k.wallet_id = w.id
-      WHERE k.address ILIKE '${address}' AND k.platform='${platform}' AND w.member_id='${member_id}' 
+      WHERE k.address ILIKE '${address}' AND w.member_id='${member_id}' 
     `;
   var rs = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
   return rs;

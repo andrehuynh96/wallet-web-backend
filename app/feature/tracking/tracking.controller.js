@@ -161,7 +161,6 @@ module.exports = {
         where: {
           tx_id: tx_id,
           // platform: platform,
-          member_id: member_id
         }
       })
       if (!memberTransactionHis) {

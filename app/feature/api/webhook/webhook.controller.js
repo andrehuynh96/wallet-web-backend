@@ -23,10 +23,19 @@ module.exports = async (req, res, next) => {
         continue;
       }
       member = member[0];
-      await MemberTransactionHis.create({
-        member_id: member.id,
-        ...data
+
+      let tx = await MemberTransactionHis.findOne({
+        where: {
+          tx_id: data.tx_id
+        }
       });
+
+      if (!tx) {
+        await MemberTransactionHis.create({
+          member_id: member.id,
+          ...data
+        });
+      }
       _sendEmail(member, data);
     }
 

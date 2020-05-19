@@ -54,6 +54,9 @@ module.exports = {
           if (platform) additionalInfo.validator_fee = platform.erc20_validator_fee;
         }
       }
+      delete req.body.plan_id;
+      delete req.body.note;
+
       let domain = await MemberPlutx.findOne({
         attributes: ["domain_name", "member_domain_name", "address"],
         where: {
@@ -63,15 +66,12 @@ module.exports = {
         }
       })
       if (domain) {
-        req.body.to_address = domain.address.toLowerCase();
+        req.body.to_address = domain.address;
         req.body.domain_name = domain.domain_name;
         req.body.member_domain_name = domain.member_domain_name;
 
       }
-      delete req.body.plan_id;
-      delete req.body.note;
-      delete req.body.from_address;
-      delete req.body.to_address;
+
       let response = await MemberTransactionHis.create({
         member_id: user.id,
         ...req.body,
@@ -173,7 +173,7 @@ module.exports = {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }
       let response
-      if (memberTransactionHis.from_address == memberFromAddress[0].address) {
+      if (memberTransactionHis.from_address.lowerCase() == memberFromAddress[0].address.lowerCase()) {
         response = await MemberTransactionHis.update({
           sender_note: note
         }, {
@@ -182,7 +182,7 @@ module.exports = {
             },
           });
       }
-      if (memberTransactionHis.to_address == memberFromAddress[0].address) {
+      if (memberTransactionHis.to_address.lowerCase() == memberFromAddress[0].address.lowerCase()) {
         response = await MemberTransactionHis.update({
           receiver_note: note
         }, {

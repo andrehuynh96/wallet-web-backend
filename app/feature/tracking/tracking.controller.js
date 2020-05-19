@@ -39,8 +39,6 @@ module.exports = {
       let additionalInfo = {}
       additionalInfo.sender_note = req.body.note;
       additionalInfo.receiver_note = req.body.note;
-      additionalInfo.from_address = req.body.from_address.toLowerCase();
-      additionalInfo.to_address = req.body.to_address.toLowerCase();
       if (req.body.plan_id && req.body.plan_id.length > 0) {
         plan = await getStakingPlan(req.body.plan_id);
         if (plan) {
@@ -173,7 +171,7 @@ module.exports = {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }
       let response
-      if (memberTransactionHis.from_address.lowerCase() == memberFromAddress[0].address.lowerCase()) {
+      if (memberTransactionHis.from_address.toLowerCase() == memberFromAddress[0].address.toLowerCase()) {
         response = await MemberTransactionHis.update({
           sender_note: note
         }, {
@@ -182,7 +180,7 @@ module.exports = {
             },
           });
       }
-      if (memberTransactionHis.to_address.lowerCase() == memberFromAddress[0].address.lowerCase()) {
+      if (memberTransactionHis.to_address.toLowerCase() == memberFromAddress[0].address.toLowerCase()) {
         response = await MemberTransactionHis.update({
           receiver_note: note
         }, {

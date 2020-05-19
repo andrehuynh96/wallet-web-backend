@@ -39,6 +39,8 @@ module.exports = {
       let additionalInfo = {}
       additionalInfo.sender_note = req.body.note;
       additionalInfo.receiver_note = req.body.note;
+      additionalInfo.from_address = req.body.from_address.toLowerCase();
+      additionalInfo.to_address = req.body.to_address.toLowerCase();
       if (req.body.plan_id && req.body.plan_id.length > 0) {
         plan = await getStakingPlan(req.body.plan_id);
         if (plan) {
@@ -52,9 +54,6 @@ module.exports = {
           if (platform) additionalInfo.validator_fee = platform.erc20_validator_fee;
         }
       }
-      delete req.body.plan_id;
-      delete req.body.note;
-
       let domain = await MemberPlutx.findOne({
         attributes: ["domain_name", "member_domain_name", "address"],
         where: {
@@ -64,12 +63,15 @@ module.exports = {
         }
       })
       if (domain) {
-        req.body.to_address = domain.address;
+        req.body.to_address = domain.address.toLowerCase();
         req.body.domain_name = domain.domain_name;
         req.body.member_domain_name = domain.member_domain_name;
 
       }
-
+      delete req.body.plan_id;
+      delete req.body.note;
+      delete req.body.from_address;
+      delete req.body.to_address;
       let response = await MemberTransactionHis.create({
         member_id: user.id,
         ...req.body,
@@ -166,28 +168,26 @@ module.exports = {
       if (!memberTransactionHis) {
         return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
       }
-      let memberFromAddress = await _getMemberFromAddress(address, platform, member_id)
+      let memberFromAddress = await _getMemberFromAddress(address, member_id)
       if (!memberFromAddress) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }
       let response
-      if (memberTransactionHis.from_address == address) {
+      if (memberTransactionHis.from_address == memberFromAddress[0].address) {
         response = await MemberTransactionHis.update({
           sender_note: note
         }, {
             where: {
               tx_id: tx_id,
-              // platform: platform
             },
           });
       }
-      if (memberTransactionHis.to_address == address) {
+      if (memberTransactionHis.to_address == memberFromAddress[0].address) {
         response = await MemberTransactionHis.update({
           receiver_note: note
         }, {
             where: {
               tx_id: tx_id,
-              //  platform: platform
             },
           });
       }
@@ -227,10 +227,9 @@ const sendEmail = {
     }
   }
 }
-async function _getMemberFromAddress(address, platform, member_id) {
-  ///AND k.platform='${platform}'
+async function _getMemberFromAddress(address, member_id) {
   var sql = `
-  SELECT w.*
+  SELECT *
       FROM wallet_priv_keys as k INNER JOIN wallets as w on k.wallet_id = w.id
       WHERE k.address ILIKE '${address}' AND w.member_id='${member_id}' 
     `;

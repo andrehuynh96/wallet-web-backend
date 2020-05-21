@@ -166,28 +166,26 @@ module.exports = {
       if (!memberTransactionHis) {
         return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
       }
-      let memberFromAddress = await _getMemberFromAddress(address, platform, member_id)
+      let memberFromAddress = await _getMemberFromAddress(address, member_id)
       if (!memberFromAddress) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
       }
       let response
-      if (memberTransactionHis.from_address == address) {
+      if (memberTransactionHis.from_address.toLowerCase() == memberFromAddress[0].address.toLowerCase()) {
         response = await MemberTransactionHis.update({
           sender_note: note
         }, {
             where: {
               tx_id: tx_id,
-              // platform: platform
             },
           });
       }
-      if (memberTransactionHis.to_address == address) {
+      if (memberTransactionHis.to_address.toLowerCase() == memberFromAddress[0].address.toLowerCase()) {
         response = await MemberTransactionHis.update({
           receiver_note: note
         }, {
             where: {
               tx_id: tx_id,
-              //  platform: platform
             },
           });
       }
@@ -227,10 +225,9 @@ const sendEmail = {
     }
   }
 }
-async function _getMemberFromAddress(address, platform, member_id) {
-  ///AND k.platform='${platform}'
+async function _getMemberFromAddress(address, member_id) {
   var sql = `
-  SELECT w.*
+  SELECT *
       FROM wallet_priv_keys as k INNER JOIN wallets as w on k.wallet_id = w.id
       WHERE k.address ILIKE '${address}' AND w.member_id='${member_id}' 
     `;

@@ -33,6 +33,18 @@ token.create = async (req, res, next) => {
     if (!priv) {
       return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND");
     }
+    let token = await WalletToken.findOne({
+      where: {
+        wallet_id: wallet_id,
+        symbol: req.body.symbol,
+        platform: req.body.platform,
+        sc_token_address: req.body.sc_token_address,
+        deleted_flg: false
+      }
+    })
+    if (token) {
+      return res.badRequest(res.__("TOKEN_EXISTED"), "TOKEN_EXISTED");
+    }
     let data = {
       ...req.body,
       wallet_id: wallet_id

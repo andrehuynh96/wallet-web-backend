@@ -13,13 +13,19 @@ const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
 const Affiliate = require('app/lib/affiliate');
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+const MemberStatus = require("app/model/wallet/value-object/member-status");
+
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
 module.exports = async (req, res, next) => {
   try {
+    const email = req.body.email.toLowerCase().trim();
+
     let emailExists = await Member.findOne({
       where: {
         deleted_flg: false,
-        email: req.body.email.toLowerCase()
+        email,
       }
     });
 
@@ -41,33 +47,55 @@ module.exports = async (req, res, next) => {
     }
 
     let affiliateInfo = {};
-    let createAffiliate = await Affiliate.register({ email: req.body.email.toLowerCase(), referrerCode: req.body.referrer_code || "" });
+    let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
     if (createAffiliate.httpCode == 200) {
       affiliateInfo.referral_code = createAffiliate.data.data.code;
       affiliateInfo.referrer_code = req.body.referrer_code || "";
       affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
     }
-     else {
+    else {
       return res.status(createAffiliate.httpCode).send(createAffiliate.data);
-    } 
+    }
 
+    let emailConfirmed = false;
+    let idOnPlutxUserID = null;
+    let today = new Date();
+
+    if (IS_ENABLED_PLUTX_USERID) {
+      const registerMemberResult = await PluTXUserIdApi.register({
+        email,
+        password: req.body.password,
+        createdAt: today,
+      });
+
+      if (createAffiliate.httpCode == 200) {
+        emailConfirmed = registerMemberResult.data.confirmed_flg;
+        idOnPlutxUserID = registerMemberResult.data.id;
+      } else {
+        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
+      }
+    }
+
+    const memberStatus = !emailConfirmed ? MemberStatus.UNACTIVATED : MemberStatus.ACTIVATED;
     let password = bcrypt.hashSync(req.body.password, 10);
     let member = await Member.create({
-      email: req.body.email.toLowerCase(),
+      email,
       password_hash: password,
+      member_sts: memberStatus,
       phone: req.body.phone || "",
-      ...affiliateInfo
+      ...affiliateInfo,
+      plutx_userid_id: idOnPlutxUserID,
     });
     if (!member) {
       return res.serverInternalError();
     }
 
-    let verifyToken = Buffer.from(uuidV4()).toString('base64');
-    let today = new Date();
-    today.setHours(today.getHours() + config.expiredVefiryToken);
-    await OTP.update({
-      expired: true
-    }, {
+    if (memberStatus === MemberStatus.UNACTIVATED) {
+      let verifyToken = Buffer.from(uuidV4()).toString('base64');
+      today.setHours(today.getHours() + config.expiredVefiryToken);
+      await OTP.update({
+        expired: true
+      }, {
         where: {
           member_id: member.id,
           action_type: OtpType.REGISTER
@@ -75,22 +103,24 @@ module.exports = async (req, res, next) => {
         returning: true
       });
 
-    let otp = await OTP.create({
-      code: verifyToken,
-      used: false,
-      expired: false,
-      expired_at: today,
-      member_id: member.id,
-      action_type: OtpType.REGISTER
-    });
-    if (!otp) {
-      return res.serverInternalError();
+      let otp = await OTP.create({
+        code: verifyToken,
+        used: false,
+        expired: false,
+        expired_at: today,
+        member_id: member.id,
+        action_type: OtpType.REGISTER
+      });
+      if (!otp) {
+        return res.serverInternalError();
+      }
+      _sendEmail(member, otp);
+      // let id = await _createKyc(member.id, req.body.email.toLowerCase());
+      // if (id) {
+      //   member.kyc_id = id;
+      // }
     }
-    _sendEmail(member, otp);
-    // let id = await _createKyc(member.id, req.body.email.toLowerCase());
-    // if (id) {
-    //   member.kyc_id = id;
-    // }
+
     let response = memberMapper(member);
     return res.ok(response);
   }
@@ -98,7 +128,7 @@ module.exports = async (req, res, next) => {
     logger.error('register fail:', err);
     next(err);
   }
-}
+};
 
 async function _sendEmail(member, otp) {
   try {
@@ -131,11 +161,11 @@ async function _createKyc(memberId, email) {
       await Member.update({
         kyc_id: kyc.data.id
       }, {
-          where: {
-            id: memberId,
-          },
-          returning: true
-        });
+        where: {
+          id: memberId,
+        },
+        returning: true
+      });
     }
     return id;
   } catch (err) {
@@ -147,7 +177,7 @@ async function _submitKyc(kycId, email) {
     let content = {};
     content[`${config.kyc.schema}`] = { email: email };
     let params = { body: [{ level: 1, content: content }], kycId: kycId };
-    return await Kyc.submit(params);;
+    return await Kyc.submit(params);
   } catch (err) {
     logger.error(err);
     throw err;

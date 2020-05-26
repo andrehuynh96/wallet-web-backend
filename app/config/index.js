@@ -1,4 +1,4 @@
-/*eslint no-process-env: "off"*/
+/* eslint no-process-env: "off"*/
 require('dotenv').config();
 const logFolder = process.env.LOG_FOLDER || './public/logs';
 
@@ -158,6 +158,12 @@ const config = {
     domain: process.env.PLUTX_DOMAIN,
     format: process.env.PLUTX_FORMAT,
     url: process.env.PLUTX_URL
+  },
+  plutxUserID: {
+    isEnabled: process.env.PLUTX_USERID_IS_ENABLED === 'true',
+    apiUrl: process.env.PLUTX_USERID_API_URL,
+    apiKey: process.env.PLUTX_USERID_APP_API_KEY,
+    secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
   }
 };
 

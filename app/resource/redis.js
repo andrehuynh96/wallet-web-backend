@@ -5,7 +5,7 @@ const keys = {
   },
   affiliate: {
     token: `${config.redis.prefix}:affiliate:token`,
-  }
+  },
 };
 
 String.prototype.withParams = function (...params) {

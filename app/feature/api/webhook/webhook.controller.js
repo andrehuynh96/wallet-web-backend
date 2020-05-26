@@ -9,6 +9,7 @@ const BigNumber = require('bignumber.js');
 
 module.exports = async (req, res, next) => {
   try {
+    logger.info(`webhook::api ${req.params.platform} ::data ${JSON.stringify(req.data)}`);
     if (!req.body || !req.body.transactions || req.body.transactions.length == 0) {
       return res.ok(true);
     }
@@ -23,10 +24,19 @@ module.exports = async (req, res, next) => {
         continue;
       }
       member = member[0];
-      await MemberTransactionHis.create({
-        member_id: member.id,
-        ...data
+
+      let tx = await MemberTransactionHis.findOne({
+        where: {
+          tx_id: data.tx_id
+        }
       });
+
+      if (!tx) {
+        await MemberTransactionHis.create({
+          member_id: member.id,
+          ...data
+        });
+      }
       _sendEmail(member, data);
     }
 

@@ -17,7 +17,8 @@ privkey.create = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -32,11 +33,23 @@ privkey.create = async (req, res, next) => {
         hd_path: item.hd_path,
         encrypted_private_key: item.encrypted_private_key
       }
-      items.push(data);
+      let coin = await WalletPrivateKey.findOne({
+        where: {
+          wallet_id: wallet_id,
+          platform: item.platform,
+          deleted_flg: false
+        }
+      })
+      if(!coin) {
+        items.push(data);
+      } 
+    }
+    if (items.length == 0) {
+      return res.badRequest(res.__("COIN_EXISTED"), "COIN_EXISTED");
     }
     let results = await WalletPrivateKey.bulkCreate(items);
 
-    for (let item of req.body.items) {
+    for (let item of items) {
       Webhook.addAddresses(item.platform, item.address);
     }
     return res.ok(mapper(results));
@@ -54,7 +67,8 @@ privkey.update = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -85,7 +99,8 @@ privkey.delete = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -94,7 +109,8 @@ privkey.delete = async (req, res, next) => {
 
     let key = await WalletPrivateKey.findOne({
       where: {
-        id: id
+        id: id,
+        deleted_flg: false
       }
     });
     if (!key) {
@@ -137,7 +153,8 @@ privkey.getPrivKey = async (req, res, next) => {
     let wallet = await Wallet.findOne({
       where: {
         id: wallet_id,
-        member_id: req.user.id
+        member_id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!wallet) {
@@ -145,7 +162,8 @@ privkey.getPrivKey = async (req, res, next) => {
     }
     let priv = await WalletPrivateKey.findOne({
       where: {
-        id: id
+        id: id,
+        deleted_flg: false
       }
     })
     if (!priv) {

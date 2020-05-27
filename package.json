@@ -4,7 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development nodemon",
+    "start": "node index.js",
+    "lint": "eslint .",
+    "lint:check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
+    "lintfix": "eslint --fix .",
+    "prettier": "prettier --write \"{,!(node_modules)/**/}*.js\"",
+    "test": "NODE_ENV=test mocha --recursive 'app/feature/**/*.test.js'"
   },
   "repository": {
     "type": "git",
@@ -63,6 +69,9 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "mocha": "^7.0.1"
+    "mocha": "^7.0.1",
+    "cross-env": "6.0.3",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1"
   }
 }

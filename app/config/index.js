@@ -1,4 +1,5 @@
-/*eslint no-process-env: "off"*/
+/* eslint no-process-env: "off"*/
+const pkg = require('../../package.json');
 require('dotenv').config();
 const logFolder = process.env.LOG_FOLDER || './public/logs';
 
@@ -22,6 +23,13 @@ const config = {
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
+  app: {
+    name: process.env.APP_NAME || 'staking-web-wallet-api',
+    version: pkg.version,
+    buildNumber: process.env.BUILD_NUMBER || '',
+    description: pkg.description,
+    port: parseInt(process.env.PORT || process.env.APP_PORT),
+  },
   db: {
     wallet: {
       database: process.env.WALLET_DB_NAME,
@@ -158,6 +166,12 @@ const config = {
     domain: process.env.PLUTX_DOMAIN,
     format: process.env.PLUTX_FORMAT,
     url: process.env.PLUTX_URL
+  },
+  plutxUserID: {
+    isEnabled: process.env.PLUTX_USERID_IS_ENABLED === 'true',
+    apiUrl: process.env.PLUTX_USERID_API_URL,
+    apiKey: process.env.PLUTX_USERID_APP_API_KEY,
+    secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
   }
 };
 

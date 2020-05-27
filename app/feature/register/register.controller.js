@@ -46,6 +46,7 @@ module.exports = async (req, res, next) => {
       }
     }
 
+    // TODO: Check email is exists on Affiliate and PluTX UserID before register this email on these system
     let affiliateInfo = {};
     let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
     if (createAffiliate.httpCode == 200) {
@@ -59,13 +60,15 @@ module.exports = async (req, res, next) => {
 
     let emailConfirmed = false;
     let idOnPlutxUserID = null;
-    let today = new Date();
+    const now = new Date();
 
     if (IS_ENABLED_PLUTX_USERID) {
       const registerMemberResult = await PluTXUserIdApi.register({
         email,
         password: req.body.password,
-        createdAt: today,
+        createdAt: now,
+        emailConfirmed: false,
+        isActived: false,
       });
 
       if (createAffiliate.httpCode == 200) {
@@ -90,9 +93,9 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
 
-    if (memberStatus === MemberStatus.UNACTIVATED) {
+    if (memberStatus !== MemberStatus.ACTIVATED) {
       let verifyToken = Buffer.from(uuidV4()).toString('base64');
-      today.setHours(today.getHours() + config.expiredVefiryToken);
+      now.setHours(now.getHours() + config.expiredVefiryToken);
       await OTP.update({
         expired: true
       }, {
@@ -107,7 +110,7 @@ module.exports = async (req, res, next) => {
         code: verifyToken,
         used: false,
         expired: false,
-        expired_at: today,
+        expired_at: now,
         member_id: member.id,
         action_type: OtpType.REGISTER
       });
@@ -140,6 +143,7 @@ async function _sendEmail(member, otp) {
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
+
     await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
   } catch (err) {
     logger.error("send email create account fail", err);

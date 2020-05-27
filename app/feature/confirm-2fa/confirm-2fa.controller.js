@@ -8,6 +8,7 @@ const OtpType = require('app/model/wallet/value-object/otp-type');
 const MemberActivityLog = require('app/model/wallet').member_activity_logs;
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
 const Kyc = require('app/lib/kyc');
+const config = require("app/config");
 
 module.exports = async (req, res, next) => {
   try {
@@ -47,7 +48,7 @@ module.exports = async (req, res, next) => {
       secret: user.twofa_secret,
       encoding: 'base32',
       token: req.body.twofa_code,
-      window: 10
+      window: config.twofaStep
     });
 
     if (!verified) {

@@ -87,6 +87,29 @@ const PluTXUserIdApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  setNewPassword: async (userId, password) => {
+    try {
+      const accessToken = await _getToken();
+      const result = await axios.put(`${API_URL}/api/v1/users/${userId}/set-new-password`,
+        {
+          password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Set new password fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+
 };
 
 async function _getToken() {

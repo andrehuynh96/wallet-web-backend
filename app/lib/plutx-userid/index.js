@@ -6,9 +6,43 @@ const redis = require("app/lib/redis");
 const cache = redis.client();
 
 const API_URL = config.plutxUserID.apiUrl;
+// eslint-disable-next-line no-unused-vars
 let rootOrgUnitId = null;
 
 const PluTXUserIdApi = {
+  importUser: async ({ email, password, createdAt, updatedAt, emailConfirmed, isActived }) => {
+    try {
+      const accessToken = await _getToken();
+      const result = await axios.post(`${API_URL}/api/v1/users/import`,
+        {
+          email,
+          password,
+          created_at: createdAt,
+          updated_at: updatedAt,
+          email_confirmed_flg: !!emailConfirmed,
+          actived_flg: !!isActived,
+          org_units: [
+            {
+              name: "Member",
+              is_belong: true
+            }
+          ]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Register client fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
   register: async ({ email, password, createdAt, emailConfirmed, isActived }) => {
     try {
       const accessToken = await _getToken();

@@ -41,52 +41,26 @@ const PluTXUserIdApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  activeNewUser: async (userId) => {
+    try {
+      const accessToken = await _getToken();
+      const result = await axios.put(`${API_URL}/api/v1/users/${userId}/active-new-user`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
 
-  // UpdateReferrer: async ({ email, referrerCode }) => {
-  //   try {
-  //     const accessToken = await _getToken();
-  //     const result = await axios.put(`${API_URL}/clients/affiliate-codes`,
-  //       {
-  //         ext_client_id: email,
-  //         affiliate_code: referrerCode
-  //       },
-  //       {
-  //         headers: {
-  //           "x-use-checksum": true,
-  //           "x-secret": config.affiliate.secretKey,
-  //           "Content-Type": "application/json",
-  //           "x-affiliate-type-id": config.affiliate.typeId,
-  //           Authorization: `Bearer ${accessToken}`,
-  //         }
-  //       });
-  //     return { httpCode: 200, data: result.data };
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Register client fail:", err);
 
-  //   }
-  //   catch (err) {
-  //     logger.error("create client fail:", err);
-  //     return { httpCode: err.response.status, data: err.response.data };
-  //   }
-  // },
-
-  // getReferrals: async ({ email, offset = 0, limit = 10 }) => {
-  //   try {
-  //     const accessToken = await _getToken();
-  //     const result = await axios.get(`${API_URL}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
-  //       {
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           "x-affiliate-type-id": config.affiliate.typeId,
-  //           Authorization: `Bearer ${accessToken}`,
-  //         }
-  //       });
-  //     return { httpCode: 200, data: result.data };
-
-  //   }
-  //   catch (err) {
-  //     logger.error("create client fail:", err);
-  //     return { httpCode: err.response.status, data: err.response.data };
-  //   }
-  // },
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
 
 };
 

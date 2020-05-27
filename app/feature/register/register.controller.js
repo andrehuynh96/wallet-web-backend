@@ -71,7 +71,7 @@ module.exports = async (req, res, next) => {
         isActived: false,
       });
 
-      if (createAffiliate.httpCode == 200) {
+      if (registerMemberResult.httpCode === 200) {
         emailConfirmed = registerMemberResult.data.confirmed_flg;
         idOnPlutxUserID = registerMemberResult.data.id;
       } else {

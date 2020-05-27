@@ -11,11 +11,17 @@ module.exports = {
     */
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.addColumn('members', 'affiliate_id', {
-          type: Sequelize.DataTypes.INTEGER,
-          allowNull: true,
-          defaultValue: 0
-        }, { transaction: t }),
+        queryInterface.describeTable('members')
+          .then(tableDefinition => {
+            if (tableDefinition['affiliate_id']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('members', 'affiliate_id', {
+              type: Sequelize.DataTypes.INTEGER,
+              allowNull: true,
+              defaultValue: 0
+            });
+          }),
       ]);
     });
   },

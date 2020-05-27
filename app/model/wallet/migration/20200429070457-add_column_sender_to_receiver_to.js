@@ -11,14 +11,29 @@ module.exports = {
     */
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.addColumn('member_transaction_his', 'sender_note', {
-          type: Sequelize.DataTypes.STRING(128),
-          allowNull: true
-        }, { transaction: t }),
-        queryInterface.addColumn('member_transaction_his', 'receiver_note', {
-          type: Sequelize.DataTypes.STRING(128),
-          allowNull: true
-        }, { transaction: t })
+        queryInterface.describeTable('member_transaction_his')
+          .then(tableDefinition => {
+            if (tableDefinition['sender_note']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('member_transaction_his', 'sender_note', {
+              type: Sequelize.DataTypes.STRING(128),
+              allowNull: true
+            })
+          })
+        ,
+        queryInterface.describeTable('member_transaction_his')
+          .then(tableDefinition => {
+            if (tableDefinition['receiver_note']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('member_transaction_his', 'receiver_note', {
+              type: Sequelize.DataTypes.STRING(128),
+              allowNull: true
+            })
+          }),
+
+
       ]);
     });
   },

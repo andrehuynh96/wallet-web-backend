@@ -88,6 +88,10 @@ router.use(
 router.get('/', function (req, res) {
   let result = {
     message: 'Hello',
+    app: config.app.name,
+    version: config.app.version,
+    buildNumber: config.app.buildNumber,
+    description: config.app.description,
   };
   res.json(result);
 });

@@ -169,6 +169,7 @@ const config = {
   },
   plutxUserID: {
     isEnabled: process.env.PLUTX_USERID_IS_ENABLED === 'true',
+    isMigrationEnabled: process.env.PLUTX_USERID_IS_MIGRATION_ENABLED === 'true',
     apiUrl: process.env.PLUTX_USERID_API_URL,
     apiKey: process.env.PLUTX_USERID_APP_API_KEY,
     secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,

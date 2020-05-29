@@ -31,6 +31,7 @@ module.exports = async () => {
     if (member.plutx_userid_id) {
       return;
     }
+
     logger.info('Processing', member.email);
     await delay(50);
 

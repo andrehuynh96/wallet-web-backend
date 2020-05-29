@@ -33,7 +33,7 @@ module.exports = async () => {
     }
 
     logger.info('Processing', member.email);
-    await delay(50);
+    await delay(200);
 
     try {
       const result = await PluTXUserIdApi.importUser({

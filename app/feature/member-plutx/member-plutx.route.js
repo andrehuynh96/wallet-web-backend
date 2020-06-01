@@ -2,7 +2,7 @@ const express = require('express');
 const controller = require('./member-plutx.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require('app/middleware/validator.middleware');
-const { update } = require('./validator');
+const { update, updatePlutxAddress } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -23,6 +23,18 @@ router.post(
   controller.checkId
 );
 
+router.post(
+  '/member-plutxs/get-admin-sig/:crypto',
+  authenticate,
+  controller.getDomainAdminSigature
+)
+
+router.post(
+  '/member-plutxs/address',
+  authenticate,
+  validator(updatePlutxAddress),
+  controller.updatePlutxAddress
+)
 
 module.exports = router;
 

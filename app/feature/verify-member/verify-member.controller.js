@@ -9,6 +9,9 @@ const MemberActivityLog = require('app/model/wallet').member_activity_logs;
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
 const Kyc = require('app/lib/kyc');
 const config = require("app/config");
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
 module.exports = async (req, res, next) => {
   try {
@@ -37,22 +40,30 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__('USER_NOT_FOUND'), 'USER_NOT_FOUND');
     }
 
+    if (IS_ENABLED_PLUTX_USERID && member.plutx_userid_id) {
+      const registerMemberResult = await PluTXUserIdApi.activeNewUser(member.plutx_userid_id);
+
+      if (registerMemberResult.httpCode !== 200) {
+        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
+      }
+    }
+
     await Member.update({
       member_sts: MemberStatus.ACTIVATED
     }, {
-        where: {
-          id: member.id
-        },
-        returning: true
-      });
+      where: {
+        id: member.id
+      },
+      returning: true
+    });
 
     await OTP.update({
       used: true
     }, {
-        where: {
-          id: otp.id
-        },
-      });
+      where: {
+        id: otp.id
+      },
+    });
 
     // const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
 
@@ -93,11 +104,11 @@ async function _createKyc(memberId, email) {
       await Member.update({
         kyc_id: kyc.data.id
       }, {
-          where: {
-            id: memberId,
-          },
-          returning: true
-        });
+        where: {
+          id: memberId,
+        },
+        returning: true
+      });
     }
     return id;
   } catch (err) {
@@ -109,7 +120,7 @@ async function _submitKyc(kycId, email) {
     let content = {};
     content[`${config.kyc.schema}`] = { email: email };
     let params = { body: [{ level: 1, content: content }], kycId: kycId };
-    return await Kyc.submit(params);;
+    return await Kyc.submit(params);
   } catch (err) {
     logger.error(err);
     throw err;
@@ -122,4 +133,4 @@ async function _updateStatus(kycId, action) {
   } catch (err) {
     logger.error("update kyc account fail", err);
   }
-} 
+}

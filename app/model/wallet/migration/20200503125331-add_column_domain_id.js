@@ -4,23 +4,36 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.addColumn('members', 'domain_id', {
-          type: Sequelize.DataTypes.INTEGER,
-          autoIncrement: true
-        }, { transaction: t }),
-        queryInterface.addColumn('members', 'domain_name', {
-          type: Sequelize.DataTypes.STRING(256)
-        }, { transaction: t })
+        queryInterface.describeTable('members')
+          .then(tableDefinition => {
+            if (tableDefinition['domain_id']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('members', 'domain_id', {
+              type: Sequelize.DataTypes.INTEGER,
+              autoIncrement: true
+            })
+          }),
+        queryInterface.describeTable('members')
+          .then(tableDefinition => {
+            if (tableDefinition['domain_name']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('members', 'domain_name', {
+              type: Sequelize.DataTypes.STRING(256)
+            })
+          })
       ]);
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.transaction(t => {
-      return Promise.all([
-        queryInterface.removeColumn('members', 'domain_id', { transaction: t }),
-        queryInterface.removeColumn('members', 'domain_name', { transaction: t })
-      ]);
-    });
+    /*
+       Add reverting commands here.
+       Return a promise to correctly handle asynchronicity.
+ 
+       Example:
+       return queryInterface.dropTable('users');
+     */
   }
 };

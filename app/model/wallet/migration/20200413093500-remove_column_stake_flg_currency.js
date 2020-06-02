@@ -11,7 +11,13 @@ module.exports = {
     */
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.removeColumn('currencies', 'stake_flg', { transaction: t }),
+        queryInterface.describeTable('currencies')
+          .then(tableDefinition => {
+            if (!tableDefinition['stake_flg']) {
+              return Promise.resolve();
+            }
+            return queryInterface.removeColumn('currencies', 'stake_flg');
+          })
       ]);
     });
   },
@@ -24,12 +30,5 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-    return queryInterface.sequelize.transaction(t => {
-      return Promise.all([
-        queryInterface.addColumn('currencies', 'stake_flg', {
-          type: Sequelize.DataTypes.BOOLEAN
-        }, { transaction: t })
-      ]);
-    });
   }
 };

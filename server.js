@@ -1,4 +1,4 @@
-/*eslint no-process-env: "off"*/
+/* eslint no-process-env: "off" */
 require('dotenv').config();
 require('rootpath')();
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -39,7 +39,7 @@ database.init(async err => {
         console.log('error', error);
         console.log('stdout ', stdout);
         console.log('stderr ', stderr);
-      })
+      });
     });
 
     process.on('SIGINT', () => {

@@ -4,24 +4,38 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.addColumn('wallets', 'backup_passphrase_flg', {
-          type: Sequelize.DataTypes.BOOLEAN,
-          defaultValue: false
-        }, { transaction: t }),
-        queryInterface.addColumn('wallets_his', 'backup_passphrase_flg', {
-          type: Sequelize.DataTypes.BOOLEAN,
-          defaultValue: false
-        }, { transaction: t })
+        queryInterface.describeTable('wallets')
+          .then(tableDefinition => {
+            if (tableDefinition['backup_passphrase_flg']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('wallets', 'backup_passphrase_flg', {
+              type: Sequelize.DataTypes.BOOLEAN,
+              defaultValue: false
+            })
+          })
+        ,
+        queryInterface.describeTable('wallets_his')
+          .then(tableDefinition => {
+            if (tableDefinition['backup_passphrase_flg']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('wallets_his', 'backup_passphrase_flg', {
+              type: Sequelize.DataTypes.BOOLEAN,
+              defaultValue: false
+            })
+          })
       ]);
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.sequelize.transaction(t => {
-      return Promise.all([
-        queryInterface.removeColumn('wallets', 'backup_passphrase_flg', { transaction: t }),
-        queryInterface.removeColumn('wallets_his', 'backup_passphrase_flg', { transaction: t })
-      ]);
-    });
+    /*
+       Add reverting commands here.
+       Return a promise to correctly handle asynchronicity.
+ 
+       Example:
+       return queryInterface.dropTable('users');
+     */
   }
 };

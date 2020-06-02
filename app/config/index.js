@@ -170,7 +170,8 @@ const config = {
       address: process.env.PLUTX_DNS_CONTRACT_ADDRESS,
       userAddAddress: 'userAddAddress',
       userEditAddress: 'userEditAddress',
-      userRemoveAddress: 'userRemoveAddress'
+      userRemoveAddress: 'userRemoveAddress',
+      createSubdomain: 'createSubdomain',
     }
   },
   txCreator: {

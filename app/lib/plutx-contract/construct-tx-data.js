@@ -15,7 +15,7 @@ const api = new InfinitoApi(opts);
 let coinAPI = api.ETH;
 
 module.exports = {
-  userAddAddress: async (_domain, _subDomain, _crypto, _address, sig) => {
+  userAddAddress: async (_domain, _subDomain, _crypto, _address) => {
     try {
       let paramTypeList = ["string", "string", "string", "string", "bytes"];
       let paramList = [
@@ -23,7 +23,7 @@ module.exports = {
         _subDomain,
         _crypto,
         _address,
-        sig
+        await _getSig(_subDomain, _crypto)
       ];
       let sig = abi.methodID(
         config.plutx.dnsContract.userAddAddress,
@@ -39,7 +39,7 @@ module.exports = {
       return null;
     }
   },
-  userEditAddress: async (_domain, _subDomain, _crypto, _newAddress, sig) => {
+  userEditAddress: async (_domain, _subDomain, _crypto, _newAddress) => {
     try {
       let paramTypeList = ["string", "string", "string", "string", "bytes"];
       let paramList = [
@@ -47,7 +47,7 @@ module.exports = {
         _subDomain,
         _crypto,
         _newAddress,
-        sig
+        await _getSig(_subDomain, _crypto)
       ];
       let sig = abi.methodID(
         config.plutx.dnsContract.userEditAddress,
@@ -63,14 +63,14 @@ module.exports = {
       return null;
     }
   },
-  userRemoveAddress: async (_domain, _subDomain, _crypto, sig) => {
+  userRemoveAddress: async (_domain, _subDomain, _crypto) => {
     try {
       let paramTypeList = ["string", "string", "string", "bytes"];
       let paramList = [
         _domain,
         _subDomain,
         _crypto,
-        sig
+        await _getSig(_subDomain, _crypto)
       ];
       let sig = abi.methodID(
         config.plutx.dnsContract.userRemoveAddress,
@@ -86,17 +86,29 @@ module.exports = {
       return null;
     }
   },
-  getSig: async (subdomain, crypto) => {
+  createSubdomain: async (_domain, _subDomain) => {
     try {
-      const unsignedSig = utils.soliditySha3(config.plutx.domain, subdomain, crypto);
-      console.log(unsignedSig);
-      await _sign(unsignedSig);
+      let paramTypeList = ["string", "string", "string", "bytes"];
+      let paramList = [
+        _domain,
+        _subDomain,
+        _crypto,
+        await _getSig(_subDomain, _crypto)
+      ];
+      let sig = abi.methodID(
+        config.plutx.dnsContract.userRemoveAddress,
+        paramTypeList
+      );
+      let encodedParams = abi.rawEncode(paramTypeList, paramList);
+      let data = '0x' + sig.toString('hex') + encodedParams.toString('hex');
+      let ret = await _constructAndSignTx(data);
+      return ret;
     }
     catch (e) {
-      console.log('get domain admin signature error:', e);
+      console.log('construct createSubdomain tx error:', e);
       return null;
     }
-  }
+  },
 }
 
 async function _constructAndSignTx(data, value = '0x0') {
@@ -114,16 +126,32 @@ async function _constructAndSignTx(data, value = '0x0') {
     };
     let tx = new Transaction(txParams, { chain: config.txCreator.ETH.testNet === 1 ? 'ropsten' : 'mainnet' });
     let { tx_raw, tx_id } = await txCreator.sign({ raw: tx.serialize().toString('hex') });
+    let ret = await coinAPI.sendTransaction({ rawtx: '0x' + tx_raw });
     console.log(tx_raw);
-    if (tx_raw) resolve({ tx_raw, tx_id: ret.data.tx_id});
-    else reject('Sign transaction failed');
+    if (ret.msg) reject('Broadcast tx failed: ' + ret.msg);
+    if (tx_raw) resolve({ tx_raw, tx_id: ret.data.tx_id.replace('0x', '') });
+    else reject('Sign and send transaction failed');
   })
 }
 
 async function _sign(unsignedSig) {
   return new Promise(async (resolve, reject) => {
+    // resolve('6d0f299022f7616ac8a78d4b04ca8078afe822b38d56303d66003e171ef6424a')
     let sig = await txCreator.sign({ raw: unsignedSig });
-    if (sig) resolve(sig);
+    console.log('sig:', sig);
+    if (sig) resolve(sig.tx_raw);
     else reject('Sign domain admin signature failed');
   })
+}
+
+async function _getSig (subdomain, crypto) {
+  try {
+    const unsignedSig = utils.soliditySha3(config.plutx.domain, subdomain, crypto.toLowerCase());
+    console.log('unsigned sig:', unsignedSig);
+    return await _sign(unsignedSig);
+  }
+  catch (e) {
+    console.log('get domain admin signature error:', e);
+    return null;
+  }
 }

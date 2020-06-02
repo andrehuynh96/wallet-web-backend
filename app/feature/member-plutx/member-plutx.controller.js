@@ -129,35 +129,10 @@ module.exports = {
       next(err);
     }
   },
-  getDomainAdminSigature: async (req, res, next) => {
-    try {
-      logger.info('member_plutxs::getDomainAdminSigature');
-      const { params: { crypto } } = req;
-      let user = await Member.findOne({
-        where: {
-          id: req.user.id
-        }
-      });
-      if (!user) res.serverInternalError();
-      if (!user.domain_name)
-        user.domain_name = user.domain_id.toString().padStart(6, '0') + '.' + config.plutx.domain;
-      await Member.update({
-        domain_name: user.domain_name
-      }, {
-        where: {
-          id: req.user.id
-        }
-      });
-      return await PlutxContract.getSig(user.domain_name, crypto);
-    }
-    catch (err) {
-      logger.error("get domain admin signature fail: ", err);
-      next(err);
-    }
-  },
   updatePlutxAddress: async (req, res, next) => {
     try {
-      const { body: { subdomain, crypto, address, sig, walletId, action } } = req;
+      logger.info('member_plutxs::updatePlutxAddress');
+      const { body: { subdomain, crypto, address, walletId, action } } = req;
       let record = await MemberPlutx.findOne({
         where: {
           member_domain_name: subdomain,
@@ -171,6 +146,7 @@ module.exports = {
           domain_name: 'temp',
           member_id: req.user.id,
           member_domain_name: subdomain,
+          platform: crypto,
           address: address,
           active_flg: true,
           wallet_id: walletId
@@ -184,17 +160,17 @@ module.exports = {
       let signedTx, response;
       switch (action) {
         case PlutxUserAddressAction.ADD_ADDRESS:
-          signedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain, crypto, address, sig);
-          response = await Plutx.sendRawTransaction({ rawTx: signedTx.rawTx, requestType: action });
-          await MemberPlutx.create({
+          signedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain, crypto, address);
+          // response = await Plutx.sendRawTransaction({ rawTx: signedTx.rawTx, requestType: action });
+          if (signedTx) await MemberPlutx.create({
             ...record
           })
           break;
         case PlutxUserAddressAction.EDIT_ADDRESS:
-          signedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain, crypto, address, sig);
-          response = await Plutx.sendRawTransaction({ rawTx: signedTx.rawTx, requestType: action });
+          signedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain, crypto, address);
+          // response = await Plutx.sendRawTransaction({ rawTx: signedTx.rawTx, requestType: action });
           record.address = address;
-          await MemberPlutx.update({
+          if (signedTx) await MemberPlutx.update({
             ...record
           }, {
             where: {
@@ -203,20 +179,60 @@ module.exports = {
           })
           break;
         case PlutxUserAddressAction.REMOVE_ADDRESS:
-          signedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain, crypto, sig);
-          response = await Plutx.sendRawTransaction({ rawTx: signedTx.rawTx, requestType: action });
-          await MemberPlutx.delete({
+          signedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain, crypto);
+          // response = await Plutx.sendRawTransaction({ rawTx: signedTx.rawTx, requestType: action });
+          if (signedTx) await MemberPlutx.delete({
             where: {
               id: record.id
             }
           })
           break;
       }
-      return response;
+      return res.ok({tx_id:signedTx});
     }
     catch (err) {
       logger.error("update Plutx crypto addresses fail: ", err);
       next(err);
     }
-  }
+  },
+  getAddress: async (req, res, next) => {
+    try {
+      logger.info('member_plutxs::getAddress');
+      let response = await Plutx.getAddress({ body: req.query });
+      return res.ok(response);
+    }
+    catch (err) {
+      logger.error("get crypto addresses of Plutx subdomain fail: ", err);
+      next(err);
+    }
+  },
+  lookup: async (req, res, next) => {
+    try {
+      logger.info('member_plutxs::lookup');
+      let response = await Plutx.lookup({ body: req.query });
+      return res.ok(response);
+    }
+    catch (err) {
+      logger.error("get crypto addresses of Plutx subdomain fail: ", err);
+      next(err);
+    }
+  },
+  createSubdomain: async (req, res, next) => {
+    try {
+      logger.info('member_plutxs::createSubdomain');
+      let member = await Member.findOne({
+        where: {
+          id: req.user.id
+        }
+      });
+      if (!member)
+        return res.serverInternalError();
+      let response = await PlutxContract.createSubdomain(config.plutx.domain, member.domain_id.toString().padStart(6, '0') + '.' + config.plutx.domain);
+      return res.ok(response);
+    }
+    catch (err) {
+      logger.error("create Plutx subdomain fail: ", err);
+      next(err);
+    }
+  },
 }

@@ -5,9 +5,8 @@ let keys = Object.values(PlutxUserAddressAction);
 const schema = Joi.object().keys({
   subdomain: Joi.string().required(), 
   crypto: Joi.string().required(), 
-  address: Joi.string().required().allow(''), 
-  sig: Joi.string().required(),
-  walletID: Joi.string().required().allow(''),
+  address: Joi.string().required().allow(''),
+  walletId: Joi.string().required().allow(''),
   action: Joi.string().valid(keys).required()
 });
 

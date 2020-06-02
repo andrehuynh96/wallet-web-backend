@@ -24,16 +24,28 @@ router.post(
 );
 
 router.post(
-  '/member-plutxs/get-admin-sig/:crypto',
-  authenticate,
-  controller.getDomainAdminSigature
-)
-
-router.post(
   '/member-plutxs/address',
   authenticate,
   validator(updatePlutxAddress),
   controller.updatePlutxAddress
+);
+
+router.get(
+  '/member-plutxs/get-address',
+  authenticate,
+  controller.getAddress
+);
+
+router.get(
+  '/member-plutxs/lookup',
+  authenticate,
+  controller.lookup
+);
+
+router.get(
+  '/member-plutxs/create-subdomain',
+  authenticate,
+  controller.createSubdomain
 )
 
 module.exports = router;
@@ -131,7 +143,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-               "data": true
+                "data": true
  *             }
  *       400:
  *         description: Error
@@ -188,6 +200,225 @@ module.exports = router;
                           "active_flg": true,
                           "created_at": "2020-04-29T08:26:25.355Z",
                           "updated_at": "2020-04-29T08:26:25.355Z"
+                      }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/member-plutxs/address:
+ *   post:
+ *     summary: add/edit/remove Plutx subdomain address
+ *     tags:
+ *       - Member Plutx
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data for update Plutx subdomain address.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - subdomain
+ *            - crypto
+ *            - walletId
+ *            - action
+ *            properties:
+ *              subdomain:
+ *                type: string
+ *              crypto:
+ *                type: string
+ *              walletId:
+ *                type: string
+ *              action:
+ *                type: string
+ *              address:
+ *                type: string
+ *                enum:
+ *                  - ADD_ADDRESS
+ *                  - EDIT_ADDRESS
+ *                  - REMOVE_ADDRESS
+ *            example:
+ *                  {
+                      "subdomain": "trinh.moonstake.io",
+                      "crypto": "ETH",
+                      "address": "0xaaaa",
+                      "walletId": "bde582c1-f184-4ac2-9167-647d83e47091",
+                      "action": "ADD_ADDRESS"
+                    }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data":
+                      {
+                          "tx_id": ""
+                      }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/member-plutxs/get-address:
+ *   get:
+ *     summary: get all platform address of a Plutx subdomain
+ *     tags:
+ *       - Member Plutx
+ *     description: get all platform address of a Plutx subdomain
+ *     parameters:
+ *       - name: fullDomain
+ *         in: query
+ *         type: string
+ *         required: true
+ *       - name: cryptoName
+ *         in: query
+ *         type: string
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data":
+                      {
+                          "tx_id": ""
+                      }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/member-plutxs/lookup:
+ *   post:
+ *     summary: lookup Plutx subdomain
+ *     tags:
+ *       - Member Plutx
+ *     description: lookup Plutx subdomain
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: fullDomain
+ *         in: query
+ *         type: string
+ *         required: true
+ *       - name: addressAndMetaData
+ *         in: query
+ *         type: boolean
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data":
+                      {
+                          "tx_id": ""
+                      }
+              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/member-plutxs/create-subdomain:
+ *   post:
+ *     summary: create Plutx subdomain
+ *     tags:
+ *       - Member Plutx
+ *     description: create Plutx subdomain
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data":
+                      {
+                          "tx_id": ""
                       }
               }
  *       400:

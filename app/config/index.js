@@ -165,7 +165,25 @@ const config = {
   plutx: {
     domain: process.env.PLUTX_DOMAIN,
     format: process.env.PLUTX_FORMAT,
-    url: process.env.PLUTX_URL
+    url: process.env.PLUTX_URL,
+    dnsContract: {
+      address: process.env.PLUTX_DNS_CONTRACT_ADDRESS,
+      userAddAddress: 'userAddAddress',
+      userEditAddress: 'userEditAddress',
+      userRemoveAddress: 'userRemoveAddress',
+      createSubdomain: 'createSubdomain',
+    }
+  },
+  txCreator: {
+    host: process.env.TX_CREATOR_HOST,
+    ETH: {
+      keyId: process.env.ERC20_TX_CREATOR_KEY_ID,
+      serviceId: process.env.ERC20_TX_CREATOR_SERVICE_ID,
+      index: process.env.ERC20_TX_CREATOR_INDEX,
+      testNet: process.env.ERC20_TX_CREATOR_TESTNET,
+      fee: process.env.ERC20_ETH_GAS_PRICE,
+      gasLimit: process.env.ERC20_ETH_GAS_LIMIT
+    }
   },
   plutxUserID: {
     isEnabled: process.env.PLUTX_USERID_IS_ENABLED === 'true',

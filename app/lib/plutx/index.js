@@ -22,7 +22,7 @@ module.exports = {
   lookup: async (data) => {
     try {
       let params = {...data};
-      return await _makeRequest('/lookup', params, 'get');
+      return await _makeGetRequest('/lookup', params, 'get');
     } catch (err) {
       throw err;
     }
@@ -30,7 +30,7 @@ module.exports = {
   getAddress: async (data) => {
     try {
       let params = {...data};
-      return await _makeRequest('/get-address', params, 'get');
+      return await _makeGetRequest('/get-address', params, 'get');
     } catch (err) {
       throw err;
     }
@@ -63,6 +63,30 @@ async function _makeRequest(path, params, method) {
       return { error: res.error};
     } else {
       return { data: res.data };
+    }
+  } catch (err) {
+    logger.error(err);
+    return { error: err };
+  }
+}
+
+async function _makeGetRequest(path, params, method) {
+  try {
+    let headers = {...params.headers};
+    let url = path ? config.plutx.url + path : config.plutx.url;
+    let options = {
+      method: method,
+      url: url,
+      params: params,
+      headers: headers,
+    };
+    let res = await Axios(options).catch(e => {
+      throw e;
+    });
+    if (res.error) {
+      return { error: res.error};
+    } else {
+      return { data: res.data.result };
     }
   } catch (err) {
     logger.error(err);

@@ -88,6 +88,7 @@ module.exports = {
   },
   createSubdomain: async (_domain, _subDomain) => {
     try {
+      return true;
       let paramTypeList = ["string", "string", "string", "bytes"];
       let paramList = [
         _domain,

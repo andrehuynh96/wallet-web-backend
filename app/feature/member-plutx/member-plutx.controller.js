@@ -4,10 +4,13 @@ const MemberPlutx = require('app/model/wallet').member_plutxs;
 const Member = require('app/model/wallet').members;
 const WalletPrivKey = require('app/model/wallet').wallet_priv_keys;
 const mapper = require('app/feature/response-schema/member-plutx.response-schema');
+const walletPrivKeyMapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const database = require('app/lib/database').db().wallet;
 const Plutx = require('app/lib/plutx');
 const PlutxContract = require('app/lib/plutx-contract');
 const PlutxUserAddressAction = require("app/model/wallet/value-object/plutx-user-address");
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -133,6 +136,14 @@ module.exports = {
     try {
       logger.info('member_plutxs::updatePlutxAddress');
       const { body: { subdomain, crypto, address, walletId, action } } = req;
+      let wallet = await WalletPrivKey.findOne({
+        where: {
+          address: { [Op.iLike]: `${address}` },
+          wallet_id: walletId
+        }
+      });
+      if (!wallet)
+        return res.badRequest(res.__("WALLETID_AND_ADDRESS_NOT_VALID"), "WALLETID_AND_ADDRESS_NOT_VALID", { fields: ['address', 'walletId'] });
       let record = await MemberPlutx.findOne({
         where: {
           member_domain_name: subdomain,
@@ -188,7 +199,7 @@ module.exports = {
           })
           break;
       }
-      return res.ok({tx_id:signedTx});
+      return res.ok({ tx_id: signedTx });
     }
     catch (err) {
       logger.error("update Plutx crypto addresses fail: ", err);
@@ -198,8 +209,8 @@ module.exports = {
   getAddress: async (req, res, next) => {
     try {
       logger.info('member_plutxs::getAddress');
-      let response = await Plutx.getAddress({ body: req.query });
-      return res.ok(response);
+      let response = await Plutx.getAddress(req.query);
+      return res.ok(response.data);
     }
     catch (err) {
       logger.error("get crypto addresses of Plutx subdomain fail: ", err);
@@ -209,8 +220,28 @@ module.exports = {
   lookup: async (req, res, next) => {
     try {
       logger.info('member_plutxs::lookup');
-      let response = await Plutx.lookup({ body: req.query });
-      return res.ok(response);
+      // req.query.fullDomain = config.plutx.domain;
+      // let response = await Plutx.lookup(req.query);
+      // response = response.data;
+      // let subdomainList = response.map(ele => ele.fullDomain);
+      let retObject = {};
+      let walletIdList = await MemberPlutx.findAll({
+        attributes: ['member_domain_name', 'wallet_id', 'platform', 'address'],
+        where: {
+          active_flg: true
+        },
+        raw: true
+      });
+      walletIdList.map(ele => {
+        if (!retObject[ele.platform]) {
+          retObject[ele.platform] = [];
+          retObject[ele.platform].push({ walletId: ele.wallet_id, address: ele.address, member_domain_name: member_domain_name })
+        }
+        else {
+          retObject[ele.platform].push({ walletId: ele.wallet_id, address: ele.address, member_domain_name: member_domain_name })
+        }
+      });
+      return res.ok(retObject);
     }
     catch (err) {
       logger.error("get crypto addresses of Plutx subdomain fail: ", err);
@@ -232,6 +263,23 @@ module.exports = {
     }
     catch (err) {
       logger.error("create Plutx subdomain fail: ", err);
+      next(err);
+    }
+  },
+  getAddressByPlatformAndWalletId: async (req, res, next) => {
+    try {
+      logger.info('member_plutxs::getAddressByPlatformAndWalletId');
+      const { query: { platform, walletId } } = req
+      let wallet = await WalletPrivKey.findOne({
+        where: {
+          platform: { [Op.iLike]: `${platform}` },
+          wallet_id: walletId
+        }
+      });
+      return res.ok(walletPrivKeyMapper(wallet));
+    }
+    catch (err) {
+      logger.error("load address by platform and walletid fail: ", err);
       next(err);
     }
   },

@@ -329,19 +329,16 @@ module.exports = router;
  *             {
                   "data": {
                       "fullDomain": "wallet1.google1.com",
-                      "domain": "google1.com",
-                      "subDomain": "wallet1",
                       "cryptos": [
                           {
                               "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
                               "cryptoName": "eth",
-                              "metadata": null
+                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
                           },
                           {
                               "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
                               "cryptoName": "usdt",
-                              "metadata": null,
-                              "defaultAddress": true
+                              "walletId": "1238b44b-47a7-4b78-bf5f-8450b7c1d354"
                           }
                       ]
                   }

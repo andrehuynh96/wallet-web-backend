@@ -209,8 +209,29 @@ module.exports = {
   getAddress: async (req, res, next) => {
     try {
       logger.info('member_plutxs::getAddress');
-      let response = await Plutx.getAddress(req.query);
-      return res.ok(response.data);
+      // let response = await Plutx.getAddress(req.query);
+      // return res.ok(response.data);
+
+      let retObject = {};
+      let walletIdList = await MemberPlutx.findAll({
+        attributes: ['member_domain_name', 'wallet_id', 'platform', 'address'],
+        where: {
+          active_flg: true,
+          member_id: req.user.id
+        },
+        raw: true
+      });
+      retObject.fullDomain = walletIdList[0].member_domain_name;
+      retObject.cryptos = walletIdList;
+      retObject.cryptos.map(ele => {
+        return {
+          address: ele.address,
+          cryptoName: ele.platform,
+          walletId: ele.wallet_id
+        }
+      });
+
+      return res.ok(retObject);
     }
     catch (err) {
       logger.error("get crypto addresses of Plutx subdomain fail: ", err);

@@ -370,7 +370,7 @@ module.exports = router;
 /**
  * @swagger
  * /web/member-plutxs/lookup:
- *   post:
+ *   get:
  *     summary: lookup Plutx subdomain
  *     tags:
  *       - Member Plutx
@@ -445,7 +445,7 @@ module.exports = router;
 /**
  * @swagger
  * /web/member-plutxs/create-subdomain:
- *   post:
+ *   get:
  *     summary: create Plutx subdomain
  *     tags:
  *       - Member Plutx

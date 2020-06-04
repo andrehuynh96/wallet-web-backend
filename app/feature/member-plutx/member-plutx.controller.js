@@ -229,6 +229,8 @@ module.exports = {
         }
       });
       response.cryptos = ret;
+      response.subDomain = response.fullDomain;
+      delete response.fullDomain;
       delete response.domain;
       delete response.subDomain;
 

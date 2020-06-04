@@ -328,7 +328,7 @@ module.exports = router;
  *           application/json:
  *             {
                   "data": {
-                      "fullDomain": "wallet1.google1.com",
+                      "subDomain": "wallet1.google1.com",
                       "cryptos": [
                           {
                               "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",

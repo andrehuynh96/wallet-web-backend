@@ -34,4 +34,23 @@ module.exports = {
       throw err;
     }
   },
+  signMessage: async (data, platform = 'ETH') => {
+    try {
+      let result = await axios.post(
+        `${config.txCreator.host}/api/message/sign/${config.txCreator[platform].keyId}/${platform}/address/${config.txCreator[platform].index}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json"
+          },
+          params: {
+            testnet: config.txCreator[platform].testNet
+          }
+        }
+      );
+      return result.data.data;
+    } catch (err) {
+      throw err;
+    }
+  },
 };

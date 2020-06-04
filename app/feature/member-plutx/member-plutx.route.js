@@ -328,20 +328,17 @@ module.exports = router;
  *           application/json:
  *             {
                   "data": {
-                      "fullDomain": "wallet1.google1.com",
-                      "domain": "google1.com",
-                      "subDomain": "wallet1",
+                      "subDomain": "wallet1.google1.com",
                       "cryptos": [
                           {
                               "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
                               "cryptoName": "eth",
-                              "metadata": null
+                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
                           },
                           {
                               "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
                               "cryptoName": "usdt",
-                              "metadata": null,
-                              "defaultAddress": true
+                              "walletId": "1238b44b-47a7-4b78-bf5f-8450b7c1d354"
                           }
                       ]
                   }
@@ -370,11 +367,16 @@ module.exports = router;
 /**
  * @swagger
  * /web/member-plutxs/lookup:
- *   post:
+ *   get:
  *     summary: lookup Plutx subdomain
  *     tags:
  *       - Member Plutx
  *     description: lookup Plutx subdomain
+ *     parameters:
+ *       - name: platform
+ *         in: query
+ *         type: string
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -383,44 +385,22 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                  "data": {
-                      "usdt": [
-                          {
-                              "member_domain_name": "google2.com",
-                              "address": "0xf86bBfC1C09AC678D05117222eBbF76691dA6846",
-                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
-                          },
-                          {
-                              "member_domain_name": "google1.com",
-                              "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
-                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
-                          },
-                          {
-                              "member_domain_name": "wallet1.google1.com",
-                              "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
-                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
-                          }
-                      ],
-                      "eth": [
-                          {
-                              "member_domain_name": "google3.com",
-                              "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
-                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
-                          },
-                          {
-                              "member_domain_name": "wallet1.google2.com",
-                              "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
-                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
-                          }
-                      ],
-                      "btc": [
-                          {
-                              "member_domain_name": "google1.com",
-                              "address": "0xf86bBfC1C09AC678D05117222eBbF76691dA6846",
-                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
-                          }
-                      ]
-                  }
+                  "data": [
+                      {
+                          "id": "72485fb1-af0a-41be-a351-24d47812fad0",
+                          "platform": "BTC",
+                          "address": "n2mWRz7MastWjhFHmS4d4o7ywQQbdpfuvh",
+                          "hd_path": "m/44'/0'/0'/0/0",
+                          "created_at": "2020-04-22T08:19:04.871Z"
+                      },
+                      {
+                          "id": "29b690e1-900b-4b31-baa4-193e692bd908",
+                          "platform": "BTC",
+                          "address": "muNqek94RUETt3DGpg5p9WsnAYbqzmzWg1",
+                          "hd_path": "m/44'/0'/0'/0/0",
+                          "created_at": "2020-04-24T08:53:49.742Z"
+                      },
+                  ]
               }
  *       400:
  *         description: Error
@@ -445,7 +425,7 @@ module.exports = router;
 /**
  * @swagger
  * /web/member-plutxs/create-subdomain:
- *   post:
+ *   get:
  *     summary: create Plutx subdomain
  *     tags:
  *       - Member Plutx

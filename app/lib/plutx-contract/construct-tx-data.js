@@ -115,20 +115,25 @@ module.exports = {
 async function _constructAndSignTx(data, value = '0x0') {
   return new Promise(async (resolve, reject) => {
     let from = await txCreator.getAddress();
+    // console.log('from address:', from);
     let nonce = await coinAPI.getNonce(from);
+    console.log('nonce:', nonce.data.nonce);
     const txParams = {
       nonce: nonce.data.nonce,
       gasPrice: config.txCreator.ETH.fee,
       gasLimit: config.txCreator.ETH.gasLimit,
-      from,
-      to: config.lockingContract.address,
+      // from: from,
+      to: config.plutx.dnsContract.address,
       value,
       data
     };
+    // console.log(txParams);
     let tx = new Transaction(txParams, { chain: config.txCreator.ETH.testNet === 1 ? 'ropsten' : 'mainnet' });
+    // console.log('unsigned tx_raw:', tx.serialize().toString('hex'));
     let { tx_raw, tx_id } = await txCreator.sign({ raw: tx.serialize().toString('hex') });
     let ret = await coinAPI.sendTransaction({ rawtx: '0x' + tx_raw });
-    console.log(tx_raw);
+    console.log('signed tx_raw:', tx_raw);
+    console.log('ret:', ret);
     if (ret.msg) reject('Broadcast tx failed: ' + ret.msg);
     if (tx_raw) resolve({ tx_raw, tx_id: ret.data.tx_id.replace('0x', '') });
     else reject('Sign and send transaction failed');
@@ -138,9 +143,9 @@ async function _constructAndSignTx(data, value = '0x0') {
 async function _sign(unsignedSig) {
   return new Promise(async (resolve, reject) => {
     // resolve('6d0f299022f7616ac8a78d4b04ca8078afe822b38d56303d66003e171ef6424a')
-    let sig = await txCreator.sign({ raw: unsignedSig });
+    let sig = await txCreator.signMessage({ raw: unsignedSig });
     console.log('sig:', sig);
-    if (sig) resolve(sig.tx_raw);
+    if (sig) resolve(sig);
     else reject('Sign domain admin signature failed');
   })
 }

@@ -139,7 +139,8 @@ module.exports = {
       let wallet = await WalletPrivKey.findOne({
         where: {
           address: { [Op.iLike]: `${address}` },
-          wallet_id: walletId
+          wallet_id: walletId,
+          deleted_flg: false
         }
       });
       if (!wallet)
@@ -199,7 +200,7 @@ module.exports = {
           })
           break;
       }
-      return res.ok({ tx_id: signedTx });
+      return res.ok({ tx_id: signedTx.tx_id });
     }
     catch (err) {
       logger.error("update Plutx crypto addresses fail: ", err);
@@ -210,7 +211,30 @@ module.exports = {
     try {
       logger.info('member_plutxs::getAddress');
       let response = await Plutx.getAddress(req.query);
-      return res.ok(response.data);
+      response = response.data;
+      let addressList = response.cryptos.map(ele => ele.address);
+      let walletIdList = await WalletPrivKey.findAll({
+        attributes: ["id", "address", "platform"],
+        where: {
+          address: addressList,
+          deleted_flg: false
+        },
+        raw: true
+      });
+      let ret = response.cryptos.map(ele => {
+        return {
+          address: ele.address,
+          cryptoName: ele.cryptoName,
+          walletId: walletIdList.find(ele1 => ele1.address == ele.address)
+        }
+      });
+      response.cryptos = ret;
+      response.subDomain = response.fullDomain;
+      delete response.fullDomain;
+      delete response.domain;
+      delete response.subDomain;
+
+      return res.ok(response);
     }
     catch (err) {
       logger.error("get crypto addresses of Plutx subdomain fail: ", err);
@@ -220,28 +244,14 @@ module.exports = {
   lookup: async (req, res, next) => {
     try {
       logger.info('member_plutxs::lookup');
-      // req.query.fullDomain = config.plutx.domain;
-      // let response = await Plutx.lookup(req.query);
-      // response = response.data;
-      // let subdomainList = response.map(ele => ele.fullDomain);
-      let retObject = {};
-      let walletIdList = await MemberPlutx.findAll({
-        attributes: ['member_domain_name', 'wallet_id', 'platform', 'address'],
+      let response = await WalletPrivKey.findAll({
         where: {
-          active_flg: true
+          deleted_flg: false,
+          platform: { [Op.iLike]: `${req.query.platform}` }
         },
         raw: true
       });
-      walletIdList.map(ele => {
-        if (!retObject[ele.platform]) {
-          retObject[ele.platform] = [];
-          retObject[ele.platform].push({ walletId: ele.wallet_id, address: ele.address, member_domain_name: member_domain_name })
-        }
-        else {
-          retObject[ele.platform].push({ walletId: ele.wallet_id, address: ele.address, member_domain_name: member_domain_name })
-        }
-      });
-      return res.ok(retObject);
+      return res.ok(walletPrivKeyMapper(response));
     }
     catch (err) {
       logger.error("get crypto addresses of Plutx subdomain fail: ", err);
@@ -273,7 +283,8 @@ module.exports = {
       let wallet = await WalletPrivKey.findOne({
         where: {
           platform: { [Op.iLike]: `${platform}` },
-          wallet_id: walletId
+          wallet_id: walletId,
+          deleted_flg: false
         }
       });
       return res.ok(walletPrivKeyMapper(wallet));

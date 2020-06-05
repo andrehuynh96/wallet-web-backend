@@ -9,15 +9,26 @@ module.exports = {
   getAll: async (req, res, next) => {
     try {
       logger.info('wallet::all');
-      const { query: { offset, limit, default_flg}, user} = req;
+      const { query: { offset, limit, default_flg, platform}, user} = req;
       const where = { deleted_flg: false, member_id: user.id };
       if (default_flg != undefined) {
         where.default_flg = default_flg;
       }
+      let include = [];
+      if (platform) {
+        include = [
+          {
+              model: WalletPrivateKey,
+              where: {
+                  platform: platform.toUpperCase()
+              },
+          }
+      ];
+      }
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 
-      const { count: total, rows: wallets } = await Wallet.findAndCountAll({offset: off, limit: lim, where: where, order: [['created_at', 'DESC']]});
+      const { count: total, rows: wallets } = await Wallet.findAndCountAll({offset: off, limit: lim, where: where, include: include, order: [['created_at', 'DESC']]});
       return res.ok({
         items: walletMapper(wallets),
         offset: off,

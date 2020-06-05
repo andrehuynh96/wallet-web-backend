@@ -7,7 +7,6 @@ const speakeasy = require('speakeasy');
 const database = require('app/lib/database').db().wallet;
 const WalletToken = require('app/model/wallet').wallet_tokens;
 const Webhook = require('app/lib/webhook');
-const config = require("app/config");
 
 var privkey = {};
 
@@ -41,9 +40,9 @@ privkey.create = async (req, res, next) => {
           deleted_flg: false
         }
       })
-      if (!coin) {
+      if(!coin) {
         items.push(data);
-      }
+      } 
     }
     if (items.length == 0) {
       return res.badRequest(res.__("COIN_EXISTED"), "COIN_EXISTED");
@@ -144,7 +143,7 @@ privkey.getPrivKey = async (req, res, next) => {
         secret: user.twofa_secret,
         encoding: 'base32',
         token: twofa_code,
-        window: config.twofaStep
+        window: 10
       });
       if (!verified) {
         return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });

@@ -1,5 +1,4 @@
-/* eslint no-process-env: "off"*/
-const pkg = require('../../package.json');
+/*eslint no-process-env: "off"*/
 require('dotenv').config();
 const logFolder = process.env.LOG_FOLDER || './public/logs';
 
@@ -23,13 +22,6 @@ const config = {
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
-  app: {
-    name: process.env.APP_NAME || 'staking-web-wallet-api',
-    version: pkg.version,
-    buildNumber: process.env.BUILD_NUMBER || '',
-    description: pkg.description,
-    port: parseInt(process.env.PORT || process.env.APP_PORT),
-  },
   db: {
     wallet: {
       database: process.env.WALLET_DB_NAME,
@@ -165,34 +157,8 @@ const config = {
   plutx: {
     domain: process.env.PLUTX_DOMAIN,
     format: process.env.PLUTX_FORMAT,
-    url: process.env.PLUTX_URL,
-    dnsContract: {
-      address: process.env.PLUTX_DNS_CONTRACT_ADDRESS,
-      userAddAddress: 'userAddAddress',
-      userEditAddress: 'userEditAddress',
-      userRemoveAddress: 'userRemoveAddress',
-      createSubdomain: 'createSubdomain',
-    }
-  },
-  txCreator: {
-    host: process.env.TX_CREATOR_HOST,
-    ETH: {
-      keyId: process.env.ERC20_TX_CREATOR_KEY_ID,
-      serviceId: process.env.ERC20_TX_CREATOR_SERVICE_ID,
-      index: process.env.ERC20_TX_CREATOR_INDEX,
-      testNet: process.env.ERC20_TX_CREATOR_TESTNET,
-      fee: process.env.ERC20_ETH_GAS_PRICE,
-      gasLimit: process.env.ERC20_ETH_GAS_LIMIT
-    }
-  },
-  plutxUserID: {
-    isEnabled: process.env.PLUTX_USERID_IS_ENABLED === 'true',
-    isMigrationEnabled: process.env.PLUTX_USERID_IS_MIGRATION_ENABLED === 'true',
-    apiUrl: process.env.PLUTX_USERID_API_URL,
-    apiKey: process.env.PLUTX_USERID_APP_API_KEY,
-    secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
-  },
-  twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3
+    url: process.env.PLUTX_URL
+  }
 };
 
 module.exports = config;

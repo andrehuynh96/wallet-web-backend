@@ -9,24 +9,18 @@ module.exports = {
     mocha: true
   },
   parserOptions: {
-    ecmaVersion: 2018,
     sourceType: "module",
-    ecmaFeatures: {
-      modules: true,
-      experimentalObjectRestSpread: true,
-    }
+    ecmaVersion: 8
   },
   rules: {
     "object-curly-spacing": [2, "always"],
     strict: 0,
-    quotes: [0, "double", "avoid-escape"],
+    quotes: [2, "single", "avoid-escape"],
     semi: [1, "always"],
     "keyword-spacing": [2, { before: true, after: true }],
     "space-infix-ops": 2,
-    "spaced-comment": [2, "always"],
+    "spaced-comment": [2, "alwaays"],
     "arrow-spacing": 2,
-    "no-console": 0,
-    'prefer-const': 1,
-    'no-unused-vars': 1,
+    "no-console": 0
   }
 };

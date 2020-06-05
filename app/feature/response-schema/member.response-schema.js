@@ -6,12 +6,13 @@ const destObject = {
     '[].email': '[].email',
     '[].name': '[].name',
     '[].phone': '[].phone',
-     // '[].twofa_secret': '[].twofa_secret',
+    //'[].twofa_secret': '[].twofa_secret',
     '[].twofa_enable_flg': '[].twofa_enable_flg',
     '[].twofa_download_key_flg': '[].twofa_download_key_flg',
     '[].created_at': '[].created_at',
     '[].member_sts': '[].member_sts',
     '[].fullname': '[].fullname',
+    '[].phone': '[].phone',
     '[].date_of_birth': '[].date_of_birth',
     '[].address': '[].address',
     '[].city': '[].city',
@@ -25,20 +26,20 @@ const destObject = {
     '[].kyc_level': '[].kyc_level',
     '[].kyc_status': '[].kyc_status',
     '[].kyc': '[].kyc',
-    '[].domain_name': '[].domain_id',
-    '[].plutx_userid_id': '[].plutx_userid_id?'
+    '[].domain_name': '[].domain_id'
   },
   single: {
     id: 'id',
     email: 'email',
     name: 'name',
     phone: 'phone',
-    // twofa_secret: 'twofa_secret',
+   // twofa_secret: 'twofa_secret',
     twofa_enable_flg: 'twofa_enable_flg',
     twofa_download_key_flg: 'twofa_download_key_flg',
     created_at: 'created_at',
     member_sts: 'member_sts',
     fullname: 'fullname',
+    phone: 'phone',
     date_of_birth: 'date_of_birth',
     address: 'address',
     city: 'city',
@@ -52,8 +53,7 @@ const destObject = {
     kyc_level: 'kyc_level',
     kyc_status: 'kyc_status',
     kyc: 'kyc',
-    domain_name: 'domain_name',
-    plutx_userid_id: 'plutx_userid_id?'
+    domain_name: 'domain_name'
   }
 };
 module.exports = srcObject => {
@@ -67,4 +67,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-};
+}; 

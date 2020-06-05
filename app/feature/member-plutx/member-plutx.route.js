@@ -2,7 +2,7 @@ const express = require('express');
 const controller = require('./member-plutx.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require('app/middleware/validator.middleware');
-const { update, updatePlutxAddress } = require('./validator');
+const { update } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -23,36 +23,6 @@ router.post(
   controller.checkId
 );
 
-router.post(
-  '/member-plutxs/address',
-  authenticate,
-  validator(updatePlutxAddress),
-  controller.updatePlutxAddress
-);
-
-router.get(
-  '/member-plutxs/get-address',
-  authenticate,
-  controller.getAddress
-);
-
-router.get(
-  '/member-plutxs/lookup',
-  authenticate,
-  controller.lookup
-);
-
-router.get(
-  '/member-plutxs/address',
-  authenticate,
-  controller.getAddressByPlatformAndWalletId
-);
-
-router.get(
-  '/member-plutxs/create-subdomain',
-  authenticate,
-  controller.createSubdomain
-)
 
 module.exports = router;
 
@@ -149,7 +119,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                "data": true
+               "data": true
  *             }
  *       400:
  *         description: Error

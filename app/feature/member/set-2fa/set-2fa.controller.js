@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const speakeasy = require("speakeasy");
 const Member = require('app/model/wallet').members;
-const config = require("app/config");
+const config = require('app/config');
 
 module.exports = {
   set2fa: async (req, res, next) => {

@@ -35,8 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     ref_id: {
-      type: DataTypes.STRING(128),
-      allowNull: false
+      type: DataTypes.STRING(128)
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,

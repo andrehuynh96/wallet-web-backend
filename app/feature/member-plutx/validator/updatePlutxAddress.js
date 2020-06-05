@@ -3,10 +3,9 @@ const PlutxUserAddressAction = require("app/model/wallet/value-object/plutx-user
 let keys = Object.values(PlutxUserAddressAction);
 
 const schema = Joi.object().keys({
-  subdomain: Joi.string().required(), 
   crypto: Joi.string().required(), 
-  address: Joi.string().required().allow(''),
-  walletId: Joi.string().required().allow(''),
+  address: Joi.string().optional().allow(''),
+  walletId: Joi.string().optional().allow(''),
   action: Joi.string().valid(keys).required()
 });
 

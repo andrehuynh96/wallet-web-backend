@@ -90,6 +90,6 @@ async function _makeGetRequest(path, params, method) {
     }
   } catch (err) {
     logger.error(err);
-    return { error: err };
+    return null;
   }
 }

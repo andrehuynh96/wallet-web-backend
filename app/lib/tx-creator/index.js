@@ -48,7 +48,8 @@ module.exports = {
           }
         }
       );
-      return result.data.data;
+      // return result.data.data;
+      return result.data.data.a.signature;
     } catch (err) {
       throw err;
     }

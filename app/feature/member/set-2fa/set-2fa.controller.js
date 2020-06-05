@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const speakeasy = require("speakeasy");
 const Member = require('app/model/wallet').members;
-
+const config = require("app/config");
 
 module.exports = {
   set2fa: async (req, res, next) => {
@@ -19,7 +19,7 @@ module.exports = {
           secret: member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
-          window: 10
+          window: config.twofaStep
         });
 
         if (!verified) {
@@ -43,7 +43,7 @@ module.exports = {
           secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
-          window: 10
+          window: config.twofaStep
         });
 
         if (!verified) {
@@ -87,7 +87,7 @@ module.exports = {
           secret: member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
-          window: 10
+          window: config.twofaStep
         });
         var verified = true;
 
@@ -113,7 +113,7 @@ module.exports = {
           secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           encoding: 'base32',
           token: req.body.twofa_code,
-          window: 10
+          window: config.twofaStep
         });
 
         if (!verified) {

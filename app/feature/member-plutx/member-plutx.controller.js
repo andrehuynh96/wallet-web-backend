@@ -161,6 +161,14 @@ module.exports = {
       switch (action) {
         case PlutxUserAddressAction.ADD_ADDRESS:
           signedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
+          if (!member.domain_name)
+            await Member.update({
+              domain_name: subDomain
+            }, {
+              where: {
+                id: req.user.id
+              }
+            })
           break;
         case PlutxUserAddressAction.EDIT_ADDRESS:
           signedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);

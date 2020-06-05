@@ -12,6 +12,7 @@ const config = require("app/config");
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
 const Affiliate = require('app/lib/affiliate');
+const KycStatus = require('app/model/wallet/value-object/kyc-status');
 
 module.exports = async (req, res, next) => {
   try {
@@ -144,6 +145,20 @@ module.exports = async (req, res, next) => {
       });
       let kyc = user.kyc_id && user.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: user.kyc_id }) : null;
       user.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
+      if (user.kyc) {
+        let length = Object.keys(user.kyc).length;
+        let level = 0;
+        for (let i = 1; i <= length; i ++) {
+          if (user.kyc[i.toString()].status == KycStatus.APPROVED) {
+            level = i;
+          } else {
+            break;
+          }
+        }
+        user.kyc_level = level;
+      } else {
+        user.kyc_level = 0;
+      }
       req.session.authenticated = true;
       req.session.user = user;
       return res.ok({

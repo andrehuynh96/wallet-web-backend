@@ -264,7 +264,6 @@ module.exports = router;
  *                  - REMOVE_ADDRESS
  *            example:
  *                  {
-                      "subdomain": "trinh.moonstake.io",
                       "crypto": "ETH",
                       "address": "0xaaaa",
                       "walletId": "bde582c1-f184-4ac2-9167-647d83e47091",
@@ -328,20 +327,15 @@ module.exports = router;
  *           application/json:
  *             {
                   "data": {
-                      "subDomain": "wallet1.google1.com",
-                      "cryptos": [
-                          {
-                              "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
-                              "cryptoName": "eth",
-                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
-                          },
-                          {
-                              "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
-                              "cryptoName": "usdt",
-                              "walletId": "1238b44b-47a7-4b78-bf5f-8450b7c1d354"
-                          }
-                      ]
-                  }
+                        "fullDomain": "000170.moonstake.io",
+                        "cryptos": [
+                            {
+                                "address": "0x126995fb801d15fa8c31325795f924e374c941d3",
+                                "cryptoName": "eth",
+                                "walletId": "001291e7-cfd6-45e3-acdd-b55049329219"
+                            }
+                        ]
+                    }
                 }
  *       400:
  *         description: Error
@@ -373,10 +367,10 @@ module.exports = router;
  *       - Member Plutx
  *     description: lookup Plutx subdomain
  *     parameters:
- *       - name: platform
+ *       - name: limit
  *         in: query
- *         type: string
- *         required: true
+ *         type: integer
+ *         format: int32
  *     produces:
  *       - application/json
  *     responses:
@@ -387,19 +381,27 @@ module.exports = router;
  *             {
                   "data": [
                       {
-                          "id": "72485fb1-af0a-41be-a351-24d47812fad0",
-                          "platform": "BTC",
-                          "address": "n2mWRz7MastWjhFHmS4d4o7ywQQbdpfuvh",
-                          "hd_path": "m/44'/0'/0'/0/0",
-                          "created_at": "2020-04-22T08:19:04.871Z"
+                          "fullDomain": "google2.com",
+                          "domain": "google2.com",
+                          "crypto": {
+                              "address": "0xf86bBfC1C09AC678D05117222eBbF76691dA6846",
+                              "cryptoName": "usdt",
+                              "metadata": null,
+                              "defaultAddress": true,
+                              "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
+                          }
                       },
                       {
-                          "id": "29b690e1-900b-4b31-baa4-193e692bd908",
-                          "platform": "BTC",
-                          "address": "muNqek94RUETt3DGpg5p9WsnAYbqzmzWg1",
-                          "hd_path": "m/44'/0'/0'/0/0",
-                          "created_at": "2020-04-24T08:53:49.742Z"
-                      },
+                          "fullDomain": "google3.com",
+                          "domain": "google3.com",
+                          "crypto": {
+                              "address": "0x9856165F6d09c5fbc6696d18f713Bf293584ef9E",
+                              "cryptoName": "eth",
+                              "metadata": null,
+                              "defaultAddress": true,
+                              "walletId": "1238b44b-47a7-4b78-bf5f-8450b7c1d354"
+                          }
+                      }
                   ]
               }
  *       400:

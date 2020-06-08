@@ -201,10 +201,11 @@ module.exports = {
         raw: true
       });
       let ret = response.cryptos.map(ele => {
+        let wallet = walletIdList.find(ele1 => ele1.address == ele.address);
         return {
           address: ele.address,
           cryptoName: ele.cryptoName,
-          walletId: walletIdList.find(ele1 => ele1.address == ele.address).id
+          walletId: wallet ? wallet.id : ''
         }
       });
       response.cryptos = ret;
@@ -227,7 +228,6 @@ module.exports = {
         fullDomain: config.plutx.domain,
         onlyDefaultAddress: false
       });
-      // console.log(response);
       if (!response || response.data.length == 0)
         return res.badRequest(res.__("FULLDOMAIN_NOT_FOUND"), "FULLDOMAIN_NOT_FOUND");
       response = response.data;
@@ -242,7 +242,8 @@ module.exports = {
       });
       let ret = response.map(ele => {
         let newEle = Object.assign({}, ele);
-        newEle.crypto.walletId = walletIdList.find(ele1 => ele1.address == ele.address).id;
+        let wallet = walletIdList.find(ele1 => ele1.address == ele.crypto.address);
+        newEle.crypto.walletId = wallet ? wallet.id : '';
         return newEle;
       })
       return res.ok(ret);

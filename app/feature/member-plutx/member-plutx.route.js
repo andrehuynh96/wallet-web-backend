@@ -394,7 +394,6 @@ module.exports = router;
                               "address": "0xf86bBfC1C09AC678D05117222eBbF76691dA6846",
                               "cryptoName": "usdt",
                               "metadata": null,
-                              "defaultAddress": true,
                               "walletId": "0008b44b-47a7-4b78-bf5f-8450b7c1ded0"
                           }
                       },

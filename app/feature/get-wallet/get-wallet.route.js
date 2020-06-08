@@ -46,6 +46,9 @@ module.exports = router;
  *       - name: default_flg
  *         in: query
  *         type: boolean
+ *       - name: platform
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:

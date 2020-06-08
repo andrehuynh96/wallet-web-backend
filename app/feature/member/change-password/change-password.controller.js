@@ -38,11 +38,11 @@ module.exports = async (req, res, next) => {
       const [_, user] = await Member.update({
         password_hash: passWord
       }, {
-        where: {
-          id: req.user.id,
-        },
-        returning: true
-      });
+          where: {
+            id: req.user.id,
+          },
+          returning: true
+        });
 
       if (!user || user.length == 0) {
         return res.serverInternalError();

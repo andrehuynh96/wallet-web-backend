@@ -6,30 +6,60 @@ const { update, updatePlutxAddress, sendRawTx } = require('./validator');
 const router = express.Router();
 
 router.get(
-  '/member-plutxs',
-  authenticate,
-  controller.getAll
+    '/member-plutxs',
+    authenticate,
+    controller.getAll
 );
 
 router.post(
-  '/member-plutxs',
-  authenticate,
-  validator(update),
-  controller.update
+    '/member-plutxs',
+    authenticate,
+    validator(update),
+    controller.update
 )
 
 router.post(
-  '/member-plutxs/address/broadcast',
-  authenticate,
-  controller.sendRawTx
+    '/member-plutxs/address/broadcast',
+    authenticate,
+    controller.sendRawTx
 )
 
 router.post(
-  '/member-plutxs/:domain_name/:platform',
-  authenticate,
-  controller.checkId
+    '/member-plutxs/:domain_name/:platform',
+    authenticate,
+    controller.checkId
 );
 
+router.post(
+    '/member-plutxs/address',
+    authenticate,
+    validator(updatePlutxAddress),
+    controller.updatePlutxAddress
+);
+
+router.get(
+    '/member-plutxs/get-address',
+    authenticate,
+    controller.getAddress
+);
+
+router.get(
+    '/member-plutxs/lookup',
+    authenticate,
+    controller.lookup
+);
+
+router.get(
+    '/member-plutxs/address',
+    authenticate,
+    controller.getAddressByPlatformAndWalletId
+);
+
+router.get(
+    '/member-plutxs/create-subdomain',
+    authenticate,
+    controller.createSubdomain
+)
 
 module.exports = router;
 
@@ -126,7 +156,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-               "data": true
+                "data": true
  *             }
  *       400:
  *         description: Error
@@ -446,10 +476,10 @@ module.exports = router;
  * @swagger
  * /web/member-plutxs/address:
  *   get:
- *     summary: get address by walletId and platform 
+ *     summary: get address by walletId and platform
  *     tags:
  *       - Member Plutx
- *     description: get address by walletId and platform 
+ *     description: get address by walletId and platform
  *     parameters:
  *       - name: platform
  *         in: query
@@ -532,10 +562,10 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                  "data": {
-                          "transactionHash": "0x8520415ec870582131c7db350c38c684dc909c5001505d35327c80d386213d8d"
-                      }
-              }
+									"data": {
+													"transactionHash": "0x8520415ec870582131c7db350c38c684dc909c5001505d35327c80d386213d8d"
+											}
+							}
  *       400:
  *         description: Error
  *         schema:

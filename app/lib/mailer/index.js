@@ -5,7 +5,6 @@ const fs = require("fs");
 const ejs = require('ejs');
 const EmailTemplate = require('email-templates');
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const root = path.resolve(__dirname + "../../../../public/email-template/");
 
 let transporter = nodemailer.createTransport({

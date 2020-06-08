@@ -10,26 +10,28 @@ module.exports = {
   getAll: async (req, res, next) => {
     try {
       logger.info('currencies::list');
-      let { query: {search}} = req
+      let { query: { search } } = req
       let limit = parseInt(req.query.limit) || parseInt(config.appLimit);
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      let where = { };
+      let where = {};
       if (search) {
-        where = {[Op.or]: [{
-          symbol: { [Op.iLike]: `%${search}%`}
-        },
-        {
-          name: { [Op.iLike]: `%${search}%`}
-        },
-        {
-          platform: { [Op.iLike]: `%${search}%`}
-        }]}
+        where = {
+          [Op.or]: [{
+            symbol: { [Op.iLike]: `%${search}%` }
+          },
+          {
+            name: { [Op.iLike]: `%${search}%` }
+          },
+          {
+            platform: { [Op.iLike]: `%${search}%` }
+          }]
+        }
       }
       if (req.query.default != undefined) {
         where.default_flg = req.query.default;
       }
       where.status = CurrencyStatus.ENABLED;
-      const { count: total, rows: items } = await Currency.findAndCountAll({ limit, offset, where: where, order: [['order_index', 'ASC']] });
+      const { count: total, rows: items } = await Currency.findAndCountAll({ limit, offset, where: where, order: [['symbol', 'ASC']] });
 
       return res.ok({
         items: mapper(items),

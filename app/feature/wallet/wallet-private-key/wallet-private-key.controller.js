@@ -7,6 +7,7 @@ const speakeasy = require('speakeasy');
 const database = require('app/lib/database').db().wallet;
 const WalletToken = require('app/model/wallet').wallet_tokens;
 const Webhook = require('app/lib/webhook');
+const config = require('app/config');
 
 var privkey = {};
 
@@ -33,11 +34,23 @@ privkey.create = async (req, res, next) => {
         hd_path: item.hd_path,
         encrypted_private_key: item.encrypted_private_key
       }
-      items.push(data);
+      let coin = await WalletPrivateKey.findOne({
+        where: {
+          wallet_id: wallet_id,
+          platform: item.platform,
+          deleted_flg: false
+        }
+      })
+      if (!coin) {
+        items.push(data);
+      }
+    }
+    if (items.length == 0) {
+      return res.badRequest(res.__("COIN_EXISTED"), "COIN_EXISTED");
     }
     let results = await WalletPrivateKey.bulkCreate(items);
 
-    for (let item of req.body.items) {
+    for (let item of items) {
       Webhook.addAddresses(item.platform, item.address);
     }
     return res.ok(mapper(results));
@@ -131,7 +144,7 @@ privkey.getPrivKey = async (req, res, next) => {
         secret: user.twofa_secret,
         encoding: 'base32',
         token: twofa_code,
-        window: 10
+        window: config.twofaStep
       });
       if (!verified) {
         return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });

@@ -7,6 +7,7 @@ const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/wallet.response-schema');
 const speakeasy = require('speakeasy');
 const Webhook = require('app/lib/webhook');
+const config = require('app/config');
 var wallet = {};
 
 wallet.create = async (req, res, next) => {
@@ -37,8 +38,8 @@ wallet.create = async (req, res, next) => {
     let data = {
       member_id: req.user.id,
       name: req.body.name,
-      default_flg: req.body.default_flg ? req.body.default_flg: false,
-      backup_passphrase_flg: req.body.backup_passphrase_flg ? req.body.backup_passphrase_flg: false,
+      default_flg: req.body.default_flg ? req.body.default_flg : false,
+      backup_passphrase_flg: req.body.backup_passphrase_flg ? req.body.backup_passphrase_flg : false,
       encrypted_passphrase: req.body.encrypted_passphrase
     }
     let wallet = await Wallet.create(data, { transaction });
@@ -148,7 +149,7 @@ wallet.getPassphrase = async (req, res, next) => {
         secret: user.twofa_secret,
         encoding: 'base32',
         token: twofa_code,
-        window: 10
+        window: config.twofaStep
       });
       if (!verified) {
         return res.badRequest(res.__('TWOFA_CODE_INCORRECT'), 'TWOFA_CODE_INCORRECT', { fields: ['twofa_code'] });

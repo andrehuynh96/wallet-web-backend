@@ -87,7 +87,3 @@ typings/
 
 # Plantuml output folder
 out
-staking-wallet-web-backend.code-workspace
-.vscode/settings.json
-.vscode/launch.json
-.vscode/keybindings.json

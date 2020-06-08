@@ -107,30 +107,26 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0
     },
-    affiliate_id: {
+     affiliate_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: 0
     },
-    domain_id: {
+     domain_id: {
       type: DataTypes.INTEGER,
       autoIncrement: true
     },
     domain_name: {
       type: DataTypes.STRING(256)
-    },
-    plutx_userid_id: {
-      type: DataTypes.UUID,
-      allowNull: true,
-    },
-  }, {
-    underscored: true,
-    timestamps: true,
-  });
+    }
+   }, {
+      underscored: true,
+      timestamps: true,
+    });
 
   Member.associate = (models) => {
-    Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" });
+    Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" })
   };
 
   return Member;
-};
+} 

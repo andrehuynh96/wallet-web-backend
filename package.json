@@ -1,16 +1,10 @@
 {
   "name": "staking-wallet-web-backend",
-  "version": "1.1.1",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon",
-    "start": "node index.js",
-    "lint": "eslint .",
-    "lint:check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
-    "lintfix": "eslint --fix .",
-    "prettier": "prettier --write \"{,!(node_modules)/**/}*.js\"",
-    "test": "NODE_ENV=test mocha --recursive 'app/feature/**/*.test.js'"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -31,6 +25,8 @@
     "dotenv": "^8.2.0",
     "ejs": "^3.0.1",
     "email-templates": "^7.0.2",
+    "ethereumjs-abi": "^0.6.8",
+    "ethereumjs-tx": "^2.1.2",
     "express": "^4.17.1",
     "express-rate-limit": "^5.0.0",
     "express-recaptcha": "^5.0.1",
@@ -49,6 +45,7 @@
     "nodemailer": "^6.4.2",
     "object-mapper": "^6.2.0",
     "otplib": "^12.0.1",
+    "p-iteration": "^1.1.8",
     "pg": "^7.18.1",
     "pg-hstore": "^2.3.3",
     "query-string": "^6.11.1",
@@ -62,7 +59,8 @@
     "swagger-jsdoc": "^3.5.0",
     "swagger-ui-express": "^4.1.3",
     "uuid": "^3.4.0",
-    "p-iteration": "^1.1.8"
+    "web3-eth": "^1.2.8",
+    "web3-utils": "^1.2.8"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -70,9 +68,6 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "mocha": "^7.0.1",
-    "cross-env": "6.0.3",
-    "nodemon": "^2.0.2",
-    "prettier": "^1.19.1"
+    "mocha": "^7.0.1"
   }
 }

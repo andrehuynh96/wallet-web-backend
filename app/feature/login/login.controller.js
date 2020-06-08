@@ -13,75 +13,118 @@ const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
 const Affiliate = require('app/lib/affiliate');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
 module.exports = async (req, res, next) => {
   try {
-    let user = await Member.findOne({
-      where: {
-        email: req.body.email.toLowerCase(),
-        deleted_flg: false
+    const email = req.body.email.toLowerCase();
+    const password = req.body.password;
+    let user = null;
+
+    if (IS_ENABLED_PLUTX_USERID) {
+      const registerMemberResult = await PluTXUserIdApi.login(email, password);
+
+      if (registerMemberResult.httpCode !== 200) {
+        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
       }
-    });
-    if (!user) {
-      return res.badRequest(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
-    }
 
-    if (user.member_sts == MemberStatus.LOCKED) {
-      return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
-    }
+      const { profile: userProfile } = registerMemberResult.data;
+      // console.log(registerMemberResult.data);
+      user = await Member.findOne({
+        where: {
+          email: userProfile.email.toLowerCase(),
+          deleted_flg: false,
+        }
+      });
 
-    if (user.member_sts == MemberStatus.UNACTIVATED) {
-      return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
-    }
-
-    const match = await bcrypt.compare(req.body.password, user.password_hash);
-    if (!match) {
-      if (user.attempt_login_number + 1 <= config.lockUser.maximumTriesLogin) {
-        await Member.update({
-          attempt_login_number: user.attempt_login_number + 1, // increase attempt_login_number in case wrong password
-          latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
-        }, {
-            where: {
-              id: user.id
-            }
-          })
-        if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
-          return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
-        else return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+      // If user creates account in Plutx and
+      // this is the first time he login in to Moonstake WebWallet, he doesn't have account
+      if (!user) {
+        user = await Member.create({
+          email,
+          password_hash: '',
+          member_sts: MemberStatus.ACTIVATED,
+          phone: '',
+          plutx_userid_id: userProfile.id,
+          referral_code: '',
+          referrer_code: null,
+          affiliate_id: null,
+        });
       }
-      else {
-        let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
-        nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
-        let rightNow = new Date();
-        if (nextAcceptableLogin < rightNow) { // don't forbid if lock time has passed
+
+    } else {
+      user = await Member.findOne({
+        where: {
+          email,
+          deleted_flg: false
+        }
+      });
+
+      if (!user) {
+        return res.badRequest(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+      }
+
+      if (user.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+
+      if (user.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
+      }
+
+      const match = await bcrypt.compare(password, user.password_hash);
+      if (!match) {
+        if (user.attempt_login_number + 1 <= config.lockUser.maximumTriesLogin) {
           await Member.update({
-            attempt_login_number: 1,
+            attempt_login_number: user.attempt_login_number + 1, // increase attempt_login_number in case wrong password
             latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
           }, {
               where: {
                 id: user.id
               }
             });
-          return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+
+          if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
+            return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+          else return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
         }
-        else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+        else {
+          let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
+          nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
+          let rightNow = new Date();
+          if (nextAcceptableLogin < rightNow) { // don't forbid if lock time has passed
+            await Member.update({
+              attempt_login_number: 1,
+              latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
+            }, {
+                where: {
+                  id: user.id
+                }
+              });
+            return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+          }
+          else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+        }
+      }
+      else {
+        let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
+        nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
+        let rightNow = new Date();
+        if (nextAcceptableLogin >= rightNow && user.attempt_login_number >= config.lockUser.maximumTriesLogin) // don't forbid if lock time has passed
+          return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
+        await Member.update({
+          attempt_login_number: 0,
+          latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
+        }, {
+            where: {
+              id: user.id
+            }
+          });
       }
     }
-    else {
-      let nextAcceptableLogin = new Date(user.latest_login_at ? user.latest_login_at : null);
-      nextAcceptableLogin.setMinutes(nextAcceptableLogin.getMinutes() + parseInt(config.lockUser.lockTime));
-      let rightNow = new Date();
-      if (nextAcceptableLogin >= rightNow && user.attempt_login_number >= config.lockUser.maximumTriesLogin) // don't forbid if lock time has passed
-        return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
-      await Member.update({
-        attempt_login_number: 0,
-        latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
-      }, {
-          where: {
-            id: user.id
-          }
-        })
-    }
+
     /** update domain name */
     if (user.domain_name == null) {
       let length = config.plutx.format.length - user.domain_id.toString().length;
@@ -97,7 +140,8 @@ module.exports = async (req, res, next) => {
       user = updatedUser;
     }
     /** */
-    /**create kyc account if not exist */
+
+    /** create kyc account if not exist */
     if (!user.kyc_id || user.kyc_id == '0') {
       let id = await _createKyc(user.id, req.body.email.toLowerCase());
       if (id) {
@@ -119,7 +163,7 @@ module.exports = async (req, res, next) => {
             action_type: OtpType.TWOFA
           },
           returning: true
-        })
+        });
 
       await OTP.create({
         code: verifyToken,
@@ -128,7 +172,7 @@ module.exports = async (req, res, next) => {
         expired_at: today,
         member_id: user.id,
         action_type: OtpType.TWOFA
-      })
+      });
 
       return res.ok({
         twofa: true,
@@ -148,7 +192,7 @@ module.exports = async (req, res, next) => {
       if (user.kyc) {
         let length = Object.keys(user.kyc).length;
         let level = 0;
-        for (let i = 1; i <= length; i ++) {
+        for (let i = 1; i <= length; i++) {
           if (user.kyc[i.toString()].status == KycStatus.APPROVED) {
             level = i;
           } else {
@@ -159,6 +203,8 @@ module.exports = async (req, res, next) => {
       } else {
         user.kyc_level = 0;
       }
+
+
       req.session.authenticated = true;
       req.session.user = user;
       return res.ok({

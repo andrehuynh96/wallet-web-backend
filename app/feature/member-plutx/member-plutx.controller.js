@@ -188,10 +188,10 @@ module.exports = {
     try {
       logger.info('member_plutxs::getAddress');
       let response = await Plutx.getAddress(req.query);
-      if (!response)
-        return res.badRequest(res.__("SUBDOMAIN_NOT_FOUND"), "SUBDOMAIN_NOT_FOUND");
+      if (!response || response.error)
+        return res.badRequest(res.__("SUBDOMAIN_OR_PLATFORM_NOT_FOUND"), "SUBDOMAIN_OR_PLATFORM_NOT_FOUND");
       response = response.data;
-      let addressList = response.cryptos.map(ele => ele.address);
+      let addressList = response.cryptos ? response.cryptos.map(ele => ele.address) : response.address;
       let walletIdList = await WalletPrivKey.findAll({
         attributes: ["id", "address", "platform"],
         where: {
@@ -200,19 +200,33 @@ module.exports = {
         },
         raw: true
       });
-      let ret = response.cryptos.map(ele => {
-        let wallet = walletIdList.find(ele1 => ele1.address == ele.address);
-        return {
-          address: ele.address,
-          cryptoName: ele.cryptoName,
-          walletId: wallet ? wallet.id : ''
-        }
-      });
-      response.cryptos = ret;
-      delete response.domain;
-      delete response.subDomain;
-
-      return res.ok(response);
+      let ret;
+      if (response.cryptos) {
+        ret = response.cryptos.map(ele => {
+          let wallet = walletIdList.find(ele1 => ele1.address == ele.address);
+          return {
+            address: ele.address,
+            cryptoName: ele.cryptoName,
+            walletId: wallet ? wallet.id : ''
+          }
+        });
+        response.cryptos = ret;
+        delete response.domain;
+        delete response.subDomain;
+        return res.ok(response);
+      }
+      else {
+        let wallet = walletIdList.find(ele1 => ele1.address == response.address);
+        ret = Object.assign({}, {
+          fullDomain: response.fullDomain,
+          cryptos: [{
+            address: response.address,
+            cryptoName: response.cryptoName,
+            walletId: wallet ? wallet.id : ''
+          }]
+        })
+        return res.ok(ret);
+      }
     }
     catch (err) {
       logger.error("get crypto addresses of Plutx subdomain fail: ", err);
@@ -228,7 +242,7 @@ module.exports = {
         fullDomain: config.plutx.domain,
         onlyDefaultAddress: false
       });
-      if (!response || response.data.length == 0)
+      if (!response || response.data.length == 0 || response.error)
         return res.badRequest(res.__("FULLDOMAIN_NOT_FOUND"), "FULLDOMAIN_NOT_FOUND");
       response = response.data;
       let addressList = response.map(ele => ele.crypto.address);

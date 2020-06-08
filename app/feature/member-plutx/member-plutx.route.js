@@ -2,7 +2,7 @@ const express = require('express');
 const controller = require('./member-plutx.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require('app/middleware/validator.middleware');
-const { update } = require('./validator');
+const { update, updatePlutxAddress, sendRawTx } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -17,6 +17,13 @@ router.post(
   validator(update),
   controller.update
 )
+
+router.post(
+  '/member-plutxs/address/broadcast',
+  authenticate,
+  controller.sendRawTx
+)
+
 router.post(
   '/member-plutxs/:domain_name/:platform',
   authenticate,
@@ -224,9 +231,9 @@ module.exports = router;
  *                type: string
  *              walletId:
  *                type: string
- *              action:
- *                type: string
  *              address:
+ *                type: string
+ *              action:
  *                type: string
  *                enum:
  *                  - ADD_ADDRESS
@@ -249,7 +256,7 @@ module.exports = router;
  *             {
                   "data":
                       {
-                          "tx_id": ""
+                          "tx_raw": "0x0"
                       }
               }
  *       400:
@@ -466,6 +473,69 @@ module.exports = router;
                       "created_at": "2020-05-01T10:14:44.854Z"
                   }
                 }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/member-plutxs/address/broadcast:
+ *   post:
+ *     summary: broadcast add/edit/remove Plutx subdomain address transaction
+ *     tags:
+ *       - Member Plutx
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: broadcast add/edit/remove Plutx subdomain address transaction
+ *         schema:
+ *            type: object
+ *            required:
+ *            - rawTx
+ *            - action
+ *            properties:
+ *              rawTx:
+ *                type: string
+ *              action:
+ *                type: string
+ *                enum:
+ *                  - ADD_ADDRESS
+ *                  - EDIT_ADDRESS
+ *                  - REMOVE_ADDRESS
+ *            example:
+ *                  {
+                        "rawTx": "f902ab29850ba43b7400830f4240945b38d49b051325610a04a802b87a02dca2e05dc680b902441ba5607f00000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000120000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000001c0000000000000000000000000000000000000000000000000000000000000000c6d6f6f6e7374616b652e696f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a7472696e682d746573740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000036574680000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002a307835363235646437663036316664653561663062363066616532663338346237613066396237313337000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041aa91bc5a6e88b267812fe7c8df285b4ea79f796b661506f44c345bdc0ce404192242c1f8b23192d59f3aa3052fb11f64d72ddf67a5b7d821247acb704dd61ace1b0000000000000000000000000000000000000000000000000000000000000029a063984c740b2adb532b5f1e4ab0158b54b5675f04fb8f71741828ee525c36eb27a05f46d7e54d6df951f7629c40dd55d428bf485c23006f298913caabc55c3e3d76",
+                        "action": "EDIT_ADDRESS"
+                    }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": {
+                          "transactionHash": "0x8520415ec870582131c7db350c38c684dc909c5001505d35327c80d386213d8d"
+                      }
+              }
  *       400:
  *         description: Error
  *         schema:

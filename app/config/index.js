@@ -149,7 +149,52 @@ const config = {
       platformName: "Ontology Gas",
       txIdLink: process.env.ONG_TX_ID_LINK,
       addressLink: process.env.ONG_ADDRESS_LINK
-    }
+    },
+    BNB: {
+      platformName: "Binance Coin",
+      txIdLink: process.env.BNB_TX_ID_LINK,
+      addressLink: process.env.BNB_ADDRESS_LINK
+    },
+    TOMO: {
+      platformName: "TomoChain",
+      txIdLink: process.env.TOMO_TX_ID_LINK,
+      addressLink: process.env.TOMO_ADDRESS_LINK
+    },
+    TRX: {
+      platformName: "TRON",
+      txIdLink: process.env.TRX_TX_ID_LINK,
+      addressLink: process.env.TRX_ADDRESS_LINK
+    },
+    LTC: {
+      platformName: "Litecoin",
+      txIdLink: process.env.LTC_TX_ID_LINK,
+      addressLink: process.env.LTC_ADDRESS_LINK
+    },
+    DOGE: {
+      platformName: "Dogecoin",
+      txIdLink: process.env.DOGE_TX_ID_LINK,
+      addressLink: process.env.DOGE_ADDRESS_LINK
+    },
+    DASH: {
+      platformName: "Dash",
+      txIdLink: process.env.DASH_TX_ID_LINK,
+      addressLink: process.env.DASH_ADDRESS_LINK
+    },
+    ETC: {
+      platformName: "Ethereum Classic",
+      txIdLink: process.env.ETC_TX_ID_LINK,
+      addressLink: process.env.ETC_ADDRESS_LINK
+    },
+    XLM: {
+      platformName: "Stellar",
+      txIdLink: process.env.XLM_TX_ID_LINK,
+      addressLink: process.env.XLM_ADDRESS_LINK
+    },
+    XTZ: {
+      platformName: "Tezos",
+      txIdLink: process.env.XTZ_TX_ID_LINK,
+      addressLink: process.env.XTZ_ADDRESS_LINK
+    },
   },
   sdk: {
     baseUrl: process.env.SDK_URL,

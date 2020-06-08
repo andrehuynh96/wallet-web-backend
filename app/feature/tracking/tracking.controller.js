@@ -11,6 +11,7 @@ const db = require("app/model/wallet");
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const memberTrackingHisMapper = require('../response-schema/member-tracking-his.response-schema');
+const Plutx = require('app/lib/plutx');
 
 module.exports = {
   tracking: async (req, res, next) => {
@@ -36,6 +37,18 @@ module.exports = {
         );
       }
 
+      let plutxSubdomain = await Plutx.getAddress({
+        fullDomain: req.body.to_address,
+        cryptoName: req.body.platform.toLowerCase()
+      });
+      if (!plutxSubdomain || plutxSubdomain.error) { }
+      else {
+        plutxSubdomain = plutxSubdomain.data;
+        console.log(plutxSubdomain)
+        req.body.member_domain_name = plutxSubdomain.fullDomain;
+        req.body.to_address = plutxSubdomain.address;
+      }
+
       let additionalInfo = {}
       additionalInfo.sender_note = req.body.note;
       additionalInfo.receiver_note = req.body.note;
@@ -54,21 +67,6 @@ module.exports = {
       }
       delete req.body.plan_id;
       delete req.body.note;
-
-      let domain = await MemberPlutx.findOne({
-        attributes: ["domain_name", "member_domain_name", "address"],
-        where: {
-          member_domain_name: req.body.to_address,
-          platform: req.body.platform,
-          active_flg: true
-        }
-      })
-      if (domain) {
-        req.body.to_address = domain.address;
-        req.body.domain_name = domain.domain_name;
-        req.body.member_domain_name = domain.member_domain_name;
-
-      }
 
       let response = await MemberTransactionHis.create({
         member_id: user.id,
@@ -175,19 +173,19 @@ module.exports = {
         response = await MemberTransactionHis.update({
           sender_note: note
         }, {
-            where: {
-              tx_id: tx_id,
-            },
-          });
+          where: {
+            tx_id: tx_id,
+          },
+        });
       }
       if (memberTransactionHis.to_address.toLowerCase() == memberFromAddress[0].address.toLowerCase()) {
         response = await MemberTransactionHis.update({
           receiver_note: note
         }, {
-            where: {
-              tx_id: tx_id,
-            },
-          });
+          where: {
+            tx_id: tx_id,
+          },
+        });
       }
       if (!response) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');

@@ -136,21 +136,17 @@ async function _constructAndSignTx(data, value = '0x0') {
     };
     // console.log(txParams);
     let tx = new Transaction(txParams, { chain: config.txCreator.ETH.testNet === 1 ? 'ropsten' : 'mainnet' });
-    // console.log('unsigned tx_raw:', tx.serialize().toString('hex'));
+    console.log('unsigned tx_raw:', tx.serialize().toString('hex'));
     let { tx_raw, tx_id } = await txCreator.sign({ raw: tx.serialize().toString('hex') });
-    let ret = await coinAPI.sendTransaction({ rawtx: '0x' + tx_raw });
-    // console.log('signed tx_raw:', tx_raw);
-    console.log('ret:', ret);
-    if (ret.msg) reject('Broadcast tx failed: ' + ret.msg);
-    if (tx_raw) resolve({ tx_raw, tx_id: ret.data.tx_id.replace('0x', '') });
-    else reject('Sign and send transaction failed');
+    console.log('signed tx_raw:', tx_raw);
+    resolve({ tx_raw: '0x' + tx.serialize().toString('hex') });
   })
 }
 
 async function _sign(unsignedSig) {
   return new Promise(async (resolve, reject) => {
     let sig = await txCreator.signMessage({ raw: unsignedSig });
-    // console.log('sig:', sig);
+    console.log('sig:', sig);
     if (sig) resolve(sig);
     else reject('Sign domain admin signature failed');
   })
@@ -159,7 +155,7 @@ async function _sign(unsignedSig) {
 async function _getSig (subdomain, crypto) {
   try {
     const unsignedSig = utils.soliditySha3(config.plutx.domain, {"type" : 'string', "value" : subdomain}, crypto);
-    // console.log(config.plutx.domain, subdomain, crypto);
+    console.log(config.plutx.domain, subdomain, crypto);
     // console.log('unsigned sig:', unsignedSig);
     return await _sign(unsignedSig);
   }

@@ -157,10 +157,10 @@ module.exports = {
         if (!wallet)
           return res.badRequest(res.__("WALLETID_AND_ADDRESS_NOT_VALID"), "WALLETID_AND_ADDRESS_NOT_VALID", { fields: ['address', 'walletId'] });
       }
-      let signedTx;
+      let unsignedTx;
       switch (action) {
         case PlutxUserAddressAction.ADD_ADDRESS:
-          signedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
+          unsignedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
           if (!member.domain_name)
             await Member.update({
               domain_name: subDomain
@@ -171,13 +171,13 @@ module.exports = {
             })
           break;
         case PlutxUserAddressAction.EDIT_ADDRESS:
-          signedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
+          unsignedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
           break;
         case PlutxUserAddressAction.REMOVE_ADDRESS:
-          signedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase());
+          unsignedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase());
           break;
       }
-      return res.ok({ tx_id: signedTx.tx_id });
+      return res.ok(unsignedTx);
     }
     catch (err) {
       logger.error("update Plutx crypto addresses fail: ", err);
@@ -221,13 +221,16 @@ module.exports = {
   lookup: async (req, res, next) => {
     try {
       logger.info('member_plutxs::lookup');
-      req.query.addressAndMetaData = true;
-      req.query.fullDomain = config.plutx.domain;
-      let response = await Plutx.lookup(req.query);
-      response = response.data;
-      console.log(response)
-      if (!response || response.length == 0)
+      let response = await Plutx.lookup({
+        ...req.query,
+        addressAndMetaData: true,
+        fullDomain: config.plutx.domain,
+        onlyDefaultAddress: false
+      });
+      // console.log(response);
+      if (!response || response.data.length == 0)
         return res.badRequest(res.__("FULLDOMAIN_NOT_FOUND"), "FULLDOMAIN_NOT_FOUND");
+      response = response.data;
       let addressList = response.map(ele => ele.crypto.address);
       let walletIdList = await WalletPrivKey.findAll({
         attributes: ["id", "address", "platform"],
@@ -285,4 +288,18 @@ module.exports = {
       next(err);
     }
   },
+  sendRawTx: async (req, res, next) => {
+    try {
+      logger.info('member_plutxs::sendRawTx');
+      let params = { body: { requestType: req.body.action, rawTx: '0x' + req.body.rawTx.replace('0x', '') } };
+      let response = await Plutx.sendRawTransaction(params);
+      if (response.data.error)
+        return res.serverInternalError(response.data.error);
+      return res.ok(response.data);
+    }
+    catch (err) {
+      logger.error("call send-raw-transaction Plutx API fail: ", err);
+      next(err);
+    }
+  }
 }

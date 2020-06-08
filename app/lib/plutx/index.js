@@ -10,7 +10,39 @@ module.exports = {
     } catch (err) {
       throw err;
     }
-  }
+  },
+  sendRawTransaction: async (data) => {
+    try {
+      let params = {...data, headers: {'Content-Type': 'application/json'}};
+      return await _makeRequest('/send-raw-transaction', params, 'post');
+    } catch (err) {
+      throw err;
+    }
+  },
+  lookup: async (data) => {
+    try {
+      let params = {...data};
+      return await _makeGetRequest('/lookup', params, 'get');
+    } catch (err) {
+      throw err;
+    }
+  },
+  getAddress: async (data) => {
+    try {
+      let params = {...data};
+      return await _makeGetRequest('/get-address', params, 'get');
+    } catch (err) {
+      throw err;
+    }
+  },
+  saveMetadata: async (data) => {
+    try {
+      let params = {...data, headers: {'Content-Type': 'application/json'}};
+      return await _makeRequest('/save-metadata', params, 'post');
+    } catch (err) {
+      throw err;
+    }
+  },
 };
 
 async function _makeRequest(path, params, method) {

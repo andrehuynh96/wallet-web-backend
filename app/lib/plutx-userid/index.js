@@ -233,8 +233,7 @@ async function _getToken() {
   rootOrgUnitId = data.root_org_unit_id;
   const accessToken = data.access_token;
 
-  const expiredTime = Math.max(data.expires_in - 3, 1) * 1000;
-  // const expiredTime = 10 * 1000;
+  const expiredTime = Math.max(data.expires_in - 3, 1);
   await cache.setAsync(key, accessToken, "EX", expiredTime);
 
   return accessToken;

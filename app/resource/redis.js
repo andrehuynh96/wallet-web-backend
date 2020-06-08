@@ -5,10 +5,10 @@ const keys = {
     token: `${config.redis.prefix}:stakingapi:token`,
   },
   affiliate: {
-    token: `${config.redis.prefix}:affiliate:token`,
+    token: `${config.redis.prefix}:affiliate:token-${config.app.version}`,
   },
   plutxUserID: {
-    token: `${config.redis.prefix}:plutx-userid:token`,
+    token: `${config.redis.prefix}:plutx-userid:token-${config.app.version}`,
   },
 };
 

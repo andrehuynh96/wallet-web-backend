@@ -5,6 +5,10 @@ const OTP = require("app/model/wallet").otps;
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
+const config = require("app/config");
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 const Op = Sequelize.Op;
 
 module.exports = async (req, res, next) => {
@@ -43,19 +47,35 @@ module.exports = async (req, res, next) => {
       return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
-    let passWord = bcrypt.hashSync(req.body.password, 10);
-    let [_, response] = await Member.update({
-      password_hash: passWord,
-      attempt_login_number: 0 // reset attempt login number after password resetting
+    if (IS_ENABLED_PLUTX_USERID && member.plutx_userid_id) {
+      const registerMemberResult = await PluTXUserIdApi.setNewPassword(member.plutx_userid_id, req.body.password);
+
+      if (registerMemberResult.httpCode !== 200) {
+        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
+      }
+    } else {
+      let passWord = bcrypt.hashSync(req.body.password, 10);
+      let [_, response] = await Member.update({
+        password_hash: passWord,
+        attempt_login_number: 0 // reset attempt login number after password resetting
+      }, {
+          where: {
+            id: member.id
+          },
+          returning: true
+        });
+      if (!response || response.length == 0) {
+        return res.serverInternalError();
+      }
+    }
+
+    await OTP.update({
+      used: true
     }, {
         where: {
-          id: member.id
+          id: otp.id
         },
-        returning: true
       });
-    if (!response || response.length == 0) {
-      return res.serverInternalError();
-    }
 
     return res.ok(true);
   }
@@ -63,4 +83,4 @@ module.exports = async (req, res, next) => {
     logger.error("login fail: ", err);
     next(err);
   }
-}; 
+};

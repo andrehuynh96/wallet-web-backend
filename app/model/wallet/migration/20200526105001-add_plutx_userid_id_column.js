@@ -4,11 +4,16 @@ module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.addColumn('members', 'plutx_userid_id', {
-          type: Sequelize.DataTypes.UUID,
-          // type: Sequelize.DataTypes.STRING(12),
-          allowNull: true,
-        }, { transaction: t }),
+        queryInterface.describeTable('members')
+          .then(tableDefinition => {
+            if (tableDefinition['plutx_userid_id']) {
+              return Promise.resolve();
+            }
+            return queryInterface.addColumn('members', 'plutx_userid_id', {
+              type: Sequelize.DataTypes.UUID,
+              allowNull: true,
+            })
+          })
       ]);
     });
   },

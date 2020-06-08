@@ -9,6 +9,7 @@ const destObject = {
     '[].name': '[].name',
     '[].decimals': '[].decimals',
     '[].icon': '[].icon',
+    '[].ref_id': '[].ref_id',
     '[].createdAt': '[].created_at'
   },
   single: {
@@ -19,6 +20,7 @@ const destObject = {
     name: 'name',
     decimals: 'decimals',
     icon: 'icon',
+    ref_id: 'ref_id',
     createdAt: 'created_at'
   }
 };

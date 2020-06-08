@@ -7,7 +7,7 @@ const speakeasy = require('speakeasy');
 const database = require('app/lib/database').db().wallet;
 const WalletToken = require('app/model/wallet').wallet_tokens;
 const Webhook = require('app/lib/webhook');
-const config = require("app/config");
+const config = require('app/config');
 
 var privkey = {};
 

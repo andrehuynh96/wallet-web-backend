@@ -49,8 +49,8 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Wallet.associate = (models) => {
-    Wallet.hasMany(models.wallet_tokens, { foreignKey: 'wallet_id'});
-    Wallet.hasMany(models.wallet_priv_keys, { foreignKey: 'wallet_id' });
+    Wallet.hasMany(models.wallet_tokens, { foreignKey: 'wallet_id', as: "tokens" });
+    Wallet.hasMany(models.wallet_priv_keys, { foreignKey: 'wallet_id', as: "privKeys" });
     Wallet.belongsTo(models.members, { foreignKey: 'member_id', targetKey: 'id' });
   };
   return Wallet;

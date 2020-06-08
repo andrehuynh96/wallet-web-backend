@@ -30,36 +30,6 @@ router.post(
   controller.checkId
 );
 
-router.post(
-  '/member-plutxs/address',
-  authenticate,
-  validator(updatePlutxAddress),
-  controller.updatePlutxAddress
-);
-
-router.get(
-  '/member-plutxs/get-address',
-  authenticate,
-  controller.getAddress
-);
-
-router.get(
-  '/member-plutxs/lookup',
-  authenticate,
-  controller.lookup
-);
-
-router.get(
-  '/member-plutxs/address',
-  authenticate,
-  controller.getAddressByPlatformAndWalletId
-);
-
-router.get(
-  '/member-plutxs/create-subdomain',
-  authenticate,
-  controller.createSubdomain
-)
 
 module.exports = router;
 
@@ -156,7 +126,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-                "data": true
+               "data": true
  *             }
  *       400:
  *         description: Error

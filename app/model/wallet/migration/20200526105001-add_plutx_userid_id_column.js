@@ -12,7 +12,7 @@ module.exports = {
             return queryInterface.addColumn('members', 'plutx_userid_id', {
               type: Sequelize.DataTypes.UUID,
               allowNull: true,
-            })
+            });
           })
       ]);
     });

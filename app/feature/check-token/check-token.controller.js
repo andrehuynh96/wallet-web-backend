@@ -1,9 +1,28 @@
+const _ = require('lodash');
 const logger = require('app/lib/logger');
 const Member = require("app/model/wallet").members;
 const OTP = require("app/model/wallet").otps;
+const config = require("app/config");
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
 module.exports = async (req, res, next) => {
   try {
+    let token = _.trim(req.params.token);
+
+    if (IS_ENABLED_PLUTX_USERID) {
+      const getTokenResult = await PluTXUserIdApi.getToken(token);
+
+      if (getTokenResult.httpCode !== 200) {
+        return res.status(getTokenResult.httpCode).send(getTokenResult.data);
+      }
+
+      return res.ok({
+        token_sts: getTokenResult.data.status,
+      });
+    }
+
     let otp = await OTP.findOne({
       where: {
         code: req.params.token,
@@ -39,4 +58,4 @@ module.exports = async (req, res, next) => {
     logger.error("checktoken fail: ", err);
     next(err);
   }
-}; 
+};

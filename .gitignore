@@ -87,3 +87,5 @@ typings/
 
 # Plantuml output folder
 out
+*.code-workspace
+.vscode/*.json

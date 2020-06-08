@@ -59,11 +59,11 @@ module.exports = async (req, res, next) => {
         password_hash: passWord,
         attempt_login_number: 0 // reset attempt login number after password resetting
       }, {
-        where: {
-          id: member.id
-        },
-        returning: true
-      });
+          where: {
+            id: member.id
+          },
+          returning: true
+        });
       if (!response || response.length == 0) {
         return res.serverInternalError();
       }
@@ -72,10 +72,10 @@ module.exports = async (req, res, next) => {
     await OTP.update({
       used: true
     }, {
-      where: {
-        id: otp.id
-      },
-    });
+        where: {
+          id: otp.id
+        },
+      });
 
     return res.ok(true);
   }

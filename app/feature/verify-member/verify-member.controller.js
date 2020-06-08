@@ -51,19 +51,19 @@ module.exports = async (req, res, next) => {
     await Member.update({
       member_sts: MemberStatus.ACTIVATED
     }, {
-      where: {
-        id: member.id
-      },
-      returning: true
-    });
+        where: {
+          id: member.id
+        },
+        returning: true
+      });
 
     await OTP.update({
       used: true
     }, {
-      where: {
-        id: otp.id
-      },
-    });
+        where: {
+          id: otp.id
+        },
+      });
 
     // const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
 
@@ -104,11 +104,11 @@ async function _createKyc(memberId, email) {
       await Member.update({
         kyc_id: kyc.data.id
       }, {
-        where: {
-          id: memberId,
-        },
-        returning: true
-      });
+          where: {
+            id: memberId,
+          },
+          returning: true
+        });
     }
     return id;
   } catch (err) {

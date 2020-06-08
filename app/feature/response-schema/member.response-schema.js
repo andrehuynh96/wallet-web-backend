@@ -6,7 +6,7 @@ const destObject = {
     '[].email': '[].email',
     '[].name': '[].name',
     '[].phone': '[].phone',
-     // '[].twofa_secret': '[].twofa_secret',
+    // '[].twofa_secret': '[].twofa_secret',
     '[].twofa_enable_flg': '[].twofa_enable_flg',
     '[].twofa_download_key_flg': '[].twofa_download_key_flg',
     '[].created_at': '[].created_at',

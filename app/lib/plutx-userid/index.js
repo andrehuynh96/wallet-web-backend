@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const config = require("app/config");
 const axios = require("axios");
 const logger = require("app/lib/logger");
@@ -121,17 +122,38 @@ const PluTXUserIdApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
-  setNewPassword: async (userId, password) => {
+  forgotPassword: async (userId, data) => {
     try {
       const accessToken = await _getToken();
-      const result = await axios.put(`${API_URL}/api/v1/users/${userId}/set-new-password`,
-        {
-          password,
-        },
+      const result = await axios.post(`${API_URL}/api/v1/users/${userId}/forgot-password`,
+        data,
         {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Forgot password fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+  resetPassword: async (token, password) => {
+    try {
+      const result = await axios.post(`${API_URL}/api/v1/account/reset-password`,
+        {
+          password,
+          token: PluTXUserIdApi.trimToken(token),
+          api_key: config.plutxUserID.apiKey,
+          secret_key: config.plutxUserID.secretKey,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
           }
         });
 
@@ -166,6 +188,29 @@ const PluTXUserIdApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  getToken: async (token) => {
+    try {
+      token = PluTXUserIdApi.trimToken(token, 'userid-');
+
+      const result = await axios.get(`${API_URL}/api/v1/tokens/${token}`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Get token", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+  trimToken(token) {
+    return _.trimEnd(token, 'userid-');
+  },
 
 };
 
@@ -188,7 +233,9 @@ async function _getToken() {
   rootOrgUnitId = data.root_org_unit_id;
   const accessToken = data.access_token;
 
-  await cache.setAsync(key, accessToken, "EX", data.expires_in);
+  const expiredTime = Math.max(data.expires_in - 3, 1) * 1000;
+  // const expiredTime = 10 * 1000;
+  await cache.setAsync(key, accessToken, "EX", expiredTime);
 
   return accessToken;
 }

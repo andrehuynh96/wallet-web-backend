@@ -31,7 +31,6 @@ module.exports = async (req, res, next) => {
       }
 
       const { profile: userProfile } = registerMemberResult.data;
-      // console.log(registerMemberResult.data);
       user = await Member.findOne({
         where: {
           email: userProfile.email.toLowerCase(),

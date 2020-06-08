@@ -6,59 +6,59 @@ const { update, updatePlutxAddress, sendRawTx } = require('./validator');
 const router = express.Router();
 
 router.get(
-    '/member-plutxs',
-    authenticate,
-    controller.getAll
+	'/member-plutxs',
+	authenticate,
+	controller.getAll
 );
 
 router.post(
-    '/member-plutxs',
-    authenticate,
-    validator(update),
-    controller.update
+	'/member-plutxs',
+	authenticate,
+	validator(update),
+	controller.update
 )
 
 router.post(
-    '/member-plutxs/address/broadcast',
-    authenticate,
-    controller.sendRawTx
+	'/member-plutxs/address/broadcast',
+	authenticate,
+	controller.sendRawTx
 )
 
 router.post(
-    '/member-plutxs/:domain_name/:platform',
-    authenticate,
-    controller.checkId
+	'/member-plutxs/:domain_name/:platform',
+	authenticate,
+	controller.checkId
 );
 
 router.post(
-    '/member-plutxs/address',
-    authenticate,
-    validator(updatePlutxAddress),
-    controller.updatePlutxAddress
+	'/member-plutxs/address',
+	authenticate,
+	validator(updatePlutxAddress),
+	controller.updatePlutxAddress
 );
 
 router.get(
-    '/member-plutxs/get-address',
-    authenticate,
-    controller.getAddress
+	'/member-plutxs/get-address',
+	authenticate,
+	controller.getAddress
 );
 
 router.get(
-    '/member-plutxs/lookup',
-    authenticate,
-    controller.lookup
+	'/member-plutxs/lookup',
+	authenticate,
+	controller.lookup
 );
 
 router.get(
-    '/member-plutxs/address',
-    authenticate,
-    controller.getAddressByPlatformAndWalletId
+	'/member-plutxs/address',
+	authenticate,
+	controller.getAddressByPlatformAndWalletId
 );
 
 router.get(
-    '/member-plutxs/create-subdomain',
-    authenticate,
-    controller.createSubdomain
+	'/member-plutxs/create-subdomain',
+	authenticate,
+	controller.createSubdomain
 )
 
 module.exports = router;

@@ -313,7 +313,6 @@ module.exports = {
       logger.info('member_plutxs::sendRawTx');
       let params = { body: { requestType: req.body.action, rawTx: '0x' + req.body.rawTx.replace('0x', '') } };
       let response = await Plutx.sendRawTransaction(params);
-      console.log(response)
       if (response.error)
         return res.badRequest(response.error);
       return res.ok(response.data);

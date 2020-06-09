@@ -177,7 +177,7 @@ module.exports = {
           unsignedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
           if (!member.domain_name)
             await Member.update({
-              domain_name: subDomain
+              domain_name: subdomain
             }, {
               where: {
                 id: req.user.id

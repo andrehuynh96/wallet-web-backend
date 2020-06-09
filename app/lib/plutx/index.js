@@ -59,8 +59,8 @@ async function _makeRequest(path, params, method) {
     let res = await Axios(options).catch(e => {
       throw e;
     });
-    if (res.errors) {
-      return { error: res.error };
+    if (res.data.error) {
+      return { error: res.data.error };
     } else {
       return { data: res.data };
     }
@@ -83,8 +83,8 @@ async function _makeGetRequest(path, params, method) {
     let res = await Axios(options).catch(e => {
       throw e;
     });
-    if (res.errors) {
-      return { error: res.error };
+    if (res.data.error) {
+      return { error: res.data.error };
     } else {
       return { data: res.data.result };
     }

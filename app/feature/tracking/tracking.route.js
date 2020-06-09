@@ -59,7 +59,7 @@ module.exports = router;
                     "platform": "ETH",
                     "symbol": "IFNT",
                     "amount": 1.8987398240000002,
-                    "to_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                    "to_address": "000209.moonstake.io",
                     "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
                     "action": "SEND",
                     "send_email_flg": true,
@@ -86,8 +86,7 @@ module.exports = router;
                       "duration_type": "DAY",
                       "reward_percentage": 3.5,
                       "validator_fee": 1,
-                      "domain_name": "a",
-                      "member_domain_name": "a"
+                      "member_domain_name": "000209.moonstake.io"
                   }
               }
  *       400:

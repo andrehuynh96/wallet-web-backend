@@ -22,6 +22,7 @@ module.exports = async (req, res, next) => {
     const email = req.body.email.toLowerCase();
     const password = req.body.password;
     let user = null;
+    let refreshToken = null;
 
     if (IS_ENABLED_PLUTX_USERID) {
       const registerMemberResult = await PluTXUserIdApi.login(email, password);
@@ -30,7 +31,8 @@ module.exports = async (req, res, next) => {
         return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
       }
 
-      const { profile: userProfile } = registerMemberResult.data;
+      const { refresh_token, profile: userProfile } = registerMemberResult.data;
+      refreshToken = refresh_token;
       user = await Member.findOne({
         where: {
           email: userProfile.email.toLowerCase(),
@@ -80,10 +82,10 @@ module.exports = async (req, res, next) => {
             attempt_login_number: user.attempt_login_number + 1, // increase attempt_login_number in case wrong password
             latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
           }, {
-              where: {
-                id: user.id
-              }
-            });
+            where: {
+              id: user.id
+            }
+          });
 
           if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
             return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
@@ -98,10 +100,10 @@ module.exports = async (req, res, next) => {
               attempt_login_number: 1,
               latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
             }, {
-                where: {
-                  id: user.id
-                }
-              });
+              where: {
+                id: user.id
+              }
+            });
             return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
           }
           else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
@@ -117,10 +119,10 @@ module.exports = async (req, res, next) => {
           attempt_login_number: 0,
           latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
         }, {
-            where: {
-              id: user.id
-            }
-          });
+          where: {
+            id: user.id
+          }
+        });
       }
     }
 
@@ -131,11 +133,11 @@ module.exports = async (req, res, next) => {
       let [_, [updatedUser]] = await Member.update({
         domain_name: domainName
       }, {
-          where: {
-            id: user.id
-          },
-          returning: true
-        });
+        where: {
+          id: user.id
+        },
+        returning: true
+      });
       user = updatedUser;
     }
     /** */
@@ -157,12 +159,12 @@ module.exports = async (req, res, next) => {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            member_id: user.id,
-            action_type: OtpType.TWOFA
-          },
-          returning: true
-        });
+        where: {
+          member_id: user.id,
+          action_type: OtpType.TWOFA
+        },
+        returning: true
+      });
 
       await OTP.create({
         code: verifyToken,
@@ -203,9 +205,10 @@ module.exports = async (req, res, next) => {
         user.kyc_level = 0;
       }
 
-
       req.session.authenticated = true;
       req.session.user = user;
+      req.session.refreshToken = refreshToken;
+
       return res.ok({
         twofa: false,
         user: memberMapper(user)
@@ -233,11 +236,11 @@ async function _createKyc(memberId, email) {
       await Member.update({
         kyc_id: kyc.data.id
       }, {
-          where: {
-            id: memberId,
-          },
-          returning: true
-        });
+        where: {
+          id: memberId,
+        },
+        returning: true
+      });
     }
     return id;
   } catch (err) {
@@ -275,12 +278,12 @@ async function _tryCreateAffiliate(member) {
         referral_code: result.data.data.code,
         affiliate_id: result.data.data.client_affiliate_id
       }, {
-          where: {
-            id: member.id
-          },
-          returning: true,
-          plain: true
-        })
+        where: {
+          id: member.id
+        },
+        returning: true,
+        plain: true
+      })
       return m;
     }
     return member;

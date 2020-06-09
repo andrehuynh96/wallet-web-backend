@@ -2,6 +2,7 @@ const logger = require('app/lib/logger');
 const config = require('app/config');
 const MemberPlutx = require('app/model/wallet').member_plutxs;
 const Member = require('app/model/wallet').members;
+const Wallet = require('app/model/wallet').wallets;
 const WalletPrivKey = require('app/model/wallet').wallet_priv_keys;
 const mapper = require('app/feature/response-schema/member-plutx.response-schema');
 const walletPrivKeyMapper = require('app/feature/response-schema/wallet-private-key.response-schema');
@@ -145,17 +146,30 @@ module.exports = {
       if (!member.domain_name)
         subdomain = member.domain_id.toString().padStart(6, '0') + '.' + config.plutx.domain;
       else subdomain = member.domain_name;
-      const { body: { crypto, address, walletId, action } } = req;
+      const { body: { crypto, walletId, action } } = req;
+      let address;
       if (action != PlutxUserAddressAction.REMOVE_ADDRESS) {
-        let wallet = await WalletPrivKey.findOne({
+        let wallet = await Wallet.findOne({
+          include: [
+            {
+              model: WalletPrivKey,
+              where: {
+                platform: crypto.toUpperCase(),
+                deleted_flg: false
+              },
+            }
+          ],
           where: {
-            address: { [Op.iLike]: `${address}` },
-            wallet_id: walletId,
+            id: walletId,
+            member_id: req.user.id,
             deleted_flg: false
-          }
+          },
+          raw: true
         });
         if (!wallet)
-          return res.badRequest(res.__("WALLETID_AND_ADDRESS_NOT_VALID"), "WALLETID_AND_ADDRESS_NOT_VALID", { fields: ['address', 'walletId'] });
+          return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND", { fields: ['walletId'] });
+        address = wallet['wallet_priv_keys.address'];
+        console.log('address:', address);
       }
       let unsignedTx;
       switch (action) {
@@ -163,7 +177,7 @@ module.exports = {
           unsignedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
           if (!member.domain_name)
             await Member.update({
-              domain_name: subDomain
+              domain_name: subdomain
             }, {
               where: {
                 id: req.user.id
@@ -187,7 +201,7 @@ module.exports = {
   getAddress: async (req, res, next) => {
     try {
       logger.info('member_plutxs::getAddress');
-      let response = await Plutx.getAddress(req.query);
+      let response = await Plutx.getAddress({ fullDomain: req.query.fullDomain });
       if (!response || response.error)
         return res.badRequest(res.__("SUBDOMAIN_OR_PLATFORM_NOT_FOUND"), "SUBDOMAIN_OR_PLATFORM_NOT_FOUND");
       response = response.data;
@@ -201,32 +215,21 @@ module.exports = {
         raw: true
       });
       let ret;
-      if (response.cryptos) {
-        ret = response.cryptos.map(ele => {
-          let wallet = walletIdList.find(ele1 => ele1.address == ele.address);
-          return {
-            address: ele.address,
-            cryptoName: ele.cryptoName,
-            walletId: wallet ? wallet.wallet_id : ''
-          }
-        });
-        response.cryptos = ret;
-        delete response.domain;
-        delete response.subDomain;
-        return res.ok(response);
-      }
-      else {
-        let wallet = walletIdList.find(ele1 => ele1.address == response.address);
-        ret = Object.assign({}, {
-          fullDomain: response.fullDomain,
-          cryptos: [{
-            address: response.address,
-            cryptoName: response.cryptoName,
-            walletId: wallet ? wallet.wallet_id : ''
-          }]
-        })
-        return res.ok(ret);
-      }
+      ret = response.cryptos.map(ele => {
+        let wallet = walletIdList.find(ele1 => ele1.address == ele.address);
+        return {
+          address: ele.address,
+          cryptoName: ele.cryptoName,
+          walletId: wallet ? wallet.wallet_id : ''
+        }
+      });
+      if (req.query.cryptoName)
+        ret = ret.filter(ele => ele.cryptoName == req.query.cryptoName);
+      response.cryptos = ret;
+      delete response.domain;
+      delete response.subDomain;
+
+      return res.ok(response);
     }
     catch (err) {
       logger.error("get crypto addresses of Plutx subdomain fail: ", err);

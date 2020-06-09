@@ -311,8 +311,9 @@ module.exports = {
       logger.info('member_plutxs::sendRawTx');
       let params = { body: { requestType: req.body.action, rawTx: '0x' + req.body.rawTx.replace('0x', '') } };
       let response = await Plutx.sendRawTransaction(params);
-      if (response.data.error)
-        return res.serverInternalError(response.data.error);
+      console.log(response)
+      if (response.error || response.data.error)
+        return res.serverInternalError(response.error ? response.error.response.data : response.data.error);
       return res.ok(response.data);
     }
     catch (err) {

@@ -272,7 +272,6 @@ module.exports = router;
  *            example:
  *                  {
                       "crypto": "ETH",
-                      "address": "0xaaaa",
                       "walletId": "bde582c1-f184-4ac2-9167-647d83e47091",
                       "action": "ADD_ADDRESS"
                     }

@@ -37,19 +37,20 @@ module.exports = {
         );
       }
 
-      let plutxSubdomain = await Plutx.getAddress({
-        fullDomain: req.body.to_address,
-        cryptoName: req.body.platform.toLowerCase()
-      });
-      if (!plutxSubdomain || plutxSubdomain.error) { 
-        if (req.body.to_address.includes(config.plutx.domain))
+      if (req.body.to_address.includes(config.plutx.domain)) {
+        let plutxSubdomain = await Plutx.getAddress({
+          fullDomain: req.body.to_address,
+          cryptoName: req.body.platform.toLowerCase()
+        });
+        if (!plutxSubdomain || plutxSubdomain.error) {
           return res.badRequest(res.__("SUBDOMAIN_OR_PLATFORM_NOT_FOUND"), "SUBDOMAIN_OR_PLATFORM_NOT_FOUND", { fields: ['to_address'] });
-      }
-      else {
-        plutxSubdomain = plutxSubdomain.data;
-        console.log(plutxSubdomain)
-        req.body.member_domain_name = plutxSubdomain.fullDomain;
-        req.body.to_address = plutxSubdomain.address;
+        }
+        else {
+          plutxSubdomain = plutxSubdomain.data;
+          console.log(plutxSubdomain)
+          req.body.member_domain_name = plutxSubdomain.fullDomain;
+          req.body.to_address = plutxSubdomain.address;
+        }
       }
 
       let additionalInfo = {}

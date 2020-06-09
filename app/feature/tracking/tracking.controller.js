@@ -207,7 +207,7 @@ const sendEmail = {
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         banner: config.website.urlImages,
-        imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
+        imageUrl: config.website.urlIcon + content.platform == 'XTZ' ? 'tezos' : content.platform.toLowerCase() + '.png',
         platform: config.explorer[content.platform].platformName,
         tx_id: content.tx_id,
         address: content.to_address,

@@ -154,7 +154,8 @@ module.exports = {
             {
               model: WalletPrivKey,
               where: {
-                platform: crypto.toUpperCase()
+                platform: crypto.toUpperCase(),
+                deleted_flg: false
               },
             }
           ],

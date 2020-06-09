@@ -13,7 +13,7 @@ let rootOrgUnitId = null;
 const PluTXUserIdApi = {
   importUser: async ({ email, password, createdAt, updatedAt, emailConfirmed, isActived }) => {
     try {
-      const accessToken = await _getToken();
+      const accessToken = await _getAccessToken();
       const result = await axios.post(`${API_URL}/api/v1/users/import`,
         {
           email,
@@ -46,7 +46,7 @@ const PluTXUserIdApi = {
   },
   register: async ({ email, password, createdAt, emailConfirmed, isActived }) => {
     try {
-      const accessToken = await _getToken();
+      const accessToken = await _getAccessToken();
       const result = await axios.post(`${API_URL}/api/v1/users/register`,
         {
           email,
@@ -78,7 +78,7 @@ const PluTXUserIdApi = {
   },
   activeNewUser: async (userId) => {
     try {
-      const accessToken = await _getToken();
+      const accessToken = await _getAccessToken();
       const result = await axios.put(`${API_URL}/api/v1/users/${userId}/active-new-user`,
         {},
         {
@@ -98,7 +98,6 @@ const PluTXUserIdApi = {
   },
   login: async (email, password) => {
     try {
-      const accessToken = await _getToken();
       const result = await axios.post(`${API_URL}/api/v1/auth/token`,
         {
           grant_type: "password",
@@ -110,7 +109,6 @@ const PluTXUserIdApi = {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
           }
         });
 
@@ -124,7 +122,7 @@ const PluTXUserIdApi = {
   },
   forgotPassword: async (userId, data) => {
     try {
-      const accessToken = await _getToken();
+      const accessToken = await _getAccessToken();
       const result = await axios.post(`${API_URL}/api/v1/users/${userId}/forgot-password`,
         data,
         {
@@ -167,7 +165,7 @@ const PluTXUserIdApi = {
   },
   changePassword: async (userId, oldPassword, newPassword) => {
     try {
-      const accessToken = await _getToken();
+      const accessToken = await _getAccessToken();
       const result = await axios.put(`${API_URL}/api/v1/users/${userId}/change-password`,
         {
           old_password: oldPassword,
@@ -208,13 +206,36 @@ const PluTXUserIdApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  createSsoToken: async (userId, refreshToken) => {
+    try {
+      const result = await axios.post(`${API_URL}/api/v1/auth/sso-token`,
+        {
+          refresh_token: refreshToken,
+          api_key: config.plutxUserID.apiKey,
+          secret_key: config.plutxUserID.secretKey,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Create SSO token:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+  // Private functions
   trimToken(token) {
     return _.trimEnd(token, 'userid-');
   },
 
 };
 
-async function _getToken() {
+async function _getAccessToken() {
   const key = redisResource.plutxUserID.token;
   const token = await cache.getAsync(key);
   if (token) {

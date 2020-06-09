@@ -237,6 +237,9 @@ const config = {
     apiKey: process.env.PLUTX_USERID_APP_API_KEY,
     secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
   },
+  membershipWeb: {
+    webUrl: process.env.MEMBERSHIP_WEB_URL,
+  },
   twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3
 };
 

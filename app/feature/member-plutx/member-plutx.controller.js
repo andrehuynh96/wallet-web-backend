@@ -146,7 +146,7 @@ module.exports = {
         subdomain = member.domain_id.toString().padStart(6, '0') + '.' + config.plutx.domain;
       else subdomain = member.domain_name;
       const { body: { crypto, address, walletId, action } } = req;
-      if (walletId && address) {
+      if (action != PlutxUserAddressAction.REMOVE_ADDRESS) {
         let wallet = await WalletPrivKey.findOne({
           where: {
             address: { [Op.iLike]: `${address}` },

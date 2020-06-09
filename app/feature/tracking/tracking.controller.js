@@ -11,6 +11,7 @@ const db = require("app/model/wallet");
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const memberTrackingHisMapper = require('../response-schema/member-tracking-his.response-schema');
+const Plutx = require('app/lib/plutx');
 
 module.exports = {
   tracking: async (req, res, next) => {
@@ -36,6 +37,21 @@ module.exports = {
         );
       }
 
+      let plutxSubdomain = await Plutx.getAddress({
+        fullDomain: req.body.to_address,
+        cryptoName: req.body.platform.toLowerCase()
+      });
+      if (!plutxSubdomain || plutxSubdomain.error) { 
+        if (req.body.to_address.includes(config.plutx.domain))
+          return res.badRequest(res.__("SUBDOMAIN_OR_PLATFORM_NOT_FOUND"), "SUBDOMAIN_OR_PLATFORM_NOT_FOUND", { fields: ['to_address'] });
+      }
+      else {
+        plutxSubdomain = plutxSubdomain.data;
+        console.log(plutxSubdomain)
+        req.body.member_domain_name = plutxSubdomain.fullDomain;
+        req.body.to_address = plutxSubdomain.address;
+      }
+
       let additionalInfo = {}
       additionalInfo.sender_note = req.body.note;
       additionalInfo.receiver_note = req.body.note;
@@ -54,21 +70,6 @@ module.exports = {
       }
       delete req.body.plan_id;
       delete req.body.note;
-
-      let domain = await MemberPlutx.findOne({
-        attributes: ["domain_name", "member_domain_name", "address"],
-        where: {
-          member_domain_name: req.body.to_address,
-          platform: req.body.platform,
-          active_flg: true
-        }
-      })
-      if (domain) {
-        req.body.to_address = domain.address;
-        req.body.domain_name = domain.domain_name;
-        req.body.member_domain_name = domain.member_domain_name;
-
-      }
 
       let response = await MemberTransactionHis.create({
         member_id: user.id,
@@ -129,9 +130,10 @@ module.exports = {
   getTxDetail: async (req, res, next) => {
     try {
       let response = await MemberTransactionHis.findOne({
-        include: [MemberPlutx],
         where: {
-          // platform: req.params.platform,
+          platform: {
+            [Op.iLike]: req.params.platform
+          },
           tx_id: {
             [Op.iLike]: req.params.tx_id
           }
@@ -139,10 +141,6 @@ module.exports = {
       });
       if (!response)
         return res.badRequest(res.__("MEMBER_TX_HISTORY_NOT_FOUND"), "MEMBER_TX_HISTORY_NOT_FOUND");
-      if (response.member_plutx && !response.member_plutx.active_flg) {
-        response.domain_name = null;
-        response.member_domain_name = null;
-      }
       return res.ok(memberTrackingHisMapper(response));
     }
     catch (err) {
@@ -175,19 +173,19 @@ module.exports = {
         response = await MemberTransactionHis.update({
           sender_note: note
         }, {
-            where: {
-              tx_id: tx_id,
-            },
-          });
+          where: {
+            tx_id: tx_id,
+          },
+        });
       }
       if (memberTransactionHis.to_address.toLowerCase() == memberFromAddress[0].address.toLowerCase()) {
         response = await MemberTransactionHis.update({
           receiver_note: note
         }, {
-            where: {
-              tx_id: tx_id,
-            },
-          });
+          where: {
+            tx_id: tx_id,
+          },
+        });
       }
       if (!response) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');
@@ -209,7 +207,7 @@ const sendEmail = {
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         banner: config.website.urlImages,
-        imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
+        imageUrl: config.website.urlIcon + content.platform == 'XTZ' ? 'tezos' : content.platform.toLowerCase() + '.png',
         platform: config.explorer[content.platform].platformName,
         tx_id: content.tx_id,
         address: content.to_address,

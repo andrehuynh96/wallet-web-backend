@@ -13,6 +13,17 @@ const Op = Sequelize.Op;
 
 module.exports = async (req, res, next) => {
   try {
+    const token = req.body.verify_token;
+
+    if (IS_ENABLED_PLUTX_USERID) {
+      const resetNewPasswordResult = await PluTXUserIdApi.resetPassword(token, req.body.password);
+      if (resetNewPasswordResult.httpCode !== 200) {
+        return res.status(resetNewPasswordResult.httpCode).send(resetNewPasswordResult.data);
+      }
+
+      return res.ok(true);
+    }
+
     let otp = await OTP.findOne({
       where: {
         code: req.body.verify_token,
@@ -28,6 +39,7 @@ module.exports = async (req, res, next) => {
     if (otp.expired_at < today || otp.expired || otp.used) {
       return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED");
     }
+
 
     let member = await Member.findOne({
       where: {
@@ -47,35 +59,27 @@ module.exports = async (req, res, next) => {
       return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
-    if (IS_ENABLED_PLUTX_USERID && member.plutx_userid_id) {
-      const registerMemberResult = await PluTXUserIdApi.setNewPassword(member.plutx_userid_id, req.body.password);
-
-      if (registerMemberResult.httpCode !== 200) {
-        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
-      }
-    } else {
-      let passWord = bcrypt.hashSync(req.body.password, 10);
-      let [_, response] = await Member.update({
-        password_hash: passWord,
-        attempt_login_number: 0 // reset attempt login number after password resetting
-      }, {
-          where: {
-            id: member.id
-          },
-          returning: true
-        });
-      if (!response || response.length == 0) {
-        return res.serverInternalError();
-      }
+    let passWord = bcrypt.hashSync(req.body.password, 10);
+    let [_, response] = await Member.update({
+      password_hash: passWord,
+      attempt_login_number: 0 // reset attempt login number after password resetting
+    }, {
+      where: {
+        id: member.id
+      },
+      returning: true
+    });
+    if (!response || response.length == 0) {
+      return res.serverInternalError();
     }
 
     await OTP.update({
       used: true
     }, {
-        where: {
-          id: otp.id
-        },
-      });
+      where: {
+        id: otp.id
+      },
+    });
 
     return res.ok(true);
   }

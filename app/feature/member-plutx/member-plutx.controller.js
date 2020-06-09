@@ -146,7 +146,7 @@ module.exports = {
         subdomain = member.domain_id.toString().padStart(6, '0') + '.' + config.plutx.domain;
       else subdomain = member.domain_name;
       const { body: { crypto, address, walletId, action } } = req;
-      if (walletId && address) {
+      if (action != PlutxUserAddressAction.REMOVE_ADDRESS) {
         let wallet = await WalletPrivKey.findOne({
           where: {
             address: { [Op.iLike]: `${address}` },
@@ -193,7 +193,7 @@ module.exports = {
       response = response.data;
       let addressList = response.cryptos ? response.cryptos.map(ele => ele.address) : response.address;
       let walletIdList = await WalletPrivKey.findAll({
-        attributes: ["id", "address", "platform"],
+        attributes: ["wallet_id", "address", "platform"],
         where: {
           address: addressList,
           deleted_flg: false
@@ -207,7 +207,7 @@ module.exports = {
           return {
             address: ele.address,
             cryptoName: ele.cryptoName,
-            walletId: wallet ? wallet.id : ''
+            walletId: wallet ? wallet.wallet_id : ''
           }
         });
         response.cryptos = ret;
@@ -222,7 +222,7 @@ module.exports = {
           cryptos: [{
             address: response.address,
             cryptoName: response.cryptoName,
-            walletId: wallet ? wallet.id : ''
+            walletId: wallet ? wallet.wallet_id : ''
           }]
         })
         return res.ok(ret);
@@ -247,7 +247,7 @@ module.exports = {
       response = response.data;
       let addressList = response.map(ele => ele.crypto.address);
       let walletIdList = await WalletPrivKey.findAll({
-        attributes: ["id", "address", "platform"],
+        attributes: ["wallet_id", "address", "platform"],
         where: {
           address: addressList,
           deleted_flg: false
@@ -257,7 +257,7 @@ module.exports = {
       let ret = response.map(ele => {
         let newEle = Object.assign({}, ele);
         let wallet = walletIdList.find(ele1 => ele1.address == ele.crypto.address);
-        newEle.crypto.walletId = wallet ? wallet.id : '';
+        newEle.crypto.walletId = wallet ? wallet.wallet_id : '';
         return newEle;
       })
       return res.ok(ret);

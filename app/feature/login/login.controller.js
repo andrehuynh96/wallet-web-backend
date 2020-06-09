@@ -31,7 +31,6 @@ module.exports = async (req, res, next) => {
       }
 
       const { profile: userProfile } = registerMemberResult.data;
-      // console.log(registerMemberResult.data);
       user = await Member.findOne({
         where: {
           email: userProfile.email.toLowerCase(),
@@ -250,7 +249,7 @@ async function _submitKyc(kycId, email) {
     let content = {};
     content[`${config.kyc.schema}`] = { email: email };
     let params = { body: [{ level: 1, content: content }], kycId: kycId };
-    return await Kyc.submit(params);;
+    return await Kyc.submit(params);
   } catch (err) {
     logger.error(err);
     throw err;

@@ -250,18 +250,15 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - subdomain
+ *            - signAddress
  *            - crypto
- *            - walletId
  *            - action
  *            properties:
- *              subdomain:
- *                type: string
  *              crypto:
  *                type: string
  *              walletId:
  *                type: string
- *              address:
+ *              signAddress:
  *                type: string
  *              action:
  *                type: string
@@ -271,9 +268,10 @@ module.exports = router;
  *                  - REMOVE_ADDRESS
  *            example:
  *                  {
-                      "crypto": "ETH",
-                      "walletId": "bde582c1-f184-4ac2-9167-647d83e47091",
-                      "action": "ADD_ADDRESS"
+ *											"signAddress": "0x1716f4b8d7fdfc00b1eb8f5beb2ecf5a0ccd6a1a",
+												"crypto": "ETH",
+												"walletId": "bde582c1-f184-4ac2-9167-647d83e47091",
+												"action": "ADD_ADDRESS"
                     }
  *     produces:
  *       - application/json

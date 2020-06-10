@@ -205,7 +205,8 @@ module.exports = {
       if (!response || response.error)
         return res.badRequest(res.__("SUBDOMAIN_OR_PLATFORM_NOT_FOUND"), "SUBDOMAIN_OR_PLATFORM_NOT_FOUND");
       response = response.data;
-      let addressList = response.cryptos ? response.cryptos.map(ele => ele.address) : response.address;
+      response.cryptos = response.cryptos.filter(ele => ele);
+      let addressList = response.cryptos.map(ele => ele.address);
       let walletIdList = await WalletPrivKey.findAll({
         attributes: ["wallet_id", "address", "platform"],
         where: {
@@ -248,6 +249,7 @@ module.exports = {
       if (!response || response.data.length == 0 || response.error)
         return res.badRequest(res.__("FULLDOMAIN_NOT_FOUND"), "FULLDOMAIN_NOT_FOUND");
       response = response.data;
+      response = response.filter(ele => ele && ele.crypto);
       let addressList = response.map(ele => ele.crypto.address);
       let walletIdList = await WalletPrivKey.findAll({
         attributes: ["wallet_id", "address", "platform"],
@@ -311,8 +313,8 @@ module.exports = {
       logger.info('member_plutxs::sendRawTx');
       let params = { body: { requestType: req.body.action, rawTx: '0x' + req.body.rawTx.replace('0x', '') } };
       let response = await Plutx.sendRawTransaction(params);
-      if (response.data.error)
-        return res.serverInternalError(response.data.error);
+      if (response.error)
+        return res.badRequest(response.error);
       return res.ok(response.data);
     }
     catch (err) {

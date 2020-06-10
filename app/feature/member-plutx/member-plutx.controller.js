@@ -146,7 +146,7 @@ module.exports = {
       if (!member.domain_name)
         subdomain = member.domain_id.toString().padStart(6, '0') + '.' + config.plutx.domain;
       else subdomain = member.domain_name;
-      const { body: { crypto, walletId, action } } = req;
+      const { body: { crypto, walletId, action, signAddress } } = req;
       let address;
       if (action != PlutxUserAddressAction.REMOVE_ADDRESS) {
         let wallet = await Wallet.findOne({
@@ -174,7 +174,7 @@ module.exports = {
       let unsignedTx;
       switch (action) {
         case PlutxUserAddressAction.ADD_ADDRESS:
-          unsignedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
+          unsignedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address, signAddress);
           if (!member.domain_name)
             await Member.update({
               domain_name: subdomain
@@ -185,10 +185,10 @@ module.exports = {
             })
           break;
         case PlutxUserAddressAction.EDIT_ADDRESS:
-          unsignedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
+          unsignedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address, signAddress);
           break;
         case PlutxUserAddressAction.REMOVE_ADDRESS:
-          unsignedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase());
+          unsignedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), signAddress);
           break;
       }
       return res.ok(unsignedTx);

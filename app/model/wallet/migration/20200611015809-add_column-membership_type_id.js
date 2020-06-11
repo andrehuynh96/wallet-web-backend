@@ -5,15 +5,20 @@ module.exports = {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
         queryInterface.describeTable('members')
-          .then(tableDefinition => {
+          .then(async (tableDefinition) => {
             if (tableDefinition['membership_type_id']) {
               return Promise.resolve();
             }
 
-            return queryInterface.addColumn('members', 'membership_type_id', {
+            await queryInterface.addColumn('members', 'membership_type_id', {
               type: Sequelize.DataTypes.INTEGER,
               allowNull: true,
             }, { transaction: t });
+
+            const sql = `UPDATE public.members SET membership_type_id=(select id from public.membership_types mt where mt."type"='Free') where membership_type_id is null;`;
+            await queryInterface.sequelize.query(sql, {}, {});
+
+            return Promise.resolve();
           })
       ]);
     });

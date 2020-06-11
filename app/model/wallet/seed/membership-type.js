@@ -3,7 +3,6 @@ const MembershipTypeName = require('app/model/wallet/value-object/membership-typ
 
 (async () => {
   const count = await Model.count();
-  console.log('membership_types', count);
 
   if (count === 0) {
     await Model.bulkCreate([

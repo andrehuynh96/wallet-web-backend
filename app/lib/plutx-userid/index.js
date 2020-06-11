@@ -228,6 +228,29 @@ const PluTXUserIdApi = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  loginWithSsoToken: async (token) => {
+    try {
+      const result = await axios.post(`${API_URL}/api/v1/auth/token`,
+        {
+          grant_type: "sso_token",
+          token,
+          api_key: config.plutxUserID.apiKey,
+          secret_key: config.plutxUserID.secretKey,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+
+      return { httpCode: 200, data: result.data.data };
+    }
+    catch (err) {
+      logger.error("Login fail:", err);
+
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
   // Private functions
   trimToken(token) {
     return _.trimEnd(token, 'userid-');

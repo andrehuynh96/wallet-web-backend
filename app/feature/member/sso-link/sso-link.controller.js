@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
     }
 
     const tokenId = createSsoTokenResult.data.id;
-    const ssoLink = `${config.membershipWeb.webUrl}/sso-login?token=${tokenId}`;
+    const ssoLink = `${config.website.ssoLoginUrl}${tokenId}`;
 
     return res.ok({ ssoLink });
   }

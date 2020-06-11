@@ -26,7 +26,8 @@ const destObject = {
     '[].kyc_status': '[].kyc_status',
     '[].kyc': '[].kyc',
     '[].domain_name': '[].domain_id',
-    '[].plutx_userid_id': '[].plutx_userid_id?'
+    '[].plutx_userid_id': '[].plutx_userid_id?',
+    '[].membership_type_id': '[].membership_type_id?'
   },
   single: {
     id: 'id',
@@ -53,7 +54,8 @@ const destObject = {
     kyc_status: 'kyc_status',
     kyc: 'kyc',
     domain_name: 'domain_name',
-    plutx_userid_id: 'plutx_userid_id?'
+    plutx_userid_id: 'plutx_userid_id?',
+    membership_type_id: 'membership_type_id?',
   }
 };
 module.exports = srcObject => {

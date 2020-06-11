@@ -3,6 +3,7 @@ const logger = require('app/lib/logger');
 const Member = require('app/model/wallet').members;
 const MemberActivityLog = require('app/model/wallet').member_activity_logs;
 const OTP = require('app/model/wallet').otps;
+const MembershipType = require('app/model/wallet').membership_types;
 const MemberStatus = require('app/model/wallet/value-object/member-status');
 const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
 const OtpType = require('app/model/wallet/value-object/otp-type');
@@ -13,6 +14,7 @@ const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
 const Affiliate = require('app/lib/affiliate');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const PluTXUserIdApi = require('app/lib/plutx-userid');
 
 const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
@@ -35,7 +37,7 @@ module.exports = async (req, res, next) => {
       refreshToken = refresh_token;
       user = await Member.findOne({
         where: {
-          email: userProfile.email.toLowerCase(),
+          email: email,
           deleted_flg: false,
         }
       });
@@ -43,6 +45,12 @@ module.exports = async (req, res, next) => {
       // If user creates account in Plutx and
       // this is the first time he login in to Moonstake WebWallet, he doesn't have account
       if (!user) {
+        const freeMembershipType = await MembershipType.findOne({
+          where: {
+            type: MembershipTypeName.Free,
+          }
+        });
+
         user = await Member.create({
           email,
           password_hash: '',
@@ -52,9 +60,9 @@ module.exports = async (req, res, next) => {
           referral_code: '',
           referrer_code: null,
           affiliate_id: null,
+          membership_type_id: freeMembershipType ? freeMembershipType.id : null,
         });
       }
-
     } else {
       user = await Member.findOne({
         where: {

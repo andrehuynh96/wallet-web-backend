@@ -2,7 +2,9 @@ const logger = require("app/lib/logger");
 const config = require("app/config");
 const Member = require("app/model/wallet").members;
 const OTP = require("app/model/wallet").otps;
+const MembershipType = require('app/model/wallet').membership_types;
 const OtpType = require("app/model/wallet/value-object/otp-type");
+const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const memberMapper = require('app/feature/response-schema/member.response-schema');
 const bcrypt = require('bcrypt');
 const mailer = require('app/lib/mailer');
@@ -81,6 +83,12 @@ module.exports = async (req, res, next) => {
 
     const memberStatus = !emailConfirmed ? MemberStatus.UNACTIVATED : MemberStatus.ACTIVATED;
     let password = bcrypt.hashSync(req.body.password, 10);
+    const freeMembershipType = await MembershipType.findOne({
+      where: {
+        type: MembershipTypeName.Free,
+      }
+    });
+
     let member = await Member.create({
       email,
       password_hash: password,
@@ -88,7 +96,9 @@ module.exports = async (req, res, next) => {
       phone: req.body.phone || "",
       ...affiliateInfo,
       plutx_userid_id: idOnPlutxUserID,
+      membership_type_id: freeMembershipType ? freeMembershipType.id : null,
     });
+
     if (!member) {
       return res.serverInternalError();
     }

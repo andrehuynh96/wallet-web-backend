@@ -207,13 +207,28 @@ module.exports = {
       response = response.data;
       response.cryptos = response.cryptos.filter(ele => ele);
       let addressList = response.cryptos.map(ele => ele.address);
-      let walletIdList = await WalletPrivKey.findAll({
-        attributes: ["wallet_id", "address", "platform"],
+      let walletIdList = await Wallet.findAll({
+        include: [
+          {
+            model: WalletPrivKey,
+            where: {
+              address: addressList,
+              deleted_flg: false
+            },
+          }
+        ],
         where: {
-          address: addressList,
+          member_id: req.user.id,
           deleted_flg: false
         },
         raw: true
+      });
+      walletIdList = walletIdList.map(ele => {
+        return {
+          wallet_id: ele.id,
+          address: ele['wallet_priv_keys.address'],
+          platform: ele['wallet_priv_keys.platform']
+        }
       });
       let ret;
       ret = response.cryptos.map(ele => {

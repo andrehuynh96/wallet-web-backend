@@ -66,7 +66,7 @@ async function _makeRequest(path, params, method) {
     }
   } catch (err) {
     logger.error(err);
-    return { error: err };
+    return { error: 'something went wrong' };
   }
 }
 
@@ -90,6 +90,6 @@ async function _makeGetRequest(path, params, method) {
     }
   } catch (err) {
     logger.error(err);
-    return { error: err };
+    return { error: 'something went wrong' };
   }
 }

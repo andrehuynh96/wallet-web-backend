@@ -87,7 +87,8 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/email-verification?token=',
     urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
-    urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
+    urlIcon: process.env.WEBSITE_URL + '/images/platforms/',
+    ssoLoginUrl: process.env.WEBSITE_URL + '/sign-in?token=',
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,
@@ -236,9 +237,6 @@ const config = {
     apiUrl: process.env.PLUTX_USERID_API_URL,
     apiKey: process.env.PLUTX_USERID_APP_API_KEY,
     secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
-  },
-  membershipWeb: {
-    webUrl: process.env.MEMBERSHIP_WEB_URL,
   },
   twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3
 };

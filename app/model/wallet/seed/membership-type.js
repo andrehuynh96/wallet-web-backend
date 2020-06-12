@@ -12,6 +12,7 @@ const MembershipTypeName = require('app/model/wallet/value-object/membership-typ
         currency_symbol: 'USD',
         type: MembershipTypeName.Free,
         display_order: null,
+        deleted_flg: false,
       },
       {
         name: 'Paid',
@@ -19,6 +20,7 @@ const MembershipTypeName = require('app/model/wallet/value-object/membership-typ
         currency_symbol: 'USD',
         type: MembershipTypeName.Paid,
         display_order: 1,
+        deleted_flg: false,
       },
     ], {
       returning: true

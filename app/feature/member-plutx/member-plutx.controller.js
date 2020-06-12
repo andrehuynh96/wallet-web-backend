@@ -207,17 +207,32 @@ module.exports = {
       response = response.data;
       response.cryptos = response.cryptos.filter(ele => ele);
       let addressList = response.cryptos.map(ele => ele.address);
-      let walletIdList = await WalletPrivKey.findAll({
-        attributes: ["wallet_id", "address", "platform"],
+      let walletIdList = await Wallet.findAll({
+        include: [
+          {
+            model: WalletPrivKey,
+            where: {
+              address: addressList,
+              deleted_flg: false
+            },
+          }
+        ],
         where: {
-          address: addressList,
+          member_id: req.user.id,
           deleted_flg: false
         },
         raw: true
       });
+      walletIdList = walletIdList.map(ele => {
+        return {
+          wallet_id: ele.id,
+          address: ele['wallet_priv_keys.address'],
+          platform: ele['wallet_priv_keys.platform']
+        }
+      });
       let ret;
       ret = response.cryptos.map(ele => {
-        let wallet = walletIdList.find(ele1 => ele1.address == ele.address);
+        let wallet = walletIdList.find(ele1 => ele1.address == ele.address && ele1.platform.toLowerCase() == ele.cryptoName);
         return {
           address: ele.address,
           cryptoName: ele.cryptoName,
@@ -251,17 +266,32 @@ module.exports = {
       response = response.data;
       response = response.filter(ele => ele && ele.crypto);
       let addressList = response.map(ele => ele.crypto.address);
-      let walletIdList = await WalletPrivKey.findAll({
-        attributes: ["wallet_id", "address", "platform"],
+      let walletIdList = await Wallet.findAll({
+        include: [
+          {
+            model: WalletPrivKey,
+            where: {
+              address: addressList,
+              deleted_flg: false
+            },
+          }
+        ],
         where: {
-          address: addressList,
+          member_id: req.user.id,
           deleted_flg: false
         },
         raw: true
       });
+      walletIdList = walletIdList.map(ele => {
+        return {
+          wallet_id: ele.id,
+          address: ele['wallet_priv_keys.address'],
+          platform: ele['wallet_priv_keys.platform']
+        }
+      });
       let ret = response.map(ele => {
         let newEle = Object.assign({}, ele);
-        let wallet = walletIdList.find(ele1 => ele1.address == ele.crypto.address);
+        let wallet = walletIdList.find(ele1 => ele1.address == ele.crypto.address && ele1.platform.toLowerCase() == ele.crypto.cryptoName);
         newEle.crypto.walletId = wallet ? wallet.wallet_id : '';
         return newEle;
       })

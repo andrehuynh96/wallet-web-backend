@@ -123,7 +123,6 @@ async function _constructAndSignTx(data, from, value = '0x0') {
   return new Promise(async (resolve, reject) => {
     console.log('from address:', from);
     let nonce = await coinAPI.getNonce(from);
-    console.log('nonce:', nonce.data.nonce);
     let fee = await coinAPI.getFeeRate();
     const txParams = {
       nonce: nonce.data.nonce,
@@ -137,7 +136,7 @@ async function _constructAndSignTx(data, from, value = '0x0') {
     let tx = new Transaction(txParams, { chain: config.txCreator.ETH.testNet === 1 ? 'ropsten' : 'mainnet' });
     console.log('unsigned tx_raw:', tx.serialize().toString('hex'));
     let { tx_raw, tx_id } = await txCreator.sign({ raw: tx.serialize().toString('hex') });
-    console.log('signed tx_raw:', tx_raw);
+    // console.log('signed tx_raw:', tx_raw);
     resolve({ tx_raw: '0x' + tx.serialize().toString('hex') });
   })
 }

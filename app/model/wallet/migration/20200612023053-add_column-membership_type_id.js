@@ -11,9 +11,9 @@ module.exports = {
             }
 
             await queryInterface.addColumn('members', 'membership_type_id', {
-              type: Sequelize.DataTypes.INTEGER,
+              type: Sequelize.DataTypes.UUID,
               allowNull: true,
-            }, { transaction: t });
+            });
 
             const sql = `UPDATE public.members SET membership_type_id=(select id from public.membership_types mt where mt."type"='Free') where membership_type_id is null;`;
             await queryInterface.sequelize.query(sql, {}, {});

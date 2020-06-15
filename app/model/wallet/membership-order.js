@@ -57,6 +57,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(1000),
       allowNull: true,
     },
+    your_wallet_address: {
+      type: DataTypes.STRING(250),
+      allowNull: true,
+    },
     wallet_address: {
       type: DataTypes.STRING(250),
       allowNull: true,
@@ -82,6 +86,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
+    processe_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: 0
+    }
   }, {
     underscored: true,
     timestamps: true,

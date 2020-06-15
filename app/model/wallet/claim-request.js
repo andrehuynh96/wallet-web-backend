@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: ClaimRequestStatus.Pending
     },
+    amount: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+    },
     currency_symbol: {
       type: DataTypes.STRING(50),
       allowNull: false,

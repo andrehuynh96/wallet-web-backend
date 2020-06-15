@@ -7,7 +7,7 @@ module.exports = {
   getRewards: async (req, res, next) => {
     try {
       logger.info('getRewards::getRewards');
-      let result = await Affiliate.getRewards({ email: member.email });
+      let result = await Affiliate.getRewards({ email: req.user.email });
       return res.ok(result);
     }
     catch (err) {

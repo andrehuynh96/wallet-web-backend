@@ -1,54 +1,73 @@
 const logger = require('app/lib/logger');
 const MembershipType = require('app/model/wallet').membership_types;
 const memberTypeMapper = require('app/feature/response-schema/membership/member-type.response-schema');
-const MemberAccount = require('app/model/wallet').member_accounts;
-const memberAccountMapper = require('app/feature/response-schema/membership/member-account.response-schema');
+const BankAccount = require('app/model/wallet').bank_accounts;
+const ReceivingAddresses = require('app/model/wallet').receiving_addresses;
+const bankAccountMapper = require('app/feature/response-schema/membership/bank-account.response-schema');
+const receivingAddressMapper = require('app/feature/response-schema/membership/receiving-address.response-schema');
 const crypto = require('crypto');
 const format = require('biguint-format');
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
+const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const cryptoRandomString = require('crypto-random-string');
 
 module.exports = {
-  getMemberType: async (req, res, next) => {
+  getMemberTypes: async (req, res, next) => {
     try {
       logger.info('getMemberType::getMemberType');
-      const where = { id: req.user.membership_type_id };
-      const membershipType = await MembershipType.findOne({where: where});
-      return res.ok(memberTypeMapper(membershipType));
+      const where = { type: MembershipTypeName.Paid, deleted_flg: false };
+      const membershipTypes = await MembershipType.findAll({where: where});
+      return res.ok(memberTypeMapper(membershipTypes));
     }
     catch (err) {
       logger.error("getMemberType: ", err);
       next(err);
     }
   },
-  getMemberAccount: async (req, res, next) => {
+  getPaymentAccount: async (req, res, next) => {
     try {
-      logger.info('getMemberAccount::getMemberAccount');
-      const where = { member_id: req.user.member_id };
-      const memberAccounts = await MemberAccount.findOne({where: where});
-      
+      logger.info('getPaymentAccount::getPaymentAccount');
+      const bankAccounts = await BankAccount.findOne({
+         where: {
+            actived_flg: true
+          }
+        });
 
-      if(memberAccounts != null && memberAccounts.length > 0){
-        let _memberAccounts = [];
-        let banks = memberAccounts.filter( x => x.type === MemberAccountType.Bank)
-        if(banks != null && banks.length > 0){
-          const idxBank = random(0, banks.length);
-          _memberAccounts.push(banks[idxBank]);
-        }
-    
-        let cryptos = memberAccounts.filter( x => x.type === MemberAccountType.Bank)
-        if(banks != null && banks.length > 0){
-          const idxCryptos = random(0, cryptos.length);
-          _memberAccounts.push(cryptos[idxCryptos]);
-        }
-        let jsonRes = memberAccountMapper(_memberAccounts);
-        jsonRes.payment_ref_code = cryptoRandomString({length: 6, type: 'numeric'});
-        return res.ok(jsonRes);
+      let _PaymentAccounts = [];
+      
+      if(bankAccounts != null && bankAccounts.length > 0){
+        const idxBank = random(0, bankAccounts.length);
+        let bankAccount = {
+          ...bankAccountMapper(bankAccounts[idxBank])
+        };
+        bankAccount.payment_type = MemberAccountType.Bank;
+        _PaymentAccounts.push(bankAccount);
       }
+
+      const receivingAddresses = await ReceivingAddresses.findAll({
+        where: {
+          actived_flg: true
+        }
+      });
+      if(receivingAddresses != null && receivingAddressess.length > 0){
+        const idxCryptos = random(0, receivingAddressess.length);
+        let cryptoAccount = {
+          ...receivingAddressMapper(receivingAddresses[idxCryptos])
+        };
+        cryptoAccount.payment_type = MemberAccountType.Crypto;
+        _PaymentAccounts.push(cryptoAccount);
+      }
+
+      let jsonRes = {
+        ..._PaymentAccounts
+      };
+      jsonRes.payment_ref_code = cryptoRandomString({length: 6, type: 'numeric'});
+
+      return res.ok(jsonRes);
      
     }
     catch (err) {
-      logger.error("getMemberAccount: ", err);
+      logger.error("getPaymentAccount: ", err);
       next(err);
     }
   },

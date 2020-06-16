@@ -7,8 +7,7 @@ const destObject = {
     '[].account_number': '[].account_number',
     '[].bank_name': '[].bank_name',
     '[].branch_name': '[].branch_name',
-    '[].account_name': '[].account_name',
-    '[].wallet_address': '[].wallet_address'
+    '[].account_name': '[].account_name'
   },
   single: {
     id: 'id',
@@ -16,8 +15,7 @@ const destObject = {
     account_number: 'account_number',
     bank_name: 'bank_name',
     branch_name: 'branch_name',
-    account_name: 'account_name',
-    wallet_address: 'wallet_address'
+    account_name: 'account_name'
   }
 };
 module.exports = srcObject => {

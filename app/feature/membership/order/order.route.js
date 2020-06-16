@@ -48,7 +48,8 @@ module.exports = router;
                     [{
                       "id": 0,
                       "member_id": 0,
-                      "member_account_id": 0,
+                      "bank_account_id": 0,
+                      "receiving_addresses_id": 0,
                       "membership_type_id": 0,
                       "payment_type": "",
                       "currency_symbol": "",
@@ -107,16 +108,18 @@ module.exports = router;
  *            - account_holder
  *            - currency_symbol
  *            - payment_type
+ *            - bank_account_id
  *            example:
- *               {
+ *               {    
+                        "bank_account_id": 1
                         "payment_ref_code":"123456",
                         "amount":100,
                         "account_number":"abc123456",
                         "bank_name":"CITIBANK",
                         "bracnch_name":"HCM",
-                        "account_holder":"HCM",
+                        "account_name":"moonstake",
                         "currency_symbol":"USD",
-                        "payment_type":"BANK"
+                        "payment_type":"Bank"
                   }
  *     produces:
  *       - application/json
@@ -129,7 +132,8 @@ module.exports = router;
  *                 "data":{
                       "id": 0,
                       "member_id": 0,
-                      "member_account_id": 0,
+                      "bank_account_id": 0,
+                      "receiving_addresses_id": 0,
                       "membership_type_id": 0,
                       "payment_type": "",
                       "currency_symbol": "",
@@ -137,7 +141,7 @@ module.exports = router;
                       "account_number": "",
                       "bank_name": "",
                       "bracnch_name": "",
-                      "account_holder": "",
+                      "account_name": "",
                       "payment_ref_code": "",
                       "wallet_address": "",
                       "your_wallet_address": "",
@@ -181,6 +185,7 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
+ *            - receiving_addresses_id
  *            - amount
  *            - wallet_address
  *            - your_wallet_address
@@ -189,6 +194,7 @@ module.exports = router;
  *            - payment_type
  *            example:
  *               {
+                        "receiving_addresses_id":1
                         "wallet_address":"123456",
                         "amount":100,
                         "your_wallet_address":"",
@@ -209,7 +215,8 @@ module.exports = router;
  *                 "data":{
                       "id": 0,
                       "member_id": 0,
-                      "member_account_id": 0,
+                      "bank_account_id": 0,
+                      "receiving_addresses_id": 0,
                       "membership_type_id": 0,
                       "payment_type": "",
                       "currency_symbol": "",

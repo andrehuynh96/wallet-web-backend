@@ -7,7 +7,8 @@ const schema = Joi.object().keys({
   your_wallet_address: Joi.string().required(),
   txid: Joi.string().required(),
   rate_by_usdt: Joi.number().required(),
-  payment_type: Joi.string().required()
+  payment_type: Joi.string().required(),
+  receiving_addresses_id: Joi.number().required()
 });
 
 module.exports = schema;

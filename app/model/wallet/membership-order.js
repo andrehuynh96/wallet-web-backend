@@ -12,9 +12,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    member_account_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+    bank_account_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    receiving_addresses_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     membership_type_id: {
       type: DataTypes.UUID,
@@ -45,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
-    account_holder: {
+    account_name: {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
@@ -102,14 +106,19 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'member_id',
     });
 
-    MembershipOrder.belongsTo(models.member_accounts, {
-      as: 'MemberAccount',
-      foreignKey: 'member_account_id',
-    });
-
     MembershipOrder.belongsTo(models.membership_types, {
       as: 'MembershipType',
       foreignKey: 'membership_type_id',
+    });
+
+    MembershipOrder.belongsTo(models.bank_accounts, {
+      as: 'BankAccount',
+      foreignKey: 'bank_account_id',
+    });
+
+    MembershipOrder.belongsTo(models.receiving_addresses, {
+      as: 'ReceivingAddress',
+      foreignKey: 'receiving_addresses_id',
     });
 
   };

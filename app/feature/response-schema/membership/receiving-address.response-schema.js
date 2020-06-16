@@ -4,19 +4,12 @@ const destObject = {
   array: {
     '[].id': '[].id',
     '[].currency_symbol': '[].currency_symbol',
-    '[].account_number': '[].account_number',
-    '[].bank_name': '[].bank_name',
-    '[].branch_name': '[].branch_name',
-    '[].account_name': '[].account_name',
+    '[].account_holder': '[].account_holder',
     '[].wallet_address': '[].wallet_address'
   },
   single: {
     id: 'id',
     currency_symbol: 'currency_symbol',
-    account_number: 'account_number',
-    bank_name: 'bank_name',
-    branch_name: 'branch_name',
-    account_name: 'account_name',
     wallet_address: 'wallet_address'
   }
 };

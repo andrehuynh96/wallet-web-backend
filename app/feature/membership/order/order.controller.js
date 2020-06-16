@@ -4,8 +4,10 @@ const MembershipOrderStatus = require('app/model/wallet/value-object/membership-
 const mapper = require('app/feature/response-schema/membership/order.response-schema');
 const MembershipType = require('app/model/wallet').membership_types;
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
+const Platform = require('app/model/wallet/value-object/platform');
 const membershipOrderMapper = require('app/feature/response-schema/membership/order.response-schema');
 const db = require("app/model/wallet");
+const CoinGecko = require('coingecko-api');
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -47,7 +49,17 @@ module.exports = {
   makePaymentCrypto: async (req, res, next) => {
     try {
       logger.info('makePaymentCrypto::makePaymentCrypto');  
-      return res.ok(createOrder(MemberAccountType.Crypto, req));
+      const CoinGeckoClient = new CoinGecko();
+      let coinPrices = await CoinGeckoClient.simple.price({
+        ids: [req.body.currency_symbol],
+        vs_currencies: ['usd']
+      });
+      const price = coinPrices[Platform[req.body.currency_symbol].name].usd;
+      const data = {
+        rate_by_usdt: price,
+        payment_type:MemberAccountType.Crypto
+      }
+      return res.ok(createOrder(data, req));
     }
     catch (err) {
       logger.error("makePaymentCrypto: ", err);
@@ -57,7 +69,10 @@ module.exports = {
   makePaymentBank: async (req, res, next) => {
     try {
       logger.info('makePaymentBank::makePaymentBank');  
-      return res.ok(createOrder(MemberAccountType.Bank, req));
+      const data = {
+        payment_type:MemberAccountType.Bank
+      }
+      return res.ok(createOrder(data, req));
     }
     catch (err) {
       logger.error("makePaymentBank: ", err);
@@ -66,7 +81,7 @@ module.exports = {
   }
 };
 
-async function createOrder(payment_type, req){
+async function createOrder(data, req){
   const _currentMembershipType = await MembershipType.findOne({
     where: {
       id: req.user.membership_type_id
@@ -83,7 +98,6 @@ async function createOrder(payment_type, req){
   });
 
   let order = {
-    payment_type: payment_type,
     ...req.body,
     membership_type_id: req.body.membership_type_id,
     status: MembershipOrderStatus.Pending,

@@ -6,7 +6,6 @@ const schema = Joi.object().keys({
   wallet_address: Joi.string().required(),
   your_wallet_address: Joi.string().required(),
   txid: Joi.string().required(),
-  rate_by_usdt: Joi.number().required(),
   receiving_addresses_id: Joi.number().required()
 });
 

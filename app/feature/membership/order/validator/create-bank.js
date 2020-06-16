@@ -8,7 +8,6 @@ const schema = Joi.object().keys({
   bracnch_name: Joi.string().required(),
   account_name: Joi.string().required(),
   currency_symbol: Joi.string().required(),
-  payment_type: Joi.string().required(),
   bank_account_id: Joi.number().required()
 });
 

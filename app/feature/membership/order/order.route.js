@@ -111,7 +111,7 @@ module.exports = router;
  *            - bank_account_id
  *            example:
  *               {    
-                        "bank_account_id": 1
+                        "bank_account_id": 1,
                         "payment_ref_code":"123456",
                         "amount":100,
                         "account_number":"abc123456",
@@ -194,7 +194,7 @@ module.exports = router;
  *            - payment_type
  *            example:
  *               {
-                        "receiving_addresses_id":1
+                        "receiving_addresses_id":1,
                         "wallet_address":"123456",
                         "amount":100,
                         "your_wallet_address":"",

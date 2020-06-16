@@ -13,14 +13,14 @@ router.post(
   '/orders/bank/make-payment',
   authenticate,
   validator(createBank),
-  controller.makePayment
+  controller.makePaymentBank
 );
 
 router.post(
   '/orders/crypto/make-payment',
   authenticate,
   validator(createCrypto),
-  controller.makePayment
+  controller.makePaymentCrypto
 );
 
 module.exports = router;
@@ -107,7 +107,6 @@ module.exports = router;
  *            - bracnch_name
  *            - account_holder
  *            - currency_symbol
- *            - payment_type
  *            - bank_account_id
  *            example:
  *               {    
@@ -191,7 +190,6 @@ module.exports = router;
  *            - your_wallet_address
  *            - txid
  *            - rate_by_usdt
- *            - payment_type
  *            example:
  *               {
                         "receiving_addresses_id":1,

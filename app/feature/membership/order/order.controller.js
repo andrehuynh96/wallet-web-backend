@@ -44,38 +44,52 @@ module.exports = {
       next(err);
     }
   },
-  makePayment: async (req, res, next) => {
+  makePaymentCrypto: async (req, res, next) => {
     try {
-      logger.info('makePayment::makePayment');  
-
-      const _currentMembershipType = await MembershipType.findOne({
-        where: {
-          id: req.user.membership_type_id
-        }
-      });
-
-      if(_currentMembershipType.type === MembershipTypeName.Paid){
-        return res.badRequest(res.__("PURCHASE_FAIL"), "MEMBER_TYPE_EXIST_PACKAGE_PAID");
-      }
-      const _membershipType = await MembershipType.findOne({
-        where: {
-          id: req.body.membership_type_id
-        }
-      });
-
-      let data = {
-        ...req.body,
-        membership_type_id: req.body.membership_type_id,
-        status: MembershipOrderStatus.Pending,
-      }
-
-      let result =  await MembershipOrder.create(data);
-
-      return res.ok(mapper(result));
+      logger.info('makePaymentCrypto::makePaymentCrypto');  
+      return res.ok(createOrder(MemberAccountType.Crypto, req));
     }
     catch (err) {
-      logger.error("makePayment: ", err);
+      logger.error("makePaymentCrypto: ", err);
+      next(err);
+    }
+  },
+  makePaymentBank: async (req, res, next) => {
+    try {
+      logger.info('makePaymentBank::makePaymentBank');  
+      return res.ok(createOrder(MemberAccountType.Bank, req));
+    }
+    catch (err) {
+      logger.error("makePaymentBank: ", err);
       next(err);
     }
   }
 };
+
+async function createOrder(payment_type, req){
+  const _currentMembershipType = await MembershipType.findOne({
+    where: {
+      id: req.user.membership_type_id
+    }
+  });
+
+  if(_currentMembershipType.type === MembershipTypeName.Paid){
+    return res.badRequest(res.__("PURCHASE_FAIL"), "MEMBER_TYPE_EXIST_PACKAGE_PAID");
+  }
+  const _membershipType = await MembershipType.findOne({
+    where: {
+      id: req.body.membership_type_id
+    }
+  });
+
+  let order = {
+    payment_type: payment_type,
+    ...req.body,
+    membership_type_id: req.body.membership_type_id,
+    status: MembershipOrderStatus.Pending,
+  }
+
+  let result =  await MembershipOrder.create(order);
+
+  return mapper(result);
+}

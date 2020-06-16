@@ -27,7 +27,7 @@ module.exports = {
   getPaymentAccount: async (req, res, next) => {
     try {
       logger.info('getPaymentAccount::getPaymentAccount');
-      const bankAccounts = await BankAccount.findOne({
+      const bankAccounts = await BankAccount.findAll({
          where: {
             actived_flg: true
           }
@@ -38,7 +38,7 @@ module.exports = {
       if(bankAccounts != null && bankAccounts.length > 0){
         const idxBank = random(0, bankAccounts.length);
         let bankAccount = {
-          ...bankAccountMapper(bankAccounts[idxBank])
+          ...bankAccountMapper(bankAccounts)
         };
         bankAccount.payment_type = MemberAccountType.Bank;
         _PaymentAccounts.push(bankAccount);

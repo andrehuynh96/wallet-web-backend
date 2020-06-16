@@ -4,13 +4,13 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 
 router.get(
-  '/member/member_type',
+  '/member/member-type',
   authenticate,
   controller.getMemberType
 );
 
 router.get(
-  '/member/payment_accounts',
+  '/member/payment-accounts',
   authenticate,
   controller.getMemberAccount
 );
@@ -22,7 +22,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/member/member_type:
+ * /web/membership/member/member-type:
  *   get:
  *     summary: member_type
  *     tags:
@@ -73,7 +73,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/member/payment_accounts:
+ * /web/membership/member/payment-accounts:
  *   get:
  *     summary: get payment_accounts
  *     tags:

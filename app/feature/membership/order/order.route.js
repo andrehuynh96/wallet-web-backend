@@ -10,14 +10,14 @@ router.get(
 );
 
 router.post(
-  '/orders/bank/make_payment',
+  '/orders/bank/make-payment',
   authenticate,
   validator(createBank),
   controller.makePayment
 );
 
 router.post(
-  '/orders/crypto/make_payment',
+  '/orders/crypto/make-payment',
   authenticate,
   validator(createCrypto),
   controller.makePayment
@@ -87,7 +87,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/orders/bank/make_payment:
+ * /web/membership/orders/bank/make-payment:
  *   post:
  *     summary: make_payment
  *     tags:
@@ -172,7 +172,7 @@ module.exports = router;
  
 /**
  * @swagger
- * /web/membership/orders/crypto/make_payment:
+ * /web/membership/orders/crypto/make-payment:
  *   post:
  *     summary: make_payment
  *     tags:

@@ -34,9 +34,9 @@ module.exports = {
         membership_orders.processe_date, 
         membership_types.type
         FROM membership_orders INNER JOIN membership_types on membership_orders.membership_type_id = membership_types.id
-        WHERE membership_orders.member_id = :member_id
+        WHERE membership_orders.member_id = ${req.user.id}
       `;
-      var membershipOrders = await db.sequelize.query(sql, { replacements: { member_id: req.user.id }, type: db.sequelize.QueryTypes.SELECT });
+      var membershipOrders = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
       return res.ok(membershipOrderMapper(membershipOrders));
     }
     catch (err) {

@@ -4,9 +4,9 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 
 router.get(
-  '/claim-historys',
+  '/claim-histories',
   authenticate,
-  controller.getClaimHistorys
+  controller.claimHistories
 );
 
 router.post(
@@ -24,7 +24,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/claim-historys:
+ * /web/membership/claim-histories:
  *   get:
  *     summary: get claim historys
  *     tags:

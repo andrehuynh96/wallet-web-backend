@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: ClaimRequestStatus.Pending
     },
+    amount: {
+      type: DataTypes.DECIMAL,
+      allowNull: false,
+    },
     currency_symbol: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -51,6 +55,10 @@ module.exports = (sequelize, DataTypes) => {
     txid: {
       type: DataTypes.STRING(500),
       allowNull: true,
+    },
+    affiliate_claim_reward_id: {
+      type: DataTypes.UUID,
+      allowNull: false,
     },
   }, {
     underscored: true,

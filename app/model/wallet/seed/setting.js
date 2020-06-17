@@ -86,10 +86,10 @@ const SETTINGS = [
     "property": "membership_type_upgrade_paid_member_flg"
   },
   {
-    "key": "UPGRADE_TO_MEMBERHIP_TYPE_ID",
+    "key": "UPGRADE_TO_MEMBERSHIP_TYPE_ID",
     "value": "",
     "type": "string",
-    "property": "upgrade_to_memberhip_type_id"
+    "property": "upgrade_to_membership_type_id"
   }
 ];
 

@@ -131,23 +131,25 @@ async function _checkDataCreateOrder(data, member_id){
   if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
     //check referrence code 
     const resCheckReferrerCode = Affiliate.checkReferrerCode(data.referrer_code);
-    if(resCheckReferrerCode.data){
+
+    //waitting data api anh hung
+    if(resCheckReferrerCode.data.inValidate){
       resData.isCreated = false; 
       resData.errorCode = "PURCHASE_FAIL";
       resData.errorMsg = "REFERRER_CODE_INVALIDATER";
-    }
-
-    //check MembershipType of member is Paid
-    const _currentMembershipType = await MembershipType.findOne({
-      where: {
-        id: _member.membership_type_id
+    }else{
+      //check MembershipType of member is Paid
+      const _currentMembershipType = await MembershipType.findOne({
+        where: {
+          id: _member.membership_type_id
+        }
+      });
+    
+      if(_currentMembershipType.type === MembershipTypeName.Paid){
+        resData.isCreated = false; 
+        resData.errorCode = "PURCHASE_FAIL";
+        resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
       }
-    });
-  
-    if(_currentMembershipType.type === MembershipTypeName.Paid){
-      resData.isCreated = false; 
-      resData.errorCode = "PURCHASE_FAIL";
-      resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
     }
   }else{
     // KYC level purchase invalidater

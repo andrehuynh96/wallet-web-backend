@@ -10,9 +10,9 @@ router.get(
 );
 
 router.get(
-  '/reward/history',
+  '/reward-history',
   authenticate,
-  controller.getHistorys
+  controller.getRewardHistorys
 );
 module.exports = router;
 
@@ -66,7 +66,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/reward/history:
+ * /web/membership/reward-history:
  *   get:
  *     summary: get reward history
  *     tags:

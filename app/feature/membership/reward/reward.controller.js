@@ -15,7 +15,7 @@ module.exports = {
       next(err);
     }
   },
-  getHistorys: async (req, res, next) => {
+  getRewardHistorys: async (req, res, next) => {
     try {
       logger.info('getHistorys::getHistorys');
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;

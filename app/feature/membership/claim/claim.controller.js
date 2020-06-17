@@ -5,7 +5,7 @@ const ClaimRequest = require('app/model/wallet').claim_requests;
 const Affiliate = require('app/lib/affiliate');
 
 module.exports = {
-  getHistorys: async (req, res, next) => {
+  getClaimHistorys: async (req, res, next) => {
     try {
       logger.info('getHistorys::getHistorys');
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;

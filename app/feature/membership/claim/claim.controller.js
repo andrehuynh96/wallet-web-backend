@@ -24,22 +24,6 @@ module.exports = {
       next(err);
     }
   },
-  getClaimRewards: async (req, res, next) => {
-    try {
-      logger.info('getClaimRewards::getClaimRewards');
-      let results = await Affiliate.getClaimReward({ email: req.user.email, currency_symbol: req.body.currency_symbol });
-      return res.ok({
-        items: claimRewardMapper(results.items),
-        offset: results.offset,
-        limit: results.limit,
-        total: results.total
-      });
-    }
-    catch (err) {
-      logger.error("getClaimRewards: ", err);
-      next(err);
-    }
-  },
   create: async (req, res, next) => {
     
   }

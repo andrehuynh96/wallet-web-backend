@@ -114,7 +114,7 @@ module.exports = {
       logger.error("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
+  }
 }
 
 async function _getToken() {

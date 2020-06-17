@@ -8,7 +8,7 @@ module.exports = {
     try {
       logger.info('getRewards::getRewards');
       let result = await Affiliate.getRewards({ email: req.user.email });
-      return res.ok(rewardMapper(result));
+      return res.stauts(result.httpCode).send(result.data);
     }
     catch (err) {
       logger.error("getRewards: ", err);
@@ -21,14 +21,7 @@ module.exports = {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
       let result = await Affiliate.getRewardHistorys({ email: req.user.email , offset: offset, limit: limit });
-      const resData = {
-        items:rewardHistoryMapper(result.items),
-        offset: result.offset,
-        limit: result.limit,
-        total: result.total
-      }
-      
-      return res.ok(resData);
+      return res.stauts(result.httpCode).send(result.data);
     }
     catch (err) {
       logger.error("getHistorys: ", err);

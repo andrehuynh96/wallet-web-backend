@@ -207,6 +207,7 @@ const config = {
     apiKey: process.env.AFFILIATE_API_KEY,
     secretKey: process.env.AFFILIATE_SECRET_KEY,
     typeId: process.env.AFFILIATE_TYPE_ID,
+	  membershipTypeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID
   },
   plutx: {
     domain: process.env.PLUTX_DOMAIN,

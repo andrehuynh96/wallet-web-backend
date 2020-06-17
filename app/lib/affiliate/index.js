@@ -77,6 +77,44 @@ module.exports = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  getRewards: async ({ email }) => {
+    try {
+      let accessToken = await _getToken();
+      let result = await axios.get(`${config.affiliate.url}/available-rewards?ext_client_id=${email}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+  getRewardHistorys: async ({ email, offset = 0, limit = 10 }) => {
+    try {
+      let accessToken = await _getToken();
+      let result = await axios.get(`${config.affiliate.url}/rewards?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
 }
 
 async function _getToken() {

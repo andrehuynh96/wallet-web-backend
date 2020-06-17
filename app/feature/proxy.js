@@ -1,15 +1,23 @@
 const express = require("express");
-const controller = require('./submit-kyc.controller');
-const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
+const authenticate = require('app/middleware/authenticate.middleware');
+const config = require("app/config");
 
-router.post(
-  '/me/kyc',
-  authenticate,
-  controller
-);
-
-module.exports = router;
+module.exports = function (proxy) {
+  router.post(
+    '/me/kyc',
+    authenticate,
+    (req, res, next) => {
+      let target = `${config.kyc.baseUrl}/api/kycs/me/customers/${req.user.kyc_id}/submit`
+      req.url = target;
+      proxy.web(req, res, {
+        target: config.kyc.baseUrl,
+        secure: false,
+      });
+    }
+  );
+  return router;
+}
 
 
 /**

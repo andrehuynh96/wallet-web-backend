@@ -10,7 +10,6 @@ const database = require('app/lib/database');
 const logger = require('app/lib/logger');
 const redis = require('app/lib/redis');
 const loader = require('app/loader');
-
 const app = express();
 app.use(morgan('dev'));
 

@@ -239,7 +239,11 @@ const config = {
     apiKey: process.env.PLUTX_USERID_APP_API_KEY,
     secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
   },
-  twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3
+  twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3,
+  membership:{
+    KYCLevelAllowPurchase: process.env.MEMBERSHIP_KYC_LEVEL_ALLOW_PURCHASE,
+    countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST
+  }
 };
 
 module.exports = config;

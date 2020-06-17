@@ -62,7 +62,15 @@ module.exports = {
         payment_type:MemberAccountType.Crypto,
         ...req.body
       }
-      return await _createOrder(body, req, res);
+
+      const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
+
+      if(resDataCheck.isCreated){
+        const result = await _createOrder(body, req);
+        return res.ok(result);
+      }else{
+        return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
+      }
     }
     catch (err) {
       logger.error("makePaymentCrypto: ", err);
@@ -76,7 +84,14 @@ module.exports = {
         payment_type:MemberAccountType.Bank,
         ...req.body,
       }
-      return await _createOrder(body, req, res);
+      const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
+
+      if(resDataCheck.isCreated){
+        const result = await _createOrder(body, req);
+        return res.ok(result);
+      }else{
+        return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
+      }
     }
     catch (err) {
       logger.error("makePaymentBank: ", err);
@@ -85,11 +100,13 @@ module.exports = {
   }
 };
 
-async function _createOrder(body, req, res){
-  let resData = {isCreated: true};
-  const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
+/**
+ * create order
+ * @param {*} body 
+ * @param {*} req 
+ */
+async function _createOrder(body, req){
 
-  if(resDataCheck.isCreated){
     const _member = await Member.findOne({where: {id: req.user.id}});
   
     let order = {
@@ -100,15 +117,13 @@ async function _createOrder(body, req, res){
     }
   
     let result =  await MembershipOrder.create(order);
-    return res.ok(mapper(result));
-  }else{
-    return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
-  }
+    return mapper(result);
 }
 
 /**
- * 
- * @param {} data 
+ * check validater data create order
+ * @param {*} data 
+ * @param {*} member_id 
  */
 async function _checkDataCreateOrder(data, member_id){
   let resData = {isCreated: true};

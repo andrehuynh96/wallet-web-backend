@@ -13,7 +13,7 @@ module.exports = function (proxy) {
       proxy.web(req, res, {
         target: config.kyc.baseUrl,
         secure: false,
-      }, next);
+      });
     }
   );
   return router;

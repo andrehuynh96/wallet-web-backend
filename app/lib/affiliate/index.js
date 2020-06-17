@@ -84,7 +84,7 @@ module.exports = {
         {
           headers: {
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.typeId,
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -103,7 +103,7 @@ module.exports = {
         {
           headers: {
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.typeId,
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });

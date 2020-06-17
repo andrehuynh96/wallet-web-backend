@@ -51,8 +51,8 @@ module.exports = {
   makePaymentCrypto: async (req, res, next) => {
     try {
       logger.info('makePaymentCrypto::makePaymentCrypto');  
-      const CoinGeckoClient = new CoinGecko();
-      let coinPrices = await CoinGeckoClient.simple.price({
+      const coinGeckoClient = new CoinGecko();
+      let coinPrices = await coinGeckoClient.simple.price({
         ids: [req.body.currency_symbol],
         vs_currencies: ['usd']
       });

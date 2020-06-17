@@ -38,7 +38,7 @@ module.exports = {
       if(bankAccounts != null && bankAccounts.length > 0){
         const idxBank = random(0, bankAccounts.length);
         let bankAccount = {
-          ...bankAccountMapper(bankAccounts)
+          ...bankAccountMapper(bankAccounts[idxBank])
         };
         bankAccount.payment_type = MemberAccountType.Bank;
         _PaymentAccounts.push(bankAccount);

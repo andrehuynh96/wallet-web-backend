@@ -12,7 +12,7 @@ router.get(
 router.get(
   '/member/payment-accounts',
   authenticate,
-  controller.getMemberAccount
+  controller.getPaymentAccount
 );
 
 module.exports = router;

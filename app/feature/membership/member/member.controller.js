@@ -62,7 +62,8 @@ module.exports = {
         ..._PaymentAccounts
       };
       jsonRes.payment_ref_code = cryptoRandomString({length: 6, type: 'numeric'});
-
+      const _member = await Member.findOne({where: {id: member_id}});
+      jsonRes.referral_code = _member.referral_code;
       return res.ok(jsonRes);
      
     }

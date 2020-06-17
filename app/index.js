@@ -19,7 +19,6 @@ i18n.configure({
   directory: path.resolve(__dirname + '/locales'),
 });
 router.use(i18n.init);
-router.use(cookieParser());
 router.use(session({
   key: 'sid',
   secret: 'secret-session',
@@ -40,19 +39,6 @@ router.use(function (req, res, next) {
   next();
 });
 
-router.use(
-  bodyParser.urlencoded({
-    limit: '5mb',
-    extended: true,
-  })
-);
-router.use(
-  bodyParser.json({
-    limit: '5mb',
-    extended: true,
-  })
-);
-
 if (config.corsDomain) {
   var allowedOrigins = config.corsDomain.split(',');
   router.use(
@@ -70,18 +56,31 @@ const limiter = rateLimit({
   max: config.rateLimit,
 });
 router.use(limiter);
-
 router.use(helmet());
+router.use(
+  baseResponse({
+    i18n: true,
+  })
+);
+
+router.use(cookieParser());
+router.use(require('./proxy'));
 router.use(
   express.json({
     limit: '1mb',
     strict: true,
   })
 );
-
 router.use(
-  baseResponse({
-    i18n: true,
+  bodyParser.urlencoded({
+    limit: '5mb',
+    extended: true,
+  })
+);
+router.use(
+  bodyParser.json({
+    limit: '5mb',
+    extended: true,
   })
 );
 

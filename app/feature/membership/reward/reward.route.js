@@ -94,12 +94,16 @@ module.exports = router;
                     {
                        "id": "7",
                         "currency_symbol": "ETH",
-                        "amount": "0.00001"
+                        "amount": "0.00001",
+                        "created_at": "2020-03-27T08:36:56.308Z",
+                        "updated_at": "2020-03-27T08:36:56.308Z"
                     },
                     {
                       "id": "6",
                       "currency_symbol": "ETH",
-                      "amount": "5"
+                      "amount": "5",
+                      "created_at": "2020-03-27T08:36:56.308Z",
+                      "updated_at": "2020-03-27T08:36:56.308Z"
                     }
                   ],
                   "offset": 0,

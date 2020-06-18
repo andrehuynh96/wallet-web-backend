@@ -132,7 +132,6 @@ async function _createOrder(body, req, res){
     
         order.member_id = _member.id;
         order.status = MembershipOrderStatus.Pending;
-        order.referral_code = _member.referral_code;
         let result =  await MembershipOrder.create(order);
         return res.ok(mapper(result));
       }else{

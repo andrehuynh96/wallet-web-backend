@@ -11,7 +11,9 @@ const CoinGecko = require('coingecko-api');
 const Member = require('app/model/wallet').members;
 const Affiliate = require('app/lib/affiliate');
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
+const createOrderMapper = require('./mapper/create.order-schema');
 const config = require('app/config');
+const cryptoRandomString = require('crypto-random-string');
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -54,11 +56,18 @@ module.exports = {
     try {
       logger.info('makePaymentCrypto::makePaymentCrypto');  
       const coinGeckoClient = new CoinGecko();
-      let coinPrices = await coinGeckoClient.simple.price({
-        ids: [req.body.currency_symbol],
-        vs_currencies: ['usd']
-      });
-      const price = coinPrices[Platform[req.body.currency_symbol].name].usd;
+      let price = 0;
+      try {
+        let coinPrices = await coinGeckoClient.simple.price({
+          ids: [Platform[req.body.currency_symbol].name],
+          vs_currencies: ['usd']
+        });
+        price = coinPrices.data[Platform[req.body.currency_symbol].name.toLowerCase()].usd;
+      }
+      catch (err) {
+        logger.info('coinGeckoClient.simple.price no found data with currency' + req.body.currency_symbol);  
+      }
+
       const body = {
         rate_by_usdt: price,
         payment_type:MemberAccountType.Crypto,
@@ -114,12 +123,14 @@ async function _createOrder(body, req){
     const _member = await Member.findOne({where: {id: req.user.id}});
   
     let order = {
-      status: MembershipOrderStatus.Pending,
-      ...body,
-      referral_code: _member.referral_code,
-      member_id: _member.id
+      ...createOrderMapper(body)
     }
-  
+
+    order.member_id = _member.id;
+    order.status = MembershipOrderStatus.Pending;
+    order.referral_code = _member.referral_code;
+    order.processe_date = new Date();
+    console.log('order', order)
     let result =  await MembershipOrder.create(order);
     return mapper(result);
 }
@@ -132,16 +143,14 @@ async function _createOrder(body, req){
 async function _checkDataCreateOrder(data, member_id){
   let resData = {isCreated: true};
   const _member = await Member.findOne({where: {id: member_id}});
-  if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
+ // if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
     //check referrence code 
-    const resCheckReferrerCode = Affiliate.isCheckReferrerCode(data.referrer_code);
-
-    //waitting data api anh hung
-    if(!resCheckReferrerCode.data.isValid){
-      resData.isCreated = false; 
-      resData.errorCode = "PURCHASE_FAIL";
-      resData.errorMsg = "REFERRER_CODE_INVALIDATER";
-    }else{
+    //const resCheckReferrerCode = Affiliate.isCheckReferrerCode(data.referrer_code);
+    // if(!resCheckReferrerCode.data.isValid){
+    //   resData.isCreated = false; 
+    //   resData.errorCode = "PURCHASE_FAIL";
+    //   resData.errorMsg = "REFERRER_CODE_INVALIDATER";
+    // }else{
       //check MembershipType of member is Paid
       const _currentMembershipType = await MembershipType.findOne({
         where: {
@@ -154,12 +163,12 @@ async function _checkDataCreateOrder(data, member_id){
         resData.errorCode = "PURCHASE_FAIL";
         resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
       }
-    }
-  }else{
-    // KYC level purchase invalidater
-    resData.isCreated = false; 
-    resData.errorCode = "PURCHASE_FAIL";
-    resData.errorMsg = "KYC_LEVEL_INVALIDATER";
-  }
+   // }
+  // }else{
+  //   // KYC level purchase invalidater
+  //   resData.isCreated = false; 
+  //   resData.errorCode = "PURCHASE_FAIL";
+  //   resData.errorMsg = "KYC_LEVEL_INVALIDATER";
+  // }
   return resData;
 }

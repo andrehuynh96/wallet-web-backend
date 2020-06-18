@@ -197,14 +197,14 @@ module.exports = router;
  *            - membership_type_id
  *            example:
  *               {      
-                        "referrer_code": "as3421fs",
-                        "receiving_addresses_id":1,
-                        "amount":100,
-                        "wallet_address":"123456",
-                        "your_wallet_address":"",
-                        "txid":"CITIBANK",
-                        "currency_symbol":"USD",
-                        "membership_type_id": 1
+                    "referrer_code": "as3421fs",
+                    "receiving_addresses_id": 9,
+                    "amount": 100,
+                    "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
+                    "your_wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd531",
+                    "txid": "txcosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
+                    "currency_symbol": "ATOM",
+                    "membership_type_id": "88fda933-0658-49c4-a9c7-4c0021e9a071"
                   }
  *     produces:
  *       - application/json

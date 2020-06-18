@@ -40,6 +40,7 @@ module.exports = {
           ...bankAccountMapper(bankAccounts[idxBank])
         };
         bankAccount.payment_type = MemberAccountType.Bank;
+        bankAccount.payment_ref_code = cryptoRandomString({length: 6, type: 'numeric'});
         _PaymentAccounts.push(bankAccount);
       }
 
@@ -60,7 +61,7 @@ module.exports = {
       let jsonRes = {
         ..._PaymentAccounts
       };
-      jsonRes.payment_ref_code = cryptoRandomString({length: 6, type: 'numeric'});
+     
       const _member = await Member.findOne({where: {id: req.user.id}});
       return res.ok(jsonRes);
      

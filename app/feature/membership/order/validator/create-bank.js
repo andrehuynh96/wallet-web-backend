@@ -10,7 +10,7 @@ const schema = Joi.object().keys({
   account_name: Joi.string().required(),
   currency_symbol: Joi.string().required(),
   bank_account_id: Joi.number().required(),
-  membership_type_id: Joi.number().required()
+  membership_type_id: Joi.string().required()
 });
 
 module.exports = schema;

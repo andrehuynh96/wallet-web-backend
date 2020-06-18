@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
-    bracnch_name: {
+    branch_name: {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
     affiliate_claim_reward_id: {
       type: DataTypes.UUID,
       allowNull: false,
-    },
+    }
   }, {
     underscored: true,
     timestamps: true,

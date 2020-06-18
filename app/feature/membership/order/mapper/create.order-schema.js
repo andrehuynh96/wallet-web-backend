@@ -16,7 +16,6 @@ const destObject = {
     account_name:'account_name',
     payment_ref_code: 'payment_ref_code',
     status: 'status',
-    processe_date:'processe_date',
     referral_code: 'referral_code',
     referrer_code: 'referrer_code',
     order_no: 'order_no',

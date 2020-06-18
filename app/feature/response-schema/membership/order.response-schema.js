@@ -20,7 +20,7 @@ const destObject = {
     '[].txid': '[].txid',
     '[].rate_by_usdt': '[].rate_by_usdt',
     '[].status': '[].status',
-    '[].processe_date': '[].processe_date',
+    '[].updatedAt': '[].updated_at',
     '[].membership_type': '[].membership_type',
   },
   single: {
@@ -42,7 +42,7 @@ const destObject = {
     txid: 'txid',
     rate_by_usdt: 'rate_by_usdt',
     status: 'status',
-    processe_date: 'processe_date',
+    updatedAt: 'updated_at',
     membership_type: 'membership_type'
   }
 };

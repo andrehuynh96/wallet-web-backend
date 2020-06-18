@@ -90,11 +90,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
-    processe_date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: 0
-    },
     referral_code: {
       type: DataTypes.STRING(12),
       allowNull: false

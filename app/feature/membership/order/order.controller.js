@@ -8,6 +8,8 @@ const Platform = require('app/model/wallet/value-object/platform');
 const membershipOrderMapper = require('app/feature/response-schema/membership/order.response-schema');
 const db = require("app/model/wallet");
 const CoinGecko = require('coingecko-api');
+const Member = require('app/model/wallet').members;
+const Affiliate = require('app/lib/affiliate');
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -49,17 +51,27 @@ module.exports = {
   makePaymentCrypto: async (req, res, next) => {
     try {
       logger.info('makePaymentCrypto::makePaymentCrypto');  
-      const CoinGeckoClient = new CoinGecko();
-      let coinPrices = await CoinGeckoClient.simple.price({
+      const coinGeckoClient = new CoinGecko();
+      let coinPrices = await coinGeckoClient.simple.price({
         ids: [req.body.currency_symbol],
         vs_currencies: ['usd']
       });
       const price = coinPrices[Platform[req.body.currency_symbol].name].usd;
-      const data = {
+      const body = {
         rate_by_usdt: price,
-        payment_type:MemberAccountType.Crypto
+        payment_type:MemberAccountType.Crypto,
+        ...req.body,
+        order_no:cryptoRandomString({length: 8})
       }
-      return res.ok(createOrder(data, req));
+
+      const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
+
+      if(resDataCheck.isCreated){
+        const result = await _createOrder(body, req);
+        return res.ok(result);
+      }else{
+        return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
+      }
     }
     catch (err) {
       logger.error("makePaymentCrypto: ", err);
@@ -69,10 +81,19 @@ module.exports = {
   makePaymentBank: async (req, res, next) => {
     try {
       logger.info('makePaymentBank::makePaymentBank');  
-      const data = {
-        payment_type:MemberAccountType.Bank
+      const body = {
+        payment_type:MemberAccountType.Bank,
+        ...req.body,
+        order_no: req.body.referrer_code
       }
-      return res.ok(createOrder(data, req));
+      const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
+
+      if(resDataCheck.isCreated){
+        const result = await _createOrder(body, req);
+        return res.ok(result);
+      }else{
+        return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
+      }
     }
     catch (err) {
       logger.error("makePaymentBank: ", err);
@@ -81,29 +102,62 @@ module.exports = {
   }
 };
 
-async function createOrder(data, req){
-  const _currentMembershipType = await MembershipType.findOne({
-    where: {
-      id: req.user.membership_type_id
+/**
+ * create order
+ * @param {*} body 
+ * @param {*} req 
+ */
+async function _createOrder(body, req){
+
+    const _member = await Member.findOne({where: {id: req.user.id}});
+  
+    let order = {
+      status: MembershipOrderStatus.Pending,
+      ...body,
+      referral_code: _member.referral_code,
+      member_id: _member.id
     }
-  });
+  
+    let result =  await MembershipOrder.create(order);
+    return mapper(result);
+}
 
-  if(_currentMembershipType.type === MembershipTypeName.Paid){
-    return res.badRequest(res.__("PURCHASE_FAIL"), "MEMBER_TYPE_EXIST_PACKAGE_PAID");
-  }
-  const _membershipType = await MembershipType.findOne({
-    where: {
-      id: req.body.membership_type_id
+/**
+ * check validater data create order
+ * @param {*} data 
+ * @param {*} member_id 
+ */
+async function _checkDataCreateOrder(data, member_id){
+  let resData = {isCreated: true};
+  const _member = await Member.findOne({where: {id: member_id}});
+  if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
+    //check referrence code 
+    const resCheckReferrerCode = Affiliate.isCheckReferrerCode(data.referrer_code);
+
+    //waitting data api anh hung
+    if(!resCheckReferrerCode.data.isValid){
+      resData.isCreated = false; 
+      resData.errorCode = "PURCHASE_FAIL";
+      resData.errorMsg = "REFERRER_CODE_INVALIDATER";
+    }else{
+      //check MembershipType of member is Paid
+      const _currentMembershipType = await MembershipType.findOne({
+        where: {
+          id: _member.membership_type_id
+        }
+      });
+    
+      if(_currentMembershipType.type === MembershipTypeName.Paid){
+        resData.isCreated = false; 
+        resData.errorCode = "PURCHASE_FAIL";
+        resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
+      }
     }
-  });
-
-  let order = {
-    ...req.body,
-    membership_type_id: req.body.membership_type_id,
-    status: MembershipOrderStatus.Pending,
+  }else{
+    // KYC level purchase invalidater
+    resData.isCreated = false; 
+    resData.errorCode = "PURCHASE_FAIL";
+    resData.errorMsg = "KYC_LEVEL_INVALIDATER";
   }
-
-  let result =  await MembershipOrder.create(order);
-
-  return mapper(result);
+  return resData;
 }

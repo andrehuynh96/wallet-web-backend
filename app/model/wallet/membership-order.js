@@ -94,6 +94,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: 0
+    },
+    referral_code: {
+      type: DataTypes.STRING(12),
+      allowNull: false
+    },
+    referrer_code: {
+      type: DataTypes.STRING(12),
+      allowNull: false
+    },
+    order_no: {
+      type: DataTypes.STRING(8),
+      allowNull: false
     }
   }, {
     underscored: true,

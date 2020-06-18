@@ -84,7 +84,7 @@ module.exports = {
         {
           headers: {
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            "x-affiliate-type-id": config.membership.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -103,7 +103,26 @@ module.exports = {
         {
           headers: {
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            "x-affiliate-type-id": config.membership.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+  isCheckReferrerCode: async ({ referrer_code }) => {
+    try {
+      let accessToken = await _getToken();
+      let result = await axios.get(`${config.affiliate.url}/affiliate-codes/${referrer_code}/can-referer`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.membership.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });

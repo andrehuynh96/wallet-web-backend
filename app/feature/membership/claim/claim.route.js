@@ -117,7 +117,7 @@ module.exports = router;
  *     summary: claim-reward
  *     tags:
  *       - membership
- *     description: claim reward
+ *     description: create claim request if call Affiliate update claimreward error, rollback data claim request
  *     parameters:
  *       - in: body
  *         name: data

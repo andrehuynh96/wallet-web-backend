@@ -171,7 +171,7 @@ module.exports = {
             Authorization: `Bearer ${accessToken}`,
           }
         });
-      return { httpCode: 200, data: result.data };
+      return { httpCode: 200, data: result.data.data };
 
     }
     catch (err) {

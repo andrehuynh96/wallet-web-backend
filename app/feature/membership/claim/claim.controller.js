@@ -46,7 +46,7 @@ module.exports = {
   
       
       claimObject.status = ClaimRequestStatus.Pending;
-      
+
       let transaction = await database.transaction();
 
       let _resultCreateData= await ClaimRequest.create(claimObject, { transaction });
@@ -57,14 +57,16 @@ module.exports = {
         email: _member.email
       }
 
-      let resClaimReward = await Affiliate.claimReward(dataReward);
+      //call api update claimreward and get affiliate_claim_reward_id
+      const resClaimReward = await Affiliate.claimReward(dataReward);
 
       if(resClaimReward.httpCode !== 200) {
         await transaction.rollback();
         return res.status(resClaimReward.httpCode).send(resClaimReward.data);
       }
 
-      _resultCreateData = await ClaimRequest.update({ affiliate_claim_reward_id: resClaimReward.data.id }, {
+      console.log('resClaimReward.data.id', resClaimReward.data.id)
+      await ClaimRequest.update({ affiliate_claim_reward_id: resClaimReward.data.id }, {
         where: {
           id: _resultCreateData.id
         }
@@ -72,7 +74,8 @@ module.exports = {
 
       await transaction.commit();
 
-      return res.ok(_resultCreateData);
+      const resultData = await ClaimRequest.findOne({where: {id: _resultCreateData.id}});
+      return res.ok(resultData);
     }
     catch (err) {
       logger.error("claim reward create: ", err);

@@ -133,8 +133,28 @@ module.exports = {
       logger.error("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  }
-}
+  },
+  clickReferrerUrl: async (code) => {
+    try {
+      let accessToken = await _getToken();
+      let result = await axios.post(`${config.affiliate.url}/affiliate-codes/${code}/click`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.membership.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  },
+};
 
 async function _getToken() {
   let token = await cache.getAsync(redisResource.affiliate.token);

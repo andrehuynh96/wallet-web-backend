@@ -102,6 +102,10 @@ module.exports = (sequelize, DataTypes) => {
     referrer_code: {
       type: DataTypes.STRING(12),
       allowNull: false
+    },
+    order_no: {
+      type: DataTypes.STRING(8),
+      allowNull: false
     }
   }, {
     underscored: true,

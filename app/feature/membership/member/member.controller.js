@@ -1,12 +1,11 @@
 const logger = require('app/lib/logger');
 const MembershipType = require('app/model/wallet').membership_types;
+const Member = require('app/model/wallet').members;
 const memberTypeMapper = require('app/feature/response-schema/membership/member-type.response-schema');
 const BankAccount = require('app/model/wallet').bank_accounts;
 const ReceivingAddresses = require('app/model/wallet').receiving_addresses;
 const bankAccountMapper = require('app/feature/response-schema/membership/bank-account.response-schema');
 const receivingAddressMapper = require('app/feature/response-schema/membership/receiving-address.response-schema');
-const crypto = require('crypto');
-const format = require('biguint-format');
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const cryptoRandomString = require('crypto-random-string');
@@ -36,7 +35,7 @@ module.exports = {
       let _PaymentAccounts = [];
       
       if(bankAccounts != null && bankAccounts.length > 0){
-        const idxBank = random(0, bankAccounts.length);
+        const idxBank = random(bankAccounts.length-1);
         let bankAccount = {
           ...bankAccountMapper(bankAccounts[idxBank])
         };
@@ -49,8 +48,8 @@ module.exports = {
           actived_flg: true
         }
       });
-      if(receivingAddresses != null && receivingAddressess.length > 0){
-        const idxCryptos = random(0, receivingAddressess.length);
+      if(receivingAddresses != null && receivingAddresses.length > 0){
+        const idxCryptos = random(receivingAddresses.length-1);
         let cryptoAccount = {
           ...receivingAddressMapper(receivingAddresses[idxCryptos])
         };
@@ -62,7 +61,7 @@ module.exports = {
         ..._PaymentAccounts
       };
       jsonRes.payment_ref_code = cryptoRandomString({length: 6, type: 'numeric'});
-      const _member = await Member.findOne({where: {id: member_id}});
+      const _member = await Member.findOne({where: {id: req.user.id}});
       return res.ok(jsonRes);
      
     }
@@ -72,10 +71,7 @@ module.exports = {
     }
   },
 };
-function randomC (qty) {
-  var x= crypto.randomBytes(qty);
-  return format(x, 'dec');
-}
-function random (low, high) {
-  return randomC(4)/Math.pow(2,4*8-1) * (high - low) + low;
+
+function random (max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }

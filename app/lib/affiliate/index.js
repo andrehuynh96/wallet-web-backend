@@ -167,7 +167,7 @@ module.exports = {
           headers: {
             "x-use-checksum": true,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            "x-affiliate-type-id": config.membership.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });

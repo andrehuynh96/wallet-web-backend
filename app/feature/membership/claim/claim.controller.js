@@ -2,7 +2,12 @@ const logger = require('app/lib/logger');
 const claimRequestMapper = require('app/feature/response-schema/membership/claim-request.response-schema');
 const ClaimRequest = require('app/model/wallet').claim_requests;
 const Affiliate = require('app/lib/affiliate');
-const createClaimRequestMapper = require('./mapper/create.claim-request-schema.js');
+const createClaimRequestMapper = require('./mapper/create.claim-request-schema');
+const MemberAccount = require('app/model/wallet').member_accounts;
+const Member = require('app/model/wallet').members;
+const database = require('app/lib/database').db().wallet;
+
+const ClaimRequestStatus = require('app/model/wallet/value-object/claim-request-status');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -27,16 +32,8 @@ module.exports = {
   create: async (req, res, next) => {
     try {
       logger.info('claim reward::create');
-     
-      const dataReward = {
-        amount: req.body.amount,
-        currency_symbol: req.body.currency_symbol,
-        email: req.user.email
-      }
-      let resClaimReward = await Affiliate.claimReward(dataReward);
-      if(resClaimReward.httpCode !== 200) {
-        return res.status(resClaimReward.httpCode).send(resClaimReward.data);
-      }
+      const _member = await Member.findOne({where: {id: req.user.id}});
+      
       const where = { id: req.body.member_account_id};
       const memberAccount = await MemberAccount.findOne({where: where});
       let claimObject = {
@@ -47,13 +44,38 @@ module.exports = {
       
       claimObject.amount = req.body.amount;
   
-      claimObject.affiliate_claim_reward_id = resClaimReward.data.id;
-      claimObject.status = resClaimReward.data.status;
-      const result = await ClaimRequest.create(claimObject);
-      return res.ok(result);
+      
+      claimObject.status = ClaimRequestStatus.Pending;
+      
+      let transaction = await database.transaction();
+
+      let _resultCreateData= await ClaimRequest.create(claimObject, { transaction });
+
+      const dataReward = {
+        amount: req.body.amount,
+        currency_symbol: req.body.currency_symbol,
+        email: _member.email
+      }
+
+      let resClaimReward = await Affiliate.claimReward(dataReward);
+
+      if(resClaimReward.httpCode !== 200) {
+        await transaction.rollback();
+        return res.status(resClaimReward.httpCode).send(resClaimReward.data);
+      }
+
+      _resultCreateData = await ClaimRequest.update({ affiliate_claim_reward_id: resClaimReward.data.id }, {
+        where: {
+          id: _resultCreateData.id
+        }
+      }, { transaction });
+
+      await transaction.commit();
+
+      return res.ok(_resultCreateData);
     }
     catch (err) {
-      logger.error("getMemberAccount: ", err);
+      logger.error("claim reward create: ", err);
       next(err);
     }
   }

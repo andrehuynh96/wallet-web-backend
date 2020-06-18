@@ -3,6 +3,7 @@ const controller = require('./claim.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 const { create } = require('./validator');
+const validator = require("app/middleware/validator.middleware");
 
 router.get(
   '/claim-histories',
@@ -129,7 +130,7 @@ module.exports = router;
  *            - member_account_id
  *            example:
  *               {    
-                        "amount": 1,
+                        "amount": 250.039697,
                         "currency_symbol":"ETH",
                         "member_account_id":1
                   }

@@ -143,32 +143,35 @@ async function _createOrder(body, req){
 async function _checkDataCreateOrder(data, member_id){
   let resData = {isCreated: true};
   const _member = await Member.findOne({where: {id: member_id}});
- // if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
-    //check referrence code 
-    //const resCheckReferrerCode = Affiliate.isCheckReferrerCode(data.referrer_code);
-    // if(!resCheckReferrerCode.data.isValid){
-    //   resData.isCreated = false; 
-    //   resData.errorCode = "PURCHASE_FAIL";
-    //   resData.errorMsg = "REFERRER_CODE_INVALIDATER";
-    // }else{
-      //check MembershipType of member is Paid
-      const _currentMembershipType = await MembershipType.findOne({
-        where: {
-          id: _member.membership_type_id
-        }
-      });
-    
-      if(_currentMembershipType.type === MembershipTypeName.Paid){
+  if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
+      //check referrence code 
+      const resCheckReferrerCode = Affiliate.isCheckReferrerCode(data.referrer_code);
+      if(resCheckReferrerCode.httpCode !== 200){
+        return res.status(result.httpCode).send(result.data);
+      }
+      if(!resCheckReferrerCode.data.isValid){
         resData.isCreated = false; 
         resData.errorCode = "PURCHASE_FAIL";
-        resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
-      }
-   // }
-  // }else{
-  //   // KYC level purchase invalidater
-  //   resData.isCreated = false; 
-  //   resData.errorCode = "PURCHASE_FAIL";
-  //   resData.errorMsg = "KYC_LEVEL_INVALIDATER";
-  // }
+        resData.errorMsg = "REFERRER_CODE_INVALIDATER";
+      }else{
+        //check MembershipType of member is Paid
+        const _currentMembershipType = await MembershipType.findOne({
+          where: {
+            id: _member.membership_type_id
+          }
+        });
+      
+        if(_currentMembershipType.type === MembershipTypeName.Paid){
+          resData.isCreated = false; 
+          resData.errorCode = "PURCHASE_FAIL";
+          resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
+        }
+    }
+    }else{
+      // KYC level purchase invalidater
+      resData.isCreated = false; 
+      resData.errorCode = "PURCHASE_FAIL";
+      resData.errorMsg = "KYC_LEVEL_INVALIDATER";
+    }
   return resData;
 }

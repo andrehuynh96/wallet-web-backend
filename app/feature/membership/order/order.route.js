@@ -57,7 +57,7 @@ module.exports = router;
                       "amount": 0,
                       "account_number": "",
                       "bank_name": "",
-                      "bracnch_name": "",
+                      "branch_name": "",
                       "account_holder": "",
                       "payment_ref_code": "",
                       "wallet_address": "",
@@ -101,25 +101,27 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
+ *            - referrer_code
  *            - payment_ref_code
  *            - amount
  *            - account_number
  *            - bank_name
- *            - bracnch_name
- *            - account_holder
+ *            - branch_name
+ *            - account_name
  *            - currency_symbol
  *            - bank_account_id
+ *            - membership_type_id
  *            example:
- *               {    
-                        "bank_account_id": 1,
+ *               {      "referrer_code": "as3421fs",
                         "payment_ref_code":"123456",
                         "amount":100,
                         "account_number":"abc123456",
                         "bank_name":"CITIBANK",
-                        "bracnch_name":"HCM",
+                        "branch_name":"HCM",
                         "account_name":"moonstake",
                         "currency_symbol":"USD",
-                        "payment_type":"Bank"
+                        "bank_account_id": 1,
+                        "membership_type_id": 1
                   }
  *     produces:
  *       - application/json
@@ -140,7 +142,7 @@ module.exports = router;
                       "amount": 0,
                       "account_number": "",
                       "bank_name": "",
-                      "bracnch_name": "",
+                      "branch_name": "",
                       "account_name": "",
                       "payment_ref_code": "",
                       "wallet_address": "",
@@ -185,23 +187,24 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
+ *            - referrer_code
  *            - receiving_addresses_id
  *            - amount
  *            - wallet_address
  *            - your_wallet_address
  *            - txid
- *            - rate_by_usdt
+ *            - currency_symbol
+ *            - membership_type_id
  *            example:
- *               {
-                        "receiving_addresses_id":1,
-                        "wallet_address":"123456",
-                        "amount":100,
-                        "your_wallet_address":"",
-                        "txid":"CITIBANK",
-                        "bracnch_name":"HCM",
-                        "rate_by_usdt":0,
-                        "currency_symbol":"USD",
-                        "payment_type":"CRYPTO"
+ *               {      
+                    "referrer_code": "as3421fs",
+                    "receiving_addresses_id": 9,
+                    "amount": 100,
+                    "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
+                    "your_wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd531",
+                    "txid": "txcosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
+                    "currency_symbol": "ATOM",
+                    "membership_type_id": "88fda933-0658-49c4-a9c7-4c0021e9a071"
                   }
  *     produces:
  *       - application/json
@@ -222,7 +225,7 @@ module.exports = router;
                       "amount": 0,
                       "account_number": "",
                       "bank_name": "",
-                      "bracnch_name": "",
+                      "branch_name": "",
                       "account_holder": "",
                       "payment_ref_code": "",
                       "wallet_address": "",

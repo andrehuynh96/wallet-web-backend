@@ -6,11 +6,11 @@ const schema = Joi.object().keys({
   amount: Joi.number().required(),
   account_number: Joi.string().required(),
   bank_name: Joi.string().required(),
-  bracnch_name: Joi.string().required(),
+  branch_name: Joi.string().required(),
   account_name: Joi.string().required(),
   currency_symbol: Joi.string().required(),
   bank_account_id: Joi.number().required(),
-  membership_type_id: Joi.number().required()
+  membership_type_id: Joi.string().required()
 });
 
 module.exports = schema;

@@ -154,6 +154,31 @@ module.exports = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
+  claimReward: async ({ email, currency_symbol, amount }) => {
+    try {
+      let accessToken = await _getToken();
+      let result = await axios.post(`${config.affiliate.url}/claim-rewards`,
+        {
+          ext_client_id: email,
+          currency_symbol: currency_symbol,
+          amount: amount
+        },
+        {
+          headers: {
+            "x-use-checksum": true,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": config.affiliate.membershipTypeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
 };
 
 async function _getToken() {

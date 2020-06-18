@@ -10,6 +10,8 @@ const db = require("app/model/wallet");
 const CoinGecko = require('coingecko-api');
 const Member = require('app/model/wallet').members;
 const Affiliate = require('app/lib/affiliate');
+const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
+const config = require('app/config');
 
 module.exports = {
   getOrders: async (req, res, next) => {

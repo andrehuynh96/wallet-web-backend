@@ -1,6 +1,4 @@
-const createBank = require('./create-bank');
-const createCrypto = require('./create-crypto');
+const create = require('./create');
 module.exports = {
-  createBank: createBank,
-  createCrypto: createCrypto
-};
+  create: create
+}

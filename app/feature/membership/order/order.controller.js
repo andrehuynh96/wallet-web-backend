@@ -130,10 +130,10 @@ async function _checkDataCreateOrder(data, member_id){
   const _member = await Member.findOne({where: {id: member_id}});
   if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
     //check referrence code 
-    const resCheckReferrerCode = Affiliate.checkReferrerCode(data.referrer_code);
+    const resCheckReferrerCode = Affiliate.isCheckReferrerCode(data.referrer_code);
 
     //waitting data api anh hung
-    if(resCheckReferrerCode.data.inValidate){
+    if(!resCheckReferrerCode.data.isValid){
       resData.isCreated = false; 
       resData.errorCode = "PURCHASE_FAIL";
       resData.errorMsg = "REFERRER_CODE_INVALIDATER";

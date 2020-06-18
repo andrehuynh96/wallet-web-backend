@@ -60,7 +60,8 @@ module.exports = {
       const body = {
         rate_by_usdt: price,
         payment_type:MemberAccountType.Crypto,
-        ...req.body
+        ...req.body,
+        order_no:cryptoRandomString({length: 8})
       }
 
       const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
@@ -83,6 +84,7 @@ module.exports = {
       const body = {
         payment_type:MemberAccountType.Bank,
         ...req.body,
+        order_no: req.body.referrer_code
       }
       const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
 

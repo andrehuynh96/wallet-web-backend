@@ -206,8 +206,7 @@ const config = {
     url: process.env.AFFILIATE_URL,
     apiKey: process.env.AFFILIATE_API_KEY,
     secretKey: process.env.AFFILIATE_SECRET_KEY,
-    typeId: process.env.AFFILIATE_TYPE_ID,
-	  membershipTypeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID
+    typeId: process.env.AFFILIATE_TYPE_ID
   },
   plutx: {
     domain: process.env.PLUTX_DOMAIN,
@@ -242,7 +241,8 @@ const config = {
   twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3,
   membership:{
     KYCLevelAllowPurchase: process.env.MEMBERSHIP_KYC_LEVEL_ALLOW_PURCHASE,
-    countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST
+    countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST,
+	  typeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID
   }
 };
 

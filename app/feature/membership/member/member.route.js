@@ -6,7 +6,7 @@ const router = express.Router();
 router.get(
   '/member/member-type',
   authenticate,
-  controller.getMemberType
+  controller.getMemberTypes
 );
 
 router.get(

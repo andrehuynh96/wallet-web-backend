@@ -23,6 +23,11 @@ router.post(
   validator(createCrypto),
   controller.makePaymentCrypto
 );
+router.post(
+  '/orders/:code/click',
+  authenticate,
+  controller.clickReferrerUrl
+);
 
 module.exports = router;
 

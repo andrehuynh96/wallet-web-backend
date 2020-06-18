@@ -6,7 +6,7 @@ const router = express.Router();
 router.get(
   '/claim-histories',
   authenticate,
-  controller.claimHistories
+  controller.getClaimHistories
 );
 
 router.post(

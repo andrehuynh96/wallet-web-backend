@@ -1,6 +1,6 @@
 const logger = require('app/lib/logger');
-const claimRequestMapper = require('app/feature/response-schema/claim-request.response-schema');
-const claimRewardMapper = require('app/feature/response-schema/claim-reward.response-schema');
+const claimRequestMapper = require('app/feature/response-schema/membership/claim-request.response-schema');
+const claimRewardMapper = require('app/feature/response-schema/membership/claim-reward.response-schema');
 const ClaimRequest = require('app/model/wallet').claim_requests;
 const Affiliate = require('app/lib/affiliate');
 

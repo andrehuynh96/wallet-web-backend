@@ -110,7 +110,21 @@ module.exports = {
       logger.error("makePaymentBank: ", err);
       next(err);
     }
-  }
+  },
+  clickReferrerUrl: async (req, res, next) => {
+    try {
+      const referrCode = req.params.code;
+      const result = await Affiliate.clickReferrerUrl(referrCode);
+      if (result.httpCode !== 200) {
+        return res.status(result.httpCode).send(result.data);
+      }
+      return res.ok(result.data.data);
+    }
+    catch (err) {
+      logger.error("click referrer url fail: ", err);
+      next(err);
+    }
+  },
 };
 
 /**

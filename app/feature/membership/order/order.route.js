@@ -253,3 +253,45 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+  /**
+ * @swagger
+ * /web/membership/orders/{code}/click:
+ *   post:
+ *     summary: Click Referrer Url
+ *     tags:
+ *       - membership
+ *     description: click referrer url
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         require: true
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                    "data": {
+                        "num_of_clicks": 3
+                    }
+                }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */

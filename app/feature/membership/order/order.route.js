@@ -222,7 +222,7 @@ module.exports = router;
                       "amount": 0,
                       "account_number": "",
                       "bank_name": "",
-                      "bracnch_name": "",
+                      "branch_name": "",
                       "account_holder": "",
                       "payment_ref_code": "",
                       "wallet_address": "",

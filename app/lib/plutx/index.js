@@ -37,3 +37,27 @@ async function _makeRequest(path, params, method) {
     return { error: err };
   }
 }
+
+async function _makeGetRequest(path, params, method) {
+  try {
+    let headers = {...params.headers};
+    let url = path ? config.plutx.url + path : config.plutx.url;
+    let options = {
+      method: method,
+      url: url,
+      params: params,
+      headers: headers,
+    };
+    let res = await Axios(options).catch(e => {
+      throw e;
+    });
+    if (res.error) {
+      return { error: res.error};
+    } else {
+      return { data: res.data.result };
+    }
+  } catch (err) {
+    logger.error(err);
+    return null;
+  }
+}

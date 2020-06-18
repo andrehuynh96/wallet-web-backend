@@ -69,7 +69,8 @@ module.exports = router;
                     "symbol": "",
                     "decimals": 18,
                     "name": "",
-                    "icon": ""
+                    "icon": "",
+                    "ref_id": ""
                   }
  *     produces:
  *       - application/json
@@ -87,6 +88,7 @@ module.exports = router;
                         "name": "",
                         "decimals":  18,
                         "icon": "",
+                        "ref_id": "",
                         "created_at":""
                     }
  *             }
@@ -141,6 +143,7 @@ module.exports = router;
                         "name": "",
                         "decimals":  18,
                         "icon": "",
+                        "ref_id": "",
                         "created_at":""
                     }],
                     "offset": 0,
@@ -199,6 +202,7 @@ module.exports = router;
                     "name": "",
                     "decimals":  18,
                     "icon": "",
+                    "ref_id": "",
                     "created_at":""
                 }
  *             }

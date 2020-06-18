@@ -1,6 +1,6 @@
 const logger = require('app/lib/logger');
-const rewardMapper = require('app/feature/response-schema/reward.response-schema');
-const rewardHistoryMapper = require('app/feature/response-schema/reward-history.response-schema');
+const rewardMapper = require('app/feature/response-schema/membership/reward.response-schema');
+const rewardHistoryMapper = require('app/feature/response-schema/membership/reward-history.response-schema');
 const Affiliate = require('app/lib/affiliate');
 
 module.exports = {

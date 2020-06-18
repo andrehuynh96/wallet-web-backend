@@ -1,6 +1,7 @@
 const express = require('express');
 const controller = require('./order.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
+const validator = require("app/middleware/validator.middleware");
 const router = express.Router();
 const { createBank, createCrypto } = require('./validator');
 router.get(

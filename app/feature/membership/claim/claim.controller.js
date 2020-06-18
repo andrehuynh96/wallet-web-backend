@@ -10,7 +10,7 @@ module.exports = {
       logger.info('getHistorys::getHistorys');
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
       let offset = req.query.offset ? parseInt(req.query.offset) : 0;
-      const where = { email: req.user.email };
+      const where = { member_id: req.user.id };
       const { count: total, rows: claimRequests } = await ClaimRequest.findAndCountAll({offset: offset, limit: limit, where: where});
       return res.ok({
         items: claimRequestMapper(claimRequests),

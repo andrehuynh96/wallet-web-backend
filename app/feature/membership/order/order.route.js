@@ -150,7 +150,7 @@ module.exports = router;
                       "txid": "",
                       "rate_by_usdt": 0,
                       "status": "",
-                      "processe_date": ""
+                      "updated_at": ""
                     }
  *             }
  *       400:

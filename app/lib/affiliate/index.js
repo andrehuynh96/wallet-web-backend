@@ -64,6 +64,8 @@ module.exports = {
       let result = await axios.get(`${config.affiliate.url}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": config.affiliate.typeId,
             Authorization: `Bearer ${accessToken}`,
@@ -83,6 +85,8 @@ module.exports = {
       let result = await axios.get(`${config.affiliate.url}/available-rewards?ext_client_id=${email}`,
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": config.membership.typeId,
             Authorization: `Bearer ${accessToken}`,
@@ -102,6 +106,8 @@ module.exports = {
       let result = await axios.get(`${config.affiliate.url}/rewards?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": config.membership.typeId,
             Authorization: `Bearer ${accessToken}`,
@@ -121,6 +127,8 @@ module.exports = {
       let result = await axios.get(`${config.affiliate.url}/affiliate-codes/${referrer_code}/can-referer`,
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": config.membership.typeId,
             Authorization: `Bearer ${accessToken}`,

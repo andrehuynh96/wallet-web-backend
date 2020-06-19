@@ -152,7 +152,6 @@ async function _checkDataCreateOrder(data, member_id){
 
   const _kycInfor = await Kyc.getKycForMember({kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED});
   let kycLevel = 0;
-  console.log('_kycInfor', _kycInfor)
   if(_kycInfor.httpCode == 200){
     kycLevel = _kycInfor.current_kyc_level;
   }else{

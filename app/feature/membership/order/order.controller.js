@@ -14,6 +14,8 @@ const MemberAccountType = require('app/model/wallet/value-object/member-account-
 const createOrderMapper = require('./mapper/create.order-schema');
 const config = require('app/config');
 const cryptoRandomString = require('crypto-random-string');
+const Kyc = require('app/lib/kyc');
+const KycStatus = require('app/model/wallet/value-object/kyc-status');
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -147,15 +149,29 @@ async function _createOrder(body, req, res){
 async function _checkDataCreateOrder(data, member_id){
   let resData = {isCreated: true};
   const _member = await Member.findOne({where: {id: member_id}});
-  if(config.membership.KYCLevelAllowPurchase == _member.kyc_level){
+
+  const _kycInfor = await Kyc.getKycForMember({kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED});
+  let kycLevel = 0;
+  console.log('_kycInfor', _kycInfor)
+  if(_kycInfor.httpCode == 200){
+    kycLevel = _kycInfor.current_kyc_level;
+  }else{
+    // request kyc system fail
+    resData.isCreated = false; 
+    resData.errorCode = "PURCHASE_FAIL";
+    resData.errorMsg = _kycInfor.data.message + " with status code " + _kycInfor.httpCode;
+  }
+
+  //if get kyc infor success, continue validate 
+  if(resData.isCreated){
+    if(config.membership.KYCLevelAllowPurchase == kycLevel){
       //check referrence code 
       const resCheckReferrerCode = await Affiliate.isCheckReferrerCode({referrer_code: data.referrer_code});
       console.log('resCheckReferrerCode', resCheckReferrerCode)
       if(resCheckReferrerCode.httpCode !== 200){
         resData.isCreated = false; 
         resData.errorCode = "PURCHASE_FAIL";
-        resData.errorMsg = resCheckReferrerCode.data.message;
-        resData.status = resCheckReferrerCode.httpCode;
+        resData.errorMsg = resCheckReferrerCode.data.message + " with status code " + resCheckReferrerCode.httpCode;
       }else{
         if(!resCheckReferrerCode.data.isValid){
           resData.isCreated = false; 
@@ -182,5 +198,7 @@ async function _checkDataCreateOrder(data, member_id){
       resData.errorCode = "PURCHASE_FAIL";
       resData.errorMsg = "KYC_LEVEL_INVALIDATER";
     }
+  }
+  
   return resData;
 }

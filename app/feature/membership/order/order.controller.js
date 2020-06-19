@@ -166,7 +166,6 @@ async function _checkDataCreateOrder(data, member_id){
     if(config.membership.KYCLevelAllowPurchase == kycLevel){
       //check referrence code 
       const resCheckReferrerCode = await Affiliate.isCheckReferrerCode({referrer_code: data.referrer_code});
-      console.log('resCheckReferrerCode', resCheckReferrerCode)
       if(resCheckReferrerCode.httpCode !== 200){
         resData.isCreated = false; 
         resData.errorCode = "PURCHASE_FAIL";

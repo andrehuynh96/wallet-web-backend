@@ -15,7 +15,7 @@ module.exports = {
     try {
       logger.info('getMemberType::getMemberType');
       const where = { type: MembershipTypeName.Paid, deleted_flg: false };
-      const membershipTypes = await MembershipType.findAll({where: where});
+      const membershipTypes = await MembershipType.findAll({ where: where });
       return res.ok(memberTypeMapper(membershipTypes));
     }
     catch (err) {
@@ -23,24 +23,45 @@ module.exports = {
       next(err);
     }
   },
+
+  getMemberTypeDetail: async (req, res, next) => {
+    try {
+      const result = await MembershipType.findOne({
+        where: {
+          id: req.params.id,
+          deleted_flg: false
+        }
+      });
+      if (!result) {
+        return res.badRequest(res.__("NOT_FOUND_MEMBERSHIP_TYPE"), "NOT_FOUND_MEMBERSHIP_TYPE");
+      }
+
+      return res.ok(memberTypeMapper(result));
+    }
+    catch (err) {
+      logger.error("getMemberTypeDetail: ", err);
+      next(err);
+    }
+  },
+
   getPaymentAccount: async (req, res, next) => {
     try {
       logger.info('getPaymentAccount::getPaymentAccount');
       const bankAccounts = await BankAccount.findAll({
-         where: {
-            actived_flg: true
-          }
-        });
+        where: {
+          actived_flg: true
+        }
+      });
 
       let _PaymentAccounts = [];
-      
-      if(bankAccounts != null && bankAccounts.length > 0){
-        const idxBank = random(bankAccounts.length-1);
+
+      if (bankAccounts != null && bankAccounts.length > 0) {
+        const idxBank = random(bankAccounts.length - 1);
         let bankAccount = {
           ...bankAccountMapper(bankAccounts[idxBank])
         };
         bankAccount.payment_type = MemberAccountType.Bank;
-        bankAccount.payment_ref_code = cryptoRandomString({length: 6, type: 'numeric'});
+        bankAccount.payment_ref_code = cryptoRandomString({ length: 6, type: 'numeric' });
         _PaymentAccounts.push(bankAccount);
       }
 
@@ -49,18 +70,17 @@ module.exports = {
           actived_flg: true
         }
       });
-      if(receivingAddresses != null && receivingAddresses.length > 0){
-        const idxCryptos = random(receivingAddresses.length-1);
+      if (receivingAddresses != null && receivingAddresses.length > 0) {
+        const idxCryptos = random(receivingAddresses.length - 1);
         let cryptoAccount = {
           ...receivingAddressMapper(receivingAddresses[idxCryptos])
         };
         cryptoAccount.payment_type = MemberAccountType.Crypto;
         _PaymentAccounts.push(cryptoAccount);
       }
-     
       const _member = await Member.findOne({where: {id: req.user.id}});
       return res.ok(_PaymentAccounts);
-     
+
     }
     catch (err) {
       logger.error("getPaymentAccount: ", err);
@@ -69,6 +89,6 @@ module.exports = {
   },
 };
 
-function random (max) {
+function random(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }

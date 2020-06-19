@@ -6,13 +6,21 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true
       },
       key: {
-        type: DataTypes.STRING(16),
+        type: DataTypes.STRING(100),
         allowNull: false,
         unique: true
       },
       value: {
         type: DataTypes.STRING(256),
         allowNull: false
+      },
+      property: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+      type: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
       },
       created_by: {
         type: DataTypes.INTEGER,
@@ -28,5 +36,5 @@ module.exports = (sequelize, DataTypes) => {
         underscored: true,
         timestamps: true,
       });
-  
-  }
+
+  };

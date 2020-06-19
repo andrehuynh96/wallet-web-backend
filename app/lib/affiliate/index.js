@@ -141,6 +141,8 @@ module.exports = {
         {},
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": config.membership.typeId,
             Authorization: `Bearer ${accessToken}`,

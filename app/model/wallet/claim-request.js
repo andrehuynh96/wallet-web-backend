@@ -58,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     affiliate_claim_reward_id: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     }
   }, {
     underscored: true,

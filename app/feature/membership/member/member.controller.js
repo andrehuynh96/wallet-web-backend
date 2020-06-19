@@ -78,13 +78,8 @@ module.exports = {
         cryptoAccount.payment_type = MemberAccountType.Crypto;
         _PaymentAccounts.push(cryptoAccount);
       }
-
-      let jsonRes = {
-        ..._PaymentAccounts
-      };
-
-      const _member = await Member.findOne({ where: { id: req.user.id } });
-      return res.ok(jsonRes);
+      const _member = await Member.findOne({where: {id: req.user.id}});
+      return res.ok(_PaymentAccounts);
 
     }
     catch (err) {

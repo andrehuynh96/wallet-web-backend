@@ -7,7 +7,7 @@ const Kyc = require('app/lib/kyc');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
 
 
-const proxy = httpProxycreateProxyServer({ target: config.kyc.baseUrl });
+const proxy = httpProxy.createProxyServer({ target: config.kyc.baseUrl });
 proxy.on('proxyReq', function (proxyReq, req, res, options) {
   proxyReq.setHeader('x-user', JSON.stringify({ kycName: config.kyc.name }));
 });

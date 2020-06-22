@@ -153,7 +153,7 @@ async function _checkDataCreateOrder(data, member_id){
   const _kycInfor = await Kyc.getKycForMember({kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED});
   let kycLevel = 0;
   if(_kycInfor.httpCode == 200){
-    kycLevel = _kycInfor.current_kyc_level;
+    kycLevel = _kycInfor.data.current_kyc_level;
   }else{
     // request kyc system fail
     resData.isCreated = false; 

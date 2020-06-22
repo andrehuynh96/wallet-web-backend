@@ -48,9 +48,10 @@ module.exports = {
       }
       return { httpCode: 200, data: _resData };
     } catch (err) {
+
       logger.error("get request KYC fail:", err);
-      const data = {};
-      if (err.response.status == 404) {
+      let data = {};
+      if(err.response.status == 404){
         data.message = 'Request system Kyc get KycForMember fail';
       } else {
         data = err.response.data;
@@ -124,5 +125,6 @@ async function _executeRequest({ path, data, method, content_type }) {
     headers: headers,
   };
 
-  return await Axios(options);
+  const result = await Axios(options);
+  return result.data;
 }

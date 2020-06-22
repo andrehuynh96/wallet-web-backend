@@ -243,7 +243,7 @@ const config = {
   membership: {
     KYCLevelAllowPurchase: process.env.MEMBERSHIP_KYC_LEVEL_ALLOW_PURCHASE,
     countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST,
-    typeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID
+    typeId: process.env.MEMBERSHIP_AFFILIATE_TYPE_ID
   }
 };
 

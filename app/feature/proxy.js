@@ -8,10 +8,9 @@ module.exports = function (proxy) {
     '/me/kyc',
     authenticate,
     (req, res, next) => {
-      let target = `${config.kyc.baseUrl}/api/kycs/me/customers/${req.user.kyc_id}/submit`
+      let target = `${config.kyc.baseUrl}/api/kycs/me/customers/${req.user.kyc_id}/submit`;
       req.url = target;
       proxy.web(req, res, {
-        target: config.kyc.baseUrl,
         secure: false,
       });
     }

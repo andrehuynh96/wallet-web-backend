@@ -106,7 +106,8 @@ const config = {
     authUrl: process.env.KYC_WEBSITE_URL + `/${process.env.KYC_NAME}?token=`,
     name: process.env.KYC_NAME,
     type: process.env.KYC_TYPE,
-    schema: process.env.KYC_SCHEMA
+    schema: process.env.KYC_SCHEMA,
+    autoApproveLevel: process.env.KYC_AUTO_APPROVE_LEVEL ? process.env.KYC_AUTO_APPROVE_LEVEL.split(",") : [],
   },
   stakingApi: {
     url: process.env.STAKING_API_URL,
@@ -239,10 +240,10 @@ const config = {
     secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
   },
   twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3,
-  membership:{
+  membership: {
     KYCLevelAllowPurchase: process.env.MEMBERSHIP_KYC_LEVEL_ALLOW_PURCHASE,
     countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST,
-	  typeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID
+    typeId: process.env.AFFILIATE_MEMBERSHIP_TYPE_ID
   }
 };
 

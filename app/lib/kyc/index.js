@@ -21,11 +21,11 @@ module.exports = {
       throw err;
     }
   },
-  getKycForMember: async ({kyc_id, kyc_status}) => {
+  getKycForMember: async ({ kyc_id, kyc_status }) => {
     try {
       const option = {
         path: `/api/kycs/me/customers/${kyc_id}`,
-        data: {}, 
+        data: {},
         method: 'get',
         content_type: MediaType.APPLICATION_JSON_VALUE
       }
@@ -35,24 +35,24 @@ module.exports = {
       if (kyc) {
         let length = Object.keys(kyc).length;
         let level = 0;
-        for (let i = 1; i <= length; i ++) {
+        for (let i = 1; i <= length; i++) {
           if (kyc[i.toString()].status == kyc_status) {
             kyc_level = i;
             break;
           }
         }
-      } 
+      }
       const _resData = {
-        kycs:kyc,
+        kycs: kyc,
         current_kyc_level: kyc_level
       }
       return { httpCode: 200, data: _resData };
     } catch (err) {
       logger.error("get request KYC fail:", err);
       const data = {};
-      if(err.response.status == 404){
+      if (err.response.status == 404) {
         data.message = 'Request system Kyc get KycForMember fail';
-      }else{
+      } else {
         data = err.response.data;
       }
       return { httpCode: err.response.status, data: data };
@@ -112,17 +112,17 @@ async function _makeRequest(path, params, method) {
   }
 }
 
-async function _executeRequest({path, data, method, content_type}) {
+async function _executeRequest({ path, data, method, content_type }) {
 
-    let xuser = { kycName: config.kyc.name };
-    let headers = { 'Content-Type': content_type, 'x-user': JSON.stringify(xuser) };
-    let url = path ? config.kyc.baseUrl + path : config.kyc.baseUrl;
-    let options = {
-      method: method,
-      url: url,
-      data: data,
-      headers: headers,
-    };
+  let xuser = { kycName: config.kyc.name };
+  let headers = { 'Content-Type': content_type, 'x-user': JSON.stringify(xuser) };
+  let url = path ? config.kyc.baseUrl + path : config.kyc.baseUrl;
+  let options = {
+    method: method,
+    url: url,
+    data: data,
+    headers: headers,
+  };
 
-    return await Axios(options);
+  return await Axios(options);
 }

@@ -92,7 +92,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     referral_code: {
       type: DataTypes.STRING(12),
-      allowNull: false
+      allowNull: true
     },
     referrer_code: {
       type: DataTypes.STRING(12),

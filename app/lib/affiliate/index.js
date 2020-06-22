@@ -96,7 +96,7 @@ module.exports = {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger.error("get available rewards fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
@@ -117,7 +117,7 @@ module.exports = {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger.error("get reward history fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   },
@@ -138,7 +138,7 @@ module.exports = {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger.error("check referrer code for can-referer fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   },

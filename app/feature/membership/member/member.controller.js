@@ -52,7 +52,7 @@ module.exports = {
           actived_flg: true
         }
       });
-      const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal();
+      const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
       //if country local not exist in country white list, return error
       if (!_isAllowCountryLocal) {
         return res.badRequest(res.__("COUNTRY_LOCAL_NOT_ALLOW_ACCESS_BANK_ACCOUNT"), "COUNTRY_LOCAL_NOT_ALLOW_ACCESS_BANK_ACCOUNT");

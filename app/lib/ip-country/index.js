@@ -15,7 +15,8 @@ module.exports = {
     isAllowCountryLocal: async (req) => {
         try {
             const _ip = _getIpClient(req);
-            console.log('_ip', _ip)
+            logger.info('isAllowCountryLocal', req);
+            logger.info('isAllowCountryLocal _ip :' + _ip)
             const _country = await Axios.get(`https://freegeoip.app/json/${_ip}`);
             const _CountryWhitelist = config.membership.countryWhitelist.split(',')
             return _CountryWhitelist.indexOf(_country.data.country_code) > -1;

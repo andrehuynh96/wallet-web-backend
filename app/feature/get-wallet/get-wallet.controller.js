@@ -18,7 +18,8 @@ module.exports = {
       let include = [];
       if (token) {
         let whereToken = {
-          symbol: token.toUpperCase()
+          symbol: token.toUpperCase(),
+          deleted_flg: false
         }
         if (platform) {
           whereToken.platform = platform.toUpperCase()
@@ -35,7 +36,8 @@ module.exports = {
             {
               model: WalletPrivateKey,
               where: {
-                  platform: platform.toUpperCase()
+                  platform: platform.toUpperCase(),
+                  deleted_flg: false
               },
           }
           )

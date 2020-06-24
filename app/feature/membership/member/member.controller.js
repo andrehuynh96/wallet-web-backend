@@ -58,23 +58,28 @@ module.exports = {
       logger.info('getPaymentAccount::getPaymentAccount');
       let bankAccount = {};
       let _cryptoAccounts = [];
-      const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
-      //if country local not exist in country white list, return error
-      if (_isAllowCountryLocal) {
-        const bankAccounts = await BankAccount.findAll({
-          where: {
-            actived_flg: true
+      try{
+        const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
+        //if country local not exist in country white list, return error
+        if (_isAllowCountryLocal) {
+          const bankAccounts = await BankAccount.findAll({
+            where: {
+              actived_flg: true
+            }
+          });
+          
+          if (bankAccounts != null && bankAccounts.length > 0) {
+            const idxBank = random(bankAccounts.length - 1);
+            bankAccount = {
+              ...bankAccountMapper(bankAccounts[idxBank])
+            };
+            bankAccount.payment_ref_code = cryptoRandomString({ length: 6, type: 'numeric' });
           }
-        });
-        
-        if (bankAccounts != null && bankAccounts.length > 0) {
-          const idxBank = random(bankAccounts.length - 1);
-          bankAccount = {
-            ...bankAccountMapper(bankAccounts[idxBank])
-          };
-          bankAccount.payment_ref_code = cryptoRandomString({ length: 6, type: 'numeric' });
         }
+      } catch (err) {
+        logger.error("isAllowCountryLocal: ", err);
       }
+      
       
 
       const receivingAddresses = await ReceivingAddresses.findAll({

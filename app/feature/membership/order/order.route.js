@@ -62,7 +62,7 @@ module.exports = router;
                       "amount": 0,
                       "account_number": "",
                       "bank_name": "",
-                      "branch_name": "",
+                      "swift": "",
                       "account_holder": "",
                       "payment_ref_code": "",
                       "wallet_address": "",
@@ -111,7 +111,7 @@ module.exports = router;
  *            - amount
  *            - account_number
  *            - bank_name
- *            - branch_name
+ *            - swift
  *            - account_name
  *            - currency_symbol
  *            - bank_account_id
@@ -122,7 +122,7 @@ module.exports = router;
                         "amount":100,
                         "account_number":"abc123456",
                         "bank_name":"CITIBANK",
-                        "branch_name":"HCM",
+                        "swift":"123456h",
                         "account_name":"moonstake",
                         "currency_symbol":"USD",
                         "bank_account_id": 1,
@@ -147,7 +147,7 @@ module.exports = router;
                       "amount": 0,
                       "account_number": "",
                       "bank_name": "",
-                      "branch_name": "",
+                      "swift": "",
                       "account_name": "",
                       "payment_ref_code": "",
                       "wallet_address": "",
@@ -230,7 +230,7 @@ module.exports = router;
                       "amount": 0,
                       "account_number": "",
                       "bank_name": "",
-                      "branch_name": "",
+                      "swift": "",
                       "account_holder": "",
                       "payment_ref_code": "",
                       "wallet_address": "",

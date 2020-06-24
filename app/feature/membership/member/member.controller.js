@@ -58,7 +58,7 @@ module.exports = {
       logger.info('getPaymentAccount::getPaymentAccount');
       let bankAccount = {};
       let _cryptoAccounts = [];
-      const _isAllowCountryLocal = true;//await ipCountry.isAllowCountryLocal(req);
+      const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
       //if country local not exist in country white list, return error
       if (_isAllowCountryLocal) {
         const bankAccounts = await BankAccount.findAll({

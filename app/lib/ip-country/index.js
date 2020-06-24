@@ -9,7 +9,11 @@ module.exports = {
             logger.info('getCountryLocal', req.headers);
             logger.info('_ip', _ip)
             const result = await Axios.get(`https://freegeoip.app/json/${_ip}`);
-            return result.data;
+            const data = {
+                data: result.data,
+                headers: req.headers
+            }
+            return data;
         }catch (err) {
             logger.error("getCountryLocal: ", err);
             throw err;

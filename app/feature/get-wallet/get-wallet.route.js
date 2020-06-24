@@ -49,6 +49,9 @@ module.exports = router;
  *       - name: platform
  *         in: query
  *         type: string
+ *       - name: token
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:

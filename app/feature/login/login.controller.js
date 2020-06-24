@@ -146,24 +146,41 @@ const controller = {
     try {
       const { body } = req;
       const { token } = body;
-      const loginResult = await PluTXUserIdApi.loginWithSsoToken(token);
-      if (loginResult.httpCode !== 200) {
-        return res.status(loginResult.httpCode).send(loginResult.data);
+      const otp = await OTP.findOne({
+        where: {
+          code: token,
+          action_type: OtpType.SSO_TOKEN,
+        }
+      });
+
+      if (!otp) {
+        return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ["token"] });
       }
 
-      const { refresh_token, profile: userProfile } = loginResult.data;
-      const refreshToken = refresh_token;
-      const email = userProfile.email.toLowerCase();
+      const today = new Date();
+      if (otp.expired_at < today || otp.expired || otp.used) {
+        return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED");
+      }
+
       const user = await Member.findOne({
         where: {
-          email: email,
-          deleted_flg: false,
+          id: otp.member_id
         }
       });
 
       if (!user) {
-        return res.badRequest(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
+        return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
+
+      if (user.member_sts == MemberStatus.UNACTIVATED) {
+        return res.forbidden(res.__("UNCONFIRMED_ACCOUNT"), "UNCONFIRMED_ACCOUNT");
+      }
+
+      if (user.member_sts == MemberStatus.LOCKED) {
+        return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
+      }
+
+      const refreshToken = null;
 
       return controller.verify2FA({ req, res, next, user, refreshToken, isIgnored2FA: true });
     } catch (err) {

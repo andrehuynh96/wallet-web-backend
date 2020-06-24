@@ -6,7 +6,6 @@ const MembershipType = require('app/model/wallet').membership_types;
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const membershipOrderMapper = require('app/feature/response-schema/membership/order.response-schema');
 const db = require("app/model/wallet");
-const CoinGecko = require('coingecko-api');
 const Member = require('app/model/wallet').members;
 const Affiliate = require('app/lib/affiliate');
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');

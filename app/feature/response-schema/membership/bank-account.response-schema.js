@@ -6,7 +6,7 @@ const destObject = {
     '[].currency_symbol': '[].currency_symbol',
     '[].account_number': '[].account_number',
     '[].bank_name': '[].bank_name',
-    '[].switf': '[].switf',
+    '[].swift': '[].swift',
     '[].account_name': '[].account_name'
   },
   single: {
@@ -14,7 +14,7 @@ const destObject = {
     currency_symbol: 'currency_symbol',
     account_number: 'account_number',
     bank_name: 'bank_name',
-    switf: 'switf',
+    swift: 'swift',
     account_name: 'account_name'
   }
 };

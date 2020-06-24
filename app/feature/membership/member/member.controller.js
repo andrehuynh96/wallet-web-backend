@@ -55,27 +55,26 @@ module.exports = {
   getPaymentAccount: async (req, res, next) => {
     try {
       logger.info('getPaymentAccount::getPaymentAccount');
-      const bankAccounts = await BankAccount.findAll({
-        where: {
-          actived_flg: true
-        }
-      });
-      //const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
-      //if country local not exist in country white list, return error
-      //if (!_isAllowCountryLocal) {
-        //return res.badRequest(res.__("COUNTRY_LOCAL_NOT_ALLOW_ACCESS_BANK_ACCOUNT"), "COUNTRY_LOCAL_NOT_ALLOW_ACCESS_BANK_ACCOUNT");
-      //}
-
-      
       let bankAccount = {};
       let cryptoAccounts = [];
-      if (bankAccounts != null && bankAccounts.length > 0) {
-        const idxBank = random(bankAccounts.length - 1);
-        bankAccount = {
-          ...bankAccountMapper(bankAccounts[idxBank])
-        };
-        bankAccount.payment_ref_code = cryptoRandomString({ length: 6, type: 'numeric' });
+      const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
+      //if country local not exist in country white list, return error
+      if (_isAllowCountryLocal) {
+        const bankAccounts = await BankAccount.findAll({
+          where: {
+            actived_flg: true
+          }
+        });
+        
+        if (bankAccounts != null && bankAccounts.length > 0) {
+          const idxBank = random(bankAccounts.length - 1);
+          bankAccount = {
+            ...bankAccountMapper(bankAccounts[idxBank])
+          };
+          bankAccount.payment_ref_code = cryptoRandomString({ length: 6, type: 'numeric' });
+        }
       }
+      
 
       const receivingAddresses = await ReceivingAddresses.findAll({
         where: {

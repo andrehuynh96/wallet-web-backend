@@ -33,7 +33,7 @@ module.exports = {
       if (result.kyc) {
         let length = Object.keys(result.kyc).length;
         let level = 0;
-        for (let i = 1; i <= length; i ++) {
+        for (let i = 1; i <= length; i++) {
           if (result.kyc[i.toString()].status == KycStatus.APPROVED) {
             level = i;
           } else {
@@ -96,8 +96,9 @@ module.exports = {
               member_id: member.id,
               action_type: OtpType.UNSUBSCRIBE
             },
-            returning: true
-          }, { transaction })
+            returning: true,
+            transaction
+          })
 
         await OTP.create({
           code: verifyToken,
@@ -127,8 +128,9 @@ module.exports = {
               member_id: member.id,
               action_type: OtpType.UNSUBSCRIBE
             },
-            returning: true
-          }, { transaction })
+            returning: true,
+            transaction
+          })
 
         await OTP.create({
           code: verifyToken,
@@ -193,8 +195,9 @@ module.exports = {
             member_id: member.id,
             action_type: OtpType.UNSUBSCRIBE
           },
-          returning: true
-        }, { transaction })
+          returning: true,
+          transaction
+        })
       await UnsubscribeReason.update({
         confirm_flg: true
       }, {

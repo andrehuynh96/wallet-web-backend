@@ -71,13 +71,15 @@ module.exports = {
                   member_id: req.user.id,
                   platform: e.platform,
                   active_flg: true
-                }
-              }, { transaction });
+                },
+                transaction
+              });
               await MemberPlutx.update({ active_flg: true }, {
                 where: {
                   id: plutx.id
-                }
-              }, { transaction });
+                },
+                transaction
+              });
             }
           } else {
             await MemberPlutx.update({ active_flg: false }, {
@@ -85,8 +87,9 @@ module.exports = {
                 member_id: req.user.id,
                 platform: e.platform,
                 active_flg: true
-              }
-            }, { transaction });
+              },
+              transaction
+            });
             e.member_id = req.user.id;
             e.member_domain_name = member.domain_name;
             e.active_flg = true;
@@ -179,10 +182,10 @@ module.exports = {
             await Member.update({
               domain_name: subdomain
             }, {
-              where: {
-                id: req.user.id
-              }
-            })
+                where: {
+                  id: req.user.id
+                }
+              })
           break;
         case PlutxUserAddressAction.EDIT_ADDRESS:
           unsignedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address, signAddress);

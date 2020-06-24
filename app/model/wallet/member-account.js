@@ -1,4 +1,5 @@
 const UserAccountType = require('./value-object/member-account-type');
+const { Temporalize } = require('sequelize-temporalize');
 
 module.exports = (sequelize, DataTypes) => {
   const MemberAccount = sequelize.define('member_accounts', {
@@ -20,10 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    account_number: {
-      type: DataTypes.STRING(250),
-      allowNull: true,
-    },
     bank_name: {
       type: DataTypes.STRING(250),
       allowNull: true,
@@ -36,9 +33,30 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
+    account_number: {
+      type: DataTypes.STRING(250),
+      allowNull: true,
+    },
+    account_address: {
+      type: DataTypes.STRING(250),
+      allowNull: true,
+    },
+    wallet_id: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
     wallet_address: {
       type: DataTypes.STRING(250),
       allowNull: true,
+    },
+    swift: {
+      type: DataTypes.STRING(250),
+      allowNull: true
+    },
+    default_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
@@ -46,8 +64,18 @@ module.exports = (sequelize, DataTypes) => {
       default: false,
     },
   }, {
-    underscored: true,
-    timestamps: true,
+      underscored: true,
+      timestamps: true,
+    });
+
+  Temporalize({
+    model: MemberAccount,
+    sequelize,
+    temporalizeOptions: {
+      blocking: false,
+      full: false,
+      modelSuffix: "_his"
+    }
   });
 
   MemberAccount.associate = (models) => {

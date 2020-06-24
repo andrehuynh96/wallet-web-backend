@@ -244,6 +244,7 @@ const config = {
     KYCLevelAllowPurchase: process.env.MEMBERSHIP_KYC_LEVEL_ALLOW_PURCHASE,
     countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST,
     typeId: process.env.MEMBERSHIP_AFFILIATE_TYPE_ID,
+    receivingRewardPlatform: process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM ? process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM.split(",") : ['USDT'],
   }
 };
 

@@ -4,7 +4,6 @@ const MembershipOrderStatus = require('app/model/wallet/value-object/membership-
 const mapper = require('app/feature/response-schema/membership/order.response-schema');
 const MembershipType = require('app/model/wallet').membership_types;
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
-const Platform = require('app/model/wallet/value-object/platform');
 const membershipOrderMapper = require('app/feature/response-schema/membership/order.response-schema');
 const db = require("app/model/wallet");
 const CoinGecko = require('coingecko-api');
@@ -16,6 +15,7 @@ const config = require('app/config');
 const cryptoRandomString = require('crypto-random-string');
 const Kyc = require('app/lib/kyc');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const CoinGeckoPrice = require('app/lib/coin-gecko-client');
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -57,19 +57,7 @@ module.exports = {
   makePaymentCrypto: async (req, res, next) => {
     try {
       logger.info('makePaymentCrypto::makePaymentCrypto');  
-      const coinGeckoClient = new CoinGecko();
-      let price = 0;
-      try {
-        let coinPrices = await coinGeckoClient.simple.price({
-          ids: [Platform[req.body.currency_symbol].name],
-          vs_currencies: ['usd']
-        });
-        price = coinPrices.data[Platform[req.body.currency_symbol].name.toLowerCase()].usd;
-      }
-      catch (err) {
-        logger.info('coinGeckoClient.simple.price no found data with currency' + req.body.currency_symbol);  
-      }
-
+      let price = CoinGeckoPrice.getPrice({platform_name: req.body.currency_symbol, currency: 'usd'});
       const body = {
         rate_by_usdt: price,
         payment_type:MemberAccountType.Crypto,

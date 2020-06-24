@@ -8,6 +8,7 @@ const receivingAddressMapper = require('app/feature/response-schema/membership/r
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const cryptoRandomString = require('crypto-random-string');
 const ipCountry = require('app/lib/ip-country');
+const CoinGeckoPrice = require('app/lib/coin-gecko-client');
 
 module.exports = {
   getMemberTypes: async (req, res, next) => {
@@ -56,8 +57,8 @@ module.exports = {
     try {
       logger.info('getPaymentAccount::getPaymentAccount');
       let bankAccount = {};
-      let cryptoAccounts = [];
-      const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
+      let _cryptoAccounts = [];
+      const _isAllowCountryLocal = true;//await ipCountry.isAllowCountryLocal(req);
       //if country local not exist in country white list, return error
       if (_isAllowCountryLocal) {
         const bankAccounts = await BankAccount.findAll({
@@ -82,11 +83,23 @@ module.exports = {
         }
       });
       if (receivingAddresses != null && receivingAddresses.length > 0) {
-        cryptoAccounts = receivingAddressMapper(receivingAddresses)
+        const cryptoAccounts = receivingAddressMapper(receivingAddresses)
+        for(let i=0; i < cryptoAccounts.length; i++){
+          const grpAccounts = await cryptoAccounts.filter(function (a){
+            return cryptoAccounts[i].currency_symbol === a.currency_symbol;
+          });
+          const idx = random(grpAccounts.length);
+          let e = grpAccounts[idx];
+          const price = await CoinGeckoPrice.getPrice({platform_name: e.currency_symbol, currency: 'usd'});
+          e.rate_by_usdt = price;
+          _cryptoAccounts.push(e);
+          i += grpAccounts.length;
+        }
       }
+     
       let _PaymentAccounts = {
         bank_account: bankAccount,
-        crypto_accounts : cryptoAccounts
+        crypto_accounts : _cryptoAccounts
       };
       return res.ok(_PaymentAccounts);
 

@@ -8,7 +8,7 @@ const schema = Joi.object().keys({
   account_number: Joi.string().required(),
   account_address: Joi.string().optional().allow(""),
   swift: Joi.string().required().optional().allow(""),
-  default_flg: Joi.string().required(),
+  default_flg: Joi.boolean().required(),
 });
 
 module.exports = schema; 

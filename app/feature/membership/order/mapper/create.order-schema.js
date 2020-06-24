@@ -12,7 +12,7 @@ const destObject = {
     amount:'amount',
     account_number:'account_number',
     bank_name:'bank_name',
-    branch_name:'branch_name',
+    swift:'swift',
     account_name:'account_name',
     payment_ref_code: 'payment_ref_code',
     status: 'status',

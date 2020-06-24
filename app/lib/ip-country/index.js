@@ -32,7 +32,7 @@ module.exports = {
 
 function _getIpClient(req){
     const xForwardedFor = req.headers['x-forwarded-for'];
-    logger.info('getCountryLocal', req.headers);
+    logger.info('_getIpClient', req.headers);
     //the first ip is client Ip.
     if(!xForwardedFor){
         return null;

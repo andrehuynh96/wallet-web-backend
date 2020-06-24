@@ -34,5 +34,7 @@ module.exports = {
 }
 
 function _getIpClient(req){
-        return requestIp.getClientIp(req); // on localhost > 127.0.0.1
+    const xForwardedFor = req.headers['x-forwarded-for'];
+    //the first ip is client Ip.
+    return xForwardedFor.split(',')[0];
 }

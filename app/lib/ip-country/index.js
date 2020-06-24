@@ -6,7 +6,10 @@ module.exports = {
     getCountryLocal: async (req) => {
         try {
             const _ip = _getIpClient(req);
-            return await Axios.get(`https://freegeoip.app/json/${_ip}`);
+            logger.info('getCountryLocal', req.headers);
+            logger.info('_ip', _ip)
+            const result = await Axios.get(`https://freegeoip.app/json/${_ip}`);
+            return result.data;
         }catch (err) {
             logger.error("getCountryLocal: ", err);
             throw err;
@@ -15,8 +18,7 @@ module.exports = {
     isAllowCountryLocal: async (req) => {
         try {
             const _ip = _getIpClient(req);
-            logger.info('isAllowCountryLocal', req);
-            logger.info('isAllowCountryLocal _ip :' + _ip)
+            logger.info('getCountryLocal', req.headers);
             const _country = await Axios.get(`https://freegeoip.app/json/${_ip}`);
             const _CountryWhitelist = config.membership.countryWhitelist.split(',')
             return _CountryWhitelist.indexOf(_country.data.country_code) > -1;

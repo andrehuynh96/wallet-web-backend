@@ -5,7 +5,6 @@ const BankAccount = require('app/model/wallet').bank_accounts;
 const ReceivingAddresses = require('app/model/wallet').receiving_addresses;
 const bankAccountMapper = require('app/feature/response-schema/membership/bank-account.response-schema');
 const receivingAddressMapper = require('app/feature/response-schema/membership/receiving-address.response-schema');
-const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const cryptoRandomString = require('crypto-random-string');
 const ipCountry = require('app/lib/ip-country');
@@ -43,7 +42,16 @@ module.exports = {
       next(err);
     }
   },
-
+  getInforIP: async (req, res, next) => {
+    logger.error("getInforIP: getInforIP");
+    try {
+     const _country = await ipCountry.getCountryLocal(req);
+     return res.ok(_country);
+    }catch (err) {
+      logger.error("getInforIP: ", err);
+      next(err);
+    }
+  },
   getPaymentAccount: async (req, res, next) => {
     try {
       logger.info('getPaymentAccount::getPaymentAccount');
@@ -58,16 +66,15 @@ module.exports = {
         //return res.badRequest(res.__("COUNTRY_LOCAL_NOT_ALLOW_ACCESS_BANK_ACCOUNT"), "COUNTRY_LOCAL_NOT_ALLOW_ACCESS_BANK_ACCOUNT");
       //}
 
-      let _PaymentAccounts = [];
-
+      
+      let bankAccount = {};
+      let cryptoAccounts = [];
       if (bankAccounts != null && bankAccounts.length > 0) {
         const idxBank = random(bankAccounts.length - 1);
-        let bankAccount = {
+        bankAccount = {
           ...bankAccountMapper(bankAccounts[idxBank])
         };
-        bankAccount.payment_type = MemberAccountType.Bank;
         bankAccount.payment_ref_code = cryptoRandomString({ length: 6, type: 'numeric' });
-        _PaymentAccounts.push(bankAccount);
       }
 
       const receivingAddresses = await ReceivingAddresses.findAll({
@@ -76,13 +83,12 @@ module.exports = {
         }
       });
       if (receivingAddresses != null && receivingAddresses.length > 0) {
-        const idxCryptos = random(receivingAddresses.length - 1);
-        let cryptoAccount = {
-          ...receivingAddressMapper(receivingAddresses[idxCryptos])
-        };
-        cryptoAccount.payment_type = MemberAccountType.Crypto;
-        _PaymentAccounts.push(cryptoAccount);
+        cryptoAccounts = receivingAddressMapper(receivingAddresses)
       }
+      let _PaymentAccounts = {
+        bank_account: bankAccount,
+        crypto_accounts : cryptoAccounts
+      };
       return res.ok(_PaymentAccounts);
 
     }

@@ -32,13 +32,13 @@ module.exports = {
         membership_orders.amount,
         membership_orders.account_number,
         membership_orders.bank_name,
-        membership_orders.branch_name,
+        membership_orders.swift,
         membership_orders.account_name,
         membership_orders.payment_ref_code,
         membership_orders.wallet_address,
         membership_orders.your_wallet_address,
         membership_orders.txid,
-        membership_orders.rate_by_usdt,
+        membership_orders.rate_usd,
         membership_orders.status,
         membership_orders.processe_date, 
         membership_types.type as membership_type
@@ -58,7 +58,7 @@ module.exports = {
       logger.info('makePaymentCrypto::makePaymentCrypto');  
       let price = CoinGeckoPrice.getPrice({platform_name: req.body.currency_symbol, currency: 'usd'});
       const body = {
-        rate_by_usdt: price,
+        rate_usd: price,
         payment_type:MemberAccountType.Crypto,
         ...req.body,
         order_no:cryptoRandomString({length: 8})

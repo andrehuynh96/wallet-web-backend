@@ -153,7 +153,7 @@ module.exports = router;
                       "wallet_address": "",
                       "your_wallet_address": "",
                       "txid": "",
-                      "rate_by_usdt": 0,
+                      "rate_usd": 0,
                       "status": "",
                       "updated_at": ""
                     }
@@ -236,7 +236,7 @@ module.exports = router;
                       "wallet_address": "",
                       "your_wallet_address": "",
                       "txid": "",
-                      "rate_by_usdt": 0,
+                      "rate_usd": 0,
                       "status": "",
                       "processe_date": ""
                     }

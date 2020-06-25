@@ -96,7 +96,7 @@ module.exports = {
           const idx = random(grpAccounts.length);
           let e = grpAccounts[idx];
           const price = await CoinGeckoPrice.getPrice({platform_name: e.currency_symbol, currency: 'usd'});
-          e.rate_by_usdt = price;
+          e.rate_usd = price;
           _cryptoAccounts.push(e);
           i += grpAccounts.length;
         }

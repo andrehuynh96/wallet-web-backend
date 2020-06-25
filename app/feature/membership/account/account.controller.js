@@ -21,6 +21,7 @@ module.exports = {
           type: MemberAccountType.Crypto,
           currency_symbol: { [Op.in]: config.membership.receivingRewardPlatform }
         },
+        order: [['created_at', 'DESC']],
         raw: true
       });
 
@@ -62,6 +63,7 @@ module.exports = {
           type: MemberAccountType.Crypto,
           currency_symbol: { [Op.in]: config.membership.receivingRewardPlatform }
         },
+        order: [['created_at', 'DESC']],
         raw: true
       });
 
@@ -95,18 +97,15 @@ module.exports = {
   },
   getBankAccount: async (req, res, next) => {
     try {
-      console.log(req.user.id);
       let result = await MemberAccount.findAll({
         where: {
           member_id: req.user.id,
           deleted_flg: false,
           type: MemberAccountType.Bank
         },
+        order: [['created_at', 'DESC']],
         raw: true
       });
-
-      console.log(result);
-
       return res.ok(bankAccountMapper(result));
     }
     catch (err) {

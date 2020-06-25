@@ -158,7 +158,8 @@ const config = {
     domain: process.env.PLUTX_DOMAIN,
     format: process.env.PLUTX_FORMAT,
     url: process.env.PLUTX_URL
-  }
+  },
+  twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3
 };
 
 module.exports = config;

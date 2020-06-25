@@ -6,7 +6,8 @@ const schema = Joi.object().keys({
       sc_token_address: Joi.string().required(),
       decimals: Joi.number().optional(),
       name: Joi.string().allow('').optional(),
-      icon: Joi.string().allow('').optional()
+      icon: Joi.string().allow('').optional(),
+      ref_id: Joi.string().allow('').optional()
 });
 
 module.exports = schema;

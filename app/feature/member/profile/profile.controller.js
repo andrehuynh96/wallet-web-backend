@@ -112,8 +112,9 @@ module.exports = {
           where: {
             member_id: member.id,
             confirm_flg: false
-          }
-        }, { transaction })
+          },
+          transaction
+        })
         let results = await UnsubscribeReason.bulkCreate(reasons, { transaction })
         logger.info('create::member unsubscribe reasons::create 2fa ', JSON.stringify(results))
         await transaction.commit();
@@ -145,8 +146,9 @@ module.exports = {
           where: {
             member_id: member.id,
             confirm_flg: false
-          }
-        }, { transaction })
+          },
+          transaction
+        })
 
         let results = await UnsubscribeReason.bulkCreate(reasons, { transaction })
         logger.info('create::member unsubscribe reasons::create not 2fa', JSON.stringify(results))
@@ -204,9 +206,9 @@ module.exports = {
           where: {
             member_id: member.id
           },
-          returning: true
-        }, { transaction }
-      )
+          returning: true,
+          transaction
+        })
 
       let privateKeys = [];
       let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
@@ -218,12 +220,33 @@ module.exports = {
             }
           });
           privateKeys.push(...keys);
-          await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id } }, { transaction });
-          await WalletToken.destroy({ where: { wallet_id: wallet[i].id } }, { transaction })
+          await WalletPrivateKey.destroy(
+            {
+              where: {
+                wallet_id: wallet[i].id
+              },
+              transaction
+            });
+          await WalletToken.destroy({
+            where: {
+              wallet_id: wallet[i].id
+            },
+            transaction
+          })
         }
-        await Wallet.destroy({ where: { member_id: member.id } }, { transaction })
+        await Wallet.destroy({
+          where: {
+            member_id: member.id
+          },
+          transaction
+        })
       }
-      await Member.destroy({ where: { id: member.id } }, { transaction })
+      await Member.destroy({
+        where: {
+          id: member.id
+        },
+        transaction
+      })
 
       let enableSendEmail = await Setting.findOne({
         where: {

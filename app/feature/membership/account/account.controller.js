@@ -266,7 +266,7 @@ module.exports = {
         }
       }
 
-      await MemberAccount.bulkCreate(items, transaction);
+      await MemberAccount.bulkCreate(items, { transaction });
       await transaction.commit();
       return res.ok(true);
     }

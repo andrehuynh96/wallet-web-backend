@@ -6,6 +6,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const bankAccountMapper = require('app/feature/response-schema/bank-account.response-schema');
 const MembershipBankCurrency = require('app/model/wallet/value-object/membership-bank-currency');
+const database = require('app/lib/database').db().wallet;
 
 module.exports = {
   getCryptoAccountSetting: async (req, res, next) => {
@@ -94,6 +95,7 @@ module.exports = {
   },
   getBankAccount: async (req, res, next) => {
     try {
+      console.log(req.user.id);
       let result = await MemberAccount.findAll({
         where: {
           member_id: req.user.id,
@@ -102,6 +104,8 @@ module.exports = {
         },
         raw: true
       });
+
+      console.log(result);
 
       return res.ok(bankAccountMapper(result));
     }
@@ -220,6 +224,56 @@ module.exports = {
       return res.ok(bankAccountMapper(result));
     }
     catch (err) {
+      logger.error("editBankAccount fail: ", err);
+      next(err);
+    }
+  },
+  updateCryptoAccount: async (req, res, next) => {
+    let transaction;
+    try {
+      transaction = await database.transaction();
+      let items = [];
+      for (let e of req.body.items) {
+        let i = await MemberAccount.findOne({
+          where: {
+            member_id: req.user.id,
+            type: MemberAccountType.Crypto,
+            currency_symbol: e.currency_symbol
+          }
+        });
+
+        if (!i) {
+          items.push({
+            member_id: req.user.id,
+            type: MemberAccountType.Crypto,
+            currency_symbol: e.currency_symbol,
+            wallet_id: e.wallet_id,
+            wallet_address: e.wallet_address
+          })
+        }
+        else {
+          await MemberAccount.update({
+            wallet_id: e.wallet_id,
+            wallet_address: e.wallet_address
+          }, {
+              where: {
+                member_id: req.user.id,
+                type: MemberAccountType.Crypto,
+                currency_symbol: e.currency_symbol
+              },
+              transaction
+            });
+        }
+      }
+
+      await MemberAccount.bulkCreate(items, transaction);
+      await transaction.commit();
+      return res.ok(true);
+    }
+    catch (err) {
+      if (transaction) {
+        await transaction.rollback()
+      };
       logger.error("editBankAccount fail: ", err);
       next(err);
     }

@@ -2,12 +2,12 @@ const objectMapper = require('object-mapper');
 
 const destObject = {
   array: {
-    '[].currency': '[].currency',
-    '[].amount': '[].amount'
+    '[].currency': '[].currency?',
+    '[].amount': '[].amount?'
   },
   single: {
-    currency: 'currency',
-    amount: 'amount'
+    currency: 'currency?',
+    amount: 'amount?'
   }
 };
 module.exports = srcObject => {

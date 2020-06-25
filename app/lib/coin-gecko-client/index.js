@@ -10,7 +10,6 @@ module.exports = {
         const key = platform_name + '_' + currency;
         let price = await cache.getAsync(key);
         if(price === null){
-          console.log('test case', key, price)
           const coinGeckoClient = new CoinGecko();
           const coinPrices = await coinGeckoClient.simple.price({
             ids: [Platform[platform_name].name],
@@ -18,7 +17,7 @@ module.exports = {
           });
           price = coinPrices.data[Platform[platform_name].name.toLowerCase()][currency];
           //10p
-          await cache.setAsync(key, price, "EX", 120);
+          await cache.setAsync(key, price, "EX", 600);
         }
         return price;
       }

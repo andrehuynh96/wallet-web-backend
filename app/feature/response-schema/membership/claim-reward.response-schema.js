@@ -3,17 +3,17 @@ const objectMapper = require('object-mapper');
 const destObject = {
   array: {
     '[].id': '[].id',
-    '[].client_affiliate_id': '[].client_affiliate_id',
-    '[].currency_symbol': '[].currency_symbol',
-    '[].amount': '[].amount',
-    '[].status': '[].status'
+    '[].client_affiliate_id': '[].client_affiliate_id?',
+    '[].currency_symbol': '[].currency_symbol?',
+    '[].amount': '[].amount?',
+    '[].status': '[].status?'
   },
   single: {
     id: 'id',
-    client_affiliate_id: 'client_affiliate_id',
-    currency_symbol: 'currency_symbol',
-    amount: 'amount',
-    status: 'status'
+    client_affiliate_id: 'client_affiliate_id?',
+    currency_symbol: 'currency_symbol?',
+    amount: 'amount?',
+    status: 'status?'
   }
 };
 module.exports = srcObject => {

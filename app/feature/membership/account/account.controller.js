@@ -177,6 +177,9 @@ module.exports = {
         }, {
             where: {
               member_id: req.user.id,
+              id: {
+                [Op.ne]: result.id
+              },
               type: MemberAccountType.Bank
             },
           });
@@ -201,7 +204,7 @@ module.exports = {
       if (!result) {
         return res.badRequest(res.__('NOT_FOUND_BANK_ACCOUNT'), 'NOT_FOUND_BANK_ACCOUNT');
       }
-      result = await MemberAccount.update({
+      [_, response] = await MemberAccount.update({
         ...req.body,
       }, {
           where: {
@@ -209,13 +212,16 @@ module.exports = {
           },
           returning: true
         });
-
+      result = response;
       if (result.default_flg) {
         await MemberAccount.update({
           default_flg: false
         }, {
             where: {
               member_id: req.user.id,
+              id: {
+                [Op.ne]: result.id
+              },
               type: MemberAccountType.Bank
             },
           });

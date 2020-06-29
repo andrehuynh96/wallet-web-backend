@@ -81,6 +81,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL,
       allowNull: true,
     },
+    amount_usd: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
     status: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -107,9 +111,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   MembershipOrder.associate = (models) => {
     MembershipOrder.belongsTo(models.members, {

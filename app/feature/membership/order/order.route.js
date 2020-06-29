@@ -49,7 +49,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data":
                     [{
                       "id": 0,
@@ -106,7 +106,6 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - referrer_code
  *            - payment_ref_code
  *            - amount
  *            - account_number
@@ -117,7 +116,7 @@ module.exports = router;
  *            - bank_account_id
  *            - membership_type_id
  *            example:
- *               {      "referrer_code": "as3421fs",
+ *               {
                         "payment_ref_code":"123456",
                         "amount":100,
                         "account_number":"abc123456",
@@ -176,7 +175,7 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- 
+
 /**
  * @swagger
  * /web/membership/orders/crypto/make-payment:
@@ -192,7 +191,6 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - referrer_code
  *            - receiving_addresses_id
  *            - amount
  *            - wallet_address
@@ -201,8 +199,7 @@ module.exports = router;
  *            - currency_symbol
  *            - membership_type_id
  *            example:
- *               {      
-                    "referrer_code": "as3421fs",
+ *               {
                     "receiving_addresses_id": 9,
                     "amount": 100,
                     "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
@@ -259,44 +256,44 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
-  /**
- * @swagger
- * /web/membership/orders/{code}/click:
- *   post:
- *     summary: Click Referrer Url
- *     tags:
- *       - membership
- *     description: click referrer url
- *     parameters:
- *       - in: path
- *         name: code
- *         require: true
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
-                    "data": {
-                        "num_of_clicks": 3
-                    }
-                }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/membership/orders/{code}/click:
+*   post:
+*     summary: Click Referrer Url
+*     tags:
+*       - membership
+*     description: click referrer url
+*     parameters:
+*       - in: path
+*         name: code
+*         require: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                  "data": {
+                      "num_of_clicks": 3
+                  }
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/

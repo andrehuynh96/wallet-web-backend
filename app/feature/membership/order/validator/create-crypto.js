@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const schema = Joi.object().keys({
-  referrer_code: Joi.string().required(),
+  //referrer_code: Joi.string().required(),
   amount: Joi.number().required(),
   currency_symbol: Joi.string().required(),
   wallet_address: Joi.string().required(),

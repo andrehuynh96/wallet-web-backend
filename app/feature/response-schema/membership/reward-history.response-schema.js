@@ -3,13 +3,13 @@ const objectMapper = require('object-mapper');
 const destObject = {
   array: {
     '[].id': '[].id',
-    '[].currency_symbol': '[].currency_symbol',
-    '[].amount': '[].amount'
+    '[].currency_symbol': '[].currency_symbol?',
+    '[].amount': '[].amount?'
   },
   single: {
     id: 'id',
-    currency_symbol: 'currency_symbol',
-    amount: 'amount'
+    currency_symbol: 'currency_symbol?',
+    amount: 'amount?'
   }
 };
 module.exports = srcObject => {

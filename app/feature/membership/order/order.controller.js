@@ -4,10 +4,8 @@ const MembershipOrderStatus = require('app/model/wallet/value-object/membership-
 const mapper = require('app/feature/response-schema/membership/order.response-schema');
 const MembershipType = require('app/model/wallet').membership_types;
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
-const Platform = require('app/model/wallet/value-object/platform');
 const membershipOrderMapper = require('app/feature/response-schema/membership/order.response-schema');
 const db = require("app/model/wallet");
-const CoinGecko = require('coingecko-api');
 const Member = require('app/model/wallet').members;
 const Membership = require('app/lib/reward-system/membership');
 
@@ -17,6 +15,7 @@ const config = require('app/config');
 const cryptoRandomString = require('crypto-random-string');
 const Kyc = require('app/lib/kyc');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const CoinGeckoPrice = require('app/lib/coin-gecko-client');
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -34,20 +33,21 @@ module.exports = {
         membership_orders.amount,
         membership_orders.account_number,
         membership_orders.bank_name,
-        membership_orders.branch_name,
+        membership_orders.swift,
         membership_orders.account_name,
         membership_orders.payment_ref_code,
         membership_orders.wallet_address,
         membership_orders.your_wallet_address,
         membership_orders.txid,
-        membership_orders.rate_by_usdt,
+        membership_orders.rate_usd,
         membership_orders.status,
-        membership_orders.processe_date, 
+        membership_orders.updated_at, 
         membership_types.type as membership_type
         FROM membership_orders INNER JOIN membership_types on membership_orders.membership_type_id = membership_types.id
-        where membership_orders.member_id = '${req.user.id}'
+        where membership_orders.member_id = '8337b3e4-b8be-4594-bca3-d6dba7c751ea'
       `;
       var membershipOrders = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
+      console.log('membershipOrders', membershipOrders)
       return res.ok(membershipOrderMapper(membershipOrders));
     }
     catch (err) {
@@ -57,23 +57,11 @@ module.exports = {
   },
   makePaymentCrypto: async (req, res, next) => {
     try {
-      logger.info('makePaymentCrypto::makePaymentCrypto');
-      const coinGeckoClient = new CoinGecko();
-      let price = 0;
-      try {
-        let coinPrices = await coinGeckoClient.simple.price({
-          ids: [Platform[req.body.currency_symbol].name],
-          vs_currencies: ['usd']
-        });
-        price = coinPrices.data[Platform[req.body.currency_symbol].name.toLowerCase()].usd;
-      }
-      catch (err) {
-        logger.info('coinGeckoClient.simple.price no found data with currency' + req.body.currency_symbol);
-      }
-
+      logger.info('makePaymentCrypto::makePaymentCrypto');  
+      let price = CoinGeckoPrice.getPrice({platform_name: req.body.currency_symbol, currency: 'usd'});
       const body = {
-        rate_by_usdt: price,
-        payment_type: MemberAccountType.Crypto,
+        rate_usd: price,
+        payment_type:MemberAccountType.Crypto,
         ...req.body,
         order_no: cryptoRandomString({ length: 8 })
       }
@@ -91,7 +79,7 @@ module.exports = {
       const body = {
         payment_type: MemberAccountType.Bank,
         ...req.body,
-        order_no: req.body.referrer_code
+        order_no: req.body.payment_ref_code
       }
 
       return await _createOrder(body, req, res);

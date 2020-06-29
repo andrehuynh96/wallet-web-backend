@@ -73,7 +73,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(500),
       allowNull: true,
     },
-    rate_by_usdt: {
+    swift: {
+      type: DataTypes.STRING(12),
+      allowNull: true,
+    },
+    rate_usd: {
       type: DataTypes.DECIMAL,
       allowNull: true,
     },

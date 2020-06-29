@@ -104,6 +104,9 @@ module.exports = router;
  *         name: wallet_id
  *         type: string
  *         required: true  
+ *       - name: platform
+ *         in: query
+ *         type: string
  *       - name: offset
  *         in: query
  *         type: integer

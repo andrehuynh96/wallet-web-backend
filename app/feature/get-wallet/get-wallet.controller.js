@@ -62,9 +62,11 @@ module.exports = {
   get: async (req, res, next) => {
     try {
       logger.info('coins::all');
-      const { query: { offset, limit}, params: { wallet_id } } = req;
+      const { query: { offset, limit, platform }, params: { wallet_id } } = req;
       const where = { deleted_flg: false, wallet_id: wallet_id };
-
+      if (platform) {
+        where.platform = platform.toUpperCase()
+      }
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 

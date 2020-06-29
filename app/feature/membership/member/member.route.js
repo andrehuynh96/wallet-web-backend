@@ -114,12 +114,14 @@ module.exports = router;
                       {
                         "id": 9,
                         "currency_symbol": "ATOM",
-                        "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u"
+                        "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
+                        "rate_by_usd": 238.73
                       },
                       {
                         "id": 10,
                         "currency_symbol": "ETH",
-                        "wallet_address": "0x32be343b94f860124dc4fee278fdcbd38c102d88"
+                        "wallet_address": "0x32be343b94f860124dc4fee278fdcbd38c102d88",
+                        "rate_by_usd": 238.73
                       }
                     ]
                   }

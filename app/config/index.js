@@ -65,7 +65,8 @@ const config = {
     deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
     txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
-    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
+    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs",
+    referral: process.env.PARTNER_NAME.toLowerCase() + "/referral.ejs"
   },
   disableRecaptcha: process.env.DISABLE_RECAPTCHA == "1",
   CDN: {
@@ -245,6 +246,7 @@ const config = {
     countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST,
     typeId: process.env.MEMBERSHIP_AFFILIATE_TYPE_ID,
     receivingRewardPlatform: process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM ? process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM.split(",") : ['USDT'],
+    referralUrl: process.env.MEMBERSHIP_REFERRAL_URL
   }
 };
 

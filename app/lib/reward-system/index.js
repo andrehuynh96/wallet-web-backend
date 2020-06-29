@@ -5,11 +5,18 @@ const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
 
-module.exports = {
-  register: async ({ email, referrerCode }) => {
+class RewardSystem {
+  constructor({ baseUrl, apiKey, secretKey, typeId }) {
+    this.typeId = typeId;
+    this.baseUrl = baseUrl;
+    this.secretKey = secretKey;
+    this.apiKey = apiKey;
+  }
+
+  async register({ email, referrerCode }) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.post(`${config.affiliate.url}/clients`,
+      let accessToken = await this._getToken();
+      let result = await axios.post(`${this.baseUrl}/clients`,
         {
           ext_client_id: email,
           affiliate_code: referrerCode || ""
@@ -17,9 +24,9 @@ module.exports = {
         {
           headers: {
             "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
+            "x-secret": this.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -30,12 +37,12 @@ module.exports = {
       logger.error("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
+  }
 
-  UpdateReferrer: async ({ email, referrerCode }) => {
+  async updateReferrer({ email, referrerCode }) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.put(`${config.affiliate.url}/clients/affiliate-codes`,
+      let accessToken = await this._getToken();
+      let result = await axios.put(`${this.baseUrl}/clients/affiliate-codes`,
         {
           ext_client_id: email,
           affiliate_code: referrerCode
@@ -43,9 +50,9 @@ module.exports = {
         {
           headers: {
             "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
+            "x-secret": this.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -56,18 +63,16 @@ module.exports = {
       logger.error("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
+  }
 
-  getReferrals: async ({ email, offset = 0, limit = 10 }) => {
+  async getReferrals({ email, offset = 0, limit = 10 }) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.get(`${config.affiliate.url}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
+      let accessToken = await this._getToken();
+      let result = await axios.get(`${this.baseUrl}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
         {
           headers: {
-            "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.affiliate.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -78,17 +83,15 @@ module.exports = {
       logger.error("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
-  getRewards: async ({ email }) => {
+  }
+  async getRewards({ email }) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.get(`${config.affiliate.url}/available-rewards?ext_client_id=${email}`,
+      let accessToken = await this._getToken();
+      let result = await axios.get(`${this.baseUrl}/available-rewards?ext_client_id=${email}`,
         {
           headers: {
-            "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.membership.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -99,17 +102,16 @@ module.exports = {
       logger.error("get available rewards fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
-  getRewardHistorys: async ({ email, offset = 0, limit = 10 }) => {
+  }
+
+  async getRewardHistories({ email, offset = 0, limit = 10 }) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.get(`${config.affiliate.url}/rewards?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
+      let accessToken = await this._getToken();
+      let result = await axios.get(`${this.baseUrl}/rewards?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
         {
           headers: {
-            "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.membership.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -120,17 +122,16 @@ module.exports = {
       logger.error("get reward history fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
-  isCheckReferrerCode: async ({ referrer_code }) => {
+  }
+
+  async isCheckReferrerCode({ referrerCode }) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.get(`${config.affiliate.url}/affiliate-codes/${referrer_code}/can-referer`,
+      let accessToken = await this._getToken();
+      let result = await axios.get(`${this.baseUrl}/affiliate-codes/${referrerCode}/can-referer`,
         {
           headers: {
-            "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.membership.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -141,18 +142,19 @@ module.exports = {
       logger.error("check referrer code for can-referer fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
-  clickReferrerUrl: async (code) => {
+  }
+
+  async clickReferrerUrl(code) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.post(`${config.affiliate.url}/affiliate-codes/${code}/click`,
+      let accessToken = await this._getToken();
+      let result = await axios.post(`${this.baseUrl}/affiliate-codes/${code}/click`,
         {},
         {
           headers: {
             "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
+            "x-secret": this.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.membership.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -163,11 +165,12 @@ module.exports = {
       logger.error("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
-  },
-  claimReward: async ({ email, currency_symbol, amount }) => {
+  }
+
+  async claimReward({ email, currency_symbol, amount }) {
     try {
-      let accessToken = await _getToken();
-      let result = await axios.post(`${config.affiliate.url}/claim-rewards`,
+      let accessToken = await this._getToken();
+      let result = await axios.post(`${this.baseUrl}/claim-rewards`,
         {
           ext_client_id: email,
           currency_symbol: currency_symbol,
@@ -176,9 +179,9 @@ module.exports = {
         {
           headers: {
             "x-use-checksum": true,
-            "x-secret": config.affiliate.secretKey,
+            "x-secret": this.secretKey,
             "Content-Type": "application/json",
-            "x-affiliate-type-id": config.membership.typeId,
+            "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,
           }
         });
@@ -190,22 +193,25 @@ module.exports = {
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
-};
 
-async function _getToken() {
-  let token = await cache.getAsync(redisResource.affiliate.token);
-  if (token) {
-    return token;
-  }
-  let result = await axios.post(
-    `${config.affiliate.url}/auth/token`,
-    {
-      api_key: config.affiliate.apiKey,
-      secret_key: config.affiliate.secretKey,
-      grant_type: "client_credentials"
+  async _getToken() {
+    let key = `${redisResource.rewardSystem.token}:${this.typeId}`;
+    let token = await cache.getAsync(key);
+    if (token) {
+      return token;
     }
-  );
+    let result = await axios.post(
+      `${this.baseUrl}/auth/token`,
+      {
+        api_key: this.apiKey,
+        secret_key: this.secretKey,
+        grant_type: "client_credentials"
+      }
+    );
 
-  await cache.setAsync(redisResource.affiliate.token, result.data.data.access_token, "EX", 3600);
-  return result.data.data.access_token;
+    await cache.setAsync(key, result.data.data.access_token, "EX", 3600);
+    return result.data.data.access_token;
+  }
 }
+
+module.exports = RewardSystem;

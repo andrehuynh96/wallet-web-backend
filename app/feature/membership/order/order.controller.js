@@ -7,7 +7,8 @@ const MembershipTypeName = require('app/model/wallet/value-object/membership-typ
 const membershipOrderMapper = require('app/feature/response-schema/membership/order.response-schema');
 const db = require("app/model/wallet");
 const Member = require('app/model/wallet').members;
-const Affiliate = require('app/lib/affiliate');
+const Membership = require('app/lib/reward-system/membership');
+
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
 const createOrderMapper = require('./mapper/create.order-schema');
 const config = require('app/config');
@@ -62,7 +63,7 @@ module.exports = {
         rate_usd: price,
         payment_type:MemberAccountType.Crypto,
         ...req.body,
-        order_no:cryptoRandomString({length: 8})
+        order_no: cryptoRandomString({ length: 8 })
       }
 
       return await _createOrder(body, req, res);
@@ -74,9 +75,9 @@ module.exports = {
   },
   makePaymentBank: async (req, res, next) => {
     try {
-      logger.info('makePaymentBank::makePaymentBank');  
+      logger.info('makePaymentBank::makePaymentBank');
       const body = {
-        payment_type:MemberAccountType.Bank,
+        payment_type: MemberAccountType.Bank,
         ...req.body,
         order_no: req.body.payment_ref_code
       }
@@ -91,7 +92,7 @@ module.exports = {
   clickReferrerUrl: async (req, res, next) => {
     try {
       const referrCode = req.params.code;
-      const result = await Affiliate.clickReferrerUrl(referrCode);
+      const result = await Membership.clickReferrerUrl(referrCode);
       if (result.httpCode !== 200) {
         return res.status(result.httpCode).send(result.data);
       }
@@ -109,24 +110,24 @@ module.exports = {
  * @param {*} body 
  * @param {*} req 
  */
-async function _createOrder(body, req, res){
+async function _createOrder(body, req, res) {
 
-      const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
+  const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
 
-      if(resDataCheck.isCreated){
-        const _member = await Member.findOne({where: {id: req.user.id}});
-  
-        let order = {
-          ...createOrderMapper(body)
-        }
-    
-        order.member_id = _member.id;
-        order.status = MembershipOrderStatus.Pending;
-        let result =  await MembershipOrder.create(order);
-        return res.ok(mapper(result));
-      }else{
-        return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
-      }
+  if (resDataCheck.isCreated) {
+    const _member = await Member.findOne({ where: { id: req.user.id } });
+
+    let order = {
+      ...createOrderMapper(body)
+    }
+
+    order.member_id = _member.id;
+    order.status = MembershipOrderStatus.Pending;
+    let result = await MembershipOrder.create(order);
+    return res.ok(mapper(result));
+  } else {
+    return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
+  }
 }
 
 /**
@@ -134,57 +135,57 @@ async function _createOrder(body, req, res){
  * @param {*} data 
  * @param {*} member_id 
  */
-async function _checkDataCreateOrder(data, member_id){
-  let resData = {isCreated: true};
-  const _member = await Member.findOne({where: {id: member_id}});
+async function _checkDataCreateOrder(data, member_id) {
+  let resData = { isCreated: true };
+  const _member = await Member.findOne({ where: { id: member_id } });
 
-  const _kycInfor = await Kyc.getKycForMember({kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED});
+  const _kycInfor = await Kyc.getKycForMember({ kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED });
   let kycLevel = 0;
-  if(_kycInfor.httpCode == 200){
+  if (_kycInfor.httpCode == 200) {
     kycLevel = _kycInfor.data.current_kyc_level;
-  }else{
+  } else {
     // request kyc system fail
-    resData.isCreated = false; 
+    resData.isCreated = false;
     resData.errorCode = "PURCHASE_FAIL";
     resData.errorMsg = _kycInfor.data.message + " with status code " + _kycInfor.httpCode;
   }
 
   //if get kyc infor success, continue validate 
-  if(resData.isCreated){
-    if(config.membership.KYCLevelAllowPurchase == kycLevel){
+  if (resData.isCreated) {
+    if (config.membership.KYCLevelAllowPurchase == kycLevel) {
       //check referrence code 
-      const resCheckReferrerCode = await Affiliate.isCheckReferrerCode({referrer_code: data.referrer_code});
-      if(resCheckReferrerCode.httpCode !== 200){
-        resData.isCreated = false; 
+      const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrer_code: data.referrer_code });
+      if (resCheckReferrerCode.httpCode !== 200) {
+        resData.isCreated = false;
         resData.errorCode = "PURCHASE_FAIL";
         resData.errorMsg = resCheckReferrerCode.data.message + " with status code " + resCheckReferrerCode.httpCode;
-      }else{
-        if(!resCheckReferrerCode.data.isValid){
-          resData.isCreated = false; 
+      } else {
+        if (!resCheckReferrerCode.data.isValid) {
+          resData.isCreated = false;
           resData.errorCode = "PURCHASE_FAIL";
           resData.errorMsg = "REFERRER_CODE_INVALIDATER";
-        }else{
+        } else {
           //check MembershipType of member is Paid
           const _currentMembershipType = await MembershipType.findOne({
             where: {
               id: _member.membership_type_id
             }
           });
-        
-          if(_currentMembershipType.type === MembershipTypeName.Paid){
-            resData.isCreated = false; 
+
+          if (_currentMembershipType.type === MembershipTypeName.Paid) {
+            resData.isCreated = false;
             resData.errorCode = "PURCHASE_FAIL";
             resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
           }
         }
       }
-    }else{
+    } else {
       // KYC level purchase invalidater
-      resData.isCreated = false; 
+      resData.isCreated = false;
       resData.errorCode = "PURCHASE_FAIL";
       resData.errorMsg = "KYC_LEVEL_INVALIDATER";
     }
   }
-  
+
   return resData;
 }

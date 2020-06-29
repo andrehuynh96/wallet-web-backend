@@ -16,6 +16,7 @@ const speakeasy = require("speakeasy");
 const Kyc = require('app/lib/kyc');
 const Webhook = require('app/lib/webhook');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const Membership = require('app/lib/reward-system/membership');
 module.exports = {
   get: async (req, res, next) => {
     try {
@@ -43,6 +44,14 @@ module.exports = {
         result.kyc_level = level;
       } else {
         result.kyc_level = 0;
+      }
+      if (result.referral_code) {
+        let checkReferrerCode = await Membership.isCheckReferrerCode({referrerCode: result.referral_code});
+        if (checkReferrerCode.httpCode !== 200) {
+          result.referral_code = "";
+        } else if (!checkReferrerCode.data.data.isValid){
+          result.referral_code = "";
+        }
       }
       return res.ok(memberMapper(result));
     }

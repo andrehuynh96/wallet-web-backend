@@ -16,6 +16,7 @@ const Affiliate = require('app/lib/reward-system/affiliate');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const PluTXUserIdApi = require('app/lib/plutx-userid');
+const Membership = require('app/lib/reward-system/membership');
 
 const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
@@ -270,7 +271,14 @@ const controller = {
       } else {
         user.kyc_level = 0;
       }
-
+      if (user.referral_code) {
+        let checkReferrerCode = await Membership.isCheckReferrerCode({referrerCode: user.referral_code});
+        if (checkReferrerCode.httpCode !== 200) {
+          user.referral_code = "";
+        } else if (!checkReferrerCode.data.data.isValid){
+          user.referral_code = "";
+        }
+      }
       req.session.authenticated = true;
       req.session.user = user;
       req.session.refreshToken = refreshToken;

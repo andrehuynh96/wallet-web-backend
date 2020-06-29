@@ -46,9 +46,9 @@ module.exports = {
   getInforIP: async (req, res, next) => {
     logger.error("getInforIP: getInforIP");
     try {
-     const _country = await ipCountry.getCountryLocal(req);
-     return res.ok(_country);
-    }catch (err) {
+      const _country = await ipCountry.getCountryLocal(req);
+      return res.ok(_country);
+    } catch (err) {
       logger.error("getInforIP: ", err);
       next(err);
     }
@@ -57,8 +57,8 @@ module.exports = {
     try {
       logger.info('getPaymentAccount::getPaymentAccount');
       let bankAccount = {};
-      let _cryptoAccounts = [];
-      try{
+      let cryptoAccounts = [];
+      try {
         const _isAllowCountryLocal = await ipCountry.isAllowCountryLocal(req);
         //if country local not exist in country white list, return error
         if (_isAllowCountryLocal) {
@@ -67,7 +67,7 @@ module.exports = {
               actived_flg: true
             }
           });
-          
+
           if (bankAccounts != null && bankAccounts.length > 0) {
             const idxBank = random(bankAccounts.length - 1);
             bankAccount = {
@@ -79,8 +79,6 @@ module.exports = {
       } catch (err) {
         logger.error("isAllowCountryLocal: ", err);
       }
-      
-      
 
       const receivingAddresses = await ReceivingAddresses.findAll({
         where: {
@@ -88,23 +86,23 @@ module.exports = {
         }
       });
       if (receivingAddresses != null && receivingAddresses.length > 0) {
-        const cryptoAccounts = receivingAddressMapper(receivingAddresses)
-        for(let i=0; i < cryptoAccounts.length; i++){
-          const grpAccounts = await cryptoAccounts.filter(function (a){
-            return cryptoAccounts[i].currency_symbol === a.currency_symbol;
-          });
-          const idx = random(grpAccounts.length);
-          let e = grpAccounts[idx];
-          const price = await CoinGeckoPrice.getPrice({platform_name: e.currency_symbol, currency: 'usd'});
-          e.rate_usd = price;
-          _cryptoAccounts.push(e);
-          i += grpAccounts.length;
+        cryptoAccounts = receivingAddressMapper(receivingAddresses)
+        for (let i = 0; i < cryptoAccounts.length; i++) {
+          // const grpAccounts = await cryptoAccounts.filter(function (a) {
+          //   return cryptoAccounts[i].currency_symbol === a.currency_symbol;
+          // });
+          // const idx = random(grpAccounts.length);
+          // let e = grpAccounts[idx];
+          const price = await CoinGeckoPrice.getPrice({ platform_name: cryptoAccounts[i].currency_symbol, currency: 'usd' });
+          cryptoAccounts[i].rate_usd = price;
+          // _cryptoAccounts.push(e);
+          // i += grpAccounts.length;
         }
       }
-     
+
       let _PaymentAccounts = {
         bank_account: bankAccount,
-        crypto_accounts : _cryptoAccounts
+        crypto_accounts: cryptoAccounts
       };
       return res.ok(_PaymentAccounts);
 

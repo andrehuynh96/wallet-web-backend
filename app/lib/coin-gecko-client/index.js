@@ -17,7 +17,7 @@ module.exports = {
         });
         price = coinPrices.data[Platform[platform_name].name.toLowerCase()][currency];
         //10p
-        //await cache.setAsync(key, price, "EX", 600);
+        await cache.setAsync(key, price, "EX", 30);
       }
       return price;
     }

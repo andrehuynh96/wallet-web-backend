@@ -8,7 +8,6 @@ const membershipOrderMapper = require('app/feature/response-schema/membership/or
 const db = require("app/model/wallet");
 const Member = require('app/model/wallet').members;
 const Membership = require('app/lib/reward-system/membership');
-
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
 const createOrderMapper = require('./mapper/create.order-schema');
 const config = require('app/config');
@@ -57,11 +56,12 @@ module.exports = {
   },
   makePaymentCrypto: async (req, res, next) => {
     try {
-      logger.info('makePaymentCrypto::makePaymentCrypto');  
-      let price = CoinGeckoPrice.getPrice({platform_name: req.body.currency_symbol, currency: 'usd'});
+      logger.info('makePaymentCrypto::makePaymentCrypto');
+      let price = await CoinGeckoPrice.getPrice({ platform_name: req.body.currency_symbol, currency: 'usd' });
       const body = {
         rate_usd: price,
-        payment_type:MemberAccountType.Crypto,
+        amount_usd: (req.body.amount * price),
+        payment_type: MemberAccountType.Crypto,
         ...req.body,
         order_no: cryptoRandomString({ length: 8 })
       }
@@ -113,15 +113,12 @@ module.exports = {
 async function _createOrder(body, req, res) {
 
   const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
-
   if (resDataCheck.isCreated) {
-    const _member = await Member.findOne({ where: { id: req.user.id } });
-
     let order = {
       ...createOrderMapper(body)
     }
 
-    order.member_id = _member.id;
+    order.member_id = req.user.id;
     order.status = MembershipOrderStatus.Pending;
     let result = await MembershipOrder.create(order);
     return res.ok(mapper(result));
@@ -138,52 +135,47 @@ async function _createOrder(body, req, res) {
 async function _checkDataCreateOrder(data, member_id) {
   let resData = { isCreated: true };
   const _member = await Member.findOne({ where: { id: member_id } });
-
   const _kycInfor = await Kyc.getKycForMember({ kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED });
   let kycLevel = 0;
-  if (_kycInfor.httpCode == 200) {
-    kycLevel = _kycInfor.data.current_kyc_level;
-  } else {
-    // request kyc system fail
+  if (_kycInfor.httpCode != 200) {
     resData.isCreated = false;
     resData.errorCode = "PURCHASE_FAIL";
     resData.errorMsg = _kycInfor.data.message + " with status code " + _kycInfor.httpCode;
+    return resData;
+  }
+  kycLevel = _kycInfor.data.current_kyc_level;
+  if (config.membership.KYCLevelAllowPurchase != kycLevel) {
+    resData.isCreated = false;
+    resData.errorCode = "PURCHASE_FAIL";
+    resData.errorMsg = "KYC_LEVEL_INVALIDATER";
+    return resData;
   }
 
-  //if get kyc infor success, continue validate 
-  if (resData.isCreated) {
-    if (config.membership.KYCLevelAllowPurchase == kycLevel) {
-      //check referrence code 
-      const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrer_code: data.referrer_code });
-      if (resCheckReferrerCode.httpCode !== 200) {
-        resData.isCreated = false;
-        resData.errorCode = "PURCHASE_FAIL";
-        resData.errorMsg = resCheckReferrerCode.data.message + " with status code " + resCheckReferrerCode.httpCode;
-      } else {
-        if (!resCheckReferrerCode.data.isValid) {
-          resData.isCreated = false;
-          resData.errorCode = "PURCHASE_FAIL";
-          resData.errorMsg = "REFERRER_CODE_INVALIDATER";
-        } else {
-          //check MembershipType of member is Paid
-          const _currentMembershipType = await MembershipType.findOne({
-            where: {
-              id: _member.membership_type_id
-            }
-          });
+  //check referrence code 
+  const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrer_code: _member.referrer_code });
+  if (resCheckReferrerCode.httpCode !== 200) {
+    resData.isCreated = false;
+    resData.errorCode = "PURCHASE_FAIL";
+    resData.errorMsg = resCheckReferrerCode.data.message + " with status code " + resCheckReferrerCode.httpCode;
+    return resData;
+  }
 
-          if (_currentMembershipType.type === MembershipTypeName.Paid) {
-            resData.isCreated = false;
-            resData.errorCode = "PURCHASE_FAIL";
-            resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
-          }
-        }
+  if (!resCheckReferrerCode.data.isValid) {
+    resData.isCreated = false;
+    resData.errorCode = "PURCHASE_FAIL";
+    resData.errorMsg = "REFERRER_CODE_INVALIDATER";
+  } else {
+    //check MembershipType of member is Paid
+    const _currentMembershipType = await MembershipType.findOne({
+      where: {
+        id: _member.membership_type_id
       }
-    } else {
-      // KYC level purchase invalidater
+    });
+
+    if (_currentMembershipType.type === MembershipTypeName.Paid) {
       resData.isCreated = false;
       resData.errorCode = "PURCHASE_FAIL";
-      resData.errorMsg = "KYC_LEVEL_INVALIDATER";
+      resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
     }
   }
 

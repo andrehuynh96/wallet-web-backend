@@ -1,7 +1,8 @@
 const logger = require('app/lib/logger');
 const claimRequestMapper = require('app/feature/response-schema/membership/claim-request.response-schema');
 const ClaimRequest = require('app/model/wallet').claim_requests;
-const Affiliate = require('app/lib/affiliate');
+const Membership = require('app/lib/reward-system/membership');
+
 const createClaimRequestMapper = require('./mapper/create.claim-request-schema');
 const MemberAccount = require('app/model/wallet').member_accounts;
 const Member = require('app/model/wallet').members;
@@ -55,7 +56,7 @@ module.exports = {
       }
 
       //call api update claimreward and get affiliate_claim_reward_id
-      const resClaimReward = await Affiliate.claimReward(dataReward);
+      const resClaimReward = await Membership.claimReward(dataReward);
 
       if (resClaimReward.httpCode !== 200) {
         await transaction.rollback();

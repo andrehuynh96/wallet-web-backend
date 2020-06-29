@@ -14,7 +14,7 @@ const Hashids = require('hashids/cjs');
 const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
 const Kyc = require('app/lib/kyc');
-const Affiliate = require('app/lib/affiliate');
+const Affiliate = require('app/lib/reward-system/affiliate');
 const PluTXUserIdApi = require('app/lib/plutx-userid');
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 
@@ -109,12 +109,12 @@ module.exports = async (req, res, next) => {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.REGISTER
-          },
-          returning: true
-        });
+        where: {
+          member_id: member.id,
+          action_type: OtpType.REGISTER
+        },
+        returning: true
+      });
 
       let otp = await OTP.create({
         code: verifyToken,
@@ -175,11 +175,11 @@ async function _createKyc(memberId, email) {
       await Member.update({
         kyc_id: kyc.data.id
       }, {
-          where: {
-            id: memberId,
-          },
-          returning: true
-        });
+        where: {
+          id: memberId,
+        },
+        returning: true
+      });
     }
     return id;
   } catch (err) {

@@ -1,7 +1,7 @@
 const logger = require("app/lib/logger");
 const Member = require("app/model/wallet").members;
 const MemberStatus = require('app/model/wallet/value-object/member-status');
-const Affiliate = require('app/lib/affiliate');
+const Affiliate = require('app/lib/reward-system/affiliate');
 
 module.exports = async (req, res, next) => {
   try {

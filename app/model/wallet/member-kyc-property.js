@@ -1,4 +1,3 @@
-const KycStatus = require('./value-object/kyc-status');
 
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define('member_kyc_properties', {

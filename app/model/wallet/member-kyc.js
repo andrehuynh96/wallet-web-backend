@@ -1,4 +1,5 @@
 const KycStatus = require('./value-object/kyc-status');
+const { Temporalize } = require('sequelize-temporalize');
 
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define('member_kycs', {
@@ -30,6 +31,15 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     });
 
+  Temporalize({
+    model: Model,
+    sequelize,
+    temporalizeOptions: {
+      blocking: false,
+      full: false,
+      modelSuffix: "_his"
+    }
+  });
 
   Model.associate = (models) => {
     Model.belongsTo(models.members, {

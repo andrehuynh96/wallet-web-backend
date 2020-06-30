@@ -4,6 +4,7 @@ const logger = require("app/lib/logger")
 const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
+const queryString = require('query-string')
 
 class RewardSystem {
   constructor({ baseUrl, apiKey, secretKey, typeId }) {
@@ -67,8 +68,14 @@ class RewardSystem {
 
   async getReferrals({ email, offset = 0, limit = 10 }) {
     try {
+      const data = {
+        ext_client_id: email,
+        limit: limit,
+        offset: offset
+      };
+      const queryData = queryString.stringify(data);
       let accessToken = await this._getToken();
-      let result = await axios.get(`${this.baseUrl}/clients/invitees?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
+      let result = await axios.get(`${this.baseUrl}/clients/invitees?${queryData}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -86,8 +93,12 @@ class RewardSystem {
   }
   async getRewards({ email }) {
     try {
+      const data = {
+        ext_client_id: email
+      };
+      const queryData = queryString.stringify(data);
       let accessToken = await this._getToken();
-      let result = await axios.get(`${this.baseUrl}/available-rewards?ext_client_id=${email}`,
+      let result = await axios.get(`${this.baseUrl}/available-rewards?${queryData}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -106,8 +117,14 @@ class RewardSystem {
 
   async getRewardHistories({ email, offset = 0, limit = 10 }) {
     try {
+      const data = {
+        ext_client_id: email,
+        limit: limit,
+        offset: offset
+      };
+      const queryData = queryString.stringify(data);
       let accessToken = await this._getToken();
-      let result = await axios.get(`${this.baseUrl}/rewards?ext_client_id=${email}&offset=${offset}&limit=${limit}`,
+      let result = await axios.get(`${this.baseUrl}/rewards?${queryData}`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -6,6 +6,9 @@ const cache = redis.client();
 module.exports = {
   getPrice: async ({ platform_name, currency }) => {
     try {
+      if (platform_name == "USDT") {
+        return 1;
+      }
       logger.info('getPrice: getPrice');
       const key = platform_name + '_' + currency;
       let price = await cache.getAsync(key);

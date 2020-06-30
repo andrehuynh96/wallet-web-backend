@@ -210,7 +210,8 @@ module.exports = {
           where: {
             id: req.params.id,
           },
-          returning: true
+          returning: true,
+          plain: true
         });
       result = response;
       if (result.default_flg) {

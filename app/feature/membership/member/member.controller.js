@@ -94,8 +94,8 @@ module.exports = {
           // });
           // const idx = random(grpAccounts.length);
           // let e = grpAccounts[idx];
-          const price = await CoinGeckoPrice.getPrice({ platform_name: cryptoAccounts[i].currency_symbol, currency: 'usd' });
-          cryptoAccounts[i].rate_usd = price;
+          // const price = await CoinGeckoPrice.getPrice({ platform_name: cryptoAccounts[i].currency_symbol, currency: 'usd' });
+          // cryptoAccounts[i].rate_usd = price;
           // _cryptoAccounts.push(e);
           // i += grpAccounts.length;
         }
@@ -110,6 +110,20 @@ module.exports = {
     }
     catch (err) {
       logger.error("getPaymentAccount: ", err);
+      next(err);
+    }
+  },
+  getPrice: async (req, res, next) => {
+    try {
+		logger.info('getPrice::getPrice');
+		console.log('req.params.currency_symbol', req.params.currency_symbol);
+		const price = await CoinGeckoPrice.getPrice({ platform_name: req.params.currency_symbol, currency: 'usd' });
+		let crypto = {
+			rate_usd: price
+		};
+		return res.ok(crypto);
+	}catch (err) {
+      logger.error("getPrice: ", err);
       next(err);
     }
   },

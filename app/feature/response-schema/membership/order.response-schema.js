@@ -21,7 +21,7 @@ const destObject = {
     '[].rate_usd': '[].rate_usd?',
     '[].status': '[].status?',
 	'[].created_at': '[].created_at?',
-    '[].updatedAt': '[].updated_at?',
+    '[].updated_at': '[].updated_at?',
     '[].membership_type': '[].membership_type',
   },
   single: {
@@ -44,7 +44,7 @@ const destObject = {
     rate_usd: 'rate_usd?',
     status: 'status?',
 	created_at: 'created_at?',
-    updatedAt: 'updated_at?',
+    updated_at: 'updated_at?',
     membership_type: 'membership_type'
   }
 };

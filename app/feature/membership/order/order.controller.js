@@ -111,11 +111,12 @@ module.exports = {
  * @param {*} req 
  */
 async function _createOrder(body, req, res) {
-
-  const resDataCheck = await _checkDataCreateOrder(body, req.user.id);
+  const _member = await Member.findOne({ where: { id: req.user.id } });
+  const resDataCheck = await _checkDataCreateOrder(body, _member);
   if (resDataCheck.isCreated) {
     let order = {
-      ...createOrderMapper(body)
+      ...createOrderMapper(body),
+      referrer_code: _member.referrer_code
     }
 
     order.member_id = req.user.id;
@@ -132,11 +133,9 @@ async function _createOrder(body, req, res) {
  * @param {*} data 
  * @param {*} member_id 
  */
-async function _checkDataCreateOrder(data, member_id) {
+async function _checkDataCreateOrder(data, member) {
   let resData = { isCreated: true };
-  const _member = await Member.findOne({ where: { id: member_id } });
-  console.log('member_id', )
-  const _kycInfor = await Kyc.getKycForMember({ kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED });
+  const _kycInfor = await Kyc.getKycForMember({ kyc_id: member.kyc_id, kyc_status: KycStatus.APPROVED });
   let kycLevel = 0;
   if (_kycInfor.httpCode != 200) {
     resData.isCreated = false;
@@ -153,7 +152,7 @@ async function _checkDataCreateOrder(data, member_id) {
   }
 
   //check referrence code 
-  const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: _member.referrer_code });
+  const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: member.referrer_code });
   if (resCheckReferrerCode.httpCode !== 200) {
     resData.isCreated = false;
     resData.errorCode = "PURCHASE_FAIL";
@@ -169,7 +168,7 @@ async function _checkDataCreateOrder(data, member_id) {
     //check MembershipType of member is Paid
     const _currentMembershipType = await MembershipType.findOne({
       where: {
-        id: _member.membership_type_id
+        id: member.membership_type_id
       }
     });
 

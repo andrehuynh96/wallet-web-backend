@@ -37,7 +37,7 @@ module.exports = {
         let length = Object.keys(kyc).length;
         let level = 0;
         for (let i = 0; i <= length; i++) {
-          if (kyc[i.toString()].status == kyc_status) {
+          if (kyc[i].status == kyc_status) {
             kyc_level++;
           }else{
 			  break;

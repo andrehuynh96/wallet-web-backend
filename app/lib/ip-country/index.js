@@ -22,9 +22,9 @@ module.exports = {
             const _ip = _getIpClient(req);
             const _country = await Axios.get(`https://freegeoip.app/json/${_ip}`);
             const _CountryWhitelist = config.membership.countryWhitelist.split(',')
-			logger.infor("_country: ", _country.data);
-			logger.infor("_CountryWhitelist: ",_CountryWhitelist);
-			logger.infor("_CountryWhitelist.indexOf(_country.data.country_code): ", _CountryWhitelist.indexOf(_country.data.country_code));
+			logger.info("_country: ", _country.data);
+			logger.info("_CountryWhitelist: ",_CountryWhitelist);
+			logger.info("_CountryWhitelist.indexOf(_country.data.country_code): ", _CountryWhitelist.indexOf(_country.data.country_code));
             return _CountryWhitelist.indexOf(_country.data.country_code) > -1;
         }catch (err) {
             logger.error("isExistCountryLocal: ", err);

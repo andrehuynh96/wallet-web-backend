@@ -2,7 +2,7 @@ const logger = require('app/lib/logger');
 const config = require('app/config');
 const mailer = require('app/lib/mailer');
 const Member = require('app/model/wallet').members;
-
+const Joi = require("joi");
 
 module.exports = {
   invite: async (req, res, next) => {
@@ -20,6 +20,20 @@ module.exports = {
       if (!member.referral_code) {
         return res.badRequest(res.__('REFERRAL_CODE_NOT_FOUND'), 'REFERRAL_CODE_NOT_FOUND');
       }
+      if (!emails) {
+        return res.badRequest("Missing parameters", "emails")
+      } else {
+        for (email of emails.split(',')) {
+          let result = Joi.validate(email, 
+            Joi.string().email({
+              minDomainAtoms: 2
+            }));
+          if (result.error) {
+            console.log(result.error);
+            return res.badRequest("Missing parameters", result.error);
+          }
+        }
+      }
       _sendEmailReferral(member.fullname, member.email, emails, member.referral_code);
       return res.ok(true);
   } catch (error) {
@@ -36,7 +50,7 @@ async function _sendEmailReferral(memberName, memberEmail, emails, referralCode)
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.membership.referralUrl}/${referralCode}`,
+      link: `${config.membership.referralUrl}${referralCode}`,
       name: memberName,
       email: memberEmail
     }

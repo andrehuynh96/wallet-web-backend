@@ -161,7 +161,7 @@ async function _checkDataCreateOrder(data, member_id) {
     return resData;
   }
 
-  if (!resCheckReferrerCode.data.isValid) {
+  if (!resCheckReferrerCode.data.data.isValid) {
     resData.isCreated = false;
     resData.errorCode = "PURCHASE_FAIL";
     resData.errorMsg = "REFERRER_CODE_INVALIDATER";

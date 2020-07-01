@@ -28,6 +28,12 @@ router.get(
   controller.getInforIP
 );
 
+router.get(
+  '/member/crypto/price/:currency_symbol',
+  authenticate,
+  controller.getPrice
+);
+
 module.exports = router;
 
 
@@ -175,6 +181,50 @@ module.exports = router;
                      "price": 0,
                      "type": "",
                      "display_order": 0
+                   }
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/membership/member/crypto/price/{currency_symbol}:
+*   get:
+*     summary: member_type
+*     tags:
+*       - membership
+*     description: get infor member type
+*     parameters:
+*       - in: path
+*         name: currency_symbol
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+               "data":
+                   {
+                     "rate_usd": 1
                    }
 *             }
 *       400:

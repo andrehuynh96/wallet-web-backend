@@ -42,6 +42,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+    order_index: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    enabled_flg: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   }, {
       underscored: true,
       timestamps: true,

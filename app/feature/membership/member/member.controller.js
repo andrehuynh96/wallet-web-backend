@@ -14,7 +14,7 @@ module.exports = {
   getMemberTypes: async (req, res, next) => {
     try {
       logger.info('getMemberType::getMemberType');
-      const where = { type: MembershipTypeName.Paid, deleted_flg: false };
+      const where = { type: MembershipTypeName.Paid, deleted_flg: false, is_enabled: true };
       const membershipTypes = await MembershipType.findAll({ where: where });
       return res.ok(memberTypeMapper(membershipTypes));
     }
@@ -29,7 +29,8 @@ module.exports = {
       const result = await MembershipType.findOne({
         where: {
           id: req.params.id,
-          deleted_flg: false
+          deleted_flg: false,
+          is_enabled: true
         }
       });
       if (!result) {

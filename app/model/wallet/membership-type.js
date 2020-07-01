@@ -37,9 +37,9 @@ module.exports = (sequelize, DataTypes) => {
       default: false,
     },
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   MembershipType.associate = (models) => { };
 

@@ -31,15 +31,17 @@ module.exports = {
       }
       const result = await _executeRequest(option);
       const kyc = result && result.data ? result.data.customer.kyc : null;
+	  console.log('getKycForMember kyc', kyc)
       let kyc_level = 0;
       if (kyc) {
         let length = Object.keys(kyc).length;
         let level = 0;
-        for (let i = 1; i <= length; i++) {
+        for (let i = 0; i <= length; i++) {
           if (kyc[i.toString()].status == kyc_status) {
-            kyc_level = i;
-            break;
-          }
+            kyc_level++;
+          }else{
+			  break;
+		  }
         }
       }
       const _resData = {

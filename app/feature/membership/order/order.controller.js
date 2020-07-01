@@ -44,7 +44,7 @@ module.exports = {
 		membership_orders.updated_at,
         membership_types.type as membership_type
         FROM membership_orders INNER JOIN membership_types on membership_orders.membership_type_id = membership_types.id
-        where membership_orders.member_id = '8337b3e4-b8be-4594-bca3-d6dba7c751ea'
+        where membership_orders.member_id = ${req.user.id}
       `;
       var membershipOrders = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
       return res.ok(membershipOrderMapper(membershipOrders));
@@ -135,6 +135,7 @@ async function _createOrder(body, req, res) {
 async function _checkDataCreateOrder(data, member_id) {
   let resData = { isCreated: true };
   const _member = await Member.findOne({ where: { id: member_id } });
+  console.log('member_id', )
   const _kycInfor = await Kyc.getKycForMember({ kyc_id: _member.kyc_id, kyc_status: KycStatus.APPROVED });
   let kycLevel = 0;
   if (_kycInfor.httpCode != 200) {

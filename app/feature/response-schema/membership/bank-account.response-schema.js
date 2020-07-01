@@ -5,6 +5,8 @@ const destObject = {
     '[].id': '[].id',
     '[].currency_symbol': '[].currency_symbol?',
     '[].account_number': '[].account_number?',
+	'[].account_type': '[].account_type?',
+	'[].branch_name': '[].branch_name?',
     '[].bank_name': '[].bank_name?',
     '[].swift': '[].swift?',
     '[].account_name': '[].account_name?'
@@ -13,9 +15,11 @@ const destObject = {
     id: 'id',
     currency_symbol: 'currency_symbol?',
     account_number: 'account_number?',
+	branch_name: 'branch_name?',
     bank_name: 'bank_name?',
     swift: 'swift?',
-    account_name: 'account_name?'
+    account_name: 'account_name?',
+	account_type: 'account_type?'
   }
 };
 module.exports = srcObject => {

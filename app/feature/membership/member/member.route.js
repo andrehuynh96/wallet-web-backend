@@ -106,6 +106,8 @@ module.exports = router;
                       "currency_symbol": "USD",
                       "account_number": "34268909879",
                       "bank_name": "Vietcombank",
+					  "account_type": "",
+                      "branch_name": "HCM",
                       "swift": "Vietcombank",
                       "account_name": "NGUYEN VAN A",
                       "payment_ref_code": "303962"

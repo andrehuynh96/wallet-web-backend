@@ -246,7 +246,7 @@ const config = {
     countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST,
     typeId: process.env.MEMBERSHIP_AFFILIATE_TYPE_ID,
     receivingRewardPlatform: process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM ? process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM.split(",") : ['USDT'],
-    referralUrl: process.env.MEMBERSHIP_REFERRAL_URL
+    referralUrl: process.env.MEMBERSHIP_REFERRAL_URL + '/sign-up?ref='
   }
 };
 

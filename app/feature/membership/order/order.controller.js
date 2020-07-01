@@ -47,7 +47,6 @@ module.exports = {
         where membership_orders.member_id = '8337b3e4-b8be-4594-bca3-d6dba7c751ea'
       `;
       var membershipOrders = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
-      console.log('membershipOrders', membershipOrders)
       return res.ok(membershipOrderMapper(membershipOrders));
     }
     catch (err) {

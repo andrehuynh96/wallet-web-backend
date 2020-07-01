@@ -1,4 +1,5 @@
 const ClaimRequestStatus = require('./value-object/claim-request-status');
+const SystemType = require('./value-object/system-type');
 
 module.exports = (sequelize, DataTypes) => {
   const ClaimRequest = sequelize.define('claim_requests', {
@@ -62,12 +63,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     system_type: {
       type: DataTypes.STRING(125),
-      allowNull: true
+      allowNull: true,
+      defaultValue: SystemType.MEMBERSHIP
     }
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   ClaimRequest.associate = (models) => {
     ClaimRequest.belongsTo(models.members, {

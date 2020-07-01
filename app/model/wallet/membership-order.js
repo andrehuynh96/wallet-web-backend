@@ -109,7 +109,12 @@ module.exports = (sequelize, DataTypes) => {
     order_no: {
       type: DataTypes.STRING(8),
       allowNull: false
-    }
+    },
+    calculate_reward: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
+    },
   }, {
       underscored: true,
       timestamps: true,

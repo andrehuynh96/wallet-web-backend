@@ -1,4 +1,3 @@
-const ActionType = require("./value-object/member-activity-action-type");
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("kycs", {
     id: {

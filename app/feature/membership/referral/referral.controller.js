@@ -36,7 +36,7 @@ async function _sendEmailReferral(memberName, memberEmail, emails, referralCode)
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
-      link: `${config.membership.referralUrl}/${referralCode}`,
+      link: `${config.membership.referralUrl}${referralCode}`,
       name: memberName,
       email: memberEmail
     }

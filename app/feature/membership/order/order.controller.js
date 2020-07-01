@@ -40,7 +40,8 @@ module.exports = {
         membership_orders.txid,
         membership_orders.rate_usd,
         membership_orders.status,
-        membership_orders.updated_at, 
+        membership_orders.created_at, 
+		membership_orders.updated_at,
         membership_types.type as membership_type
         FROM membership_orders INNER JOIN membership_types on membership_orders.membership_type_id = membership_types.id
         where membership_orders.member_id = '8337b3e4-b8be-4594-bca3-d6dba7c751ea'

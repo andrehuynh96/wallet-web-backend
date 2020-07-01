@@ -152,7 +152,7 @@ async function _checkDataCreateOrder(data, member_id) {
   }
 
   //check referrence code 
-  const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrer_code: _member.referrer_code });
+  const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: _member.referrer_code });
   if (resCheckReferrerCode.httpCode !== 200) {
     resData.isCreated = false;
     resData.errorCode = "PURCHASE_FAIL";

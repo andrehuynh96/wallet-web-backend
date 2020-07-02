@@ -6,6 +6,7 @@ const Membership = require('app/lib/reward-system/membership');
 const createClaimRequestMapper = require('./mapper/create.claim-request-schema');
 const MemberAccount = require('app/model/wallet').member_accounts;
 const Member = require('app/model/wallet').members;
+const MemberRewardTransactionHis = require('app/model/wallet').member_reward_transaction_his;
 const database = require('app/lib/database').db().wallet;
 
 const ClaimRequestStatus = require('app/model/wallet/value-object/claim-request-status');
@@ -40,7 +41,7 @@ module.exports = {
       const memberAccount = await MemberAccount.findOne({ where: where });
       let claimObject = {
         ...createClaimRequestMapper(memberAccount),
-      }
+      };
 
       claimObject.member_account_id = memberAccount.id;
       claimObject.amount = req.body.amount;
@@ -53,9 +54,17 @@ module.exports = {
         amount: req.body.amount,
         currency_symbol: req.body.currency_symbol,
         email: _member.email
-      }
+      };
+      const dataTrackingReward = {
+        member_id: req.user.id,
+        currency_symbol: req.body.currency_symbol,
+        amount: req.body.amount,
+        tx_id: _resultCreateData.tx_id
+      };
 
-      //call api update claimreward and get affiliate_claim_reward_id
+      let _resultCreateTracking = await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
+      
+      // call api update claimreward and get affiliate_claim_reward_id
       const resClaimReward = await Membership.claimReward(dataReward);
 
       if (resClaimReward.httpCode !== 200) {
@@ -92,4 +101,4 @@ module.exports = {
       next(err);
     }
   }
-}
+};

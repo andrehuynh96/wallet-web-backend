@@ -103,6 +103,29 @@ module.exports = {
       next(err);
     }
   },
+  isPurchased: async (req, res, next) => {
+    try {
+      const paymentType = req.params.paymentType;
+      const memberId = req.user.id;
+
+      const membershipOrder = await MembershipOrder.findOne({
+        where: {
+          member_id: memberId,
+          payment_type: paymentType
+        }
+      });
+
+      if (!membershipOrder) {
+        return res.ok(false);
+      }
+      
+      return res.ok(true);
+    }
+    catch (error) {
+      logger.error("check payment fail: ", error);
+      next(error);
+    }
+  }
 };
 
 /**

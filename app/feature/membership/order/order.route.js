@@ -29,10 +29,16 @@ router.post(
   controller.clickReferrerUrl
 );
 
+router.post(
+  '/orders/:paymentType/purchased',
+  authenticate,
+  controller.isPurchased
+);
+
 module.exports = router;
 
 
-/*********************************************************************/
+/** *******************************************************************/
 
 /**
  * @swagger
@@ -280,6 +286,46 @@ module.exports = router;
                   "data": {
                       "num_of_clicks": 3
                   }
+              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+/**
+* @swagger
+* /web/membership/orders/{paymentType}/purchased:
+*   post:
+*     summary: Check payment
+*     tags:
+*       - membership
+*     description: check payment order of user
+*     parameters:
+*       - in: path
+*         name: paymentType [Bank|Crypto]
+*         require: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                  "data": true|false
               }
 *       400:
 *         description: Error

@@ -40,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     note: {
-      type: DataTypes.TEXT('medium'),
+      type: DataTypes.STRING(1024),
       allowNull: true
     },
     system_type: {

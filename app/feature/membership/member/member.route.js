@@ -23,6 +23,12 @@ router.get(
 );
 
 router.get(
+  '/member/payment-accounts/crypto',
+  authenticate,
+  controller.getPaymentCryptoAccount
+);
+
+router.get(
   '/member/infor-ip',
   authenticate,
   controller.getInforIP
@@ -151,6 +157,54 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+
+/**
+* @swagger
+* /web/membership/member/payment-accounts/crypto:
+*   get:
+*     summary: get payment crypto account
+*     tags:
+*       - membership
+*     description: get payment crypto account
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+              "data":[
+                     {
+                       "id": 9,
+                       "currency_symbol": "ATOM",
+                       "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
+                      },
+                     {
+                       "id": 10,
+                       "currency_symbol": "ETH",
+                       "wallet_address": "0x32be343b94f860124dc4fee278fdcbd38c102d88",
+                      }
+                   ]
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 
 /**

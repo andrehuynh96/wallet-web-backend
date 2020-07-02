@@ -115,15 +115,29 @@ module.exports = {
   },
   getPrice: async (req, res, next) => {
     try {
-		logger.info('getPrice::getPrice');
-		console.log('req.params.currency_symbol', req.params.currency_symbol);
-		const price = await CoinGeckoPrice.getPrice({ platform_name: req.params.currency_symbol, currency: 'usd' });
-		let crypto = {
-			rate_usd: price
-		};
-		return res.ok(crypto);
-	}catch (err) {
+      logger.info('getPrice::getPrice');
+      console.log('req.params.currency_symbol', req.params.currency_symbol);
+      const price = await CoinGeckoPrice.getPrice({ platform_name: req.params.currency_symbol, currency: 'usd' });
+      let crypto = {
+        rate_usd: price
+      };
+      return res.ok(crypto);
+    } catch (err) {
       logger.error("getPrice: ", err);
+      next(err);
+    }
+  },
+  getPaymentCryptoAccount: async (req, res, next) => {
+    try {
+      const result = await ReceivingAddresses.findAll({
+        where: {
+          actived_flg: true
+        }
+      });
+      return res.ok(result);
+    }
+    catch (err) {
+      logger.error("getPaymentCryptoAccount: ", err);
       next(err);
     }
   },

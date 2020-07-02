@@ -66,6 +66,7 @@ module.exports = router;
                       "payment_type": "",
                       "currency_symbol": "",
                       "amount": 0,
+                      "amount_usd": 0,
                       "account_number": "",
                       "bank_name": "",
                       "swift": "",
@@ -74,10 +75,10 @@ module.exports = router;
                       "wallet_address": "",
                       "your_wallet_address": "",
                       "txid": "",
-                      "rate_by_usdt": 0,
+                      "rate_by_usd": 0,
                       "status": "",
                       "created_at": "",
-					  "updatedAt": ""
+					            "updated_at": ""
                     },]
              }
  *       400:
@@ -113,26 +114,10 @@ module.exports = router;
  *         schema:
  *            type: object
  *            required:
- *            - payment_ref_code
- *            - amount
- *            - account_number
- *            - bank_name
- *            - swift
- *            - account_name
- *            - currency_symbol
- *            - bank_account_id
  *            - membership_type_id
  *            example:
  *               {
-                        "payment_ref_code":"123456",
-                        "amount":100,
-                        "account_number":"abc123456",
-                        "bank_name":"CITIBANK",
-                        "swift":"123456h",
-                        "account_name":"moonstake",
-                        "currency_symbol":"USD",
-                        "bank_account_id": 1,
-                        "membership_type_id": 1
+                    "membership_type_id":""
                   }
  *     produces:
  *       - application/json
@@ -151,8 +136,11 @@ module.exports = router;
                       "payment_type": "",
                       "currency_symbol": "",
                       "amount": 0,
+                      "amount_usd": 0,
                       "account_number": "",
                       "bank_name": "",
+                      "branch_name":"",
+                      "account_type":"regular",
                       "swift": "",
                       "account_name": "",
                       "payment_ref_code": "",

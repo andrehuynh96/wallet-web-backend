@@ -24,7 +24,7 @@ module.exports = {
         return res.badRequest("Missing parameters", "emails")
       } else {
         for (email of emails.split(',')) {
-          let result = Joi.validate(email, 
+          let result = Joi.validate(email.trim(), 
             Joi.string().email({
               minDomainAtoms: 2
             }));

@@ -53,6 +53,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
+    account_type: {
+      type: DataTypes.STRING(250),
+      allowNull: true,
+      defaultValue: ""
+    },
     payment_ref_code: {
       type: DataTypes.STRING(100),
       allowNull: true,

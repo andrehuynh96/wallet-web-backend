@@ -90,6 +90,12 @@ const SETTINGS = [
     "value": "",
     "type": "string",
     "property": "upgrade_to_membership_type_id"
+  },
+  {
+    "key": "RATE_USD",
+    "value": "1",
+    "type": "number",
+    "property": "rate_usd"
   }
 ];
 

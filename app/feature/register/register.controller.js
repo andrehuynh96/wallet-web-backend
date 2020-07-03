@@ -84,11 +84,6 @@ module.exports = async (req, res, next) => {
 
     const memberStatus = !emailConfirmed ? MemberStatus.UNACTIVATED : MemberStatus.ACTIVATED;
     let password = bcrypt.hashSync(req.body.password, 10);
-    const freeMembershipType = await MembershipType.findOne({
-      where: {
-        type: MembershipTypeName.Free,
-      }
-    });
 
     let member = await Member.create({
       email,
@@ -97,7 +92,7 @@ module.exports = async (req, res, next) => {
       phone: req.body.phone || "",
       ...affiliateInfo,
       plutx_userid_id: idOnPlutxUserID,
-      membership_type_id: freeMembershipType ? freeMembershipType.id : null,
+      membership_type_id: null,
     });
 
     if (!member) {
@@ -134,19 +129,22 @@ module.exports = async (req, res, next) => {
       //   member.kyc_id = id;
       // }
     }
+
     if (member.referral_code) {
-      let checkReferrerCode = await Membership.isCheckReferrerCode({referrerCode: member.referral_code});
+      let checkReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: member.referral_code });
       if (checkReferrerCode.httpCode !== 200) {
         member.referral_code = "";
-      } else if (!checkReferrerCode.data.data.isValid){
+      } else if (!checkReferrerCode.data.data.isValid) {
         member.referral_code = "";
       }
     }
+
     let response = memberMapper(member);
     return res.ok(response);
   }
   catch (err) {
     logger.error('register fail:', err);
+
     next(err);
   }
 };

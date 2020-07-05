@@ -9,6 +9,8 @@ const MembershipTypeName = require('app/model/wallet/value-object/membership-typ
 const cryptoRandomString = require('crypto-random-string');
 const ipCountry = require('app/lib/ip-country');
 const CoinGeckoPrice = require('app/lib/coin-gecko-client');
+const Setting = require('app/model/wallet').settings;
+const config = require('app/config');
 
 module.exports = {
   getMemberTypes: async (req, res, next) => {
@@ -44,6 +46,7 @@ module.exports = {
       next(err);
     }
   },
+
   getInforIP: async (req, res, next) => {
     logger.error("getInforIP: getInforIP");
     try {
@@ -54,6 +57,7 @@ module.exports = {
       next(err);
     }
   },
+
   getPaymentAccount: async (req, res, next) => {
     try {
       logger.info('getPaymentAccount::getPaymentAccount');
@@ -113,6 +117,7 @@ module.exports = {
       next(err);
     }
   },
+
   getPrice: async (req, res, next) => {
     try {
       logger.info('getPrice::getPrice');
@@ -127,6 +132,7 @@ module.exports = {
       next(err);
     }
   },
+
   getPaymentCryptoAccount: async (req, res, next) => {
     try {
       const result = await ReceivingAddresses.findAll({
@@ -138,6 +144,28 @@ module.exports = {
     }
     catch (err) {
       logger.error("getPaymentCryptoAccount: ", err);
+      next(err);
+    }
+  },
+
+  getFiatPrice: async (req, res, next) => {
+    try {
+      let rateUsd = 1;
+      const rateUsdConfig = await Setting.findOne({
+        where: {
+          key: `${config.setting.USD_RATE_BY_}${req.params.currency_symbol.toUpperCase()}`
+        }
+      });
+
+      if (rateUsdConfig) {
+        rateUsd = parseFloat(rateUsdConfig.value);
+      }
+      else {
+        return res.badRequest(res.__("NOT_SUPPORT_CURRENCY"), "NOT_SUPPORT_CURRENCY");
+      }
+      return res.ok(rateUsd);
+    } catch (err) {
+      logger.error("getFiatPrice: ", err);
       next(err);
     }
   },

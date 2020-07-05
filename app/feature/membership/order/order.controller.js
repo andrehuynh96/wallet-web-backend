@@ -164,7 +164,13 @@ module.exports = {
     try {
       const paymentType = req.params.paymentType;
       const memberId = req.user.id;
-
+      if (paymentType == MemberAccountType.Bank) {
+        const allowCountry = await IpCountry.isAllowCountryLocal(req);
+        
+        if (!allowCountry) {
+          return res.badRequest(res.__("DONOT_SUPPORT_YOUR_COUNTRY"), "DONOT_SUPPORT_YOUR_COUNTRY");
+        }
+      }
       const membershipOrder = await MembershipOrder.findOne({
         where: {
           member_id: memberId,
@@ -175,7 +181,7 @@ module.exports = {
       if (!membershipOrder) {
         return res.ok(false);
       }
-      
+
       return res.ok(true);
     }
     catch (error) {

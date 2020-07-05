@@ -1,6 +1,6 @@
 const Model = require('app/model/wallet').currencies;
 
-(async () => {
+module.exports = async () => {
   let count = await Model.count();
   if (count == 0) {
     await Model.bulkCreate([{
@@ -32,4 +32,4 @@ const Model = require('app/model/wallet').currencies;
         returning: true
       });
   }
-})();
+};

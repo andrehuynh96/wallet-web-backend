@@ -111,7 +111,7 @@ const SETTINGS = [
   },
 ];
 
-(async () => {
+module.exports = async () => {
   const models = [];
 
   for (let item of SETTINGS) {
@@ -141,4 +141,4 @@ const SETTINGS = [
       returning: true
     });
 
-})();
+};

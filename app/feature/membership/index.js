@@ -6,4 +6,5 @@ router.use(require("./order/order.route"));
 router.use(require("./member/member.route"));
 router.use(require("./account/account.route"));
 router.use(require("./referral/referral.route"));
+router.use(require("./member-reward-transaction-his/member-reward-transaction-his.route"));
 module.exports = router;

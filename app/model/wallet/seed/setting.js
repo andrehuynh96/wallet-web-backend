@@ -96,7 +96,19 @@ const SETTINGS = [
     "value": "1",
     "type": "number",
     "property": "rate_usd"
-  }
+  },
+  {
+    "key": "USD_RATE_BY_JPY",
+    "value": "107.483",
+    "type": "number",
+    "property": "usd_rate_by_jpy"
+  },
+  {
+    "key": "MEMBERSHIP_COMISSION_USDT_MINIMUM_CLAIM_AMOUNT",
+    "value": "50",
+    "type": "number",
+    "property": "membership_comission_usdt_minimum_claim_amount"
+  },
 ];
 
 (async () => {

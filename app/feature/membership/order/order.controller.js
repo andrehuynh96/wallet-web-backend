@@ -118,10 +118,10 @@ module.exports = {
       if (checkCondition) {
         return res.badRequest(res.__(checkCondition), checkCondition);
       }
-      // const allowCountry = await IpCountry.isAllowCountryLocal(req);
-      // if (!allowCountry) {
-      //   return res.badRequest(res.__("DONOT_SUPPORT_YOUR_COUNTRY"), "DONOT_SUPPORT_YOUR_COUNTRY");
-      // }
+      const allowCountry = await IpCountry.isAllowCountryLocal(req);
+      if (!allowCountry) {
+        return res.badRequest(res.__("DONOT_SUPPORT_YOUR_COUNTRY"), "DONOT_SUPPORT_YOUR_COUNTRY");
+      }
       const bankAccount = await BankAccount.findOne({
         where: {
           actived_flg: true

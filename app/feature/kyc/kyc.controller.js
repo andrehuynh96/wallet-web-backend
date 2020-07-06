@@ -2,7 +2,9 @@ const logger = require('app/lib/logger');
 const Member = require('app/model/wallet').members;
 const KycPermission = require('app/model/wallet/value-object/kyc-permission');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
-const Kyc = require('app/lib/kyc');
+const Kyc = require('app/model/wallet').kycs;
+const KycProperty = require('app/model/wallet').kyc_properties;
+const KycMapper = require('app/feature/response-schema/kyc.response-schema');
 
 module.exports = {
   get: async (req, res, next) => {
@@ -26,11 +28,9 @@ module.exports = {
   },
   schema: async (req, res, next) => {
     try {
-      let schema = await Kyc.getSchema();
-      if (schema.error) {
-        throw schema.error
-      }
-      return res.ok(schema.data);
+      logger.info("kyc::schema");
+      const { rows: kycs } = await Kyc.findAndCountAll({include: { model: KycProperty, order: [['order_index', 'ASC']] }, order: [['prev_level', 'ASC']]});
+      return res.ok(KycMapper(kycs));
     } catch (err) {
       logger.error("kyc schema fail: ", err);
       next(err);

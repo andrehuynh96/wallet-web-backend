@@ -13,9 +13,7 @@ const config = require("app/config");
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
 const speakeasy = require("speakeasy");
-const Kyc = require('app/lib/kyc');
 const Webhook = require('app/lib/webhook');
-const KycStatus = require('app/model/wallet/value-object/kyc-status');
 const Membership = require('app/lib/reward-system/membership');
 module.exports = {
   get: async (req, res, next) => {
@@ -29,27 +27,12 @@ module.exports = {
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-      let kyc = result.kyc_id && result.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: result.kyc_id }) : null;
-      result.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
-      if (result.kyc) {
-        let length = Object.keys(result.kyc).length;
-        let level = 0;
-        for (let i = 1; i <= length; i++) {
-          if (result.kyc[i.toString()].status == KycStatus.APPROVED) {
-            level = i;
-          } else {
-            break;
-          }
-        }
-        result.kyc_level = level;
-      } else {
-        result.kyc_level = 0;
-      }
+
       if (result.referral_code) {
-        let checkReferrerCode = await Membership.isCheckReferrerCode({referrerCode: result.referral_code});
+        let checkReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: result.referral_code });
         if (checkReferrerCode.httpCode !== 200) {
           result.referral_code = "";
-        } else if (!checkReferrerCode.data.data.isValid){
+        } else if (!checkReferrerCode.data.data.isValid) {
           result.referral_code = "";
         }
       }

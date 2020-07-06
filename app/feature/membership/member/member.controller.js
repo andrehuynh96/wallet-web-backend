@@ -163,7 +163,10 @@ module.exports = {
       else {
         return res.badRequest(res.__("NOT_SUPPORT_CURRENCY"), "NOT_SUPPORT_CURRENCY");
       }
-      return res.ok(rateUsd);
+      return res.ok({
+        value: rateUsd,
+        date: rateUsdConfig.updatedAt
+      });
     } catch (err) {
       logger.error("getFiatPrice: ", err);
       next(err);

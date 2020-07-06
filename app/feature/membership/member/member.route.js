@@ -375,7 +375,10 @@ module.exports = router;
 *         examples:
 *           application/json:
 *             {
-                "data":107
+                "data":{
+                  "value":107,
+                  "date":""
+                }
 *             }
 *       400:
 *         description: Error

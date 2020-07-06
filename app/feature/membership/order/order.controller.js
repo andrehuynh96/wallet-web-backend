@@ -12,7 +12,6 @@ const Setting = require('app/model/wallet').settings;
 const Membership = require('app/lib/reward-system/membership');
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
 const config = require('app/config');
-const Kyc = require('app/lib/kyc');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
 const CoinGeckoPrice = require('app/lib/coin-gecko-client');
 const IpCountry = require('app/lib/ip-country');
@@ -234,7 +233,7 @@ async function _checkConditionCreateOrder(req, paymentType) {
     return "MEMBERSHIP_TYPE_NOT_FOUND";
   }
 
-  if (config.membership.KYCLevelAllowPurchase != req.user.kyc_level) {
+  if (config.membership.KYCLevelAllowPurchase != req.user.kyc_level || req.user.kyc_status != KycStatus.APPROVED) {
     return "KYC_LEVEL_DONOT_HAVE_PERMISSION";
   }
 

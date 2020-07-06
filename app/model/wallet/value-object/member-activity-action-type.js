@@ -9,4 +9,5 @@ module.exports = {
   "UNSTAKE": "UNSTAKE",
   "CLAIM_REWARD": "CLAIM_REWARD",
   "SSO_TOKEN": "SSO_TOKEN",
+  "REVEAL": "REVEAL"
 }

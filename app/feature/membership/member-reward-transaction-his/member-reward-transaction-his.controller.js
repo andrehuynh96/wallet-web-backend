@@ -7,12 +7,23 @@ module.exports = {
   getAll: async (req, res, next) => {
     try {
       logger.info('MemberRewardTransactionHis::all');
-      const { query: { offset, limit }, user} = req;
+      const { query: { offset, limit, order_by }, user} = req;
       const where = { member_id: user.id };
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
-
-      const { count: total, rows: memberRewardTransactionHises } = await MemberRewardTransactionHis.findAndCountAll({offset: off, limit: lim, where: where, order: [['updated_at', 'DESC']]});
+      let order = [];
+      if (order_by) {
+        for (let sort of order_by.split(',')) {
+          if (sort.includes('-')){
+            order.push([sort.trim().substring(1), 'DESC'])
+          }else {
+            order.push([sort.trim(), 'ASC'])
+          }
+        }
+      } else {
+        order.push(['updated_at', 'DESC']);
+      }
+      const { count: total, rows: memberRewardTransactionHises } = await MemberRewardTransactionHis.findAndCountAll({offset: off, limit: lim, where: where, order: order});
       return res.ok({
         items: MemberRewardTransactionHisMapper(memberRewardTransactionHises),
         offset: off,

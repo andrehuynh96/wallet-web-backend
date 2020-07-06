@@ -5,6 +5,7 @@ const KycStatus = require('app/model/wallet/value-object/kyc-status');
 const Kyc = require('app/model/wallet').kycs;
 const KycProperty = require('app/model/wallet').kyc_properties;
 const KycMapper = require('app/feature/response-schema/kyc.response-schema');
+const KycPropertyMapper = require('app/feature/response-schema/kyc-property.response-schema');
 
 module.exports = {
   get: async (req, res, next) => {
@@ -34,6 +35,16 @@ module.exports = {
       return res.ok(KycMapper(kycs));
     } catch (err) {
       logger.error("kyc schema fail: ", err);
+      next(err);
+    }
+  },
+  getProperties: async (req, res, next) => {
+    try {
+      logger.info("kyc::property::schema");
+      const { rows: kyc_properties } = await KycProperty.findAndCountAll({where: {kyc_id: req.params.kyc_id}, order: [['order_index', 'ASC']]});
+      return res.ok(KycPropertyMapper(kyc_properties));
+    } catch (err) {
+      logger.error("kyc scheme properties fail: ", err);
       next(err);
     }
   }

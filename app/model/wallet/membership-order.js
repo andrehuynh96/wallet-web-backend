@@ -74,6 +74,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(250),
       allowNull: true,
     },
+    wallet_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
     txid: {
       type: DataTypes.STRING(500),
       allowNull: true,

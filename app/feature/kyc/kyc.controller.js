@@ -26,10 +26,11 @@ module.exports = {
       next(err);
     }
   },
+
   schema: async (req, res, next) => {
     try {
       logger.info("kyc::schema");
-      const { rows: kycs } = await Kyc.findAndCountAll({include: { model: KycProperty, order: [['order_index', 'ASC']] }, order: [['prev_level', 'ASC']]});
+      const { rows: kycs } = await Kyc.findAndCountAll({ include: { model: KycProperty, order: [['order_index', 'ASC']] }, order: [['prev_level', 'ASC']] });
       return res.ok(KycMapper(kycs));
     } catch (err) {
       logger.error("kyc schema fail: ", err);

@@ -105,12 +105,12 @@ module.exports = async (req, res, next) => {
       await OTP.update({
         expired: true
       }, {
-        where: {
-          member_id: member.id,
-          action_type: OtpType.REGISTER
-        },
-        returning: true
-      });
+          where: {
+            member_id: member.id,
+            action_type: OtpType.REGISTER
+          },
+          returning: true
+        });
 
       let otp = await OTP.create({
         code: verifyToken,
@@ -124,19 +124,6 @@ module.exports = async (req, res, next) => {
         return res.serverInternalError();
       }
       _sendEmail(member, otp);
-      // let id = await _createKyc(member.id, req.body.email.toLowerCase());
-      // if (id) {
-      //   member.kyc_id = id;
-      // }
-    }
-
-    if (member.referral_code) {
-      let checkReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: member.referral_code });
-      if (checkReferrerCode.httpCode !== 200) {
-        member.referral_code = "";
-      } else if (!checkReferrerCode.data.data.isValid) {
-        member.referral_code = "";
-      }
     }
 
     let response = memberMapper(member);
@@ -181,11 +168,11 @@ async function _createKyc(memberId, email) {
       await Member.update({
         kyc_id: kyc.data.id
       }, {
-        where: {
-          id: memberId,
-        },
-        returning: true
-      });
+          where: {
+            id: memberId,
+          },
+          returning: true
+        });
     }
     return id;
   } catch (err) {

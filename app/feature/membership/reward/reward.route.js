@@ -4,15 +4,21 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 
 router.get(
-  '/rewards',
+  '/rewards/available',
   authenticate,
   controller.getRewards
 );
 
 router.get(
-  '/reward-history',
+  '/rewards/statistics',
   authenticate,
-  controller.getRewardHistorys
+  controller.statistics
+);
+
+router.get(
+  '/rewards/histories',
+  authenticate,
+  controller.getRewardHistories
 );
 module.exports = router;
 
@@ -22,7 +28,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/membership/rewards:
+ * /web/membership/rewards/available:
  *   get:
  *     summary: get reward current balance
  *     tags:
@@ -64,9 +70,56 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
+
+
 /**
  * @swagger
- * /web/membership/reward-history:
+ * /web/membership/rewards/statistics:
+ *   get:
+ *     summary: get Unclaim, Payout Request, Total commission paid out
+ *     tags:
+ *       - membership
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                "data": [
+                    {
+                      "currency": "ETH",
+                      "amount": "250.8"
+                    },
+                    {
+                      "currency": "USD",
+                      "amount": "1323364"
+                    }
+                  ]
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+
+/**
+ * @swagger
+ * /web/membership/rewards/histories:
  *   get:
  *     summary: get reward history
  *     tags:

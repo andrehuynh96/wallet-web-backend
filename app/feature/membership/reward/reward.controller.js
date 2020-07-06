@@ -17,7 +17,17 @@ module.exports = {
       next(err);
     }
   },
-  getRewardHistorys: async (req, res, next) => {
+  statistics: async (req, res, next) => {
+    try {
+      let result = await Membership.getStatistics({ email: req.user.email });
+      return res.status(result.httpCode).send(result.data);
+    }
+    catch (err) {
+      logger.error("getRewards: ", err);
+      next(err);
+    }
+  },
+  getRewardHistories: async (req, res, next) => {
     try {
       logger.info('getHistorys::getHistorys');
       const _member = await Member.findOne({ where: { id: req.user.id } });

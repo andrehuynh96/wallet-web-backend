@@ -191,13 +191,15 @@ module.exports = router;
  *            - your_wallet_address
  *            - txid
  *            - membership_type_id
+ *            - wallet_id
  *            example:
  *               {
                     "receiving_addresses_id": 9,
                     "amount": 100,
                     "your_wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd531",
                     "txid": "txcosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
-                    "membership_type_id": "88fda933-0658-49c4-a9c7-4c0021e9a071"
+                    "membership_type_id": "88fda933-0658-49c4-a9c7-4c0021e9a071",
+                    "wallet_id": "88fda933-0658-49c4-a9c7-4c0021e9a071",
                   }
  *     produces:
  *       - application/json

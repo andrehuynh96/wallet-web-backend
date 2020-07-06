@@ -95,6 +95,7 @@ module.exports = {
         receiving_addresses_id: receivingAddresseq.id,
         amount: req.body.amount,
         your_wallet_address: req.body.your_wallet_address,
+        wallet_id: req.body.wallet_id,
         txid: req.body.txid,
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
@@ -198,7 +199,7 @@ module.exports = {
       const memberId = req.user.id;
       if (paymentType == MemberAccountType.Bank) {
         const allowCountry = await IpCountry.isAllowCountryLocal(req);
-        
+
         if (!allowCountry) {
           return res.badRequest(res.__("DONOT_SUPPORT_YOUR_COUNTRY"), "DONOT_SUPPORT_YOUR_COUNTRY");
         }

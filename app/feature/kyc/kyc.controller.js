@@ -38,10 +38,11 @@ module.exports = {
       next(err);
     }
   },
+
   getProperties: async (req, res, next) => {
     try {
       logger.info("kyc::property::schema");
-      const { rows: kyc_properties } = await KycProperty.findAndCountAll({where: {kyc_id: req.params.kyc_id}, order: [['order_index', 'ASC']]});
+      const { rows: kyc_properties } = await KycProperty.findAndCountAll({ where: { kyc_id: req.params.kyc_id }, order: [['order_index', 'ASC']] });
       return res.ok(KycPropertyMapper(kyc_properties));
     } catch (err) {
       logger.error("kyc scheme properties fail: ", err);

@@ -118,10 +118,10 @@ module.exports = {
       if (checkCondition) {
         return res.badRequest(res.__(checkCondition), checkCondition);
       }
-      const allowCountry = await IpCountry.isAllowCountryLocal(req);
-      if (!allowCountry) {
-        return res.badRequest(res.__("DONOT_SUPPORT_YOUR_COUNTRY"), "DONOT_SUPPORT_YOUR_COUNTRY");
-      }
+      // const allowCountry = await IpCountry.isAllowCountryLocal(req);
+      // if (!allowCountry) {
+      //   return res.badRequest(res.__("DONOT_SUPPORT_YOUR_COUNTRY"), "DONOT_SUPPORT_YOUR_COUNTRY");
+      // }
       const bankAccount = await BankAccount.findOne({
         where: {
           actived_flg: true
@@ -234,15 +234,11 @@ async function _checkConditionCreateOrder(req, paymentType) {
     return "MEMBERSHIP_TYPE_NOT_FOUND";
   }
 
-  const member = await Member.findOne({ where: { id: req.user.id } });
-  ///TODO: Will be change by internal KYC
-  const kycInfo = await Kyc.getKycForMember({ kyc_id: member.kyc_id, kyc_status: KycStatus.APPROVED });
-  if (kycInfo.httpCode != 200 ||
-    config.membership.KYCLevelAllowPurchase != kycInfo.data.current_kyc_level) {
+  if (config.membership.KYCLevelAllowPurchase != req.user.kyc_level) {
     return "KYC_LEVEL_DONOT_HAVE_PERMISSION";
   }
 
-  const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: member.referrer_code });
+  const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.user.referrer_code });
   if (referrerCode.httpCode !== 200 ||
     !referrerCode.data.data.isValid) {
     return "YOUR_REFERRER_NOT_MEMBERSHIP";
@@ -250,7 +246,7 @@ async function _checkConditionCreateOrder(req, paymentType) {
 
   let order = await MembershipOrder.findOne({
     where: {
-      member_id: member.id,
+      member_id: req.user.id,
       payment_type: paymentType,
       status: {
         [Op.in]: [MembershipOrderStatus.Pending,

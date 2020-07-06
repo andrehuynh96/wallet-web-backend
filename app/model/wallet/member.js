@@ -84,9 +84,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: '0'
     },
     kyc_level: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(256),
       allowNull: false,
-      defaultValue: 1
     },
     kyc_status: {
       type: DataTypes.STRING(16),
@@ -128,9 +127,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
     },
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   Member.associate = (models) => {
     Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" });

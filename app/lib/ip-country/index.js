@@ -25,17 +25,13 @@ module.exports = {
       return _CountryWhitelist.indexOf(_country.data.country_code) > -1;
     } catch (err) {
       logger.error("isExistCountryLocal: ", err);
-      throw err;
     }
+    return false;
   }
 }
 
 function _getIpClient(req) {
-  const xForwardedFor = req.headers['x-forwarded-for'];
+  const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
   logger.info('_getIpClient', req.headers);
-  //the first ip is client Ip.
-  if (!xForwardedFor) {
-    return null;
-  }
-  return xForwardedFor.split(',')[0];
+  return registerIp;
 }

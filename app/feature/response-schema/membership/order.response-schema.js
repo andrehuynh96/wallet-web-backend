@@ -46,8 +46,8 @@ const destObject = {
     txid: 'txid?',
     rate_usd: 'rate_usd?',
     status: 'status?',
-    created_at: 'created_at?',
-    updated_at: 'updated_at?',
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     membership_type: 'membership_type'
   }
 };

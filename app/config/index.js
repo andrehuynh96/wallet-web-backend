@@ -249,7 +249,8 @@ const config = {
     referralUrl: process.env.MEMBERSHIP_REFERRAL_URL + '/sign-up?ref='
   },
   setting: {
-    RATE_USD: "RATE_USD"
+    USD_RATE_BY_JPY: "USD_RATE_BY_JPY",
+    USD_RATE_BY_: "USD_RATE_BY_"
   }
 };
 

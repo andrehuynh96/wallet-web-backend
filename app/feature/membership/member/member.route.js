@@ -40,6 +40,12 @@ router.get(
   controller.getPrice
 );
 
+router.get(
+  '/member/bank/price/:currency_symbol',
+  authenticate,
+  controller.getFiatPrice
+);
+
 module.exports = router;
 
 
@@ -346,3 +352,45 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+
+/**
+* @swagger
+* /web/membership/member/bank/price/{currency_symbol}:
+*   get:
+*     summary: get reate fiat coin based on USD
+*     tags:
+*       - membership
+*     description: Support JPY, USD
+*     parameters:
+*       - in: path
+*         name: currency_symbol
+*         type: string
+*         required: true
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data":107
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/

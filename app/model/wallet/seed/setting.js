@@ -92,12 +92,6 @@ const SETTINGS = [
     "property": "upgrade_to_membership_type_id"
   },
   {
-    "key": "RATE_USD",
-    "value": "1",
-    "type": "number",
-    "property": "rate_usd"
-  },
-  {
     "key": "USD_RATE_BY_JPY",
     "value": "107.483",
     "type": "number",
@@ -109,9 +103,15 @@ const SETTINGS = [
     "type": "number",
     "property": "membership_comission_usdt_minimum_claim_amount"
   },
+  {
+    "key": "USD_RATE_BY_USD",
+    "value": "1",
+    "type": "number",
+    "property": "usd_rate_by_usd"
+  },
 ];
 
-(async () => {
+module.exports = async () => {
   const models = [];
 
   for (let item of SETTINGS) {
@@ -141,4 +141,4 @@ const SETTINGS = [
       returning: true
     });
 
-})();
+};

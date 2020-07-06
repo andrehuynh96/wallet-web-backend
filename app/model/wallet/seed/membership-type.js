@@ -1,7 +1,7 @@
 const Model = require('app/model/wallet').membership_types;
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 
-(async () => {
+module.exports = async () => {
   const count = await Model.count();
 
   if (count === 0) {
@@ -61,7 +61,7 @@ const MembershipTypeName = require('app/model/wallet/value-object/membership-typ
         is_enabled: false,
       },
     ], {
-      returning: true
-    });
+        returning: true
+      });
   }
-})();
+};

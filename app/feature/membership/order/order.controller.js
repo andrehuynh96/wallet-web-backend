@@ -3,17 +3,15 @@ const MembershipOrder = require('app/model/wallet').membership_orders;
 const MembershipOrderStatus = require('app/model/wallet/value-object/membership-order-status');
 const mapper = require('app/feature/response-schema/membership/order.response-schema');
 const MembershipType = require('app/model/wallet').membership_types;
-const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const membershipOrderMapper = require('app/feature/response-schema/membership/order.response-schema');
 const db = require("app/model/wallet");
 const Member = require('app/model/wallet').members;
 const BankAccount = require('app/model/wallet').bank_accounts;
+const ReceivingAddresses = require('app/model/wallet').receiving_addresses;
 const Setting = require('app/model/wallet').settings;
 const Membership = require('app/lib/reward-system/membership');
 const MemberAccountType = require('app/model/wallet/value-object/member-account-type');
-const createOrderMapper = require('./mapper/create.order-schema');
 const config = require('app/config');
-const cryptoRandomString = require('crypto-random-string');
 const Kyc = require('app/lib/kyc');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
 const CoinGeckoPrice = require('app/lib/coin-gecko-client');
@@ -21,7 +19,6 @@ const IpCountry = require('app/lib/ip-country');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const Hashids = require('hashids/cjs');
-
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -64,16 +61,49 @@ module.exports = {
 
   makePaymentCrypto: async (req, res, next) => {
     try {
-      let price = await CoinGeckoPrice.getPrice({ platform_name: req.body.currency_symbol, currency: 'usd' });
-      const body = {
-        rate_usd: price,
-        amount_usd: (req.body.amount * price),
-        payment_type: MemberAccountType.Crypto,
-        ...req.body,
-        order_no: cryptoRandomString({ length: 8 })
+      let checkCondition = await _checkConditionCreateOrder(req, MemberAccountType.Crypto);
+      if (checkCondition) {
+        return res.badRequest(res.__(checkCondition), checkCondition);
       }
 
-      return await _createOrder(body, req, res);
+      const receivingAddress = await ReceivingAddresses.findOne({
+        where: {
+          id: receivingAddresseq.body.receiving_addresses_id
+        }
+      });
+      if (!receivingAddress) {
+        return res.serverInternalError();
+      }
+      const membershipType = await MembershipType.findOne({
+        where: {
+          id: req.body.membership_type_id
+        }
+      });
+
+      let rateUsd = await CoinGeckoPrice.getPrice({ platform_name: req.body.currency_symbol, currency: 'usd' });
+
+      let salt = `${Date.now().toString()}-${req.user.id}`;
+      let hashids = new Hashids(salt, 8);
+      let orderId = hashids.encode(1, 2, 3, 4).toUpperCase();
+
+      let data = {
+        member_id: req.user.id,
+        membership_type_id: membershipType.id,
+        payment_type: MemberAccountType.Crypto,
+        currency_symbol: receivingAddress.currency_symbol,
+        wallet_address: receivingAddress.wallet_address,
+        receiving_addresses_id: receivingAddresseq.id,
+        amount: req.body.amount,
+        your_wallet_address: req.body.your_wallet_address,
+        txid: req.body.txid,
+        payment_ref_code: orderId,
+        referrer_code: req.user.referrer_code,
+        order_no: orderId,
+        rate_by_usd: rateUsd,
+        amount_usd: (rateUsd * req.body.amount),
+      }
+      let result = await MembershipOrder.create(data);
+      return res.ok(mapper(result));
     }
     catch (err) {
       logger.error("makePaymentCrypto: ", err);
@@ -107,11 +137,12 @@ module.exports = {
       let rateUsd = 1;
       const rateUsdConfig = await Setting.findOne({
         where: {
-          key: config.setting.RATE_USD
+          key: `${config.setting.USD_RATE_BY_}${membershipType.currency_symbol}`
         }
       });
+
       if (rateUsdConfig) {
-        rateUsd = parseInt(rateUsdConfig.value);
+        rateUsd = parseFloat(rateUsdConfig.value);
       }
 
       let salt = `${Date.now().toString()}-${req.user.id}`;
@@ -120,7 +151,7 @@ module.exports = {
 
       let data = {
         member_id: req.user.id,
-        membership_type_id: req.body.membership_type_id,
+        membership_type_id: membershipType.id,
         payment_type: MemberAccountType.Bank,
         currency_symbol: membershipType.currency_symbol,
         amount: membershipType.price,
@@ -160,11 +191,18 @@ module.exports = {
       next(err);
     }
   },
+
   isPurchased: async (req, res, next) => {
     try {
       const paymentType = req.params.paymentType;
       const memberId = req.user.id;
-
+      if (paymentType == MemberAccountType.Bank) {
+        const allowCountry = await IpCountry.isAllowCountryLocal(req);
+        
+        if (!allowCountry) {
+          return res.badRequest(res.__("DONOT_SUPPORT_YOUR_COUNTRY"), "DONOT_SUPPORT_YOUR_COUNTRY");
+        }
+      }
       const membershipOrder = await MembershipOrder.findOne({
         where: {
           member_id: memberId,
@@ -175,7 +213,7 @@ module.exports = {
       if (!membershipOrder) {
         return res.ok(false);
       }
-      
+
       return res.ok(true);
     }
     catch (error) {
@@ -184,83 +222,6 @@ module.exports = {
     }
   }
 };
-
-/**
- * create order
- * @param {*} body 
- * @param {*} req 
- */
-async function _createOrder(body, req, res) {
-  const _member = await Member.findOne({ where: { id: req.user.id } });
-  const resDataCheck = await _checkDataCreateOrder(body, _member);
-  if (resDataCheck.isCreated) {
-    let order = {
-      ...createOrderMapper(body),
-      referrer_code: _member.referrer_code
-    }
-
-    order.member_id = req.user.id;
-    order.status = MembershipOrderStatus.Pending;
-    let result = await MembershipOrder.create(order);
-    return res.ok(mapper(result));
-  } else {
-    return res.badRequest(res.__(resDataCheck.errorCode), resDataCheck.errorMsg);
-  }
-}
-
-/**
- * check validater data create order
- * @param {*} data 
- * @param {*} member_id 
- */
-async function _checkDataCreateOrder(data, member) {
-  let resData = { isCreated: true };
-  const _kycInfor = await Kyc.getKycForMember({ kyc_id: member.kyc_id, kyc_status: KycStatus.APPROVED });
-  let kycLevel = 0;
-  if (_kycInfor.httpCode != 200) {
-    resData.isCreated = false;
-    resData.errorCode = "PURCHASE_FAIL";
-    resData.errorMsg = _kycInfor.data.message + " with status code " + _kycInfor.httpCode;
-    return resData;
-  }
-  kycLevel = _kycInfor.data.current_kyc_level;
-  if (config.membership.KYCLevelAllowPurchase != kycLevel) {
-    resData.isCreated = false;
-    resData.errorCode = "PURCHASE_FAIL";
-    resData.errorMsg = "KYC_LEVEL_INVALIDATER";
-    return resData;
-  }
-
-  //check referrence code 
-  const resCheckReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: member.referrer_code });
-  if (resCheckReferrerCode.httpCode !== 200) {
-    resData.isCreated = false;
-    resData.errorCode = "PURCHASE_FAIL";
-    resData.errorMsg = resCheckReferrerCode.data.message + " with status code " + resCheckReferrerCode.httpCode;
-    return resData;
-  }
-
-  if (!resCheckReferrerCode.data.data.isValid) {
-    resData.isCreated = false;
-    resData.errorCode = "PURCHASE_FAIL";
-    resData.errorMsg = "REFERRER_CODE_INVALIDATER";
-  } else {
-    //check MembershipType of member is Paid
-    const _currentMembershipType = await MembershipType.findOne({
-      where: {
-        id: member.membership_type_id
-      }
-    });
-
-    if (_currentMembershipType.type === MembershipTypeName.Paid) {
-      resData.isCreated = false;
-      resData.errorCode = "PURCHASE_FAIL";
-      resData.errorMsg = "MEMBER_TYPE_EXIST_PACKAGE_PAID";
-    }
-  }
-
-  return resData;
-}
 
 async function _checkConditionCreateOrder(req, paymentType) {
   const membershipType = await MembershipType.findOne({

@@ -188,19 +188,15 @@ module.exports = router;
  *            required:
  *            - receiving_addresses_id
  *            - amount
- *            - wallet_address
  *            - your_wallet_address
  *            - txid
- *            - currency_symbol
  *            - membership_type_id
  *            example:
  *               {
                     "receiving_addresses_id": 9,
                     "amount": 100,
-                    "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
                     "your_wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd531",
                     "txid": "txcosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
-                    "currency_symbol": "ATOM",
                     "membership_type_id": "88fda933-0658-49c4-a9c7-4c0021e9a071"
                   }
  *     produces:
@@ -230,7 +226,8 @@ module.exports = router;
                       "txid": "",
                       "rate_usd": 0,
                       "status": "",
-                      "processe_date": ""
+                      "created_at": "",
+                      "updated_at": ""
                     }
  *             }
  *       400:

@@ -126,6 +126,14 @@ module.exports = async (req, res, next) => {
       _sendEmail(member, otp);
     }
 
+    if (member.referral_code) {
+      let checkReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: member.referral_code });
+      if (checkReferrerCode.httpCode !== 200) {
+        member.referral_code = "";
+      } else if (!checkReferrerCode.data.data.isValid) {
+        member.referral_code = "";
+      }
+    }
     let response = memberMapper(member);
     return res.ok(response);
   }

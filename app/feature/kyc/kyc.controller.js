@@ -38,14 +38,15 @@ module.exports = {
       next(err);
     }
   },
+
   getProperties: async (req, res, next) => {
     try {
       logger.info("kyc::property::schema");
-      const kyc = await Kyc.findOne({where: {key: req.params.key}});
+      const kyc = await Kyc.findOne({ where: { key: req.params.key } });
       if (!kyc) {
         return res.badRequest(res.__("KYC_NOT_FOUND"), "KYC_NOT_FOUND");
       }
-      const { rows: kyc_properties } = await KycProperty.findAndCountAll({where: {kyc_id: kyc.id}, order: [['order_index', 'ASC']]});
+      const { rows: kyc_properties } = await KycProperty.findAndCountAll({ where: { kyc_id: kyc.id }, order: [['order_index', 'ASC']] });
       return res.ok(KycPropertyMapper(kyc_properties));
     } catch (err) {
       logger.error("kyc scheme properties fail: ", err);

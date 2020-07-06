@@ -92,10 +92,10 @@ const controller = {
               attempt_login_number: user.attempt_login_number + 1, // increase attempt_login_number in case wrong password
               latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
             }, {
-              where: {
-                id: user.id
-              }
-            });
+                where: {
+                  id: user.id
+                }
+              });
 
             if (user.attempt_login_number + 1 == config.lockUser.maximumTriesLogin)
               return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
@@ -110,10 +110,10 @@ const controller = {
                 attempt_login_number: 1,
                 latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
               }, {
-                where: {
-                  id: user.id
-                }
-              });
+                  where: {
+                    id: user.id
+                  }
+                });
               return res.unauthorized(res.__("LOGIN_FAIL"), "LOGIN_FAIL");
             }
             else return res.forbidden(res.__("ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS"), "ACCOUNT_TEMPORARILY_LOCKED_DUE_TO_MANY_WRONG_ATTEMPTS");
@@ -129,10 +129,10 @@ const controller = {
             attempt_login_number: 0,
             latest_login_at: Sequelize.fn('NOW') // TODO: review this in case 2fa is enabled
           }, {
-            where: {
-              id: user.id
-            }
-          });
+              where: {
+                id: user.id
+              }
+            });
         }
       }
 
@@ -200,22 +200,15 @@ const controller = {
         let [_, [updatedUser]] = await Member.update({
           domain_name: domainName
         }, {
-          where: {
-            id: user.id
-          },
-          returning: true
-        });
+            where: {
+              id: user.id
+            },
+            returning: true
+          });
         user = updatedUser;
       }
       /** */
 
-      /** create kyc account if not exist */
-      if (!user.kyc_id || user.kyc_id == '0') {
-        let id = await _createKyc(user.id, email);
-        if (id) {
-          user.kyc_id = id;
-        }
-      }
       user = await _tryCreateAffiliate(user);
 
       if (!isIgnored2FA && user.twofa_enable_flg) {
@@ -226,12 +219,12 @@ const controller = {
         await OTP.update({
           expired: true
         }, {
-          where: {
-            member_id: user.id,
-            action_type: OtpType.TWOFA
-          },
-          returning: true
-        });
+            where: {
+              member_id: user.id,
+              action_type: OtpType.TWOFA
+            },
+            returning: true
+          });
 
         await OTP.create({
           code: verifyToken,
@@ -255,27 +248,12 @@ const controller = {
         action: ActionType.LOGIN,
         user_agent: req.headers['user-agent']
       });
-      let kyc = user.kyc_id && user.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: user.kyc_id }) : null;
-      user.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
-      if (user.kyc) {
-        let length = Object.keys(user.kyc).length;
-        let level = 0;
-        for (let i = 1; i <= length; i++) {
-          if (user.kyc[i.toString()].status == KycStatus.APPROVED) {
-            level = i;
-          } else {
-            break;
-          }
-        }
-        user.kyc_level = level;
-      } else {
-        user.kyc_level = 0;
-      }
+
       if (user.referral_code) {
-        let checkReferrerCode = await Membership.isCheckReferrerCode({referrerCode: user.referral_code});
+        let checkReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: user.referral_code });
         if (checkReferrerCode.httpCode !== 200) {
           user.referral_code = "";
-        } else if (!checkReferrerCode.data.data.isValid){
+        } else if (!checkReferrerCode.data.data.isValid) {
           user.referral_code = "";
         }
       }
@@ -295,54 +273,6 @@ const controller = {
 
 };
 
-async function _createKyc(memberId, email) {
-  try {
-    /** create kyc */
-    let params = { body: { email: email, type: config.kyc.type } };
-    let kyc = await Kyc.createAccount(params);
-    let id = null;
-    if (kyc.data && kyc.data.id) {
-      id = kyc.data.id;
-      let submit = await _submitKyc(kyc.data.id, email);
-      if (submit.data && submit.data.id) {
-        _updateStatus(kyc.data.id, 'APPROVE');
-      }
-      await Member.update({
-        kyc_id: kyc.data.id
-      }, {
-        where: {
-          id: memberId,
-        },
-        returning: true
-      });
-    }
-    return id;
-  } catch (err) {
-    logger.error("create kyc account fail", err);
-  }
-}
-
-async function _submitKyc(kycId, email) {
-  try {
-    let content = {};
-    content[`${config.kyc.schema}`] = { email: email };
-    let params = { body: [{ level: 1, content: content }], kycId: kycId };
-    return await Kyc.submit(params);
-  } catch (err) {
-    logger.error(err);
-    throw err;
-  }
-}
-
-async function _updateStatus(kycId, action) {
-  try {
-    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
-    await Kyc.updateStatus(params);
-  } catch (err) {
-    logger.error("update kyc account fail", err);
-  }
-}
-
 async function _tryCreateAffiliate(member) {
   try {
     if (member.referral_code) {
@@ -354,12 +284,12 @@ async function _tryCreateAffiliate(member) {
         referral_code: result.data.data.code,
         affiliate_id: result.data.data.client_affiliate_id
       }, {
-        where: {
-          id: member.id
-        },
-        returning: true,
-        plain: true
-      })
+          where: {
+            id: member.id
+          },
+          returning: true,
+          plain: true
+        })
       return m;
     }
     return member;

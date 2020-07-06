@@ -75,6 +75,7 @@ const config = {
     secretKey: process.env.CDN_SECRET_KEY,
     bucket: process.env.CDN_BUCKET,
     folderPlatform: process.env.CDN_FOLDER_PLATFORM,
+    folderKYC: process.env.CDN_FOLDER_KYC,
     exts: process.env.CDN_FILE_EXT ? process.env.CDN_FILE_EXT.split(',')
       : [],
     fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880

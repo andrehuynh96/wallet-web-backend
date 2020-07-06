@@ -10,7 +10,8 @@ module.exports = async () => {
       order_index: 0,
       prev_level: 0,
       have_to_pass_prev_level_flg: false,
-      auto_approve_flg: true
+      auto_approve_flg: true,
+      first_level_flg: true,
     });
 
     let result1 = await Model.create({

@@ -64,7 +64,7 @@ router.use(
 );
 
 router.use(cookieParser());
-router.use(require('./proxy'));
+// router.use(require('./proxy'));
 router.use(
   express.json({
     limit: '1mb',

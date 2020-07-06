@@ -13,7 +13,6 @@ const otplib = require("otplib");
 const Hashids = require('hashids/cjs');
 const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
-const Kyc = require('app/lib/kyc');
 const Affiliate = require('app/lib/reward-system/affiliate');
 const PluTXUserIdApi = require('app/lib/plutx-userid');
 const MemberStatus = require("app/model/wallet/value-object/member-status");
@@ -24,7 +23,6 @@ const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 module.exports = async (req, res, next) => {
   try {
     const email = req.body.email.toLowerCase().trim();
-
     let emailExists = await Member.findOne({
       where: {
         deleted_flg: false,
@@ -159,50 +157,4 @@ async function _sendEmail(member, otp) {
   } catch (err) {
     logger.error("send email create account fail", err);
   }
-}
-
-async function _createKyc(memberId, email) {
-  try {
-    /** create kyc */
-    let params = { body: { email: email, type: config.kyc.type } };
-    let kyc = await Kyc.createAccount(params);
-    let id = null;
-    if (kyc.data && kyc.data.id) {
-      id = kyc.data.id;
-      let submit = await _submitKyc(kyc.data.id, email);
-      if (submit.data && submit.data.id) {
-        _updateStatus(kyc.data.id, 'APPROVE');
-      }
-      await Member.update({
-        kyc_id: kyc.data.id
-      }, {
-          where: {
-            id: memberId,
-          },
-          returning: true
-        });
-    }
-    return id;
-  } catch (err) {
-    logger.error("create kyc account fail", err);
-  }
-}
-async function _submitKyc(kycId, email) {
-  try {
-    let content = {};
-    content[`${config.kyc.schema}`] = { email: email };
-    let params = { body: [{ level: 1, content: content }], kycId: kycId };
-    return await Kyc.submit(params);
-  } catch (err) {
-    logger.error(err);
-    throw err;
-  }
-}
-async function _updateStatus(kycId, action) {
-  try {
-    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
-    await Kyc.updateStatus(params);
-  } catch (err) {
-    logger.error("update kyc account fail", err);
-  }
-}
+} 

@@ -16,7 +16,7 @@ router.get(
 );
 
 router.get(
-  '/kycs/:kyc_id/properties',
+  '/kycs/:key/properties',
   authenticate,
   controller.getProperties
 );
@@ -267,7 +267,7 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/kycs/{kyc_id}/properties:
+ * /web/kycs/{key}/properties:
  *   get:
  *     summary: get kyc schema properties
  *     tags:
@@ -275,7 +275,7 @@ module.exports = router;
  *     description:
  *     parameters:
  *       - in: path
- *         name: kyc_id
+ *         name: key
  *         type: string
  *         required: true  
  *     responses:

@@ -15,6 +15,8 @@ const util = require("util");
 const path = require("path");
 const toArray = require("stream-to-array");
 const database = require('app/lib/database').db().wallet;
+const MemberKycMapper = require('app/feature/response-schema/member-kyc.response-schema');
+const MemberKycPropertyMapper = require('app/feature/response-schema/member-kyc-property.response-schema');
 
 module.exports = {
   get: async (req, res, next) => {
@@ -163,6 +165,36 @@ module.exports = {
       next(err);
     }
   },
+  getKycs: async (req, res, next) => {
+    try {
+      logger.info("member::kyc");
+      const include = [{model: Kyc, as: 'Kyc'}];
+      const memberKycs = await MemberKyc.findAll({ where: {member_id: req.user.id }, include: include, order: [['kyc_id', 'ASC']] });
+      console.log('memberKycs: ', memberKycs[0].Kyc.name);
+      return res.ok(MemberKycMapper(memberKycs));
+    } catch (err) {
+      logger.error("member kyc fail: ", err);
+      next(err);
+    }
+  },
+  getKycProperties: async (req, res, next) => {
+    try {
+      logger.info("kyc::property::schema");
+      const kyc = await Kyc.findOne({ where: { key: req.params.key } });
+      if (!kyc) {
+        return res.badRequest(res.__("KYC_NOT_FOUND"), "KYC_NOT_FOUND");
+      }
+      const memberKyc = await MemberKyc.findOne({where: {member_id: req.user.id, kyc_id: kyc.id}});
+      if (!memberKyc) {
+        return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
+      }
+      const memberKycProperties  = await MemberKycProperty.findAll({ where: { member_kyc_id: memberKyc.id }, order: [['updated_at', 'DESC']] });
+      return res.ok(MemberKycPropertyMapper(memberKycProperties));
+    } catch (err) {
+      logger.error("kyc scheme properties fail: ", err);
+      next(err);
+    }
+  }
 }
 
 function _validateKYCProperties(properties, data) {

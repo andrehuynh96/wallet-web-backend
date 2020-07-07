@@ -6,9 +6,9 @@ const config = require("app/config");
       await Promise.all([require("./member")(),
       require("./currency")(),
       require("./membership-type")(),
-      require("./setting")(),
-      require("./level")()]);
-      await require("./level-property")()
+      require("./setting")()]);
+      await require("./level")();
+      await require("./level-property")();
     }
   }
   catch (err) {

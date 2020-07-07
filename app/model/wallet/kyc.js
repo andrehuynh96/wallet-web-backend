@@ -41,6 +41,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+    approve_membership_type_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    }
   }, {
       underscored: true,
       timestamps: true,
@@ -48,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Model.associate = (models) => {
     Model.hasMany(models.kyc_properties, { foreignKey: 'kyc_id' });
-    Model.hasMany(models.member_kycs, {foreignKey: 'kyc_id'});
+    Model.hasMany(models.member_kycs, { foreignKey: 'kyc_id' });
   };
 
   return Model;

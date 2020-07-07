@@ -141,19 +141,24 @@ module.exports = {
           value: value
         });
       }
+
+      if (kyc.approve_membership_type_id) {
+        memberData.membership_type_id = kyc.approve_membership_type_id;
+      }
+
       await MemberKycProperty.bulkCreate(data, { transaction: transaction });
       let [_, response] = await Member.update({
         kyc_level: kyc.key,
         kyc_status: memberKyc.status,
         ...memberData
       }, {
-        where: {
-          id: req.user.id
-        },
-        returning: true,
-        plain: true,
-        transaction: transaction
-      });
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
       req.session.user = response;
       await transaction.commit();
       return res.ok(true);
@@ -168,8 +173,8 @@ module.exports = {
   getKycs: async (req, res, next) => {
     try {
       logger.info("member::kyc");
-      const include = [{model: Kyc, as: 'Kyc'}];
-      const memberKycs = await MemberKyc.findAll({ where: {member_id: req.user.id }, include: include, order: [['kyc_id', 'ASC']] });
+      const include = [{ model: Kyc, as: 'Kyc' }];
+      const memberKycs = await MemberKyc.findAll({ where: { member_id: req.user.id }, include: include, order: [['kyc_id', 'ASC']] });
       console.log('memberKycs: ', memberKycs[0].Kyc.name);
       return res.ok(MemberKycMapper(memberKycs));
     } catch (err) {
@@ -184,11 +189,11 @@ module.exports = {
       if (!kyc) {
         return res.badRequest(res.__("KYC_NOT_FOUND"), "KYC_NOT_FOUND");
       }
-      const memberKyc = await MemberKyc.findOne({where: {member_id: req.user.id, kyc_id: kyc.id}});
+      const memberKyc = await MemberKyc.findOne({ where: { member_id: req.user.id, kyc_id: kyc.id } });
       if (!memberKyc) {
         return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
       }
-      const memberKycProperties  = await MemberKycProperty.findAll({ where: { member_kyc_id: memberKyc.id }, order: [['updated_at', 'DESC']] });
+      const memberKycProperties = await MemberKycProperty.findAll({ where: { member_kyc_id: memberKyc.id }, order: [['updated_at', 'DESC']] });
       return res.ok(MemberKycPropertyMapper(memberKycProperties));
     } catch (err) {
       logger.error("kyc scheme properties fail: ", err);

@@ -14,6 +14,7 @@ const s3 = require("app/service/s3.service");
 const util = require("util");
 const path = require("path");
 const toArray = require("stream-to-array");
+const database = require('app/lib/database').db().wallet;
 
 module.exports = {
   get: async (req, res, next) => {
@@ -138,19 +139,19 @@ module.exports = {
           value: value
         });
       }
-      await MemberKycProperty.bulkCreate(member_kyc_id, { transaction: transaction });
+      await MemberKycProperty.bulkCreate(data, { transaction: transaction });
       let [_, response] = await Member.update({
         kyc_level: kyc.key,
         kyc_status: memberKyc.status,
         ...memberData
       }, {
-          where: {
-            id: req.user.id
-          },
-          returning: true,
-          plain: true,
-          transaction: transaction
-        });
+        where: {
+          id: req.user.id
+        },
+        returning: true,
+        plain: true,
+        transaction: transaction
+      });
       req.session.user = response;
       await transaction.commit();
       return res.ok(true);

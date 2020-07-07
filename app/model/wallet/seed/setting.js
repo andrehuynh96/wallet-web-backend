@@ -104,10 +104,10 @@ const SETTINGS = [
     "property": "usd_rate_by_jpy_updated_at"
   },
   {
-    "key": "MEMBERSHIP_COMISSION_USDT_MINIMUM_CLAIM_AMOUNT",
+    "key": "MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT",
     "value": "50",
     "type": "number",
-    "property": "membership_comission_usdt_minimum_claim_amount"
+    "property": "membership_commission_usdt_minimum_claim_amount"
   },
   {
     "key": "USD_RATE_BY_USD",

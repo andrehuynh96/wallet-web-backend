@@ -80,16 +80,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     kyc_id: {
       type: DataTypes.STRING(32),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '0'
     },
     kyc_level: {
       type: DataTypes.STRING(256),
-      allowNull: false,
+      allowNull: true,
     },
     kyc_status: {
       type: DataTypes.STRING(16),
-      allowNull: false,
+      allowNull: true,
       defaultValue: KycStatus.APPROVED
     },
     deleted_flg: {

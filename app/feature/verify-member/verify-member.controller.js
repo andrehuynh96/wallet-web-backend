@@ -110,8 +110,8 @@ async function _createKyc(member) {
 
     let dataMember = {};
     for (let p of properties) {
-      if (member[p.field_key]) {
-        dataMember[p.field_key] = member[p.field_key];
+      if (member[p.member_field]) {
+        dataMember[p.field_key] = member[p.member_field];
       }
     }
 
@@ -128,7 +128,7 @@ async function _createKyc(member) {
 
     let data = [];
     for (let p of properties) {
-      let value = member[p.field_key] || "";
+      let value = p.member_field ? member[p.member_field] : member[p.field_key];
       data.push({
         member_kyc_id: memberKyc.id,
         property_id: p.id,
@@ -137,8 +137,9 @@ async function _createKyc(member) {
         value: value
       });
     }
-    await MemberKycProperty.bulkCreate(member_kyc_id, { transaction: transaction });
+    await MemberKycProperty.bulkCreate(data, { transaction: transaction });
     let [_, response] = await Member.update({
+      kyc_id: kyc.id.toString(),
       kyc_level: kyc.key,
       kyc_status: memberKyc.status
     }, {
@@ -149,6 +150,7 @@ async function _createKyc(member) {
         plain: true,
         transaction: transaction
       });
+    await transaction.commit();
     return response;
   } catch (err) {
     if (transaction) {

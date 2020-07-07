@@ -137,11 +137,16 @@ async function _createKyc(member) {
         value: value
       });
     }
+    let memberData = {};
+    if (kyc.approve_membership_type_id) {
+      memberData.membership_type_id = kyc.approve_membership_type_id;
+    }
     await MemberKycProperty.bulkCreate(data, { transaction: transaction });
     let [_, response] = await Member.update({
       kyc_id: kyc.id.toString(),
       kyc_level: kyc.key,
-      kyc_status: memberKyc.status
+      kyc_status: memberKyc.status,
+      ...memberData
     }, {
         where: {
           id: member.id

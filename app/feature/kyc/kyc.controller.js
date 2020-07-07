@@ -148,6 +148,7 @@ module.exports = {
 
       await MemberKycProperty.bulkCreate(data, { transaction: transaction });
       let [_, response] = await Member.update({
+        kyc_id: kyc.id.toString(),
         kyc_level: kyc.key,
         kyc_status: memberKyc.status,
         ...memberData

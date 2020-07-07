@@ -29,6 +29,18 @@ router.post(
   controller.submit
 );
 
+router.get(
+  '/me/kycs',
+  authenticate,
+  controller.getKycs
+);
+
+router.get(
+  '/me/kycs/:key/properties',
+  authenticate,
+  controller.getKycProperties
+)
+
 module.exports = router;
 
 /*********************************************************************/
@@ -371,6 +383,108 @@ module.exports = router;
  *           application/json:
  *             {
                   "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/me/kycs:
+ *   get:
+ *     summary: get kycs
+ *     tags:
+ *       - Accounts
+ *     description:
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+             "data": [
+                {
+                  "id": 1,
+                  "name": "Level 0",
+                  "key": "LEVEL_0",
+                  "description": "Your Email",
+                  "order_index": 0,
+                  "prev_level": 0,
+                  "status": "Approved",
+                  "created_at": "2020-07-05T15:37:58.103Z",
+                  "updated_at": "2020-07-05T15:37:58.103Z"
+                }
+              ]
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/me/kycs/{key}/properties:
+ *   get:
+ *     summary: get kyc schema properties
+ *     tags:
+ *       - Accounts
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: key
+ *         type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+             "data": [
+                {
+                  "id": 1,
+                  "field_name": "Email",
+                  "field_key": "email",
+                  "value": "Your Email",
+                  "created_at": "2020-07-05T15:37:58.103Z",
+                  "updated_at": "2020-07-05T15:37:58.103Z"
+                },
+                {
+                  "id": 2,
+                  "field_name": "Password",
+                  "field_key": "password",
+                  "value": "Your Password",
+                  "created_at": "2020-07-05T15:37:58.103Z",
+                  "updated_at": "2020-07-05T15:37:58.103Z"
+                }
+              ]
  *             }
  *       400:
  *         description: Error

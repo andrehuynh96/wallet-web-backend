@@ -2,14 +2,14 @@ const logger = require('app/lib/logger');
 const claimRequestMapper = require('app/feature/response-schema/membership/claim-request.response-schema');
 const ClaimRequest = require('app/model/wallet').claim_requests;
 const Membership = require('app/lib/reward-system/membership');
-
 const createClaimRequestMapper = require('./mapper/create.claim-request-schema');
 const MemberAccount = require('app/model/wallet').member_accounts;
 const Member = require('app/model/wallet').members;
 const MemberRewardTransactionHis = require('app/model/wallet').member_reward_transaction_his;
 const database = require('app/lib/database').db().wallet;
-
 const ClaimRequestStatus = require('app/model/wallet/value-object/claim-request-status');
+const Setting = require('app/model/wallet').settings;
+const config = require('app/config');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -31,11 +31,20 @@ module.exports = {
       next(err);
     }
   },
+
   create: async (req, res, next) => {
     let transaction;
     try {
-      logger.info('claim reward::create');
-      const _member = await Member.findOne({ where: { id: req.user.id } });
+      const setting = await Setting.findOne({
+        where: {
+          key: config.setting.MEMBERSHIP_COMISSION_USDT_MINIMUM_CLAIM_AMOUNT
+        }
+      });
+
+      let minimunClaimAmount = parseFloat(setting.value);
+      if (req.body.amount < minimunClaimAmount) {
+        return res.badRequest(res.__("AMOUNT_TOO_SMALL"), "AMOUNT_TOO_SMALL");
+      }
 
       const where = { id: req.body.member_account_id };
       const memberAccount = await MemberAccount.findOne({ where: where });
@@ -53,7 +62,7 @@ module.exports = {
       const dataReward = {
         amount: req.body.amount,
         currency_symbol: req.body.currency_symbol,
-        email: _member.email
+        email: req.user.email
       };
       const dataTrackingReward = {
         member_id: req.user.id,
@@ -62,8 +71,8 @@ module.exports = {
         tx_id: _resultCreateData.tx_id
       };
 
-      let _resultCreateTracking = await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
-      
+      await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
+
       // call api update claimreward and get affiliate_claim_reward_id
       const resClaimReward = await Membership.claimReward(dataReward);
 
@@ -100,5 +109,21 @@ module.exports = {
       logger.error("claim reward create: ", err);
       next(err);
     }
-  }
+  },
+
+  setting: async (req, res, next) => {
+    try {
+      const setting = await Setting.findOne({
+        where: {
+          key: config.setting.MEMBERSHIP_COMISSION_USDT_MINIMUM_CLAIM_AMOUNT
+        }
+      });
+      return res.ok({
+        minimun_claim_amount: parseFloat(setting.value)
+      });
+    } catch (err) {
+      logger.error("setting: ", err);
+      next(err);
+    }
+  },
 };

@@ -99,7 +99,7 @@ module.exports = {
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
         order_no: orderId,
-        rate_by_usd: rateUsd,
+        rate_usd: rateUsd,
         amount_usd: (rateUsd * req.body.amount),
       }
       let result = await MembershipOrder.create(data);
@@ -165,7 +165,7 @@ module.exports = {
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
         order_no: orderId,
-        rate_by_usd: rateUsd,
+        rate_usd: rateUsd,
         amount_usd: (rateUsd * membershipType.price)
       }
       let result = await MembershipOrder.create(data);

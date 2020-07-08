@@ -67,7 +67,7 @@ module.exports = {
 
       const receivingAddress = await ReceivingAddresses.findOne({
         where: {
-          id: receivingAddresseq.body.receiving_addresses_id
+          id: req.body.receiving_addresses_id
         }
       });
       if (!receivingAddress) {

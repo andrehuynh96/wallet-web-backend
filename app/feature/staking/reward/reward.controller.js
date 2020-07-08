@@ -71,7 +71,7 @@ module.exports = {
 
       let [_, response] = await ClaimRequest.update(
         {
-          affiliate_claim_reward_id: resClaimReward.data.data.id
+          affiliate_claim_reward_id: resClaimReward.data.id
         },
         {
           where: {

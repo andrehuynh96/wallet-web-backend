@@ -138,7 +138,6 @@ module.exports = router;
 *               {
                        "amount": 250.039697,
                        "currency_symbol":"ETH",
-                       "platform": "ETH",
                        "member_account_id":1
                  }
 *     produces:
@@ -156,7 +155,6 @@ module.exports = router;
                      "type": "Crypto",
                      "status": "Approved",
                      "currency_symbol": "ETH",
-                     "platform": "ETH",
                      "account_number": 0,
                      "bank_name": "",
                      "bracnch_name": "",

@@ -10,7 +10,6 @@ const destObject = {
     '[].action': '[].action',
     '[].tx_id': '[].tx_id',
     '[].note': '[].note',
-    '[].platform': '[].platform',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at'
   },
@@ -23,7 +22,6 @@ const destObject = {
     action: 'action',
     tx_id: 'tx_id',
     note: 'note',
-    platform: 'platform',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }

@@ -67,7 +67,6 @@ module.exports = {
       const dataTrackingReward = {
         member_id: req.user.id,
         currency_symbol: req.body.currency_symbol,
-        platform: req.body.platform,
         amount: req.body.amount,
         tx_id: _resultCreateData.tx_id
       };

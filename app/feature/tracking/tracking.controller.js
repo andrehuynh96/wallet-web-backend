@@ -132,9 +132,18 @@ module.exports = {
     try {
       let response = await MemberTransactionHis.findOne({
         where: {
-          platform: {
-            [Op.iLike]: req.params.platform
-          },
+          [Op.or]: [ 
+            {
+              platform: {
+                [Op.iLike]: req.params.platform
+              }
+            },
+            {
+              symbol: {
+                [Op.iLike]: req.params.platform
+              }
+            }
+          ],
           tx_id: {
             [Op.iLike]: req.params.tx_id
           }

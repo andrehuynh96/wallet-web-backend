@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(125),
       allowNull: true,
       defaultValue: SystemType.MEMBERSHIP
+    },
+    platform: {
+      type: DataTypes.STRING(32),
+      allowNull: false
     }
   }, {
       underscored: true,

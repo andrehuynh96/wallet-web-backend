@@ -115,6 +115,24 @@ const SETTINGS = [
     "type": "number",
     "property": "usd_rate_by_usd"
   },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_ATOM",
+    "value": "0.5",
+    "type": "number",
+    "property": "claim_affiliate_reward_atom"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_IRIS",
+    "value": "0.5",
+    "type": "number",
+    "property": "claim_affiliate_reward_iris"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_ONG",
+    "value": "0.5",
+    "type": "number",
+    "property": "claim_affiliate_reward_ong"
+  }
 ];
 
 module.exports = async () => {

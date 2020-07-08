@@ -5,7 +5,7 @@ module.exports = function (permission) {
     if (!req.user.kyc_level || !req.user.kyc_status) {
       res.forbidden();
     } else {
-      let permissionLv = req.user.kyc_status == KycStatus.APPROVED ? req.user.kyc_level : req.user.kyc_level - 1;
+      let permissionLv =  req.user.kyc_level;
       let permissions = KycPermission[`${permissionLv}`];
       if (permissions.indexOf(permission) == -1) {
         res.forbidden();

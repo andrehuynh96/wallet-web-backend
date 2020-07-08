@@ -53,6 +53,7 @@ module.exports = router;
                       "action": "PAYOUT_REQUEST",
                       "tx_id": "",
                       "note": "",
+                      "platform": "ETH",
                       "created_at": "2020-03-27T08:36:56.308Z",
                       "updated_at": "2020-03-27T08:36:56.308Z"
                     }

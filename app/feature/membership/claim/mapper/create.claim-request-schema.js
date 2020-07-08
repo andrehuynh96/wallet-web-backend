@@ -8,6 +8,7 @@ const destObject = {
     type:'type',
     status:'status',
     currency_symbol:'currency_symbol',
+    platform: 'platform',
     account_number:'account_number',
     bank_name:'bank_name',
     branch_name:'branch_name',

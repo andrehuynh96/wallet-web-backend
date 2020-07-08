@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     bank_account_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     receiving_addresses_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     membership_type_id: {

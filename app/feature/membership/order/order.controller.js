@@ -67,7 +67,7 @@ module.exports = {
 
       const receivingAddress = await ReceivingAddresses.findOne({
         where: {
-          id: receivingAddresseq.body.receiving_addresses_id
+          id: req.body.receiving_addresses_id
         }
       });
       if (!receivingAddress) {
@@ -79,7 +79,7 @@ module.exports = {
         }
       });
 
-      let rateUsd = await CoinGeckoPrice.getPrice({ platform_name: req.body.currency_symbol, currency: 'usd' });
+      let rateUsd = await CoinGeckoPrice.getPrice({ platform_name: receivingAddress.currency_symbol, currency: 'usd' });
 
       let salt = `${Date.now().toString()}-${req.user.id}`;
       let hashids = new Hashids(salt, 8);
@@ -91,7 +91,7 @@ module.exports = {
         payment_type: MemberAccountType.Crypto,
         currency_symbol: receivingAddress.currency_symbol,
         wallet_address: receivingAddress.wallet_address,
-        receiving_addresses_id: receivingAddresseq.id,
+        receiving_addresses_id: receivingAddress.id,
         amount: req.body.amount,
         your_wallet_address: req.body.your_wallet_address,
         wallet_id: req.body.wallet_id,
@@ -99,7 +99,7 @@ module.exports = {
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
         order_no: orderId,
-        rate_by_usd: rateUsd,
+        rate_usd: rateUsd,
         amount_usd: (rateUsd * req.body.amount),
       }
       let result = await MembershipOrder.create(data);
@@ -165,7 +165,7 @@ module.exports = {
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
         order_no: orderId,
-        rate_by_usd: rateUsd,
+        rate_usd: rateUsd,
         amount_usd: (rateUsd * membershipType.price)
       }
       let result = await MembershipOrder.create(data);

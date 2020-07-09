@@ -20,7 +20,8 @@ module.exports = {
     try {
       let result = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       })
 
@@ -49,7 +50,8 @@ module.exports = {
       let reasons = req.body.reasons
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       })
       if (!member) {
@@ -174,7 +176,8 @@ module.exports = {
       }
       let member = await Member.findOne({
         where: {
-          id: otp.member_id
+          id: otp.member_id,
+          deleted_flg: false
         }
       })
       if (!member) {
@@ -200,7 +203,7 @@ module.exports = {
           },
           returning: true,
           transaction
-        })
+        });
 
       let privateKeys = [];
       let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
@@ -212,33 +215,56 @@ module.exports = {
             }
           });
           privateKeys.push(...keys);
-          await WalletPrivateKey.destroy(
-            {
-              where: {
-                wallet_id: wallet[i].id
-              },
-              transaction
-            });
-          await WalletToken.destroy({
-            where: {
-              wallet_id: wallet[i].id
-            },
-            transaction
-          })
+          // await WalletPrivateKey.destroy(
+          //   {
+          //     where: {
+          //       wallet_id: wallet[i].id
+          //     },
+          //     transaction
+          //   });
+          // await WalletToken.destroy({
+          //   where: {
+          //     wallet_id: wallet[i].id
+          //   },
+          //   transaction
+          // })
         }
-        await Wallet.destroy({
-          where: {
-            member_id: member.id
-          },
-          transaction
-        })
+        // await Wallet.destroy({
+        //   where: {
+        //     member_id: member.id
+        //   },
+        //   transaction
+        // })
       }
-      await Member.destroy({
-        where: {
-          id: member.id
-        },
-        transaction
-      })
+      // await Member.destroy({
+      //   where: {
+      //     id: member.id
+      //   },
+      //   transaction
+      // });
+
+      await Member.update({
+        deleted_flg: true
+      }, {
+          where: {
+            id: member.id
+          },
+          returning: true,
+          transaction
+        });
+
+      let deactivate = await Membership.deactivate({
+        email: member.email
+      });
+      if (deactivate.httpCode !== 200) {
+        return res.status(deactivate.httpCode).send(deactivate.data);
+      }
+
+      if (!deactivate.data.data.isSuccess) {
+        throw new Error("DEACTIVATE_AFFLIATE_FAIL");
+      }
+
+      await transaction.commit();
 
       let enableSendEmail = await Setting.findOne({
         where: {
@@ -262,7 +288,7 @@ module.exports = {
           await _sendAdminEmail(member.email, adminEmailAddress.value, resons)
         }
       }
-      await transaction.rollback();
+
       if (privateKeys.length > 0) {
         for (let key of privateKeys) {
           Webhook.removeAddresses(key.platform, key.address);

@@ -28,12 +28,12 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-        where: {
-          member_id: member.id,
-          action_type: req.body.type
-        },
-        returning: true
-      });
+          where: {
+            member_id: member.id,
+            action_type: req.body.type
+          },
+          returning: true
+        });
 
       let otp = await OTP.create({
         code: verifyToken,
@@ -68,16 +68,17 @@ module.exports = {
       if (!otp) {
         return res.badRequest(res.__("TOKEN_INVALID"), "TOKEN_INVALID", { fields: ['verify_token'] })
       }
-     
+
       let member = await Member.findOne({
         where: {
-          id: otp.member_id
+          id: otp.member_id,
+          deleted_flg: false
         }
       })
-      if(member.member_sts == MemberStatus.LOCKED){
+      if (member.member_sts == MemberStatus.LOCKED) {
         return res.badRequest(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED")
       }
-      if(member.member_sts == MemberStatus.ACTIVATED){
+      if (member.member_sts == MemberStatus.ACTIVATED) {
         return res.badRequest(res.__("ACCOUNT_ACTIVATED"), "ACCOUNT_ACTIVATED")
       }
       let verifyToken = Buffer.from(uuidV4()).toString('base64');
@@ -86,11 +87,11 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-        where: {
-          member_id: member.id
-        },
-        returning: true
-      });
+          where: {
+            member_id: member.id
+          },
+          returning: true
+        });
       let newOtp = await OTP.create({
         code: verifyToken,
         used: false,

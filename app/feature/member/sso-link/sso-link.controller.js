@@ -12,7 +12,8 @@ module.exports = async (req, res, next) => {
 
     const member = await Member.findOne({
       where: {
-        id: req.user.id
+        id: req.user.id,
+        deleted_flg: false
       }
     });
     if (!member) {

@@ -8,7 +8,8 @@ module.exports = async (req, res, next) => {
     let member = await Member.findOne({
       where: {
         email: data.customer.email,
-        kyc_id: data.customer.id
+        kyc_id: data.customer.id,
+        deleted_flg: false
       }
     });
     if (member && data.kyc) {
@@ -25,9 +26,9 @@ module.exports = async (req, res, next) => {
             id: member.id
           }
         })
-        if (req.session.authenticated && req.session.user.id == member.id) {
-          req.session.user.kyc_level = level;
-        }
+      if (req.session.authenticated && req.session.user.id == member.id) {
+        req.session.user.kyc_level = level;
+      }
     }
     return res.ok(true);
   } catch (error) {

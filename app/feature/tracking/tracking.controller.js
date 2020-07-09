@@ -18,7 +18,8 @@ module.exports = {
     try {
       let user = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       })
 
@@ -132,7 +133,7 @@ module.exports = {
     try {
       let response = await MemberTransactionHis.findOne({
         where: {
-          [Op.or]: [ 
+          [Op.or]: [
             {
               platform: {
                 [Op.iLike]: req.params.platform
@@ -183,19 +184,19 @@ module.exports = {
         response = await MemberTransactionHis.update({
           sender_note: note
         }, {
-          where: {
-            tx_id: tx_id,
-          },
-        });
+            where: {
+              tx_id: tx_id,
+            },
+          });
       }
       if (memberTransactionHis.to_address.toLowerCase() == memberFromAddress[0].address.toLowerCase()) {
         response = await MemberTransactionHis.update({
           receiver_note: note
         }, {
-          where: {
-            tx_id: tx_id,
-          },
-        });
+            where: {
+              tx_id: tx_id,
+            },
+          });
       }
       if (!response) {
         return res.forbidden(res.__('ADDRESS_NOT_FOUND'), 'ADDRESS_NOT_FOUND');

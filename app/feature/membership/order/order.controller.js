@@ -134,15 +134,17 @@ module.exports = {
           id: req.body.membership_type_id
         }
       });
-      let rateUsd = 1;
-      const rateUsdConfig = await Setting.findOne({
+
+      let currencySymbol = "JPY";
+      let rateJPY = 1;
+      const rateJPYConfig = await Setting.findOne({
         where: {
-          key: `${config.setting.USD_RATE_BY_}${membershipType.currency_symbol}`
+          key: `${config.setting.USD_RATE_BY_}${currencySymbol}`
         }
       });
 
-      if (rateUsdConfig) {
-        rateUsd = parseFloat(rateUsdConfig.value);
+      if (rateJPYConfig) {
+        rateJPY = parseFloat(rateJPYConfig.value);
       }
 
       let salt = `${Date.now().toString()}-${req.user.id}`;
@@ -153,8 +155,8 @@ module.exports = {
         member_id: req.user.id,
         membership_type_id: membershipType.id,
         payment_type: MemberAccountType.Bank,
-        currency_symbol: membershipType.currency_symbol,
-        amount: membershipType.price,
+        currency_symbol: currencySymbol,
+        amount: (rateJPY * membershipType.price),
         bank_account_id: bankAccount.id,
         branch_name: bankAccount.branch_name,
         account_number: bankAccount.account_number,
@@ -165,8 +167,8 @@ module.exports = {
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
         order_no: orderId,
-        rate_usd: rateUsd,
-        amount_usd: (rateUsd * membershipType.price)
+        rate_usd: rateJPY,
+        amount_usd: membershipType.price
       }
       let result = await MembershipOrder.create(data);
       return res.ok(mapper(result));

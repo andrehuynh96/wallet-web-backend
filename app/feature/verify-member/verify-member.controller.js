@@ -36,8 +36,7 @@ module.exports = async (req, res, next) => {
 
     let member = await Member.findOne({
       where: {
-        id: otp.member_id,
-        deleted_flg: false
+        id: otp.member_id
       }
     });
     if (!member) {
@@ -53,7 +52,8 @@ module.exports = async (req, res, next) => {
     }
 
     await Member.update({
-      member_sts: MemberStatus.ACTIVATED
+      member_sts: MemberStatus.ACTIVATED,
+      deleted_flg: false
     }, {
         where: {
           id: member.id

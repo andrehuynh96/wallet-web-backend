@@ -47,100 +47,142 @@ module.exports = async (req, res, next) => {
       }
     }
 
-    // TODO: Check email is exists on Affiliate and PluTX UserID before register this email on these system
-    let affiliateInfo = {};
-    let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
-    if (createAffiliate.httpCode == 200) {
-      affiliateInfo.referral_code = createAffiliate.data.data.code;
-      affiliateInfo.referrer_code = req.body.referrer_code || "";
-      affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
-    }
-    else {
-      return res.status(createAffiliate.httpCode).send(createAffiliate.data);
-    }
-
-    let emailConfirmed = false;
-    let idOnPlutxUserID = null;
-    const now = new Date();
-
-    if (IS_ENABLED_PLUTX_USERID) {
-      const registerMemberResult = await PluTXUserIdApi.register({
-        email,
-        password: req.body.password,
-        createdAt: now,
-        emailConfirmed: false,
-        isActived: false,
-      });
-
-      if (registerMemberResult.httpCode === 200) {
-        emailConfirmed = registerMemberResult.data.confirmed_flg;
-        idOnPlutxUserID = registerMemberResult.data.id;
-      } else {
-        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
+    let deactiveAccount = await Member.findOne({
+      where: {
+        deleted_flg: true,
+        email: email,
       }
-    }
-
-    const memberStatus = !emailConfirmed ? MemberStatus.UNACTIVATED : MemberStatus.ACTIVATED;
-    let password = bcrypt.hashSync(req.body.password, 10);
-
-    let member = await Member.create({
-      email,
-      password_hash: password,
-      member_sts: memberStatus,
-      phone: req.body.phone || "",
-      ...affiliateInfo,
-      plutx_userid_id: idOnPlutxUserID,
-      membership_type_id: null,
     });
 
-    if (!member) {
-      return res.serverInternalError();
+    if (deactiveAccount) {
+      return _activeAccount(deactiveAccount, req, res, next);
     }
-
-    if (memberStatus !== MemberStatus.ACTIVATED) {
-      let verifyToken = Buffer.from(uuidV4()).toString('base64');
-      now.setHours(now.getHours() + config.expiredVefiryToken);
-      await OTP.update({
-        expired: true
-      }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.REGISTER
-          },
-          returning: true
-        });
-
-      let otp = await OTP.create({
-        code: verifyToken,
-        used: false,
-        expired: false,
-        expired_at: now,
-        member_id: member.id,
-        action_type: OtpType.REGISTER
-      });
-      if (!otp) {
-        return res.serverInternalError();
-      }
-      _sendEmail(member, otp);
-    }
-
-    if (member.referral_code) {
-      let checkReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: member.referral_code });
-      if (checkReferrerCode.httpCode !== 200) {
-        member.referral_code = "";
-      } else if (!checkReferrerCode.data.data.isValid) {
-        member.referral_code = "";
-      }
-    }
-    let response = memberMapper(member);
-    return res.ok(response);
+    return _createAccount(req, res, next);
   }
   catch (err) {
     logger.error('register fail:', err);
-
     next(err);
   }
 };
+
+async function _activeAccount(member, req, res, next) {
+  member.password_hash = bcrypt.hashSync(req.body.password, 10);
+
+  const now = new Date();
+  let verifyToken = Buffer.from(uuidV4()).toString('base64');
+  now.setHours(now.getHours() + config.expiredVefiryToken);
+  await OTP.update({
+    expired: true
+  }, {
+      where: {
+        member_id: member.id,
+        action_type: OtpType.REGISTER
+      },
+      returning: true
+    });
+
+  let otp = await OTP.create({
+    code: verifyToken,
+    used: false,
+    expired: false,
+    expired_at: now,
+    member_id: member.id,
+    action_type: OtpType.REGISTER
+  });
+  if (!otp) {
+    return res.serverInternalError();
+  }
+  await member.save();
+  _sendEmail(member, otp);
+  let response = memberMapper(member);
+  response.referral_code = "";
+  return res.ok(response);
+}
+
+async function _createAccount(req, res, next) {
+  const email = req.body.email.toLowerCase().trim();
+
+  // TODO: Check email is exists on Affiliate and PluTX UserID before register this email on these system
+  let affiliateInfo = {};
+  let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
+  if (createAffiliate.httpCode == 200) {
+    affiliateInfo.referral_code = createAffiliate.data.data.code;
+    affiliateInfo.referrer_code = req.body.referrer_code || "";
+    affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
+  }
+  else {
+    return res.status(createAffiliate.httpCode).send(createAffiliate.data);
+  }
+
+  let emailConfirmed = false;
+  let idOnPlutxUserID = null;
+  const now = new Date();
+
+  if (IS_ENABLED_PLUTX_USERID) {
+    const registerMemberResult = await PluTXUserIdApi.register({
+      email,
+      password: req.body.password,
+      createdAt: now,
+      emailConfirmed: false,
+      isActived: false,
+    });
+
+    if (registerMemberResult.httpCode === 200) {
+      emailConfirmed = registerMemberResult.data.confirmed_flg;
+      idOnPlutxUserID = registerMemberResult.data.id;
+    } else {
+      return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
+    }
+  }
+
+  const memberStatus = !emailConfirmed ? MemberStatus.UNACTIVATED : MemberStatus.ACTIVATED;
+  let password = bcrypt.hashSync(req.body.password, 10);
+
+  let member = await Member.create({
+    email,
+    password_hash: password,
+    member_sts: memberStatus,
+    phone: req.body.phone || "",
+    ...affiliateInfo,
+    plutx_userid_id: idOnPlutxUserID,
+    membership_type_id: null,
+  });
+
+  if (!member) {
+    return res.serverInternalError();
+  }
+
+  //if (memberStatus !== MemberStatus.ACTIVATED) {
+  let verifyToken = Buffer.from(uuidV4()).toString('base64');
+  now.setHours(now.getHours() + config.expiredVefiryToken);
+  await OTP.update({
+    expired: true
+  }, {
+      where: {
+        member_id: member.id,
+        action_type: OtpType.REGISTER
+      },
+      returning: true
+    });
+
+  let otp = await OTP.create({
+    code: verifyToken,
+    used: false,
+    expired: false,
+    expired_at: now,
+    member_id: member.id,
+    action_type: OtpType.REGISTER
+  });
+  if (!otp) {
+    return res.serverInternalError();
+  }
+  _sendEmail(member, otp);
+  // }
+
+  member.referral_code = "";
+  let response = memberMapper(member);
+  return res.ok(response);
+}
 
 async function _sendEmail(member, otp) {
   try {

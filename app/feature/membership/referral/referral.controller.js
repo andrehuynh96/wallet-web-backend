@@ -30,7 +30,7 @@ module.exports = {
             }));
           if (result.error) {
             console.log(result.error);
-            return res.badRequest("Missing parameters", result.error);
+            return res.badRequest(res.__('EMAIL_INCORRECT'), 'EMAIL_INCORRECT');
           }
         }
       }

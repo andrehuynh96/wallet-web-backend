@@ -42,7 +42,8 @@ module.exports = {
       transaction = await database.transaction();
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       });
       let newDatas = [];
@@ -141,7 +142,8 @@ module.exports = {
       logger.info('member_plutxs::updatePlutxAddress');
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       });
       if (!member)
@@ -310,7 +312,8 @@ module.exports = {
       logger.info('member_plutxs::createSubdomain');
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       });
       if (!member)

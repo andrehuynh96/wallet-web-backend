@@ -22,7 +22,8 @@ module.exports = async (req, res, next) => {
 
     let member = await Member.findOne({
       where: {
-        id: otp.member_id
+        id: otp.member_id,
+        deleted_flg: false
       }
     });
     await OTP.update({

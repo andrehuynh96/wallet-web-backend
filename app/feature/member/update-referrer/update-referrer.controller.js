@@ -7,7 +7,8 @@ module.exports = async (req, res, next) => {
   try {
     let member = await Member.findOne({
       where: {
-        id: req.user.id
+        id: req.user.id,
+        deleted_flg: false
       }
     });
 
@@ -37,12 +38,12 @@ module.exports = async (req, res, next) => {
       await Member.update({
         referrer_code: req.body.referrer_code
       }, {
-        where: {
-          id: member.id
-        },
-        returning: true,
-        plain: true
-      })
+          where: {
+            id: member.id
+          },
+          returning: true,
+          plain: true
+        })
       return res.ok(true)
     }
 

@@ -8,7 +8,8 @@ module.exports = {
     try {
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       })
       if (!member) {
@@ -75,7 +76,8 @@ module.exports = {
     try {
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       })
       if (!member) {

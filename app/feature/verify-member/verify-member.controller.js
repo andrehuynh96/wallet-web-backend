@@ -52,7 +52,8 @@ module.exports = async (req, res, next) => {
     }
 
     await Member.update({
-      member_sts: MemberStatus.ACTIVATED
+      member_sts: MemberStatus.ACTIVATED,
+      deleted_flg: false
     }, {
         where: {
           id: member.id

@@ -8,4 +8,6 @@ module.exports = {
   "STAKE": "STAKE",
   "UNSTAKE": "UNSTAKE",
   "CLAIM_REWARD": "CLAIM_REWARD",
+  "SSO_TOKEN": "SSO_TOKEN",
+  "REVEAL": "REVEAL"
 }

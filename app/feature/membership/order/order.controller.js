@@ -27,28 +27,29 @@ module.exports = {
 
       var sql = `
         SELECT membership_orders.id,
-        membership_orders.member_id,
-        membership_orders.bank_account_id,
-        membership_orders.receiving_addresses_id,
-        membership_orders.membership_type_id,
-        membership_orders.payment_type,
-        membership_orders.currency_symbol,
-        membership_orders.amount,
-        membership_orders.account_number,
-        membership_orders.bank_name,
-        membership_orders.swift,
-        membership_orders.account_name,
-        membership_orders.payment_ref_code,
-        membership_orders.wallet_address,
-        membership_orders.your_wallet_address,
-        membership_orders.txid,
-        membership_orders.rate_usd,
-        membership_orders.status,
-        membership_orders.created_at, 
-		membership_orders.updated_at,
+          membership_orders.member_id,
+          membership_orders.bank_account_id,
+          membership_orders.receiving_addresses_id,
+          membership_orders.membership_type_id,
+          membership_orders.payment_type,
+          membership_orders.currency_symbol,
+          membership_orders.amount,
+          membership_orders.account_number,
+          membership_orders.bank_name,
+          membership_orders.swift,
+          membership_orders.account_name,
+          membership_orders.payment_ref_code,
+          membership_orders.wallet_address,
+          membership_orders.your_wallet_address,
+          membership_orders.txid,
+          membership_orders.rate_usd,
+          membership_orders.status,
+          membership_orders.created_at, 
+          membership_orders.updated_at,
         membership_types.type as membership_type
         FROM membership_orders INNER JOIN membership_types on membership_orders.membership_type_id = membership_types.id
-        where membership_orders.member_id = '${req.user.id}'
+        WHERE membership_orders.member_id = '${req.user.id} 
+        OREDER BY membership_orders.created_at DESC'
       `;
       var membershipOrders = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
       return res.ok(membershipOrderMapper(membershipOrders));

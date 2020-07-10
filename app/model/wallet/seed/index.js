@@ -10,6 +10,7 @@ const config = require("app/config");
       await require("./level")();
       await require("./level-property")();
     }
+    await require("./migration-member-kyc")();
   }
   catch (err) {
     console.log(err)

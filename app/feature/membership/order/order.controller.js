@@ -18,6 +18,7 @@ const IpCountry = require('app/lib/ip-country');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const Hashids = require('hashids/cjs');
+const database = require('app/lib/database').db().wallet;
 
 module.exports = {
   getOrders: async (req, res, next) => {

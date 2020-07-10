@@ -15,18 +15,18 @@ router.get(
   controller.getMemberTypeDetail
 );
 
-
-router.get(
-  '/member/payment-accounts',
-  authenticate,
-  controller.getPaymentAccount
-);
-
 router.get(
   '/member/payment-accounts/crypto',
   //authenticate,
   controller.getPaymentCryptoAccount
 );
+
+router.get(
+  '/member/payment-accounts/allow-bank',
+  //authenticate,
+  controller.allowBankMethod
+);
+
 
 router.get(
   '/member/infor-ip',
@@ -101,69 +101,6 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
-
-/**
- * @swagger
- * /web/membership/member/payment-accounts:
- *   get:
- *     summary: get payment_accounts
- *     tags:
- *       - membership
- *     description: get payment_accounts bank and crypto
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
-               "data": {
-                    "bank_account": {
-                      "id": 10,
-                      "currency_symbol": "USD",
-                      "account_number": "34268909879",
-                      "bank_name": "Vietcombank",
-					  "account_type": "",
-                      "branch_name": "HCM",
-                      "swift": "Vietcombank",
-                      "account_name": "NGUYEN VAN A",
-                      "payment_ref_code": "303962"
-                    },
-                    "crypto_accounts": [
-                      {
-                        "id": 9,
-                        "currency_symbol": "ATOM",
-                        "wallet_address": "cosmos1xxkueklal9vejv9unqu80w9vptyepfa95pd53u",
-                        "rate_by_usd": 238.73
-                      },
-                      {
-                        "id": 10,
-                        "currency_symbol": "ETH",
-                        "wallet_address": "0x32be343b94f860124dc4fee278fdcbd38c102d88",
-                        "rate_by_usd": 238.73
-                      }
-                    ]
-                  }
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
-
 
 /**
 * @swagger
@@ -379,6 +316,44 @@ module.exports = router;
                   "value":107,
                   "date":""
                 }
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
+
+
+/**
+* @swagger
+* /web/membership/member/payment-accounts/allow-bank:
+*   get:
+*     summary: Check allow bank method
+*     tags:
+*       - membership
+*     description: Check allow bank method
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+               "data": true
 *             }
 *       400:
 *         description: Error

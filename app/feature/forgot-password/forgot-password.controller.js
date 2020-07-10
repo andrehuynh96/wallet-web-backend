@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
     let member = await Member.findOne({
       where: {
         email: req.body.email.toLowerCase(),
-        deleted_flg: false
+        deleted_flg: false,
       }
     });
     if (!member) {
@@ -60,12 +60,12 @@ module.exports = async (req, res, next) => {
     await OTP.update({
       expired: true
     }, {
-      where: {
-        member_id: member.id,
-        action_type: OtpType.FORGOT_PASSWORD
-      },
-      returning: true
-    })
+        where: {
+          member_id: member.id,
+          action_type: OtpType.FORGOT_PASSWORD
+        },
+        returning: true
+      })
 
     await OTP.create({
       code: verifyToken,

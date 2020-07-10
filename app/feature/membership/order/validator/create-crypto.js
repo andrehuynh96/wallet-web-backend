@@ -6,7 +6,7 @@ const schema = Joi.object().keys({
   txid: Joi.string().required(),
   receiving_addresses_id: Joi.number().required(),
   membership_type_id: Joi.string().required(),
-  wallet_id: Joi.string().optional()
+  wallet_id: Joi.string().optional().allow("")
 });
 
 module.exports = schema;

@@ -91,6 +91,7 @@ class RewardSystem {
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
+
   async getRewards({ email }) {
     try {
       const data = {
@@ -234,6 +235,59 @@ class RewardSystem {
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
+
+  async deactivate({ email }) {
+    try {
+      const data = {
+        ext_client_id: email
+      };
+      const queryData = queryString.stringify(data);
+      let accessToken = await this._getToken();
+      let result = await axios.put(`${this.baseUrl}/clients/deactivate?${queryData}`,
+        {},
+        {
+          headers: {
+            "x-use-checksum": true,
+            "x-secret": this.secretKey,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": this.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
+  async activate({ email }) {
+    try {
+      const data = {
+        ext_client_id: email
+      };
+      const queryData = queryString.stringify(data);
+      let accessToken = await this._getToken();
+      let result = await axios.put(`${this.baseUrl}/clients/activate?${queryData}`,
+        {},
+        {
+          headers: {
+            "x-use-checksum": true,
+            "x-secret": this.secretKey,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": this.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+    }
+    catch (err) {
+      logger.error("create client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
 
   async _getToken() {
     let key = `${redisResource.rewardSystem.token}:${this.typeId}`;

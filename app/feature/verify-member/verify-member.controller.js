@@ -15,6 +15,7 @@ const MemberKycProperty = require('app/model/wallet').member_kyc_properties;
 const Joi = require("joi");
 const KycDataType = require('app/model/wallet/value-object/kyc-data-type');
 const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const Membership = require('app/lib/reward-system/membership');
 
 module.exports = async (req, res, next) => {
   try {
@@ -51,8 +52,22 @@ module.exports = async (req, res, next) => {
       }
     }
 
+    if (member.deleted_flg) {
+      let activate = await Membership.activate({
+        email: member.email
+      });
+      if (activate.httpCode !== 200) {
+        return res.status(activate.httpCode).send(activate.data);
+      }
+
+      if (!activate.data.data.isSuccess) {
+        throw new Error("ACTIVATE_AFFLIATE_FAIL");
+      }
+    }
+
     await Member.update({
-      member_sts: MemberStatus.ACTIVATED
+      member_sts: MemberStatus.ACTIVATED,
+      deleted_flg: false
     }, {
         where: {
           id: member.id

@@ -32,6 +32,10 @@ module.exports = {
 
 function _getIpClient(req) {
   const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
-  logger.info('_getIpClient', req.headers);
-  return registerIp;
+  let ips = registerIp.split(",");
+  if (ips.length > 0) {
+    return ips[0].trimStart().trimEnd();
+  }
+
+  return "";
 }

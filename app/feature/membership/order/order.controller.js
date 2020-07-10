@@ -18,6 +18,7 @@ const IpCountry = require('app/lib/ip-country');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const Hashids = require('hashids/cjs');
+const database = require('app/lib/database').db().wallet;
 
 module.exports = {
   getOrders: async (req, res, next) => {
@@ -59,6 +60,7 @@ module.exports = {
   },
 
   makePaymentCrypto: async (req, res, next) => {
+    let transaction;
     try {
       let checkCondition = await _checkConditionCreateOrder(req, MemberAccountType.Crypto);
       if (checkCondition) {
@@ -94,7 +96,6 @@ module.exports = {
         receiving_addresses_id: receivingAddress.id,
         amount: req.body.amount,
         your_wallet_address: req.body.your_wallet_address,
-        wallet_id: req.body.wallet_id,
         txid: req.body.txid,
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
@@ -102,16 +103,38 @@ module.exports = {
         rate_usd: rateUsd,
         amount_usd: (rateUsd * req.body.amount),
       }
-      let result = await MembershipOrder.create(data);
+
+      if (req.body.wallet_id) {
+        data.wallet_id = req.body.wallet_id;
+      }
+
+      transaction = await database.transaction();
+      let result = await MembershipOrder.create(data, { transaction: transaction });
+      await Member.update({
+        latest_membership_order_id: result.id
+      }, {
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
+      await transaction.commit();
+
       return res.ok(mapper(result));
     }
     catch (err) {
+      if (transaction) {
+        await transaction.rollback()
+      };
       logger.error("makePaymentCrypto: ", err);
       next(err);
     }
   },
 
   makePaymentBank: async (req, res, next) => {
+    let transaction;
     try {
       let checkCondition = await _checkConditionCreateOrder(req, MemberAccountType.Bank);
       if (checkCondition) {
@@ -134,15 +157,17 @@ module.exports = {
           id: req.body.membership_type_id
         }
       });
-      let rateUsd = 1;
-      const rateUsdConfig = await Setting.findOne({
+
+      let currencySymbol = "JPY";
+      let rateJPY = 1;
+      const rateJPYConfig = await Setting.findOne({
         where: {
-          key: `${config.setting.USD_RATE_BY_}${membershipType.currency_symbol}`
+          key: `${config.setting.USD_RATE_BY_}${currencySymbol}`
         }
       });
 
-      if (rateUsdConfig) {
-        rateUsd = parseFloat(rateUsdConfig.value);
+      if (rateJPYConfig) {
+        rateJPY = parseFloat(rateJPYConfig.value);
       }
 
       let salt = `${Date.now().toString()}-${req.user.id}`;
@@ -153,8 +178,8 @@ module.exports = {
         member_id: req.user.id,
         membership_type_id: membershipType.id,
         payment_type: MemberAccountType.Bank,
-        currency_symbol: membershipType.currency_symbol,
-        amount: membershipType.price,
+        currency_symbol: currencySymbol,
+        amount: (rateJPY * membershipType.price),
         bank_account_id: bankAccount.id,
         branch_name: bankAccount.branch_name,
         account_number: bankAccount.account_number,
@@ -165,13 +190,29 @@ module.exports = {
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
         order_no: orderId,
-        rate_usd: rateUsd,
-        amount_usd: (rateUsd * membershipType.price)
+        rate_usd: rateJPY,
+        amount_usd: membershipType.price
       }
-      let result = await MembershipOrder.create(data);
+
+      transaction = await database.transaction();
+      let result = await MembershipOrder.create(data, { transaction: transaction });
+      await Member.update({
+        latest_membership_order_id: result.id
+      }, {
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
+      await transaction.commit();
       return res.ok(mapper(result));
     }
     catch (err) {
+      if (transaction) {
+        await transaction.rollback()
+      };
       logger.error("makePaymentBank: ", err);
       next(err);
     }

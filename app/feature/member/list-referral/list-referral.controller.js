@@ -35,7 +35,7 @@ module.exports = async (req, res, next) => {
       include: [{
         model: MembershipType,
         as: 'MembershipType',
-        attributes: ['id', 'name']
+        attributes: ['id', 'name', 'type']
       }],
       where: {
         referrer_code: member.referral_code,
@@ -47,10 +47,10 @@ module.exports = async (req, res, next) => {
     for (let i = 0; i < items.length; i++) {
       let item = items[i]
       let status = ''
-      if (item['MembershipType.name'] == MembershipTypeName.Paid) {
+      if (item['MembershipType.type'] == MembershipTypeName.Paid) {
         status = MembershipTypeName.Paid
       }
-      else if (item['MembershipType.name'] == MembershipTypeName.Free) {
+      else if (item['MembershipType.type'] == MembershipTypeName.Free) {
         let orderCount = await MembershipOrder.count({
           where: {
             member_id: item.id,
@@ -71,6 +71,7 @@ module.exports = async (req, res, next) => {
         kyc_status: item.kyc_status,
         membership_type_id: item['MembershipType.id'],
         membership_type_name: item['MembershipType.name'],
+        membership_type_type: item['MembershipType.type'],
         created_at: item.createdAt,
         status: status
       })

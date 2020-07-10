@@ -96,7 +96,6 @@ module.exports = {
         receiving_addresses_id: receivingAddress.id,
         amount: req.body.amount,
         your_wallet_address: req.body.your_wallet_address,
-        wallet_id: req.body.wallet_id,
         txid: req.body.txid,
         payment_ref_code: orderId,
         referrer_code: req.user.referrer_code,
@@ -104,6 +103,11 @@ module.exports = {
         rate_usd: rateUsd,
         amount_usd: (rateUsd * req.body.amount),
       }
+
+      if (req.body.wallet_id) {
+        data.wallet_id = req.body.wallet_id;
+      }
+
       transaction = await database.transaction();
       let result = await MembershipOrder.create(data, { transaction: transaction });
       await Member.update({
@@ -203,7 +207,6 @@ module.exports = {
           transaction: transaction
         });
       await transaction.commit();
-
       return res.ok(mapper(result));
     }
     catch (err) {

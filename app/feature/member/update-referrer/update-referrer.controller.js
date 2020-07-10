@@ -35,7 +35,7 @@ module.exports = async (req, res, next) => {
         return res.serverInternalError();
       }
 
-      await Member.update({
+      let [_, response] = await Member.update({
         referrer_code: req.body.referrer_code
       }, {
           where: {
@@ -43,7 +43,9 @@ module.exports = async (req, res, next) => {
           },
           returning: true,
           plain: true
-        })
+        });
+
+      req.session.user = response;
       return res.ok(true)
     }
 

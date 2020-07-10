@@ -37,7 +37,7 @@ module.exports = {
     try {
       const setting = await Setting.findOne({
         where: {
-          key: config.setting.MEMBERSHIP_COMISSION_USDT_MINIMUM_CLAIM_AMOUNT
+          key: config.setting.MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT
         }
       });
 
@@ -120,7 +120,7 @@ module.exports = {
     try {
       const setting = await Setting.findOne({
         where: {
-          key: config.setting.MEMBERSHIP_COMISSION_USDT_MINIMUM_CLAIM_AMOUNT
+          key: config.setting.MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT
         }
       });
       return res.ok({

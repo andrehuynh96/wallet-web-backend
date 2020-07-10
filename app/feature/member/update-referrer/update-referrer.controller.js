@@ -2,6 +2,7 @@ const logger = require("app/lib/logger");
 const Member = require("app/model/wallet").members;
 const MemberStatus = require('app/model/wallet/value-object/member-status');
 const Affiliate = require('app/lib/reward-system/affiliate');
+const Membership = require('app/lib/reward-system/membership');
 
 module.exports = async (req, res, next) => {
   try {
@@ -26,6 +27,13 @@ module.exports = async (req, res, next) => {
 
     if (member.referrer_code) {
       return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
+    }
+
+
+    const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
+    if (referrerCode.httpCode !== 200 ||
+      !referrerCode.data.data.isValid) {
+      return res.status(referrerCode.httpCode).send(referrerCode.data);
     }
 
     let result = await Affiliate.updateReferrer({ email: member.email, referrerCode: req.body.referrer_code });

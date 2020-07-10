@@ -6,11 +6,11 @@ module.exports = {
       return Promise.all([
         queryInterface.describeTable('members')
           .then(async (tableDefinition) => {
-            if (tableDefinition['lastest_membership_order_id']) {
+            if (tableDefinition['latest_membership_order_id']) {
               return Promise.resolve();
             }
 
-            return queryInterface.addColumn('members', 'lastest_membership_order_id', {
+            return queryInterface.addColumn('members', 'latest_membership_order_id', {
               type: Sequelize.DataTypes.INTEGER,
               allowNull: true
             });
@@ -23,7 +23,7 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction(t => {
       return Promise.all([
-        queryInterface.removeColumn('members', 'lastest_membership_order_id', { transaction: t }),
+        queryInterface.removeColumn('members', 'latest_membership_order_id', { transaction: t }),
       ]);
     });
   }

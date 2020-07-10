@@ -8,7 +8,7 @@ axios.interceptors.request.use(function (config) {
     let time = Date.now();
     let url = Url.parse(config.url, true)
     let secret = config.headers["x-secret"];
-    const content = `${secret}\n${config.method.toUpperCase()}\n${url.pathname}\n${JSON.stringify(config.data)}\n${time}`;
+    const content = `${secret}\n${config.method.toUpperCase()}\n${url.pathname}${url.search}\n${JSON.stringify(config.data)}\n${time}`;
     const hash = crypto
       .createHash('sha256')
       .update(content)

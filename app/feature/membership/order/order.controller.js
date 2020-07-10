@@ -59,6 +59,7 @@ module.exports = {
   },
 
   makePaymentCrypto: async (req, res, next) => {
+    let transaction;
     try {
       let checkCondition = await _checkConditionCreateOrder(req, MemberAccountType.Crypto);
       if (checkCondition) {
@@ -102,16 +103,33 @@ module.exports = {
         rate_usd: rateUsd,
         amount_usd: (rateUsd * req.body.amount),
       }
-      let result = await MembershipOrder.create(data);
+      transaction = await database.transaction();
+      let result = await MembershipOrder.create(data, { transaction: transaction });
+      await Member.update({
+        latest_membership_order_id: result.id
+      }, {
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
+      await transaction.commit();
+
       return res.ok(mapper(result));
     }
     catch (err) {
+      if (transaction) {
+        await transaction.rollback()
+      };
       logger.error("makePaymentCrypto: ", err);
       next(err);
     }
   },
 
   makePaymentBank: async (req, res, next) => {
+    let transaction;
     try {
       let checkCondition = await _checkConditionCreateOrder(req, MemberAccountType.Bank);
       if (checkCondition) {
@@ -170,10 +188,27 @@ module.exports = {
         rate_usd: rateJPY,
         amount_usd: membershipType.price
       }
-      let result = await MembershipOrder.create(data);
+
+      transaction = await database.transaction();
+      let result = await MembershipOrder.create(data, { transaction: transaction });
+      await Member.update({
+        latest_membership_order_id: result.id
+      }, {
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
+      await transaction.commit();
+
       return res.ok(mapper(result));
     }
     catch (err) {
+      if (transaction) {
+        await transaction.rollback()
+      };
       logger.error("makePaymentBank: ", err);
       next(err);
     }

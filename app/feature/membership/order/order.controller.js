@@ -48,8 +48,8 @@ module.exports = {
           membership_orders.updated_at,
         membership_types.type as membership_type
         FROM membership_orders INNER JOIN membership_types on membership_orders.membership_type_id = membership_types.id
-        WHERE membership_orders.member_id = '${req.user.id}' 
-        OREDER BY membership_orders.created_at DESC
+        WHERE membership_orders.member_id = '${req.user.id}'
+        ORDER BY membership_orders.created_at DESC
       `;
       var membershipOrders = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
       return res.ok(membershipOrderMapper(membershipOrders));

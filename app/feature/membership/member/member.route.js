@@ -24,7 +24,7 @@ router.get(
 
 router.get(
   '/member/payment-accounts/crypto',
-  authenticate,
+  //authenticate,
   controller.getPaymentCryptoAccount
 );
 

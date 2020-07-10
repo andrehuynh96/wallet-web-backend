@@ -48,6 +48,11 @@ module.exports = {
 
       const where = { id: req.body.member_account_id };
       const memberAccount = await MemberAccount.findOne({ where: where });
+      if (!memberAccount) {
+        return res.badRequest(res.__("NOT_FOUND_MEMBER_ACCOUNT"), "NOT_FOUND_MEMBER_ACCOUNT");
+      }
+
+
       let claimObject = {
         ...createClaimRequestMapper(memberAccount),
       };
@@ -68,7 +73,8 @@ module.exports = {
         member_id: req.user.id,
         currency_symbol: req.body.currency_symbol,
         amount: req.body.amount,
-        tx_id: _resultCreateData.tx_id
+        tx_id: _resultCreateData.tx_id,
+        note: memberAccount.wallet_address
       };
 
       await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });

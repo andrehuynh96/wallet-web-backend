@@ -134,6 +134,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: true,
     },
+    latest_membership_order_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
       underscored: true,
       timestamps: true,

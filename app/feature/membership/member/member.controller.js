@@ -140,7 +140,16 @@ module.exports = {
           actived_flg: true
         }
       });
-      return res.ok(result);
+
+      let response = [];
+      const currencies = [...new Set(result.map(i => i.currency_symbol))];
+      for (let i of currencies) {
+        let csi = result.filter(x => x.currency_symbol == i);
+        let ix = random(csi.length);
+        response.push(csi[ix]);
+      }
+
+      return res.ok(response);
     }
     catch (err) {
       logger.error("getPaymentCryptoAccount: ", err);

@@ -17,13 +17,13 @@ router.get(
 
 router.get(
   '/member/payment-accounts/crypto',
-  //authenticate,
+  authenticate,
   controller.getPaymentCryptoAccount
 );
 
 router.get(
   '/member/payment-accounts/allow-bank',
-  //authenticate,
+  authenticate,
   controller.allowBankMethod
 );
 

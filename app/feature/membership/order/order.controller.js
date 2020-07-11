@@ -283,10 +283,17 @@ async function _checkConditionCreateOrder(req, paymentType) {
     return "YOUR_REFERRER_NOT_MEMBERSHIP";
   }
 
+  let where = {};
+  if (paymentType == MemberAccountType.Crypto) {
+    where.wallet_id = {
+      [Op.ne]: null
+    }
+  }
   let order = await MembershipOrder.findOne({
     where: {
       member_id: req.user.id,
       payment_type: paymentType,
+      ...where,
       status: {
         [Op.in]: [MembershipOrderStatus.Pending,
         MembershipOrderStatus.InProcessing,

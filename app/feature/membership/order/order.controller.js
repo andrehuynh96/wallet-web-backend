@@ -247,7 +247,8 @@ module.exports = {
             MembershipOrderStatus.InProcessing,
             MembershipOrderStatus.Completed]
           }
-        }
+        },
+        order: [['created_at', 'DESC']]
       });
 
       if (!membershipOrder) {

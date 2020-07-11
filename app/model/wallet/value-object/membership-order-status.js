@@ -6,7 +6,3 @@ const MembershipOrderStatus = {
 };
 
 module.exports = MembershipOrderStatus;
-
-
-
-

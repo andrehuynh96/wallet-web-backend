@@ -128,15 +128,25 @@
           <table class="main" style="text-align: center;" align="center">
             <tr>
               <td class="head-logo">
-                <img src="<%=imageUrl%>/moon-logo.png" alt="">
+                <img src="<%=imageUrl%>/moon-logo.png" alt="moonstake logo">
               </td>
             </tr>
             <tr>
-              <td>
-                <p style="margin-bottom: 3px"><%=name%></p>
-                <p style="margin-bottom: 3px"><%=email%></p>
+              <td style="padding: 108px 60px 0 60px">
+                <img src="<%=imageUrl%>/key-visual.png" alt="" style="margin-bottom: 26px">
+                <div style="font-size: 15px; line-height: 23px; color: #000;text-align: left;">
+                        <p >
+                            Hi!
+                        </p>
+                        <p style="margin-bottom: 32px;"><%=email%> is inviting you to join Moonstake, to stake your coins and to also become a gold member!</p>
+                        <p>
+                            Click the following button to join Moonstake. <br />If you already have an account, click the following button to use your friend’s referral code.
+                        </p>
+                </div>
+                
               </td>
             </tr>
+            
             <tr>
               <td>
                 <div>
@@ -146,13 +156,56 @@
                           <center style="color:#ffffff;font-family: 'Montserrat', sans-serif;font-size:14px; font-weight: 600; ">Verify email</center>
                         </v:roundrect>
                       <![endif]-->
-                  <a href="<%=link%>"
-                    style="background: rgb(0,224,147); background: -moz-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: -webkit-linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%); background: linear-gradient(45deg, rgba(0,224,147,1) 0%, rgba(0,124,255,1) 100%);border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 18px; margin: 18px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;"><%=link%>
-                  </a>
+                  <a target="_blank" href="<%=link%>"
+                    style="background: rgb(0,224,147); background: -moz-radial-gradient(100% 987.76% at 3.41% 100%, #007CFF 0.27%, #00E093 100%);; background: -webkit-radial-gradient(100% 987.76% at 3.41% 100%, #007CFF 0.27%, #00E093 100%);; background: radial-gradient(100% 987.76% at 3.41% 100%, #007CFF 0.27%, #00E093 100%);;border:1px solid #00ABCD;border-radius:8px;-webkit-border-radius: 8px; -moz-border-radius: 8px; color:#ffffff;font-family: 'Montserrat', sans-serif;font-size: 14px; font-weight: 600; letter-spacing: 0; line-height: 17px; margin: 18px 0 0 0; padding: 13px 18px; display:inline-block; text-align:center; text-decoration:none; -webkit-text-size-adjust:none;mso-hide:all;">
+                    Sign-up Now
+                    </a>
                 </div>
+                <p style="margin-top: 44px;color:#000;font-size: 15px;list-style: 23px;text-align: center;">
+                  <%=email%>’s referral code
+                </p>
+                <p style="color:#0D89FF; font-weight: 600;margin-bottom: 32px; font-size: 15px;"><%=referralCode%></p>
+                <p style="color:#000; margin-bottom: 32px; font-size: 15px;">
+                    If the button above doesn't work, please use this link. <br>
+                    <a target="_blank" href="<%=link%>"><%=link%></a>
+                    
+                </p>
+                <p style="color:#000; margin-bottom: 26px; font-size: 15px;">
+                    Or you can manually sign-up by going to <a href="https://wallet.moonstake.io/">wallet.moonstake.io</a> <br> and entering the above referral code.
+                    
+                </p>
               </td>
 
             </tr>
+          </table>
+          <table style="background-color: rgba(186, 186, 186, 0.5); padding:14px;">
+              <thead>
+                  <th style="font-size: 12px; line-height: 15px; color:#000; font-weight: normal; text-align: left;">Download our app and start staking</th>
+                  <th style="font-size: 12px; line-height: 15px; color:#000; font-weight: normal; text-align: left;">Manage your stakes via your browser</th>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td >
+                          <div style="text-align: left;margin-top: 12px;">
+                              <span style="margin-right: 12px;">
+                                  <a target="_blank" href="https://apps.apple.com/us/app/moonstake-wallet/id1502532651">
+                                      <img width="124px" height="40px" src="<%=imageUrl%>/app-store.jpg" alt="download app store">
+                                  </a>
+                              </span>
+                              <span>
+                                <a target="_blank" href="https://play.google.com/store/apps/details?id=io.moonstake.wallet">
+                                    <img width="124px" height="40px" src="<%=imageUrl%>/google-play.jpg" alt="download google play">
+                                </a>
+                            </span>
+                          </div>
+                      </td>
+                      <td>
+                          <div style="margin-top: 12px; cursor: pointer; width: 160px; border-radius: 5px; padding:8px 12px;background-color:#182850 ; border:1px solid #a6a6a6;  font-size: 15px; line-height: 23px; text-align: center;">
+                              <a target="_blank" style="color:#fff;" href="https://wallet.moonstake.io/">WEB WALLET</a>
+                          </div>
+                      </td>
+                  </tr>
+              </tbody>
           </table>
         </div>
       </td>

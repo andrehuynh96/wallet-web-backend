@@ -51,6 +51,7 @@ async function _sendEmailReferral(memberName, memberEmail, emails, referralCode)
     let data = {
       imageUrl: config.website.urlImages,
       link: `${config.membership.referralUrl}${referralCode}`,
+      referralCode: referralCode,
       name: memberName,
       email: memberEmail
     }

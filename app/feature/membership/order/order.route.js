@@ -312,7 +312,29 @@ module.exports = router;
 *         examples:
 *           application/json:
 *             {
-                  "data": true|false
+                  "data":{
+                      "id": 0,
+                      "member_id": 0,
+                      "bank_account_id": 0,
+                      "receiving_addresses_id": 0,
+                      "membership_type_id": 0,
+                      "payment_type": "",
+                      "currency_symbol": "",
+                      "amount": 0,
+                      "amount_usd": 0,
+                      "account_number": "",
+                      "bank_name": "",
+                      "swift": "",
+                      "account_holder": "",
+                      "payment_ref_code": "",
+                      "wallet_address": "",
+                      "your_wallet_address": "",
+                      "txid": "",
+                      "rate_by_usd": 0,
+                      "status": "",
+                      "created_at": "",
+					            "updated_at": ""
+                    }
               }
 *       400:
 *         description: Error

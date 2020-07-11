@@ -46,21 +46,27 @@ module.exports = async (req, res, next) => {
     result = []
     for (let i = 0; i < items.length; i++) {
       let item = items[i]
-      let status = ''
-      if (item['MembershipType.type'] == MembershipTypeName.Paid) {
-        status = MembershipTypeName.Paid
+      let status = '';
+      if (item.deleted_flg) {
+        status = "ACCOUNT_DEACTIVATED";
       }
-      else if (item['MembershipType.type'] == MembershipTypeName.Free) {
-        let orderCount = await MembershipOrder.count({
-          where: {
-            member_id: item.id,
-            status: MembershipOrderStatus.Pending
+
+      else {
+        if (item['MembershipType.type'] == MembershipTypeName.Paid) {
+          status = "PAYMENT_ACCEPTED";
+        }
+        else if (item['MembershipType.type'] == MembershipTypeName.Free) {
+          let orderCount = await MembershipOrder.count({
+            where: {
+              member_id: item.id,
+              status: MembershipOrderStatus.Pending
+            }
+          })
+          if (orderCount) {
+            status = 'PAYMENT_PENDING';
           }
-        })
-        if (orderCount)
-          status = 'Order pending'
-        else
-          status = 'No order'
+        }
+
       }
       result.push({
         id: item.id,
@@ -76,7 +82,6 @@ module.exports = async (req, res, next) => {
         status: status
       })
     }
-    console.log(result)
     return res.ok({
       offset: offset,
       limit: limit,

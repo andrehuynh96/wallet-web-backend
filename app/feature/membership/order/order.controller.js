@@ -251,7 +251,7 @@ module.exports = {
       });
 
       if (!membershipOrder) {
-        return res.notFound();
+        return res.ok({});
       }
 
       return res.ok(membershipOrder);

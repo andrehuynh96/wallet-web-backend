@@ -10,7 +10,6 @@ const destObject = {
     '[].account_holder': '[].account_holder',
     '[].account_number': '[].account_number',
     '[].account_address': '[].account_address',
-    '[].swift': '[].swift',
     '[].default_flg': '[].default_flg'
   },
   single: {
@@ -22,7 +21,6 @@ const destObject = {
     account_holder: 'account_holder',
     account_number: 'account_number',
     account_address: 'account_address',
-    swift: 'swift',
     default_flg: 'default_flg'
   }
 };

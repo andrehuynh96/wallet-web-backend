@@ -40,7 +40,8 @@ module.exports = {
           key: config.setting.MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT
         }
       });
-
+      if (!setting) 
+        return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
       let minimunClaimAmount = parseFloat(setting.value);
       if (req.body.amount < minimunClaimAmount) {
         return res.badRequest(res.__("AMOUNT_TOO_SMALL"), "AMOUNT_TOO_SMALL");
@@ -123,6 +124,8 @@ module.exports = {
           key: config.setting.MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT
         }
       });
+      if (!setting) 
+        return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
       return res.ok({
         minimun_claim_amount: parseFloat(setting.value)
       });

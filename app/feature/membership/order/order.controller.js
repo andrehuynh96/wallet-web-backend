@@ -185,7 +185,7 @@ module.exports = {
         branch_name: bankAccount.branch_name,
         account_number: bankAccount.account_number,
         bank_name: bankAccount.bank_name,
-        swift: bankAccount.swift,
+        // swift: bankAccount.swift,
         account_name: bankAccount.account_name,
         account_type: bankAccount.account_type,
         payment_ref_code: orderId,

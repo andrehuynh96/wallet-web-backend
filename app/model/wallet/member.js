@@ -138,13 +138,28 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    country_phone_code: {
+      type: DataTypes.STRING(64),
+      allowNull: true
+    },
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 
   Member.associate = (models) => {
     Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" });
+
+    Member.hasMany(models.membership_orders, {
+      as: "membership_orders",
+      foreignKey: 'member_id',
+    });
+
+    Member.hasOne(models.membership_orders, {
+      as: "LatestMembershipOrder",
+      foreignKey: 'id',
+      sourceKey: 'latest_membership_order_id',
+    });
 
     Member.belongsTo(models.membership_types, {
       as: 'MembershipType',

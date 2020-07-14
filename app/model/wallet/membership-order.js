@@ -158,6 +158,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'receiving_addresses_id',
     });
 
+    MembershipOrder.belongsTo(models.bank_accounts, {
+      as: 'BankAccount',
+      foreignKey: 'bank_account_id',
+    });
   };
 
   return MembershipOrder;

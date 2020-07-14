@@ -12,10 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false,
     },
-    bank_account_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
     receiving_addresses_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -124,6 +120,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       default: false,
     },
+    description: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+    },
+    approved_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    }
   }, {
       underscored: true,
       timestamps: true,
@@ -140,9 +144,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'membership_type_id',
     });
 
-    MembershipOrder.belongsTo(models.bank_accounts, {
-      as: 'BankAccount',
-      foreignKey: 'bank_account_id',
+    MembershipOrder.belongsTo(models.wallets, {
+      as: 'Wallet',
+      foreignKey: 'wallet_id',
     });
 
     MembershipOrder.belongsTo(models.receiving_addresses, {

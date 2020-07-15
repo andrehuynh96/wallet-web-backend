@@ -89,12 +89,18 @@ module.exports = router;
  *             {
                 "data": [
                     {
-                      "currency": "ETH",
-                      "amount": "250.8"
+                      "currency": "USD",
+                      "total_amount": 30,
+                      "available_amount": 24,
+                      "pending_amount": 6,
+                      "paid_amount": 0
                     },
                     {
-                      "currency": "USD",
-                      "amount": "1323364"
+                     "currency": "USD",
+                      "total_amount": 30,
+                      "available_amount": 24,
+                      "pending_amount": 6,
+                      "paid_amount": 0
                     }
                   ]
  *             }
@@ -145,7 +151,7 @@ module.exports = router;
                 "data": {
                   "items": [
                     {
-                       "id": "7",
+                        "id": "7",
                         "currency_symbol": "ETH",
                         "amount": "0.00001",
                         "created_at": "2020-03-27T08:36:56.308Z",

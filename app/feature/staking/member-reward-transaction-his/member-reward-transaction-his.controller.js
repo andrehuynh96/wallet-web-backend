@@ -11,7 +11,7 @@ module.exports = {
       const { query: { offset, limit, order_by }, user } = req;
       const where = {
         member_id: user.id,
-        system_type: SystemType.MEMBERSHIP
+        system_type: SystemType.AFFILIATE
       };
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);

@@ -28,7 +28,7 @@ module.exports = {
   },
   statistics: async (req, res, next) => {
     try {
-      let result = await Affiliate.getStatistics({ email: req.user.email });
+      let result = await Affiliate.getAffiliateStatistics({ email: req.user.email });
       return res.status(result.httpCode).send(result.data);
     }
     catch (err) {

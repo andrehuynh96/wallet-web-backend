@@ -288,6 +288,30 @@ class RewardSystem {
     }
   }
 
+  async getAffiliateStatistics({ email }) {
+    try {
+      const data = {
+        ext_client_id: email
+      };
+      const queryData = queryString.stringify(data);
+      let accessToken = await this._getToken();
+      let result = await axios.get(`${this.baseUrl}/affiliate-reward-statistics?${queryData}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": this.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("get available rewards fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
 
   async _getToken() {
     let key = `${redisResource.rewardSystem.token}:${this.typeId}`;

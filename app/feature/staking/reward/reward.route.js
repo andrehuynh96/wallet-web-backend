@@ -89,18 +89,112 @@ module.exports = router;
  *           application/json:
  *             {
                 "data": [
-                    {
-                      "currency": "USD",
-                      "total_amount": 30,
-                      "available_amount": 24,
-                      "pending_amount": 6,
+                      {
+                      "currency_symbol": "ATOM",
+                      "reward_list": [
+                        {
+                          "level": 0,
+                          "amount": 0,
+                          "membership_policy": {
+                            "proportion_share": 10,
+                            "membership_rate": {
+                              "d146bc01-9e56-4664-9788-79e518877f0b": 20,
+                              "88fda933-0658-49c4-a9c7-4c0021e9a071": 100
+                            }
+                          }
+                        },
+                        {
+                          "level": 1,
+                          "amount": 0
+                        },
+                        {
+                          "level": 2,
+                          "amount": 0
+                        },
+                        {
+                          "level": 3,
+                          "amount": 0
+                        },
+                        {
+                          "level": 4,
+                          "amount": 0
+                        }
+                      ],
+                      "total_amount": 0,
+                      "available_amount": 0,
+                      "pending_amount": 0,
                       "paid_amount": 0
                     },
                     {
-                      "currency": "USD",
-                      "total_amount": 30,
-                      "available_amount": 24,
-                      "pending_amount": 6,
+                      "currency_symbol": "IRIS",
+                      "reward_list": [
+                        {
+                          "level": 0,
+                          "amount": 0,
+                          "membership_policy": {
+                            "proportion_share": 10,
+                            "membership_rate": {
+                              "d146bc01-9e56-4664-9788-79e518877f0b": 20,
+                              "88fda933-0658-49c4-a9c7-4c0021e9a071": 100
+                            }
+                          }
+                        },
+                        {
+                          "level": 1,
+                          "amount": 0
+                        },
+                        {
+                          "level": 2,
+                          "amount": 0
+                        },
+                        {
+                          "level": 3,
+                          "amount": 0
+                        },
+                        {
+                          "level": 4,
+                          "amount": 0
+                        }
+                      ],
+                      "total_amount": 0,
+                      "available_amount": 0,
+                      "pending_amount": 0,
+                      "paid_amount": 0
+                    },
+                    {
+                      "currency_symbol": "ONG",
+                      "reward_list": [
+                        {
+                          "level": 0,
+                          "amount": 0,
+                          "membership_policy": {
+                            "proportion_share": 10,
+                            "membership_rate": {
+                              "d146bc01-9e56-4664-9788-79e518877f0b": 20,
+                              "88fda933-0658-49c4-a9c7-4c0021e9a071": 100
+                            }
+                          }
+                        },
+                        {
+                          "level": 1,
+                          "amount": 0
+                        },
+                        {
+                          "level": 2,
+                          "amount": 0
+                        },
+                        {
+                          "level": 3,
+                          "amount": 0
+                        },
+                        {
+                          "level": 4,
+                          "amount": 0
+                        }
+                      ],
+                      "total_amount": 0,
+                      "available_amount": 0,
+                      "pending_amount": 0,
                       "paid_amount": 0
                     }
                   ]

@@ -1,75 +1,91 @@
 module.exports = {
-    ETH: {
-      "symbol": "ETH",
-      "name": "Ethereum"
-    },
-    ATOM: {
-      "symbol": "ATOM",
-      "name": "Cosmos"
-    },
-    IRIS: {
-      "symbol": "IRIS",
-      "name": "Iris"
-    },
-    ONT: {
-      "symbol": "ONT",
-      "name": "Ontology"
-    },
-    ADA: {
-      "symbol": "ADA",
-      "name": "Cardano"
-    },
-    BTC: {
-      "symbol": "BTC",
-      "name": "Bitcoin"
-    },
-    USDT: {
-      "symbol": "USDT",
-      "name": "Tether USD"
-    },
-    BCH: {
-      "symbol": "BCH",
-      "name": "Bitcoin Cash"
-    },
-    LTC: {
-      "symbol": "LTC",
-      "name": "Litecoin"
-    },
-    DOGE: {
-      "symbol": "DOGE",
-      "name": "Dogecoin"
-    },
-    DASH: {
-      "symbol": "DASH",
-      "name": "Dash"
-    },
-    XLM: {
-      "symbol": "XLM",
-      "name": "Stellar"
-    },
-    TRX: {
-      "symbol": "TRX",
-      "name": "TRON"
-    },
-    ETC: {
-      "symbol": "ETC",
-      "name": "Ethereum Classic"
-    },
-    TOMO: {
-      "symbol": "TOMO",
-      "name": "TomoChain"
-    },
-    EOS: {
-      "symbol": "EOS",
-      "name": "EOS"
-    },
-    XTZ: {
-      "symbol": "XTZ",
-      "name": "Tezos"
-    },
-    NEO: {
-      "symbol": "NEO",
-      "name": "NEO"
-    }
+  ETH: {
+    "symbol": "ETH",
+    "name": "Ethereum",
+    "coingeckoId": "ethereum"
+  },
+  ATOM: {
+    "symbol": "ATOM",
+    "name": "Cosmos",
+    "coingeckoId": "cosmos"
+  },
+  IRIS: {
+    "symbol": "IRIS",
+    "name": "Iris",
+    "coingeckoId": "iris-network"
+  },
+  ONT: {
+    "symbol": "ONT",
+    "name": "Ontology",
+    "coingeckoId": "ontology"
+  },
+  ADA: {
+    "symbol": "ADA",
+    "name": "Cardano",
+    "coingeckoId": "cardano"
+  },
+  BTC: {
+    "symbol": "BTC",
+    "name": "Bitcoin",
+    "coingeckoId": "bitcoin"
+  },
+  USDT: {
+    "symbol": "USDT",
+    "name": "Tether USD"
+  },
+  BCH: {
+    "symbol": "BCH",
+    "name": "Bitcoin Cash",
+    "coingeckoId": "bitcoin-cash"
+  },
+  LTC: {
+    "symbol": "LTC",
+    "name": "Litecoin",
+    "coingeckoId": "litecoin"
+  },
+  DOGE: {
+    "symbol": "DOGE",
+    "name": "Dogecoin",
+    "coingeckoId": "dogecoin"
+  },
+  DASH: {
+    "symbol": "DASH",
+    "name": "Dash",
+    "coingeckoId": "dash"
+  },
+  XLM: {
+    "symbol": "XLM",
+    "name": "Stellar",
+    "coingeckoId": "stellar"
+  },
+  TRX: {
+    "symbol": "TRX",
+    "name": "TRON",
+    "coingeckoId": "tron"
+  },
+  ETC: {
+    "symbol": "ETC",
+    "name": "Ethereum Classic",
+    "coingeckoId": "ethereum-classic"
+  },
+  TOMO: {
+    "symbol": "TOMO",
+    "name": "TomoChain",
+    "coingeckoId": "tomochain"
+  },
+  EOS: {
+    "symbol": "EOS",
+    "name": "EOS",
+    "coingeckoId": "eos"
+  },
+  XTZ: {
+    "symbol": "XTZ",
+    "name": "Tezos",
+    "coingeckoId": "tezos"
+  },
+  NEO: {
+    "symbol": "NEO",
+    "name": "NEO",
+    "coingeckoId": "neo"
   }
-  
+}

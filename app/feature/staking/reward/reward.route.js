@@ -90,12 +90,18 @@ module.exports = router;
  *             {
                 "data": [
                     {
-                      "currency": "ETH",
-                      "amount": "250.8"
+                      "currency": "USD",
+                      "total_amount": 30,
+                      "available_amount": 24,
+                      "pending_amount": 6,
+                      "paid_amount": 0
                     },
                     {
                       "currency": "USD",
-                      "amount": "1323364"
+                      "total_amount": 30,
+                      "available_amount": 24,
+                      "pending_amount": 6,
+                      "paid_amount": 0
                     }
                   ]
  *             }

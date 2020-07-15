@@ -19,6 +19,11 @@ module.exports = {
     "name": "Ontology",
     "coingeckoId": "ontology"
   },
+  ONG: {
+    "symbol": "ONG",
+    "name": "Ontology Gas",
+    "coingeckoId": "ong"
+  },
   ADA: {
     "symbol": "ADA",
     "name": "Cardano",

@@ -134,11 +134,13 @@ module.exports = router;
 *            - amount
 *            - currency_symbol
 *            - member_account_id
+*            - latest_id
 *            example:
 *               {
                        "amount": 250.039697,
                        "currency_symbol":"ETH",
-                       "member_account_id":1
+                       "member_account_id":1,
+                       "latest_id": 102
                  }
 *     produces:
 *       - application/json

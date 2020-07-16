@@ -69,11 +69,15 @@ module.exports = (sequelize, DataTypes) => {
     payout_transferred: {
       type: DataTypes.DATE,
       allowNull: true,
-    }
+    },
+    affiliate_latest_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   ClaimRequest.associate = (models) => {
     ClaimRequest.belongsTo(models.members, {

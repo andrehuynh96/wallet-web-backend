@@ -91,6 +91,7 @@ module.exports = router;
                 "data": [
                       {
                       "currency_symbol": "ATOM",
+                      "latest_id": 102,
                       "reward_list": [
                         {
                           "level": 0,
@@ -127,6 +128,7 @@ module.exports = router;
                     },
                     {
                       "currency_symbol": "IRIS",
+                      "latest_id": 102,
                       "reward_list": [
                         {
                           "level": 0,
@@ -163,6 +165,7 @@ module.exports = router;
                     },
                     {
                       "currency_symbol": "ONG",
+                      "latest_id": 102,
                       "reward_list": [
                         {
                           "level": 0,

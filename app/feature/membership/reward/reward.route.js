@@ -90,15 +90,15 @@ module.exports = router;
                 "data": [
                     {
                       "currency": "USD",
+                      "latest_id": 102,
                       "total_amount": 30,
-                      "available_amount": 24,
                       "pending_amount": 6,
                       "paid_amount": 0
                     },
                     {
                      "currency": "USD",
+                     "latest_id": 102,
                       "total_amount": 30,
-                      "available_amount": 24,
                       "pending_amount": 6,
                       "paid_amount": 0
                     }

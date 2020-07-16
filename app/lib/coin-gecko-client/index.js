@@ -15,10 +15,10 @@ module.exports = {
       if (price === null) {
         const coinGeckoClient = new CoinGecko();
         const coinPrices = await coinGeckoClient.simple.price({
-          ids: [Platform[platform_name].name],
+          ids: [Platform[platform_name].coingeckoId],
           vs_currencies: [currency]
         });
-        price = coinPrices.data[Platform[platform_name].name.toLowerCase()][currency];
+        price = coinPrices.data[Platform[platform_name].coingeckoId.toLowerCase()][currency];
         //10p
         await cache.setAsync(key, price, "EX", 30);
       }

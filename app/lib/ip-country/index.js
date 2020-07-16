@@ -1,12 +1,19 @@
 const logger = require('app/lib/logger');
 const Axios = require('axios');
 const config = require('app/config');
-var requestIp = require('request-ip');
+
 module.exports = {
   getCountryLocal: async (req) => {
     try {
-      const _ip = _getIpClient(req);
-      const result = await Axios.get(`https://freegeoip.app/json/${_ip}`);
+      const ip = _getIpClient(req);
+      let key = config.apiKeyIP;
+      let result;
+      if (key) {
+        result = await Axios.get(`http://pro.ip-api.com/json/${ip}?key=${key}`);
+      }
+      else {
+        result = await Axios.get(`http://ip-api.com/json/${ip}`);
+      }
       const data = {
         data: result.data,
         headers: req.headers
@@ -19,10 +26,17 @@ module.exports = {
   },
   isAllowCountryLocal: async (req) => {
     try {
-      const _ip = _getIpClient(req);
-      const _country = await Axios.get(`https://freegeoip.app/json/${_ip}`);
-      const _CountryWhitelist = config.membership.countryWhitelist.split(',')
-      return _CountryWhitelist.indexOf(_country.data.country_code) > -1;
+      const ip = _getIpClient(req);
+      let key = config.apiKeyIP;
+      let result;
+      if (key) {
+        result = await Axios.get(`http://pro.ip-api.com/json/${ip}?key=${key}`);
+      }
+      else {
+        result = await Axios.get(`http://ip-api.com/json/${ip}`);
+      }
+      const countryWhitelist = config.membership.countryWhitelist.split(',')
+      return countryWhitelist.indexOf(result.data.countryCode) > -1;
     } catch (err) {
       logger.error("isExistCountryLocal: ", err);
     }

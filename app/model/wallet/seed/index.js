@@ -1,11 +1,19 @@
 const config = require("app/config");
-if (config.enableSeed) {
+
+(async () => {
   try {
-    require("./member");
-    require("./currency");
-    require("./setting");
+    if (config.enableSeed) {
+      await Promise.all([require("./member")(),
+      require("./currency")(),
+      require("./membership-type")(),
+      require("./setting")()]);
+      await require("./level")();
+      await require("./level-property")();
+    }
+    await require("./migration-member-kyc")();
   }
   catch (err) {
     console.log(err)
   }
 }
+)()

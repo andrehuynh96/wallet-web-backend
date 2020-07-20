@@ -80,7 +80,14 @@ privkey.update = async (req, res, next) => {
       let data = {
         encrypted_private_key: item.encrypted_private_key
       }
-      await WalletPrivateKey.update(data, { where: { id: item.id, wallet_id: wallet_id, platform: item.platform } }, { transaction });
+      await WalletPrivateKey.update(data, {
+        where: {
+          id: item.id,
+          wallet_id: wallet_id,
+          platform: item.platform
+        },
+        transaction
+      });
     }
     await transaction.commit();
     return res.ok(true);
@@ -118,8 +125,23 @@ privkey.delete = async (req, res, next) => {
       return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND")
     }
     transaction = await database.transaction();
-    await WalletToken.update({ deleted_flg: true }, { where: { wallet_id: wallet_id, platform: key.platform } }, { transaction });
-    await WalletPrivateKey.update({ deleted_flg: true }, { where: { id: id } }, { transaction });
+    await WalletToken.update({
+      deleted_flg: true
+    }, {
+        where: {
+          wallet_id: wallet_id,
+          platform: key.platform
+        },
+        transaction
+      });
+    await WalletPrivateKey.update({
+      deleted_flg: true
+    }, {
+        where: {
+          id: id
+        },
+        transaction
+      });
     await transaction.commit();
     Webhook.removeAddresses(key.platform, key.address);
     return res.ok({ deleted: true });

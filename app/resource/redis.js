@@ -1,10 +1,14 @@
 const config = require('app/config');
+
 const keys = {
   stakingApi: {
     token: `${config.redis.prefix}:stakingapi:token`,
   },
-  affiliate: {
-    token: `${config.redis.prefix}:affiliate:token`,
+  rewardSystem: {
+    token: `${config.redis.prefix}:affiliate:token-${config.app.version}`,
+  },
+  plutxUserID: {
+    token: `${config.redis.prefix}:plutx-userid:token-${config.app.version}`,
   },
 };
 
@@ -19,4 +23,4 @@ String.prototype.withParams = function (...params) {
   return str;
 };
 
-module.exports = Object.assign({}, keys); 
+module.exports = Object.assign({}, keys);

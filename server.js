@@ -1,4 +1,4 @@
-/*eslint no-process-env: "off"*/
+/* eslint no-process-env: "off"*/
 require('dotenv').config();
 require('rootpath')();
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -10,7 +10,6 @@ const database = require('app/lib/database');
 const logger = require('app/lib/logger');
 const redis = require('app/lib/redis');
 const loader = require('app/loader');
-
 const app = express();
 app.use(morgan('dev'));
 

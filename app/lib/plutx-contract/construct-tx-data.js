@@ -17,7 +17,7 @@ const api = new InfinitoApi(opts);
 let coinAPI = api.ETH;
 
 module.exports = {
-  userAddAddress: async (_domain, _subDomain, _crypto, _address) => {
+  userAddAddress: async (_domain, _subDomain, _crypto, _address, signAddress) => {
     try {
       let paramTypeList = ["string", "string", "string", "string", "bytes"];
       let paramList = [
@@ -35,7 +35,7 @@ module.exports = {
       let encodedParams = eth.abi.encodeParameters(paramTypeList, paramList);
       encodedParams = encodedParams.replace('0x', '');
       let data = '0x' + sig.toString('hex') + encodedParams.toString('hex');
-      let ret = await _constructAndSignTx(data);
+      let ret = await _constructAndSignTx(data, signAddress);
       return ret;
     }
     catch (e) {
@@ -43,7 +43,7 @@ module.exports = {
       return null;
     }
   },
-  userEditAddress: async (_domain, _subDomain, _crypto, _newAddress) => {
+  userEditAddress: async (_domain, _subDomain, _crypto, _newAddress, signAddress) => {
     try {
       let paramTypeList = ["string", "string", "string", "string", "bytes"];
       let paramList = [
@@ -60,7 +60,7 @@ module.exports = {
       let encodedParams = eth.abi.encodeParameters(paramTypeList, paramList);
       encodedParams = encodedParams.replace('0x', '');
       let data = '0x' + sig.toString('hex') + encodedParams.toString('hex');
-      let ret = await _constructAndSignTx(data);
+      let ret = await _constructAndSignTx(data, signAddress);
       return ret;
     }
     catch (e) {
@@ -68,7 +68,7 @@ module.exports = {
       return null;
     }
   },
-  userRemoveAddress: async (_domain, _subDomain, _crypto) => {
+  userRemoveAddress: async (_domain, _subDomain, _crypto, signAddress) => {
     try {
       let paramTypeList = ["string", "string", "string", "bytes"];
       let paramList = [
@@ -84,7 +84,7 @@ module.exports = {
       let encodedParams = eth.abi.encodeParameters(paramTypeList, paramList);
       encodedParams = encodedParams.replace('0x', '');
       let data = '0x' + sig.toString('hex') + encodedParams.toString('hex');
-      let ret = await _constructAndSignTx(data);
+      let ret = await _constructAndSignTx(data, signAddress);
       return ret;
     }
     catch (e) {
@@ -92,7 +92,7 @@ module.exports = {
       return null;
     }
   },
-  createSubdomain: async (_domain, _subDomain) => {
+  createSubdomain: async (_domain, _subDomain, signAddress) => {
     try {
       return true;
       let paramTypeList = ["string", "string", "string", "bytes"];
@@ -109,7 +109,7 @@ module.exports = {
       let encodedParams = eth.abi.encodeParameters(paramTypeList, paramList);
       encodedParams = encodedParams.replace('0x', '');
       let data = '0x' + sig.toString('hex') + encodedParams.toString('hex');
-      let ret = await _constructAndSignTx(data);
+      let ret = await _constructAndSignTx(data, signAddress);
       return ret;
     }
     catch (e) {
@@ -119,38 +119,32 @@ module.exports = {
   },
 }
 
-async function _constructAndSignTx(data, value = '0x0') {
+async function _constructAndSignTx(data, from, value = '0x0') {
   return new Promise(async (resolve, reject) => {
-    // console.log('tx data:', data);
-    let from = await txCreator.getAddress();
-    // console.log('from address:', from);
+    console.log('from address:', from);
     let nonce = await coinAPI.getNonce(from);
-    // console.log('nonce:', nonce.data.nonce);
+    let fee = await coinAPI.getFeeRate();
     const txParams = {
       nonce: nonce.data.nonce,
-      gasPrice: config.txCreator.ETH.fee,
+      gasPrice: fee.data.ETH.medium,
       gasLimit: config.txCreator.ETH.gasLimit,
       to: config.plutx.dnsContract.address,
       value,
       data
     };
-    // console.log(txParams);
+    console.log(txParams);
     let tx = new Transaction(txParams, { chain: config.txCreator.ETH.testNet === 1 ? 'ropsten' : 'mainnet' });
-    // console.log('unsigned tx_raw:', tx.serialize().toString('hex'));
+    console.log('unsigned tx_raw:', tx.serialize().toString('hex'));
     let { tx_raw, tx_id } = await txCreator.sign({ raw: tx.serialize().toString('hex') });
-    let ret = await coinAPI.sendTransaction({ rawtx: '0x' + tx_raw });
     // console.log('signed tx_raw:', tx_raw);
-    console.log('ret:', ret);
-    if (ret.msg) reject('Broadcast tx failed: ' + ret.msg);
-    if (tx_raw) resolve({ tx_raw, tx_id: ret.data.tx_id.replace('0x', '') });
-    else reject('Sign and send transaction failed');
+    resolve({ tx_raw: '0x' + tx.serialize().toString('hex') });
   })
 }
 
 async function _sign(unsignedSig) {
   return new Promise(async (resolve, reject) => {
     let sig = await txCreator.signMessage({ raw: unsignedSig });
-    // console.log('sig:', sig);
+    console.log('sig:', sig);
     if (sig) resolve(sig);
     else reject('Sign domain admin signature failed');
   })
@@ -159,7 +153,7 @@ async function _sign(unsignedSig) {
 async function _getSig (subdomain, crypto) {
   try {
     const unsignedSig = utils.soliditySha3(config.plutx.domain, {"type" : 'string', "value" : subdomain}, crypto);
-    // console.log(config.plutx.domain, subdomain, crypto);
+    console.log(config.plutx.domain, subdomain, crypto);
     // console.log('unsigned sig:', unsignedSig);
     return await _sign(unsignedSig);
   }

@@ -1,4 +1,5 @@
-/*eslint no-process-env: "off"*/
+/* eslint no-process-env: "off"*/
+const pkg = require('../../package.json');
 require('dotenv').config();
 const logFolder = process.env.LOG_FOLDER || './public/logs';
 
@@ -22,6 +23,13 @@ const config = {
   rateLimit: process.env.RATE_LIMIT ? parseInt(process.env.RATE_LIMIT) : 100,
   recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
   recaptchaSecret: process.env.RECAPTCHA_SECRET,
+  app: {
+    name: process.env.APP_NAME || 'staking-web-wallet-api',
+    version: pkg.version,
+    buildNumber: process.env.BUILD_NUMBER || '',
+    description: pkg.description,
+    port: parseInt(process.env.PORT || process.env.APP_PORT),
+  },
   db: {
     wallet: {
       database: process.env.WALLET_DB_NAME,
@@ -57,7 +65,8 @@ const config = {
     deactiveAccount: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account.ejs",
     txSent: process.env.PARTNER_NAME.toLowerCase() + "/transaction-sent.ejs",
     txReceived: process.env.PARTNER_NAME.toLowerCase() + "/transaction-received.ejs",
-    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs"
+    deactiveAccountToAdmin: process.env.PARTNER_NAME.toLowerCase() + "/deactive-account-admin.ejs",
+    referral: process.env.PARTNER_NAME.toLowerCase() + "/referral.ejs"
   },
   disableRecaptcha: process.env.DISABLE_RECAPTCHA == "1",
   CDN: {
@@ -66,6 +75,7 @@ const config = {
     secretKey: process.env.CDN_SECRET_KEY,
     bucket: process.env.CDN_BUCKET,
     folderPlatform: process.env.CDN_FOLDER_PLATFORM,
+    folderKYC: process.env.CDN_FOLDER_KYC,
     exts: process.env.CDN_FILE_EXT ? process.env.CDN_FILE_EXT.split(',')
       : [],
     fileSize: process.env.CDN_FILE_SIZE ? parseFloat(process.env.CDN_FILE_SIZE) : 5242880
@@ -79,7 +89,8 @@ const config = {
     urlActive: process.env.WEBSITE_URL + '/email-verification?token=',
     urlUnsubscribe: process.env.WEBSITE_URL + '/confirm-unsubscribe?token=',
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
-    urlIcon: process.env.WEBSITE_URL + '/images/platforms/'
+    urlIcon: process.env.WEBSITE_URL + '/images/platforms/',
+    ssoLoginUrl: process.env.WEBSITE_URL + '/sign-in?token=',
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,
@@ -97,7 +108,8 @@ const config = {
     authUrl: process.env.KYC_WEBSITE_URL + `/${process.env.KYC_NAME}?token=`,
     name: process.env.KYC_NAME,
     type: process.env.KYC_TYPE,
-    schema: process.env.KYC_SCHEMA
+    schema: process.env.KYC_SCHEMA,
+    autoApproveLevel: process.env.KYC_AUTO_APPROVE_LEVEL ? process.env.KYC_AUTO_APPROVE_LEVEL.split(",") : [],
   },
   stakingApi: {
     url: process.env.STAKING_API_URL,
@@ -141,7 +153,52 @@ const config = {
       platformName: "Ontology Gas",
       txIdLink: process.env.ONG_TX_ID_LINK,
       addressLink: process.env.ONG_ADDRESS_LINK
-    }
+    },
+    BNB: {
+      platformName: "Binance Coin",
+      txIdLink: process.env.BNB_TX_ID_LINK,
+      addressLink: process.env.BNB_ADDRESS_LINK
+    },
+    TOMO: {
+      platformName: "TomoChain",
+      txIdLink: process.env.TOMO_TX_ID_LINK,
+      addressLink: process.env.TOMO_ADDRESS_LINK
+    },
+    TRX: {
+      platformName: "TRON",
+      txIdLink: process.env.TRX_TX_ID_LINK,
+      addressLink: process.env.TRX_ADDRESS_LINK
+    },
+    LTC: {
+      platformName: "Litecoin",
+      txIdLink: process.env.LTC_TX_ID_LINK,
+      addressLink: process.env.LTC_ADDRESS_LINK
+    },
+    DOGE: {
+      platformName: "Dogecoin",
+      txIdLink: process.env.DOGE_TX_ID_LINK,
+      addressLink: process.env.DOGE_ADDRESS_LINK
+    },
+    DASH: {
+      platformName: "Dash",
+      txIdLink: process.env.DASH_TX_ID_LINK,
+      addressLink: process.env.DASH_ADDRESS_LINK
+    },
+    ETC: {
+      platformName: "Ethereum Classic",
+      txIdLink: process.env.ETC_TX_ID_LINK,
+      addressLink: process.env.ETC_ADDRESS_LINK
+    },
+    XLM: {
+      platformName: "Stellar",
+      txIdLink: process.env.XLM_TX_ID_LINK,
+      addressLink: process.env.XLM_ADDRESS_LINK
+    },
+    XTZ: {
+      platformName: "Tezos",
+      txIdLink: process.env.XTZ_TX_ID_LINK,
+      addressLink: process.env.XTZ_ADDRESS_LINK
+    },
   },
   sdk: {
     baseUrl: process.env.SDK_URL,
@@ -152,14 +209,56 @@ const config = {
     url: process.env.AFFILIATE_URL,
     apiKey: process.env.AFFILIATE_API_KEY,
     secretKey: process.env.AFFILIATE_SECRET_KEY,
-    typeId: process.env.AFFILIATE_TYPE_ID,
+    typeId: process.env.AFFILIATE_TYPE_ID
   },
   plutx: {
     domain: process.env.PLUTX_DOMAIN,
     format: process.env.PLUTX_FORMAT,
-    url: process.env.PLUTX_URL
+    url: process.env.PLUTX_URL,
+    dnsContract: {
+      address: process.env.PLUTX_DNS_CONTRACT_ADDRESS,
+      userAddAddress: 'userAddAddress',
+      userEditAddress: 'userEditAddress',
+      userRemoveAddress: 'userRemoveAddress',
+      createSubdomain: 'createSubdomain',
+    }
   },
-  twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3
+  txCreator: {
+    host: process.env.TX_CREATOR_HOST,
+    ETH: {
+      keyId: process.env.ERC20_TX_CREATOR_KEY_ID,
+      serviceId: process.env.ERC20_TX_CREATOR_SERVICE_ID,
+      index: process.env.ERC20_TX_CREATOR_INDEX,
+      testNet: process.env.ERC20_TX_CREATOR_TESTNET,
+      fee: process.env.ERC20_ETH_GAS_PRICE,
+      gasLimit: process.env.ERC20_ETH_GAS_LIMIT
+    }
+  },
+  plutxUserID: {
+    isEnabled: process.env.PLUTX_USERID_IS_ENABLED === 'true',
+    isMigrationEnabled: process.env.PLUTX_USERID_IS_MIGRATION_ENABLED === 'true',
+    apiUrl: process.env.PLUTX_USERID_API_URL,
+    apiKey: process.env.PLUTX_USERID_APP_API_KEY,
+    secretKey: process.env.PLUTX_USERID_APP_SECRET_KEY,
+  },
+  twofaStep: process.env.TWOFA_STEP ? parseInt(process.env.TWOFA_STEP) : 3,
+  membership: {
+    KYCLevelAllowPurchase: process.env.MEMBERSHIP_KYC_LEVEL_ALLOW_PURCHASE,
+    countryWhitelist: process.env.MEMBERSHIP_COUNTRY_WHITELIST,
+    typeId: process.env.MEMBERSHIP_AFFILIATE_TYPE_ID,
+    receivingRewardPlatform: process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM ? process.env.MEMBERSHIP_RECEIVING_REWARD_PLATFROM.split(",") : ['USDT'],
+    referralUrl: process.env.MEMBERSHIP_REFERRAL_URL + '/sign-up?ref='
+  },
+  setting: {
+    USD_RATE_BY_JPY: "USD_RATE_BY_JPY",
+    USD_RATE_BY_: "USD_RATE_BY_",
+    MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT: "MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT",
+    CLAIM_AFFILIATE_REWARD_: "CLAIM_AFFILIATE_REWARD_",
+    CLAIM_AFFILIATE_REWARD_ATOM: "CLAIM_AFFILIATE_REWARD_ATOM",
+    CLAIM_AFFILIATE_REWARD_IRIS: "CLAIM_AFFILIATE_REWARD_IRIS",
+    CLAIM_AFFILIATE_REWARD_ONG: "CLAIM_AFFILIATE_REWARD_ONG"
+  },
+  apiKeyIP: process.env.API_IP_KEY || '',
 };
 
 module.exports = config;

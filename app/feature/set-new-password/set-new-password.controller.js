@@ -5,10 +5,25 @@ const OTP = require("app/model/wallet").otps;
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const bcrypt = require('bcrypt');
 const Sequelize = require('sequelize');
+const config = require("app/config");
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 const Op = Sequelize.Op;
 
 module.exports = async (req, res, next) => {
   try {
+    const token = req.body.verify_token;
+
+    if (IS_ENABLED_PLUTX_USERID) {
+      const resetNewPasswordResult = await PluTXUserIdApi.resetPassword(token, req.body.password);
+      if (resetNewPasswordResult.httpCode !== 200) {
+        return res.status(resetNewPasswordResult.httpCode).send(resetNewPasswordResult.data);
+      }
+
+      return res.ok(true);
+    }
+
     let otp = await OTP.findOne({
       where: {
         code: req.body.verify_token,
@@ -25,9 +40,11 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("TOKEN_EXPIRED"), "TOKEN_EXPIRED");
     }
 
+
     let member = await Member.findOne({
       where: {
-        id: otp.member_id
+        id: otp.member_id,
+        deleted_flg: false
       }
     });
 
@@ -57,10 +74,18 @@ module.exports = async (req, res, next) => {
       return res.serverInternalError();
     }
 
+    await OTP.update({
+      used: true
+    }, {
+        where: {
+          id: otp.id
+        },
+      });
+
     return res.ok(true);
   }
   catch (err) {
     logger.error("login fail: ", err);
     next(err);
   }
-}; 
+};

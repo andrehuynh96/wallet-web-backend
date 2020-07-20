@@ -31,8 +31,10 @@ wallet.create = async (req, res, next) => {
         where: {
           member_id: req.user.id,
           default_flg: true
-        }, returning: true
-      }, { transaction });
+        },
+        returning: true,
+        transaction
+      });
     }
 
     let data = {
@@ -71,18 +73,24 @@ wallet.update = async (req, res, next) => {
     transaction = await database.transaction();
 
     if (body.default_flg) {
-      await Wallet.update({ default_flg: false }, {
-        where: {
-          member_id: req.user.id,
-          default_flg: true
-        }, returning: true
-      }, { transaction });
+      await Wallet.update({
+        default_flg: false
+      }, {
+          where: {
+            member_id: req.user.id,
+            default_flg: true
+          },
+          returning: true,
+          transaction
+        });
     }
     let [_, [result]] = await Wallet.update(body, {
       where: {
         id: id
-      }, returning: true
-    }, { transaction });
+      },
+      returning: true,
+      transaction
+    });
     await transaction.commit();
     return res.ok(mapper(result));
   } catch (ex) {
@@ -116,9 +124,30 @@ wallet.delete = async (req, res, next) => {
       }
     });
 
-    await WalletPrivateKey.update({ deleted_flg: true }, { where: { wallet_id: id } }, { transaction });
-    await WalletToken.update({ deleted_flg: true }, { where: { wallet_id: id } }, { transaction });
-    await Wallet.update({ deleted_flg: true }, { where: { id: id } }, { transaction });
+    await WalletPrivateKey.update({
+      deleted_flg: true
+    }, {
+        where: {
+          wallet_id: id
+        },
+        transaction
+      });
+    await WalletToken.update({
+      deleted_flg: true
+    }, {
+        where: {
+          wallet_id: id
+        },
+        transaction
+      });
+    await Wallet.update({
+      deleted_flg: true
+    }, {
+        where: {
+          id: id
+        },
+        transaction
+      });
     await transaction.commit();
 
     for (let key of keys) {

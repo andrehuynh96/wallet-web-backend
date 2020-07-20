@@ -2,10 +2,16 @@ const logger = require('app/lib/logger');
 const config = require('app/config');
 const MemberPlutx = require('app/model/wallet').member_plutxs;
 const Member = require('app/model/wallet').members;
+const Wallet = require('app/model/wallet').wallets;
 const WalletPrivKey = require('app/model/wallet').wallet_priv_keys;
 const mapper = require('app/feature/response-schema/member-plutx.response-schema');
+const walletPrivKeyMapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const database = require('app/lib/database').db().wallet;
 const Plutx = require('app/lib/plutx');
+const PlutxContract = require('app/lib/plutx-contract');
+const PlutxUserAddressAction = require("app/model/wallet/value-object/plutx-user-address");
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 module.exports = {
   getAll: async (req, res, next) => {
@@ -36,7 +42,8 @@ module.exports = {
       transaction = await database.transaction();
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       });
       let newDatas = [];
@@ -60,44 +67,47 @@ module.exports = {
           })
           if (plutx) {
             if (plutx.active_flg == false) {
-              await MemberPlutx.update({active_flg: false}, {
+              await MemberPlutx.update({ active_flg: false }, {
                 where: {
                   member_id: req.user.id,
                   platform: e.platform,
                   active_flg: true
-                }
-              }, {transaction});
-              await MemberPlutx.update({active_flg: true}, {
+                },
+                transaction
+              });
+              await MemberPlutx.update({ active_flg: true }, {
                 where: {
                   id: plutx.id
-                }
-              }, {transaction});
+                },
+                transaction
+              });
             }
           } else {
-            await MemberPlutx.update({active_flg: false}, {
+            await MemberPlutx.update({ active_flg: false }, {
               where: {
                 member_id: req.user.id,
                 platform: e.platform,
                 active_flg: true
-              }
-            }, {transaction});
+              },
+              transaction
+            });
             e.member_id = req.user.id;
             e.member_domain_name = member.domain_name;
             e.active_flg = true;
             e.domain_name = `${e.platform}.${e.wallet_id.replace(/-/g, '')}.${member.domain_id}`.toLowerCase();
-             /** create plutx domain */
+            /** create plutx domain */
             let params = { body: { domainName: e.domain_name, domainOwnerAddress: e.address } };
             let result = await Plutx.registerDomain(params);
             if (result.data) {
               newDatas.push(e);
             } else {
               logger.error(`can't register domain member plutxs --domainName::${e.domain_name} --domainOwnerAddress::${e.address}: `, result.error);
-            } 
+            }
           }
         }
-      }  
-      if (newDatas.length > 0 ) {
-        await MemberPlutx.bulkCreate(newDatas, {transaction});
+      }
+      if (newDatas.length > 0) {
+        await MemberPlutx.bulkCreate(newDatas, { transaction });
       }
       await transaction.commit();
       return res.ok(true);
@@ -132,7 +142,8 @@ module.exports = {
       logger.info('member_plutxs::updatePlutxAddress');
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       });
       if (!member)
@@ -140,39 +151,52 @@ module.exports = {
       if (!member.domain_name)
         subdomain = member.domain_id.toString().padStart(6, '0') + '.' + config.plutx.domain;
       else subdomain = member.domain_name;
-      const { body: { crypto, address, walletId, action } } = req;
-      if (walletId && address) {
-        let wallet = await WalletPrivKey.findOne({
+      const { body: { crypto, walletId, action, signAddress } } = req;
+      let address;
+      if (action != PlutxUserAddressAction.REMOVE_ADDRESS) {
+        let wallet = await Wallet.findOne({
+          include: [
+            {
+              model: WalletPrivKey,
+              where: {
+                platform: crypto.toUpperCase(),
+                deleted_flg: false
+              },
+            }
+          ],
           where: {
-            address: { [Op.iLike]: `${address}` },
-            wallet_id: walletId,
+            id: walletId,
+            member_id: req.user.id,
             deleted_flg: false
-          }
+          },
+          raw: true
         });
         if (!wallet)
-          return res.badRequest(res.__("WALLETID_AND_ADDRESS_NOT_VALID"), "WALLETID_AND_ADDRESS_NOT_VALID", { fields: ['address', 'walletId'] });
+          return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND", { fields: ['walletId'] });
+        address = wallet['wallet_priv_keys.address'];
+        console.log('address:', address);
       }
-      let signedTx;
+      let unsignedTx;
       switch (action) {
         case PlutxUserAddressAction.ADD_ADDRESS:
-          signedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
+          unsignedTx = await PlutxContract.userAddAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address, signAddress);
           if (!member.domain_name)
             await Member.update({
-              domain_name: subDomain
+              domain_name: subdomain
             }, {
-              where: {
-                id: req.user.id
-              }
-            })
+                where: {
+                  id: req.user.id
+                }
+              })
           break;
         case PlutxUserAddressAction.EDIT_ADDRESS:
-          signedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address);
+          unsignedTx = await PlutxContract.userEditAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), address, signAddress);
           break;
         case PlutxUserAddressAction.REMOVE_ADDRESS:
-          signedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase());
+          unsignedTx = await PlutxContract.userRemoveAddress(config.plutx.domain, subdomain.split('.')[0], crypto.toLowerCase(), signAddress);
           break;
       }
-      return res.ok({ tx_id: signedTx.tx_id });
+      return res.ok(unsignedTx);
     }
     catch (err) {
       logger.error("update Plutx crypto addresses fail: ", err);
@@ -182,26 +206,46 @@ module.exports = {
   getAddress: async (req, res, next) => {
     try {
       logger.info('member_plutxs::getAddress');
-      let response = await Plutx.getAddress(req.query);
-      if (!response)
-        return res.badRequest(res.__("SUBDOMAIN_NOT_FOUND"), "SUBDOMAIN_NOT_FOUND");
+      let response = await Plutx.getAddress({ fullDomain: req.query.fullDomain });
+      if (!response || response.error)
+        return res.badRequest(res.__("SUBDOMAIN_OR_PLATFORM_NOT_FOUND"), "SUBDOMAIN_OR_PLATFORM_NOT_FOUND");
       response = response.data;
+      response.cryptos = response.cryptos.filter(ele => ele);
       let addressList = response.cryptos.map(ele => ele.address);
-      let walletIdList = await WalletPrivKey.findAll({
-        attributes: ["id", "address", "platform"],
+      let walletIdList = await Wallet.findAll({
+        include: [
+          {
+            model: WalletPrivKey,
+            where: {
+              address: addressList,
+              deleted_flg: false
+            },
+          }
+        ],
         where: {
-          address: addressList,
+          member_id: req.user.id,
           deleted_flg: false
         },
         raw: true
       });
-      let ret = response.cryptos.map(ele => {
+      walletIdList = walletIdList.map(ele => {
+        return {
+          wallet_id: ele.id,
+          address: ele['wallet_priv_keys.address'],
+          platform: ele['wallet_priv_keys.platform']
+        }
+      });
+      let ret;
+      ret = response.cryptos.map(ele => {
+        let wallet = walletIdList.find(ele1 => ele1.address == ele.address && ele1.platform.toLowerCase() == ele.cryptoName);
         return {
           address: ele.address,
           cryptoName: ele.cryptoName,
-          walletId: walletIdList.find(ele1 => ele1.address == ele.address).id
+          walletId: wallet ? wallet.wallet_id : ''
         }
       });
+      if (req.query.cryptoName)
+        ret = ret.filter(ele => ele.cryptoName == req.query.cryptoName);
       response.cryptos = ret;
       delete response.domain;
       delete response.subDomain;
@@ -216,25 +260,44 @@ module.exports = {
   lookup: async (req, res, next) => {
     try {
       logger.info('member_plutxs::lookup');
-      req.query.addressAndMetaData = true;
-      req.query.fullDomain = config.plutx.domain;
-      let response = await Plutx.lookup(req.query);
-      response = response.data;
-      console.log(response)
-      if (!response || response.length == 0)
+      let response = await Plutx.lookup({
+        ...req.query,
+        addressAndMetaData: true,
+        fullDomain: config.plutx.domain,
+        onlyDefaultAddress: false
+      });
+      if (!response || response.data.length == 0 || response.error)
         return res.badRequest(res.__("FULLDOMAIN_NOT_FOUND"), "FULLDOMAIN_NOT_FOUND");
+      response = response.data;
+      response = response.filter(ele => ele && ele.crypto);
       let addressList = response.map(ele => ele.crypto.address);
-      let walletIdList = await WalletPrivKey.findAll({
-        attributes: ["id", "address", "platform"],
+      let walletIdList = await Wallet.findAll({
+        include: [
+          {
+            model: WalletPrivKey,
+            where: {
+              address: addressList,
+              deleted_flg: false
+            },
+          }
+        ],
         where: {
-          address: addressList,
+          member_id: req.user.id,
           deleted_flg: false
         },
         raw: true
       });
+      walletIdList = walletIdList.map(ele => {
+        return {
+          wallet_id: ele.id,
+          address: ele['wallet_priv_keys.address'],
+          platform: ele['wallet_priv_keys.platform']
+        }
+      });
       let ret = response.map(ele => {
         let newEle = Object.assign({}, ele);
-        newEle.crypto.walletId = walletIdList.find(ele1 => ele1.address == ele.address).id;
+        let wallet = walletIdList.find(ele1 => ele1.address == ele.crypto.address && ele1.platform.toLowerCase() == ele.crypto.cryptoName);
+        newEle.crypto.walletId = wallet ? wallet.wallet_id : '';
         return newEle;
       })
       return res.ok(ret);
@@ -249,7 +312,8 @@ module.exports = {
       logger.info('member_plutxs::createSubdomain');
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       });
       if (!member)
@@ -280,4 +344,18 @@ module.exports = {
       next(err);
     }
   },
+  sendRawTx: async (req, res, next) => {
+    try {
+      logger.info('member_plutxs::sendRawTx');
+      let params = { body: { requestType: req.body.action, rawTx: '0x' + req.body.rawTx.replace('0x', '') } };
+      let response = await Plutx.sendRawTransaction(params);
+      if (response.error)
+        return res.badRequest(response.error);
+      return res.ok(response.data);
+    }
+    catch (err) {
+      logger.error("call send-raw-transaction Plutx API fail: ", err);
+      next(err);
+    }
+  }
 }

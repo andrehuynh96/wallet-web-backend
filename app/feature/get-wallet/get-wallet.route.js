@@ -46,6 +46,12 @@ module.exports = router;
  *       - name: default_flg
  *         in: query
  *         type: boolean
+ *       - name: platform
+ *         in: query
+ *         type: string
+ *       - name: token
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
@@ -98,6 +104,9 @@ module.exports = router;
  *         name: wallet_id
  *         type: string
  *         required: true  
+ *       - name: platform
+ *         in: query
+ *         type: string
  *       - name: offset
  *         in: query
  *         type: integer

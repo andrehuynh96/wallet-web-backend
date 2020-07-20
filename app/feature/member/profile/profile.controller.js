@@ -13,36 +13,29 @@ const config = require("app/config");
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
 const speakeasy = require("speakeasy");
-const Kyc = require('app/lib/kyc');
 const Webhook = require('app/lib/webhook');
-const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const Membership = require('app/lib/reward-system/membership');
 module.exports = {
   get: async (req, res, next) => {
     try {
       let result = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       })
 
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
       }
-      let kyc = result.kyc_id && result.kyc_id != '0' ? await Kyc.getKycInfo({ kycId: result.kyc_id }) : null;
-      result.kyc = kyc && kyc.data ? kyc.data.customer.kyc : null;
-      if (result.kyc) {
-        let length = Object.keys(result.kyc).length;
-        let level = 0;
-        for (let i = 1; i <= length; i ++) {
-          if (result.kyc[i.toString()].status == KycStatus.APPROVED) {
-            level = i;
-          } else {
-            break;
-          }
+
+      if (result.referral_code) {
+        let checkReferrerCode = await Membership.isCheckReferrerCode({ referrerCode: result.referral_code });
+        if (checkReferrerCode.httpCode !== 200) {
+          result.referral_code = "";
+        } else if (!checkReferrerCode.data.data.isValid) {
+          result.referral_code = "";
         }
-        result.kyc_level = level;
-      } else {
-        result.kyc_level = 0;
       }
       return res.ok(memberMapper(result));
     }
@@ -57,7 +50,8 @@ module.exports = {
       let reasons = req.body.reasons
       let member = await Member.findOne({
         where: {
-          id: req.user.id
+          id: req.user.id,
+          deleted_flg: false
         }
       })
       if (!member) {
@@ -96,8 +90,9 @@ module.exports = {
               member_id: member.id,
               action_type: OtpType.UNSUBSCRIBE
             },
-            returning: true
-          }, { transaction })
+            returning: true,
+            transaction
+          })
 
         await OTP.create({
           code: verifyToken,
@@ -111,8 +106,9 @@ module.exports = {
           where: {
             member_id: member.id,
             confirm_flg: false
-          }
-        }, { transaction })
+          },
+          transaction
+        })
         let results = await UnsubscribeReason.bulkCreate(reasons, { transaction })
         logger.info('create::member unsubscribe reasons::create 2fa ', JSON.stringify(results))
         await transaction.commit();
@@ -127,8 +123,9 @@ module.exports = {
               member_id: member.id,
               action_type: OtpType.UNSUBSCRIBE
             },
-            returning: true
-          }, { transaction })
+            returning: true,
+            transaction
+          })
 
         await OTP.create({
           code: verifyToken,
@@ -143,8 +140,9 @@ module.exports = {
           where: {
             member_id: member.id,
             confirm_flg: false
-          }
-        }, { transaction })
+          },
+          transaction
+        })
 
         let results = await UnsubscribeReason.bulkCreate(reasons, { transaction })
         logger.info('create::member unsubscribe reasons::create not 2fa', JSON.stringify(results))
@@ -178,7 +176,8 @@ module.exports = {
       }
       let member = await Member.findOne({
         where: {
-          id: otp.member_id
+          id: otp.member_id,
+          deleted_flg: false
         }
       })
       if (!member) {
@@ -193,17 +192,18 @@ module.exports = {
             member_id: member.id,
             action_type: OtpType.UNSUBSCRIBE
           },
-          returning: true
-        }, { transaction })
+          returning: true,
+          transaction
+        })
       await UnsubscribeReason.update({
         confirm_flg: true
       }, {
           where: {
             member_id: member.id
           },
-          returning: true
-        }, { transaction }
-      )
+          returning: true,
+          transaction
+        });
 
       let privateKeys = [];
       let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
@@ -215,12 +215,56 @@ module.exports = {
             }
           });
           privateKeys.push(...keys);
-          await WalletPrivateKey.destroy({ where: { wallet_id: wallet[i].id } }, { transaction });
-          await WalletToken.destroy({ where: { wallet_id: wallet[i].id } }, { transaction })
+          // await WalletPrivateKey.destroy(
+          //   {
+          //     where: {
+          //       wallet_id: wallet[i].id
+          //     },
+          //     transaction
+          //   });
+          // await WalletToken.destroy({
+          //   where: {
+          //     wallet_id: wallet[i].id
+          //   },
+          //   transaction
+          // })
         }
-        await Wallet.destroy({ where: { member_id: member.id } }, { transaction })
+        // await Wallet.destroy({
+        //   where: {
+        //     member_id: member.id
+        //   },
+        //   transaction
+        // })
       }
-      await Member.destroy({ where: { id: member.id } }, { transaction })
+      // await Member.destroy({
+      //   where: {
+      //     id: member.id
+      //   },
+      //   transaction
+      // });
+
+      await Member.update({
+        deleted_flg: true
+      }, {
+          where: {
+            id: member.id
+          },
+          returning: true,
+          transaction
+        });
+
+      let deactivate = await Membership.deactivate({
+        email: member.email
+      });
+      if (deactivate.httpCode !== 200) {
+        return res.status(deactivate.httpCode).send(deactivate.data);
+      }
+
+      if (!deactivate.data.data.isSuccess) {
+        throw new Error("DEACTIVATE_AFFLIATE_FAIL");
+      }
+
+      await transaction.commit();
 
       let enableSendEmail = await Setting.findOne({
         where: {
@@ -244,7 +288,7 @@ module.exports = {
           await _sendAdminEmail(member.email, adminEmailAddress.value, resons)
         }
       }
-      await transaction.rollback();
+
       if (privateKeys.length > 0) {
         for (let key of privateKeys) {
           Webhook.removeAddresses(key.platform, key.address);

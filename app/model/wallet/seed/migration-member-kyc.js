@@ -1,0 +1,188 @@
+require('dotenv').config();
+require('rootpath')();
+const Member = require("app/model/wallet").members;
+const Kyc = require('app/model/wallet').kycs;
+const KycProperty = require('app/model/wallet').kyc_properties;
+const MemberKyc = require('app/model/wallet').member_kycs;
+const MemberKycProperty = require('app/model/wallet').member_kyc_properties;
+const Joi = require("joi");
+const KycDataType = require('app/model/wallet/value-object/kyc-data-type');
+const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const Membership = require('app/lib/reward-system/membership');
+const database = require('app/lib/database').db().wallet;
+const logger = require('app/lib/logger');
+const config = require("app/config");
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
+module.exports = async () => {
+  let kycs = await Kyc.findAll({});
+  if (!kycs || kycs.length == 0) {
+    return;
+  }
+
+  let firstLevel = kycs.filter(x => x.first_level_flg);
+  if (!firstLevel || firstLevel.length == 0) {
+    return;
+  }
+  firstLevel = firstLevel[0];
+
+  let ids = kycs.map(x => x.id.toString());
+  let members = await Member.findAll({
+    where: {
+      kyc_id: {
+        [Op.notIn]: ids
+      },
+      deleted_flg: false,
+      member_sts: "ACTIVATED"
+    }
+  });
+
+  if (!members || members.length == 0) {
+    return;
+  }
+
+  for (let m of members) {
+    await _createKyc(m);
+  }
+};
+
+
+
+async function _createKyc(member) {
+  let transaction;
+  try {
+    let kyc = await Kyc.findOne({
+      where: {
+        first_level_flg: true
+      }
+    });
+    if (!kyc) {
+      return member;
+    }
+
+    let oldMemberKyc = await MemberKyc.findOne({
+      where: {
+        kyc_id: kyc.id,
+        member_id: member.id,
+      }
+    });
+    if (oldMemberKyc) {
+      return member;
+    }
+
+    const properties = await KycProperty.findAll({
+      where: {
+        kyc_id: kyc.id,
+        enabled_flg: true
+      },
+      order: [['order_index', 'ASC']]
+    });
+
+    let dataMember = {};
+    for (let p of properties) {
+      if (member[p.member_field]) {
+        dataMember[p.field_key] = member[p.member_field];
+      }
+    }
+
+    let vefify = _validateKYCProperties(properties, dataMember);
+    if (vefify.error) {
+      return member;
+    }
+    transaction = await database.transaction();
+    let memberKyc = await MemberKyc.create({
+      member_id: member.id,
+      kyc_id: kyc.id,
+      status: kyc.auto_approve_flg ? KycStatus.APPROVED : KycStatus.IN_REVIEW,
+    }, { transaction: transaction });
+
+    let data = [];
+    for (let p of properties) {
+      let value = p.member_field ? member[p.member_field] : member[p.field_key];
+      data.push({
+        member_kyc_id: memberKyc.id,
+        property_id: p.id,
+        field_name: p.field_name,
+        field_key: p.field_key,
+        value: value
+      });
+    }
+    let memberData = {};
+    if (kyc.approve_membership_type_id) {
+      memberData.membership_type_id = kyc.approve_membership_type_id;
+    }
+    await MemberKycProperty.bulkCreate(data, { transaction: transaction });
+    let [_, response] = await Member.update({
+      kyc_id: kyc.id.toString(),
+      kyc_level: kyc.key,
+      kyc_status: memberKyc.status,
+      ...memberData
+    }, {
+        where: {
+          id: member.id
+        },
+        returning: true,
+        plain: true,
+        transaction: transaction
+      });
+    await transaction.commit();
+    return response;
+  } catch (err) {
+    if (transaction) {
+      await transaction.rollback()
+    };
+    logger.error("create kyc account fail", err);
+  }
+}
+
+
+
+function _validateKYCProperties(properties, data) {
+  let obj = {};
+  for (let p of properties) {
+    obj[p.field_key] = _buildJoiFieldValidate(p);
+  }
+
+  let schema = Joi.object().keys(obj);
+  return Joi.validate(data, schema);
+}
+
+function _buildJoiFieldValidate(p) {
+  let result;
+  switch (p.data_type) {
+    case KycDataType.TEXT:
+    case KycDataType.PASSWORD: {
+      result = Joi.string();
+      break;
+    }
+    case KycDataType.EMAIL: {
+      result = Joi.string().email({
+        minDomainAtoms: 2
+      });
+      break;
+    }
+    case KycDataType.UPLOAD: {
+      result = Joi.any();
+      break;
+    }
+    case KycDataType.DATETIME: {
+      result = Joi.date();
+      break;
+    }
+    default:
+      {
+        result = Joi.string();
+        break;
+      }
+  }
+
+  if (p.require_flg) {
+    result = result.required()
+  }
+  else {
+    result = result.optional()
+  }
+
+  return result;
+} 

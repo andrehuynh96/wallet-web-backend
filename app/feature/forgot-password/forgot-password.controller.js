@@ -6,13 +6,16 @@ const mailer = require('app/lib/mailer');
 const OTP = require("app/model/wallet").otps;
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
 module.exports = async (req, res, next) => {
   try {
     let member = await Member.findOne({
       where: {
         email: req.body.email.toLowerCase(),
-        deleted_flg: false
+        deleted_flg: false,
       }
     });
     if (!member) {
@@ -27,9 +30,32 @@ module.exports = async (req, res, next) => {
       return res.forbidden(res.__("ACCOUNT_LOCKED"), "ACCOUNT_LOCKED");
     }
 
+    const expiredHours = config.expiredVefiryToken;
+    if (IS_ENABLED_PLUTX_USERID && member.plutx_userid_id) {
+      const subject = `${config.emailTemplate.partnerName} - Reset Password`;
+      const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
+      const rawTemplate = mailer.getRawTemplate(config.emailTemplate.resetPassword);
+      const data = {
+        subject,
+        from,
+        email: member.email,
+        imageUrl: config.website.urlImages,
+        link: config.linkWebsiteVerify,
+        hours: config.expiredVefiryToken,
+        rawTemplate: rawTemplate.toString(),
+      };
+      const forgotPasswordResult = await PluTXUserIdApi.forgotPassword(member.plutx_userid_id, data);
+
+      if (forgotPasswordResult.httpCode !== 200) {
+        return res.status(forgotPasswordResult.httpCode).send(forgotPasswordResult.data);
+      }
+
+      return res.ok(true);
+    }
+
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
     let today = new Date();
-    today.setHours(today.getHours() + config.expiredVefiryToken);
+    today.setHours(today.getHours() + expiredHours);
 
     await OTP.update({
       expired: true
@@ -51,6 +77,7 @@ module.exports = async (req, res, next) => {
     })
 
     _sendEmail(member, verifyToken);
+
     return res.ok(true);
   }
   catch (err) {

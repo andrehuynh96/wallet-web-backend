@@ -20,7 +20,8 @@ router.use(require('./wallet/wallet-token/wallet-token.route'));
 router.use(require('./get-contract-testnet/get-contract-testnet.route'));
 router.use(require('./check-token/check-token.route'));
 router.use(require('./member-plutx/member-plutx.route'));
-
+router.use('/membership', require('./membership'));
+router.use('/staking', require('./staking'));
 
 module.exports = router;
 

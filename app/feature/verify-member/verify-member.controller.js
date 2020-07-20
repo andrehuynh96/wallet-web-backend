@@ -5,10 +5,17 @@ const memberMapper = require('app/feature/response-schema/member.response-schema
 const OTP = require('app/model/wallet').otps;
 const OtpType = require('app/model/wallet/value-object/otp-type');
 const database = require('app/lib/database').db().wallet;
-const MemberActivityLog = require('app/model/wallet').member_activity_logs;
-const ActionType = require('app/model/wallet/value-object/member-activity-action-type');
-const Kyc = require('app/lib/kyc');
 const config = require("app/config");
+const PluTXUserIdApi = require('app/lib/plutx-userid');
+const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
+const Kyc = require('app/model/wallet').kycs;
+const KycProperty = require('app/model/wallet').kyc_properties;
+const MemberKyc = require('app/model/wallet').member_kycs;
+const MemberKycProperty = require('app/model/wallet').member_kyc_properties;
+const Joi = require("joi");
+const KycDataType = require('app/model/wallet/value-object/kyc-data-type');
+const KycStatus = require('app/model/wallet/value-object/kyc-status');
+const Membership = require('app/lib/reward-system/membership');
 
 module.exports = async (req, res, next) => {
   try {
@@ -37,8 +44,30 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__('USER_NOT_FOUND'), 'USER_NOT_FOUND');
     }
 
+    if (IS_ENABLED_PLUTX_USERID && member.plutx_userid_id) {
+      const registerMemberResult = await PluTXUserIdApi.activeNewUser(member.plutx_userid_id);
+
+      if (registerMemberResult.httpCode !== 200) {
+        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
+      }
+    }
+
+    if (member.deleted_flg) {
+      let activate = await Membership.activate({
+        email: member.email
+      });
+      if (activate.httpCode !== 200) {
+        return res.status(activate.httpCode).send(activate.data);
+      }
+
+      if (!activate.data.data.isSuccess) {
+        throw new Error("ACTIVATE_AFFLIATE_FAIL");
+      }
+    }
+
     await Member.update({
-      member_sts: MemberStatus.ACTIVATED
+      member_sts: MemberStatus.ACTIVATED,
+      deleted_flg: false
     }, {
         where: {
           id: member.id
@@ -54,21 +83,7 @@ module.exports = async (req, res, next) => {
         },
       });
 
-    // const registerIp = (req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.headers['x-client'] || req.ip).replace(/^.*:/, '');
-
-    // await MemberActivityLog.create({
-    //   member_id: member.id,
-    //   client_ip: registerIp,
-    //   action: ActionType.VERIFY_ACCOUNT,
-    //   user_agent: req.headers['user-agent']
-    // });
-
-    // req.session.authenticated = true;
-    // req.session.user = member;
-    let id = await _createKyc(member.id, member.email);
-    if (id) {
-      member.kyc_id = id;
-    }
+    member = await _createKyc(member);
     return res.ok(memberMapper(member));
   }
   catch (err) {
@@ -78,48 +93,140 @@ module.exports = async (req, res, next) => {
 }
 
 
-async function _createKyc(memberId, email) {
+async function _createKyc(member) {
+  let transaction;
   try {
-    /** create kyc */
-    let params = { body: { email: email, type: config.kyc.type } };
-    let kyc = await Kyc.createAccount(params);
-    let id = null;
-    if (kyc.data && kyc.data.id) {
-      id = kyc.data.id;
-      let submit = await _submitKyc(kyc.data.id, email);
-      if (submit.data && submit.data.id) {
-        _updateStatus(kyc.data.id, 'APPROVE');
+    let kyc = await Kyc.findOne({
+      where: {
+        first_level_flg: true
       }
-      await Member.update({
-        kyc_id: kyc.data.id
-      }, {
-          where: {
-            id: memberId,
-          },
-          returning: true
-        });
+    });
+    if (!kyc) {
+      return member;
     }
-    return id;
+
+    let oldMemberKyc = await MemberKyc.findOne({
+      where: {
+        kyc_id: kyc.id,
+        member_id: member.id,
+      }
+    });
+    if (oldMemberKyc) {
+      return member;
+    }
+
+    const properties = await KycProperty.findAll({
+      where: {
+        kyc_id: kyc.id,
+        enabled_flg: true
+      },
+      order: [['order_index', 'ASC']]
+    });
+
+    let dataMember = {};
+    for (let p of properties) {
+      if (member[p.member_field]) {
+        dataMember[p.field_key] = member[p.member_field];
+      }
+    }
+
+    let vefify = _validateKYCProperties(properties, dataMember);
+    if (vefify.error) {
+      return member;
+    }
+    transaction = await database.transaction();
+    let memberKyc = await MemberKyc.create({
+      member_id: member.id,
+      kyc_id: kyc.id,
+      status: kyc.auto_approve_flg ? KycStatus.APPROVED : KycStatus.IN_REVIEW,
+    }, { transaction: transaction });
+
+    let data = [];
+    for (let p of properties) {
+      let value = p.member_field ? member[p.member_field] : member[p.field_key];
+      data.push({
+        member_kyc_id: memberKyc.id,
+        property_id: p.id,
+        field_name: p.field_name,
+        field_key: p.field_key,
+        value: value
+      });
+    }
+    let memberData = {};
+    if (kyc.approve_membership_type_id) {
+      memberData.membership_type_id = kyc.approve_membership_type_id;
+    }
+    await MemberKycProperty.bulkCreate(data, { transaction: transaction });
+    let [_, response] = await Member.update({
+      kyc_id: kyc.id.toString(),
+      kyc_level: kyc.key,
+      kyc_status: memberKyc.status,
+      ...memberData
+    }, {
+        where: {
+          id: member.id
+        },
+        returning: true,
+        plain: true,
+        transaction: transaction
+      });
+    await transaction.commit();
+    return response;
   } catch (err) {
+    if (transaction) {
+      await transaction.rollback()
+    };
     logger.error("create kyc account fail", err);
   }
 }
-async function _submitKyc(kycId, email) {
-  try {
-    let content = {};
-    content[`${config.kyc.schema}`] = { email: email };
-    let params = { body: [{ level: 1, content: content }], kycId: kycId };
-    return await Kyc.submit(params);;
-  } catch (err) {
-    logger.error(err);
-    throw err;
+
+
+
+function _validateKYCProperties(properties, data) {
+  let obj = {};
+  for (let p of properties) {
+    obj[p.field_key] = _buildJoiFieldValidate(p);
   }
+
+  let schema = Joi.object().keys(obj);
+  return Joi.validate(data, schema);
 }
-async function _updateStatus(kycId, action) {
-  try {
-    let params = { body: { level: 1, comment: "update level 1" }, kycId: kycId, action: action };
-    await Kyc.updateStatus(params);
-  } catch (err) {
-    logger.error("update kyc account fail", err);
+
+function _buildJoiFieldValidate(p) {
+  let result;
+  switch (p.data_type) {
+    case KycDataType.TEXT:
+    case KycDataType.PASSWORD: {
+      result = Joi.string();
+      break;
+    }
+    case KycDataType.EMAIL: {
+      result = Joi.string().email({
+        minDomainAtoms: 2
+      });
+      break;
+    }
+    case KycDataType.UPLOAD: {
+      result = Joi.any();
+      break;
+    }
+    case KycDataType.DATETIME: {
+      result = Joi.date();
+      break;
+    }
+    default:
+      {
+        result = Joi.string();
+        break;
+      }
   }
+
+  if (p.require_flg) {
+    result = result.required()
+  }
+  else {
+    result = result.optional()
+  }
+
+  return result;
 } 

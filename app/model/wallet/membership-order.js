@@ -138,10 +138,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
   MembershipOrder.associate = (models) => {
-    MembershipOrder.belongsTo(models.members, {
-      as: 'Member',
-      foreignKey: 'member_id',
-    });
+    MembershipOrder.belongsTo(models.members, { foreignKey: 'member_id', targetKey: 'id' });
 
     MembershipOrder.belongsTo(models.membership_types, {
       as: 'MembershipType',

@@ -10,5 +10,6 @@ router.use(require('./kyc-link/kyc-link.route'));
 router.use(require('./update-referrer/update-referrer.route'));
 router.use(require('./list-referral/list-referral.route'));
 router.use(require('./sso-link/sso-link.route'));
+router.use(require('./update-current-language/update-current-language.route'))
 
 module.exports = router;

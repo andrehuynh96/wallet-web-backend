@@ -38,8 +38,7 @@ module.exports = router;
  *                type: string
  *            example:
  *                  {
-                          "language":"English",
-                          "g-recaptcha-response":"fdsfdsjkljfsdfjdsfdhs"
+                      "language":"English"
  *                  }
  *     produces:
  *       - application/json

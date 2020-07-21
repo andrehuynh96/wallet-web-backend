@@ -11,8 +11,8 @@ const router = express.Router();
 router.post(
   '/register',
   validator(schema),
-  //recaptcha.middleware.verify,
-  //verifyRecaptcha,
+  recaptcha.middleware.verify,
+  verifyRecaptcha,
   controller
 );
 
@@ -47,7 +47,8 @@ module.exports = router;
                         "email":"example@gmail.com",
                         "password":"abc123456",
                         "phone":"0902907856",
-                        "referrer_code":"WDRF3F1C"
+                        "referrer_code":"WDRF3F1C",
+                        "language": "English"
                   }
  *     produces:
  *       - application/json

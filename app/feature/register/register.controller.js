@@ -146,6 +146,7 @@ async function _createAccount(req, res, next) {
     ...affiliateInfo,
     plutx_userid_id: idOnPlutxUserID,
     membership_type_id: null,
+    current_language: req.body.language
   });
 
   if (!member) {

@@ -13,6 +13,8 @@ module.exports = async () => {
       user_sts: "ACTIVATED",
       twofa_enable_flg: false,
       deleted_flg: false,
+      phone: '',
+      referral_code: '',
       created_by: 0,
       updated_by: 0
     }], {

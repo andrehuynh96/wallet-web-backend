@@ -35,6 +35,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: true
     },
+    first_name_kanji: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+     : {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
     phone: {
       type: DataTypes.STRING(32),
       allowNull: false,
@@ -158,12 +166,6 @@ module.exports = (sequelize, DataTypes) => {
       as: "membership_orders",
       foreignKey: 'member_id',
     });
-
-    // Member.hasOne(models.membership_orders, {
-    //   as: "LatestMembershipOrder",
-    //   foreignKey: 'id',
-    //   sourceKey: 'latest_membership_order_id',
-    // });
 
     Member.belongsTo(models.membership_types, {
       as: 'MembershipType',

@@ -107,7 +107,34 @@ module.exports = async () => {
       order_index: 5,
       enabled_flg: true,
       group_name: "",
-    }], {
+    },
+    {
+      kyc_id: kyc1.id,
+      field_name: "First Name Kanji",
+      field_key: "first_name_kanji",
+      description: "Your First Name Kanji",
+      data_type: KycDataType.TEXT,
+      member_field: "first_name_kanji",
+      require_flg: true,
+      check_data_type_flg: false,
+      order_index: 2,
+      enabled_flg: true,
+      group_name: "",
+    },
+    {
+      kyc_id: kyc1.id,
+      field_name: "Last Name Kanji",
+      field_key: "last_name_kanji",
+      description: "Your Last Name Kanji",
+      data_type: KycDataType.TEXT,
+      member_field: "last_name_kanji",
+      require_flg: true,
+      check_data_type_flg: false,
+      order_index: 2,
+      enabled_flg: true,
+      group_name: "",
+    }
+    ], {
         returning: true
       });
 

@@ -12,6 +12,8 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const memberTrackingHisMapper = require('../response-schema/member-tracking-his.response-schema');
 const Plutx = require('app/lib/plutx');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplate = require('app/model/wallet').email_templates;
 
 module.exports = {
   tracking: async (req, res, next) => {
@@ -214,6 +216,27 @@ module.exports = {
 const sendEmail = {
   [ActionType.SEND]: async (member, content) => {
     try {
+       let templateName = EmailTemplateType.TRANSACTION_SENT
+    let template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: member.current_language
+      }
+    })
+
+    if(!template){
+      template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: 'en'
+        }
+      })
+    }
+
+    if(!template)
+      return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+  
+    let subject = template.subject;
       let subject = `${config.emailTemplate.partnerName} - Send coin/token alert`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
@@ -228,9 +251,10 @@ const sendEmail = {
         addressLink: config.explorer[content.platform].addressLink + content.address
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.txSent);
+      await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
     } catch (err) {
       logger.error("send coin/token alert email fail", err);
+      throw err
     }
   }
 }

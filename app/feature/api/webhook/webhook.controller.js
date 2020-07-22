@@ -128,7 +128,7 @@ async function _sendEmail(member, content) {
     if(!template)
       return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
   
-    let subject = template.subject;;
+    let subject = template.subject;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       banner: config.website.urlImages,

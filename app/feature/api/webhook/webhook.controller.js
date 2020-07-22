@@ -6,6 +6,8 @@ const config = require("app/config");
 const mailer = require('app/lib/mailer');
 const db = require("app/model/wallet");
 const BigNumber = require('bignumber.js');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplate = require('app/model/wallet').email_templates;
 
 module.exports = async (req, res, next) => {
   try {
@@ -106,7 +108,27 @@ async function _getMemberFromAddress(platform, address) {
 
 async function _sendEmail(member, content) {
   try {
-    let subject = `${config.emailTemplate.partnerName} - Received coin/token alert`;
+    let templateName = EmailTemplateType.TRANSACTION_RECEIVED 
+    let template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: member.current_language
+      }
+    })
+
+    if(!template){
+      template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: 'en'
+        }
+      })
+    }
+
+    if(!template)
+      return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+  
+    let subject = template.subject;;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       banner: config.website.urlImages,
@@ -120,8 +142,9 @@ async function _sendEmail(member, content) {
       addressLink: config.explorer[content.platform].addressLink + content.from_address
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.txReceived);
+    await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
   } catch (err) {
     logger.error("Received coin/token alert email fail", err);
+    throw err
   }
 } 

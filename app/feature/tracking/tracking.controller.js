@@ -216,28 +216,27 @@ module.exports = {
 const sendEmail = {
   [ActionType.SEND]: async (member, content) => {
     try {
-       let templateName = EmailTemplateType.TRANSACTION_SENT
-    let template = await EmailTemplate.findOne({
-      where: {
-        name: templateName,
-        language: member.current_language
-      }
-    })
-
-    if(!template){
-      template = await EmailTemplate.findOne({
+      let templateName = EmailTemplateType.TRANSACTION_SENT
+      let template = await EmailTemplate.findOne({
         where: {
           name: templateName,
-          language: 'en'
+          language: member.current_language
         }
       })
-    }
 
-    if(!template)
-      return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-  
-    let subject = template.subject;
-      let subject = `${config.emailTemplate.partnerName} - Send coin/token alert`;
+      if(!template){
+        template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: 'en'
+          }
+        })
+      }
+
+      if(!template)
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+    
+      let subject = template.subject;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         banner: config.website.urlImages,
@@ -254,7 +253,6 @@ const sendEmail = {
       await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
     } catch (err) {
       logger.error("send coin/token alert email fail", err);
-      throw err
     }
   }
 }

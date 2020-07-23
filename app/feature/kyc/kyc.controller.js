@@ -138,7 +138,7 @@ module.exports = {
           property_id: p.id,
           field_name: p.field_name,
           field_key: p.field_key,
-          value: value
+          value: value || ""
         });
       }
 

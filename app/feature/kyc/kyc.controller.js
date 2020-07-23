@@ -138,7 +138,7 @@ module.exports = {
           property_id: p.id,
           field_name: p.field_name,
           field_key: p.field_key,
-          value: value
+          value: value || ""
         });
       }
 
@@ -219,6 +219,9 @@ function _buildJoiFieldValidate(p) {
     case KycDataType.TEXT:
     case KycDataType.PASSWORD: {
       result = Joi.string();
+      if (!p.require_flg) {
+        result = result.allow("")
+      }
       break;
     }
     case KycDataType.EMAIL: {
@@ -238,6 +241,9 @@ function _buildJoiFieldValidate(p) {
     default:
       {
         result = Joi.string();
+        if (!p.require_flg) {
+          result = result.allow("")
+        }
         break;
       }
   }

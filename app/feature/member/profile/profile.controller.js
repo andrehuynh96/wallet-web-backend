@@ -309,7 +309,7 @@ module.exports = {
 
 async function _sendEmail(member, verifyToken) {
   try {
-    let templateName = EmailTemplateType.DEACTIVATE_ACCOUNT
+    let templateName = EmailTemplateType.DEACTIVE_ACCOUNT
     let template = await EmailTemplate.findOne({
       where: {
         name: templateName,

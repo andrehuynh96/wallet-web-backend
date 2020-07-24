@@ -7,6 +7,8 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const mailer = require('app/lib/mailer');
 const otplib = require("otplib");
 const uuidV4 = require('uuid/v4');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplate = require('app/model/wallet').email_templates;
 
 module.exports = {
   resend: async (req, res, next) => {
@@ -117,7 +119,27 @@ module.exports = {
 const _sendEmail = {
   [OtpType.REGISTER]: async (member, otp) => {
     try {
-      let subject = `${config.emailTemplate.partnerName} - Create Account`;
+      let templateName = EmailTemplateType.VERIFY_EMAIL
+      let template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: member.current_language
+        }
+      })
+
+      if(!template){
+        template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: 'en'
+          }
+        })
+      }
+
+      if(!template)
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+    
+      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -125,14 +147,34 @@ const _sendEmail = {
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
+      await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
     } catch (err) {
       logger.error("resend email create account fail", err);
     }
   },
   [OtpType.FORGOT_PASSWORD]: async (member, otp) => {
     try {
-      let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+      let templateName = EmailTemplateType.RESET_PASSWORD
+      let template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: member.current_language
+        }
+      })
+
+      if(!template){
+        template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: 'en'
+          }
+        })
+      }
+
+      if(!template)
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+    
+      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -140,14 +182,34 @@ const _sendEmail = {
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
+      await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
     } catch (err) {
       logger.error("resend email forgot password fail", err);
     }
   },
   [OtpType.UNSUBSCRIBE]: async (member, otp) => {
     try {
-      let subject = ` ${config.emailTemplate.partnerName} - Delete Account`;
+      let templateName = EmailTemplateType.DEACTIVE_ACCOUNT
+      let template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: member.current_language
+        }
+      })
+
+      if(!template){
+        template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: 'en'
+          }
+        })
+      }
+
+      if(!template)
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+    
+      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -155,7 +217,7 @@ const _sendEmail = {
         hours: config.expiredVefiryToken
       }
       data = Object.assign({}, data, config.email);
-      await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.deactiveAccount);
+      await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
     } catch (err) {
       logger.error("resend email delete account fail", err);
     }

@@ -9,6 +9,7 @@ const config = require("app/config");
       require("./setting")()]);
       await require("./level")();
       await require("./level-property")();
+      await require("./email-template")();
   //  }
     await require("./migration-member-kyc")();
   }

@@ -154,6 +154,9 @@ function _buildJoiFieldValidate(p) {
     case KycDataType.TEXT:
     case KycDataType.PASSWORD: {
       result = Joi.string();
+      if (!p.require_flg) {
+        result = result.allow("")
+      }
       break;
     }
     case KycDataType.EMAIL: {
@@ -173,6 +176,9 @@ function _buildJoiFieldValidate(p) {
     default:
       {
         result = Joi.string();
+        if (!p.require_flg) {
+          result = result.allow("")
+        }
         break;
       }
   }

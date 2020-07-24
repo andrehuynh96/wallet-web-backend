@@ -17,6 +17,7 @@ const toArray = require("stream-to-array");
 const database = require('app/lib/database').db().wallet;
 const MemberKycMapper = require('app/feature/response-schema/member-kyc.response-schema');
 const MemberKycPropertyMapper = require('app/feature/response-schema/member-kyc-property.response-schema');
+const config = require('app/config');
 
 module.exports = {
   get: async (req, res, next) => {
@@ -270,7 +271,7 @@ async function _uploadFile(field, req, res, next) {
   return new Promise(async (resolve, reject) => {
     let file = path.parse(req.body[field].file.name);
     if (config.CDN.exts.indexOf(file.ext.toLowerCase()) == -1) {
-      reject("NOT_SUPPORT_FILE_EXTENSION");
+      return reject("NOT_SUPPORT_FILE_EXTENSION");
     }
     let uploadName = `${config.CDN.folderKYC}/${file.name}-${Date.now()}${
       file.ext
@@ -288,7 +289,10 @@ async function _uploadFile(field, req, res, next) {
           config.aws.endpoint.lastIndexOf("//") + 2
         )}/${uploadName}`
       );
-      resolve(uploadUrl);
-    } else reject("UPLOAD_S3_FAILED");
+      return resolve(uploadUrl);
+    }
+    else {
+      reject("UPLOAD_S3_FAILED");
+    }
   });
 } 

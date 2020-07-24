@@ -15,6 +15,9 @@ const uuidV4 = require('uuid/v4');
 const speakeasy = require("speakeasy");
 const Webhook = require('app/lib/webhook');
 const Membership = require('app/lib/reward-system/membership');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplate = require('app/model/wallet').email_templates;
+
 module.exports = {
   get: async (req, res, next) => {
     try {
@@ -306,7 +309,27 @@ module.exports = {
 
 async function _sendEmail(member, verifyToken) {
   try {
-    let subject = ` ${config.emailTemplate.partnerName} - Delete account`;
+    let templateName = EmailTemplateType.DEACTIVATE_ACCOUNT
+    let template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: member.current_language
+      }
+    })
+
+    if(!template){
+      template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: 'en'
+        }
+      })
+    }
+
+    if(!template)
+      return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+  
+    let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
@@ -314,7 +337,7 @@ async function _sendEmail(member, verifyToken) {
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.deactiveAccount);
+    await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
   } catch (err) {
     logger.error("send email unsubscribe account fail", err);
   }

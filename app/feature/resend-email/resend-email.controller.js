@@ -7,6 +7,8 @@ const MemberStatus = require("app/model/wallet/value-object/member-status");
 const mailer = require('app/lib/mailer');
 const otplib = require("otplib");
 const uuidV4 = require('uuid/v4');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplate = require('app/model/wallet').email_templates;
 
 module.exports = {
   resend: async (req, res, next) => {
@@ -137,7 +139,7 @@ const _sendEmail = {
       if(!template)
         return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
     
-      let subject = template.subject;
+      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -172,7 +174,7 @@ const _sendEmail = {
       if(!template)
         return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
     
-      let subject = template.subject;
+      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -207,7 +209,7 @@ const _sendEmail = {
       if(!template)
         return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
     
-      let subject = template.subject;
+      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,

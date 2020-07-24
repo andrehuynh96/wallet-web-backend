@@ -7,13 +7,13 @@ const s3 = new AWS.S3({
   accessKeyId: "AKIAWSQSDOR5NKVSF37P",
   secretAccessKey: "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",
   sslEnabled: true
-}); 
+});
 
 let putParams = {
   Body: "thangdv",
   Bucket: "terraform-state-web-wallet",
   Key: "passphrase/thangdv.txt",
-  ServerSideEncryption: "AES256", 
+  ServerSideEncryption: "AES256",
   StorageClass: "STANDARD_IA"
 }
 
@@ -21,12 +21,11 @@ let putParams = {
 //   if (err) console.log(err, err.stack); // an error occurred
 //   else     console.log(data);           // successful response
 // });
- let getParams = {
-  Bucket: "terraform-state-web-wallet", 
-  Key: "passphrase/thangdv.txt"
- }
-s3.getObject(getParams, function(err, data) {
+let getParams = {
+  Bucket: "terraform-state-web-wallet",
+  Key: "kycs/test_upload-1595576415308.png"
+}
+s3.getObject(getParams, function (err, data) {
   if (err) console.log(err, err.stack); // an error occurred
-  else     console.log(data.Body.toString());           // successful response
+  else console.log(typeof data.Body);           // successful response
 });
-

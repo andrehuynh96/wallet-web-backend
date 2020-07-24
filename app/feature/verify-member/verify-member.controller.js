@@ -153,7 +153,7 @@ async function _createKyc(member) {
       });
     }
     let memberData = {};
-    if (kyc.approve_membership_type_id) {
+    if (kyc.approve_membership_type_id && !member.membership_type_id) {
       memberData.membership_type_id = kyc.approve_membership_type_id;
     }
     await MemberKycProperty.bulkCreate(data, { transaction: transaction });

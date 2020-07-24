@@ -142,7 +142,13 @@ module.exports = {
         });
       }
 
-      if (kyc.approve_membership_type_id) {
+      let member = await Member.findOne({
+        where: {
+          id: req.user.id
+        }
+      });
+
+      if (kyc.approve_membership_type_id && !member.membership_type_id) {
         memberData.membership_type_id = kyc.approve_membership_type_id;
       }
 
@@ -171,6 +177,7 @@ module.exports = {
       next(err);
     }
   },
+
   getKycs: async (req, res, next) => {
     try {
       logger.info("member::kyc");
@@ -183,6 +190,7 @@ module.exports = {
       next(err);
     }
   },
+
   getKycProperties: async (req, res, next) => {
     try {
       logger.info("kyc::property::schema");

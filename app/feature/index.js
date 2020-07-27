@@ -22,6 +22,7 @@ router.use(require('./check-token/check-token.route'));
 router.use(require('./member-plutx/member-plutx.route'));
 router.use('/membership', require('./membership'));
 router.use('/staking', require('./staking'));
+router.use(require('./static/static.route'));
 
 module.exports = router;
 

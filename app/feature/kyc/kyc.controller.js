@@ -127,11 +127,11 @@ module.exports = {
       let memberData = {};
       for (let p of properties) {
         let value = req.body[p.field_key];
-        if (p.data_type == KycDataType.UPLOAD) {
+        if (p.data_type == KycDataType.UPLOAD && req.body[p.field_key]) {
           value = await _uploadFile(p.field_key, req, res, next);
         }
         if (p.member_field) {
-          memberData[p.member_field] = value;
+          memberData[p.member_field] = value || "";
         }
 
         data.push({

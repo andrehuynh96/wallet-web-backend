@@ -127,8 +127,10 @@ module.exports = {
       let memberData = {};
       for (let p of properties) {
         let value = req.body[p.field_key];
+        let note = '';
         if (p.data_type == KycDataType.UPLOAD && req.body[p.field_key]) {
           value = await _uploadFile(p.field_key, req, res, next);
+          note = req.body[p.field_key].file.name;
         }
         if (p.member_field) {
           memberData[p.member_field] = value || "";
@@ -139,7 +141,8 @@ module.exports = {
           property_id: p.id,
           field_name: p.field_name,
           field_key: p.field_key,
-          value: value || ""
+          value: value || "",
+          note: note || ""
         });
       }
 
@@ -209,7 +212,130 @@ module.exports = {
       logger.error("kyc scheme properties fail: ", err);
       next(err);
     }
-  }
+  },
+
+  resubmit: async (req, res, next) => {
+    let transaction;
+    try {
+      if (req.user.kyc_level == "LEVEL_2" &&
+        req.user.kyc_status == KycStatus.APPROVED) {
+        return res.badRequest(res.__("KYC_HAVE_BEEN_FINISHED"), "KYC_HAVE_BEEN_FINISHED");
+      }
+      let kyc = await Kyc.findOne({
+        where: {
+          key: req.body.kyc_key,
+        }
+      });
+      if (!kyc) {
+        return res.badRequest(res.__("KYC_NOT_FOUND"), "KYC_NOT_FOUND");
+      }
+
+      let memberKyc = await MemberKyc.findOne({
+        where: {
+          kyc_id: kyc.id,
+          member_id: req.user.id,
+        }
+      });
+      if (!memberKyc) {
+        return res.badRequest(res.__("NOT_SUBMIT_KYC_YET"), "NOT_SUBMIT_KYC_YET");
+      }
+
+      const properties = await KycProperty.findAll({
+        where: {
+          kyc_id: kyc.id,
+          enabled_flg: true
+        },
+        order: [['order_index', 'ASC']]
+      });
+
+      delete req.body.kyc_key;
+
+      let vefify = _validateKYCProperties(properties, req.body)
+      if (vefify.error) {
+        return res.badRequest("Missing parameters", vefify.error);
+      }
+
+      transaction = await database.transaction();
+      let data = [];
+      let memberData = {};
+      for (let p of properties) {
+        if (!req.body[p.field_key]) {
+          continue;
+        }
+        let value = req.body[p.field_key];
+        let note = '';
+        if (p.data_type == KycDataType.UPLOAD) {
+          value = await _uploadFile(p.field_key, req, res, next);
+          note = req.body[p.field_key].file.name;
+        }
+        if (p.member_field) {
+          memberData[p.member_field] = value || "";
+        }
+
+        data.push({
+          member_kyc_id: memberKyc.id,
+          property_id: p.id,
+          field_name: p.field_name,
+          field_key: p.field_key,
+          value: value || "",
+          note: note || "",
+        });
+      }
+
+      let oldProperties = await MemberKycProperty.findAll({
+        where: {
+          member_kyc_id: memberKyc.id
+        }
+      });
+
+      let propertyIds = oldProperties.map(x => x.property_id);
+      let itemCreate = data.filter(x => propertyIds.indexOf(x.property_id) == -1);
+      let itemUpdate = data.filter(x => propertyIds.indexOf(x.property_id) > -1);
+
+      if (itemCreate && itemCreate.length > 0) {
+        await MemberKycProperty.bulkCreate(itemCreate, { transaction: transaction });
+      }
+      if (itemUpdate && itemUpdate.length > 0) {
+        for (let i of itemUpdate) {
+          await MemberKycProperty.update({
+            field_name: i.field_name,
+            field_key: i.field_key,
+            value: i.value,
+            note: i.note,
+          }, {
+              where: {
+                member_kyc_id: i.member_kyc_id,
+                property_id: i.property_id,
+              },
+              returning: true,
+              plain: true,
+              transaction: transaction
+            });
+        }
+      }
+
+      let [_, response] = await Member.update({
+        ...memberData
+      }, {
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
+      req.session.user = response;
+      await transaction.commit();
+      return res.ok(true);
+    } catch (err) {
+      if (transaction) {
+        await transaction.rollback()
+      };
+      logger.error("submit kyc fail: ", err);
+      next(err);
+    }
+  },
+
 }
 
 function _validateKYCProperties(properties, data) {

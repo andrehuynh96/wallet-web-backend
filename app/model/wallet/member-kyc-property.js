@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('medium'),
       allowNull: false,
     },
+    note: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true,
+    },
   }, {
       underscored: true,
       timestamps: true,

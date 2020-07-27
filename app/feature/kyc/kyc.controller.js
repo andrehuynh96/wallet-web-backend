@@ -131,7 +131,7 @@ module.exports = {
           value = await _uploadFile(p.field_key, req, res, next);
         }
         if (p.member_field) {
-          memberData[p.member_field] = value;
+          memberData[p.member_field] = value || "";
         }
 
         data.push({

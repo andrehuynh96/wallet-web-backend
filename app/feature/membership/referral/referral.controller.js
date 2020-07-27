@@ -37,7 +37,7 @@ module.exports = {
           }
         }
       }
-      _sendEmailReferral(member.fullname, member.email, emails, member.referral_code);
+      _sendEmailReferral(member, member.fullname, member.email, emails, member.referral_code);
       return res.ok(true);
   } catch (error) {
       logger.error(error);
@@ -47,7 +47,7 @@ module.exports = {
 
 }
 
-async function _sendEmailReferral(memberName, memberEmail, emails, referralCode) {
+async function _sendEmailReferral(member, memberName, memberEmail, emails, referralCode) {
   try {
     let templateName = EmailTemplateType.REFERRAL 
     let template = await EmailTemplate.findOne({

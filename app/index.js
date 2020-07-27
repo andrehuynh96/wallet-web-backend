@@ -12,6 +12,7 @@ const redis = require('app/lib/redis').client();
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const redisStore = require('connect-redis')(session);
+const baseUrl = require('app/lib/cdn/base-url');
 
 i18n.configure({
   locales: ['en', 'vi'],
@@ -62,6 +63,12 @@ router.use(
     i18n: true,
   })
 );
+
+router.use((req, res, next) => {
+  req.baseurl = req.protocol + "://" + req.headers.host;
+  baseUrl.setBaseUrl(req.baseurl);
+  next();
+});
 
 router.use(cookieParser());
 // router.use(require('./proxy'));

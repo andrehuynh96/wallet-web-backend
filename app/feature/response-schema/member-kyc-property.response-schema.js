@@ -8,6 +8,7 @@ const destObject = {
     '[].field_name': '[].field_name',
     '[].field_key': '[].field_key',
     '[].value': '[].value',
+    '[].note': '[].note',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at'
   },
@@ -15,7 +16,7 @@ const destObject = {
     id: 'id',
     field_name: 'field_name',
     field_key: 'field_key',
-    value: 'value',
+    note: 'note',
     "value": {
       "key": "value",
       "transform": (val) => {

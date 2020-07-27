@@ -44,7 +44,12 @@ module.exports = (sequelize, DataTypes) => {
     approve_membership_type_id: {
       type: DataTypes.UUID,
       allowNull: true,
-    }
+    },
+    allow_modify: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
   }, {
       underscored: true,
       timestamps: true,

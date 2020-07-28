@@ -30,7 +30,8 @@ module.exports = async () => {
       prev_level: result0.id,
       have_to_pass_prev_level_flg: true,
       auto_approve_flg: true,
-      approve_membership_type_id: freeMember ? freeMember.id : null
+      approve_membership_type_id: freeMember ? freeMember.id : null,
+      allow_modify: true
     });
     await Model.create({
       name: "Level 2",

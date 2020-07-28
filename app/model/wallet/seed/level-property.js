@@ -35,8 +35,8 @@ module.exports = async () => {
       enabled_flg: true,
       group_name: "",
     }], {
-        returning: true
-      });
+      returning: true
+    });
 
     let kyc1 = await KYC.findOne({
       where: {
@@ -135,8 +135,8 @@ module.exports = async () => {
       group_name: "",
     }
     ], {
-        returning: true
-      });
+      returning: true
+    });
 
     let kyc2 = await KYC.findOne({
       where: {
@@ -180,8 +180,100 @@ module.exports = async () => {
       order_index: 1,
       enabled_flg: true,
       group_name: "",
-    }], {
-        returning: true
-      });
+    },
+    {
+      kyc_id: kyc2.id,
+      field_name: "Identity ID",
+      field_key: "identity_id",
+      description: "Your Identity Id",
+      data_type: KycDataType.TEXT,
+      member_field: "",
+      require_flg: true,
+      check_data_type_flg: false,
+      order_index: 1,
+      enabled_flg: true,
+      group_name: "",
+    },
+    {
+      kyc_id: kyc2.id,
+      field_name: "Document 1",
+      field_key: "document_1",
+      description: "Your Document 1",
+      data_type: KycDataType.UPLOAD,
+      member_field: "",
+      require_flg: false,
+      check_data_type_flg: false,
+      order_index: 1,
+      enabled_flg: true,
+      group_name: "",
+    },
+    {
+      kyc_id: kyc2.id,
+      field_name: "Document 2",
+      field_key: "document_2",
+      description: "Your Document 2",
+      data_type: KycDataType.UPLOAD,
+      member_field: "",
+      require_flg: false,
+      check_data_type_flg: false,
+      order_index: 1,
+      enabled_flg: true,
+      group_name: "",
+    },
+    {
+      kyc_id: kyc2.id,
+      field_name: "Document 3",
+      field_key: "document_3",
+      description: "Your Document 3",
+      data_type: KycDataType.UPLOAD,
+      member_field: "",
+      require_flg: false,
+      check_data_type_flg: false,
+      order_index: 1,
+      enabled_flg: true,
+      group_name: "",
+    },
+    {
+      kyc_id: kyc2.id,
+      field_name: "Document 4",
+      field_key: "document_4",
+      description: "Your Document 4",
+      data_type: KycDataType.UPLOAD,
+      member_field: "",
+      require_flg: false,
+      check_data_type_flg: false,
+      order_index: 1,
+      enabled_flg: true,
+      group_name: "",
+    },
+    {
+      kyc_id: kyc2.id,
+      field_name: "Document 5",
+      field_key: "document_5",
+      description: "Your Document 5",
+      data_type: KycDataType.UPLOAD,
+      member_field: "",
+      require_flg: false,
+      check_data_type_flg: false,
+      order_index: 1,
+      enabled_flg: true,
+      group_name: "",
+    },
+    {
+      kyc_id: kyc2.id,
+      field_name: "Document 6",
+      field_key: "document_6",
+      description: "Your Document 6",
+      data_type: KycDataType.UPLOAD,
+      member_field: "",
+      require_flg: false,
+      check_data_type_flg: false,
+      order_index: 1,
+      enabled_flg: true,
+      group_name: "",
+    }
+    ], {
+      returning: true
+    });
   }
 };

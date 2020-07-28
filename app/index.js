@@ -80,13 +80,13 @@ router.use(
 );
 router.use(
   bodyParser.urlencoded({
-    limit: '5mb',
+    limit: config.bodyTransferLimit,
     extended: true,
   })
 );
 router.use(
   bodyParser.json({
-    limit: '5mb',
+    limit: config.bodyTransferLimit,
     extended: true,
   })
 );

@@ -23,7 +23,7 @@ const destObject = {
         if (val && val.startsWith("http")) {
           for (let i of config.aws.bucketUrls) {
             if (val.indexOf(i) > -1) {
-              val = val.replace(i, baseUrl.getBaseUrl() + "/web/static/images");
+              val = val.replace(i, config.website.url + "/web/static/images");
               break;
             }
           }
@@ -46,7 +46,7 @@ module.exports = srcObject => {
         if (e.value && e.value.startsWith("http")) {
           for (let i of config.aws.bucketUrls) {
             if (e.value.indexOf(i) > -1) {
-              e.value = e.value.replace(i, baseUrl.getBaseUrl() + "/web/static/images");
+              e.value = e.value.replace(i, config.website.url + "/web/static/images");
               break;
             }
           }

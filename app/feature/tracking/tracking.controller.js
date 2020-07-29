@@ -247,7 +247,7 @@ const sendEmail = {
         amount: content.amount,
         symbol: content.symbol,
         txIdLink: config.explorer[content.platform].txIdLink + content.tx_id,
-        addressLink: config.explorer[content.platform].addressLink + content.address
+        addressLink: config.explorer[content.platform].addressLink + content.to_address
       }
       data = Object.assign({}, data, config.email);
       await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);

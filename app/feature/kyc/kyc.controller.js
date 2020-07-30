@@ -18,6 +18,7 @@ const database = require('app/lib/database').db().wallet;
 const MemberKycMapper = require('app/feature/response-schema/member-kyc.response-schema');
 const MemberKycPropertyMapper = require('app/feature/response-schema/member-kyc-property.response-schema');
 const config = require('app/config');
+const Membership = require('app/lib/reward-system/membership');
 
 module.exports = {
   get: async (req, res, next) => {
@@ -170,6 +171,15 @@ module.exports = {
         plain: true,
         transaction: transaction
       });
+
+      if (kyc.approve_membership_type_id && !member.membership_type_id) {
+        let result = await Membership.updateMembershipType(member.email, kyc.approve_membership_type_id);
+        if (result.httpCode !== 200) {
+          await transaction.rollback();
+          return res.status(result.httpCode).send(result.data);
+        }
+      }
+
       req.session.user = response;
       await transaction.commit();
       return res.ok(true);

@@ -2,7 +2,7 @@ const express = require("express");
 const controller = require('./profile.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
 const validator = require("app/middleware/validator.middleware");
-const {unsubscribe, confirmUnsubscribe} = require("./validator");
+const { unsubscribe, confirmUnsubscribe } = require("./validator");
 const router = express.Router();
 
 router.get(
@@ -10,6 +10,7 @@ router.get(
   authenticate,
   controller.get
 );
+
 router.post(
   '/me/unsubscribe',
   authenticate,

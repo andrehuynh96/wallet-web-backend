@@ -164,16 +164,20 @@ module.exports = {
         kyc_status: memberKyc.status,
         ...memberData
       }, {
-        where: {
-          id: req.user.id
-        },
-        returning: true,
-        plain: true,
-        transaction: transaction
-      });
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
 
       if (kyc.approve_membership_type_id && !member.membership_type_id) {
-        let result = await Membership.updateMembershipType(member.email, kyc.approve_membership_type_id);
+        let result = await Membership.updateMembershipType(
+          {
+            email: member.email,
+            membership_type_id: kyc.approve_membership_type_id
+          });
         if (result.httpCode !== 200) {
           await transaction.rollback();
           return res.status(result.httpCode).send(result.data);
@@ -313,27 +317,27 @@ module.exports = {
             value: i.value,
             note: i.note,
           }, {
-            where: {
-              member_kyc_id: i.member_kyc_id,
-              property_id: i.property_id,
-            },
-            returning: true,
-            plain: true,
-            transaction: transaction
-          });
+              where: {
+                member_kyc_id: i.member_kyc_id,
+                property_id: i.property_id,
+              },
+              returning: true,
+              plain: true,
+              transaction: transaction
+            });
         }
       }
 
       let [_, response] = await Member.update({
         ...memberData
       }, {
-        where: {
-          id: req.user.id
-        },
-        returning: true,
-        plain: true,
-        transaction: transaction
-      });
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
       req.session.user = response;
       await transaction.commit();
       return res.ok(true);

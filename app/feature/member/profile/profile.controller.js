@@ -17,6 +17,8 @@ const Webhook = require('app/lib/webhook');
 const Membership = require('app/lib/reward-system/membership');
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
 const EmailTemplate = require('app/model/wallet').email_templates;
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 module.exports = {
   get: async (req, res, next) => {
@@ -89,13 +91,13 @@ module.exports = {
         await OTP.update({
           expired: true
         }, {
-            where: {
-              member_id: member.id,
-              action_type: OtpType.UNSUBSCRIBE
-            },
-            returning: true,
-            transaction
-          })
+          where: {
+            member_id: member.id,
+            action_type: OtpType.UNSUBSCRIBE
+          },
+          returning: true,
+          transaction
+        })
 
         await OTP.create({
           code: verifyToken,
@@ -122,13 +124,13 @@ module.exports = {
         await OTP.update({
           expired: true
         }, {
-            where: {
-              member_id: member.id,
-              action_type: OtpType.UNSUBSCRIBE
-            },
-            returning: true,
-            transaction
-          })
+          where: {
+            member_id: member.id,
+            action_type: OtpType.UNSUBSCRIBE
+          },
+          returning: true,
+          transaction
+        })
 
         await OTP.create({
           code: verifyToken,
@@ -191,22 +193,22 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.UNSUBSCRIBE
-          },
-          returning: true,
-          transaction
-        })
+        where: {
+          member_id: member.id,
+          action_type: OtpType.UNSUBSCRIBE
+        },
+        returning: true,
+        transaction
+      })
       await UnsubscribeReason.update({
         confirm_flg: true
       }, {
-          where: {
-            member_id: member.id
-          },
-          returning: true,
-          transaction
-        });
+        where: {
+          member_id: member.id
+        },
+        returning: true,
+        transaction
+      });
 
       let privateKeys = [];
       let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
@@ -249,12 +251,12 @@ module.exports = {
       await Member.update({
         deleted_flg: true
       }, {
-          where: {
-            id: member.id
-          },
-          returning: true,
-          transaction
-        });
+        where: {
+          id: member.id
+        },
+        returning: true,
+        transaction
+      });
 
       let deactivate = await Membership.deactivate({
         email: member.email
@@ -304,7 +306,7 @@ module.exports = {
       if (transaction) await transaction.rollback();
       next(err);
     }
-  }
+  },
 }
 
 async function _sendEmail(member, verifyToken) {
@@ -317,7 +319,7 @@ async function _sendEmail(member, verifyToken) {
       }
     })
 
-    if(!template){
+    if (!template) {
       template = await EmailTemplate.findOne({
         where: {
           name: templateName,
@@ -326,10 +328,10 @@ async function _sendEmail(member, verifyToken) {
       })
     }
 
-    if(!template)
+    if (!template)
       return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-  
-    let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
+
+    let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,

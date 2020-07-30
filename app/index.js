@@ -74,19 +74,19 @@ router.use(cookieParser());
 // router.use(require('./proxy'));
 router.use(
   express.json({
-    limit: '1mb',
+    limit: config.bodyTransferLimit,
     strict: true,
   })
 );
 router.use(
   bodyParser.urlencoded({
-    limit: '5mb',
+    limit: config.bodyTransferLimit,
     extended: true,
   })
 );
 router.use(
   bodyParser.json({
-    limit: '5mb',
+    limit: config.bodyTransferLimit,
     extended: true,
   })
 );
@@ -98,7 +98,10 @@ router.get('/', function (req, res) {
   res.json(result);
 });
 router.get('/health', (req, res) => res.send('OK!'));
-require('app/config/swagger')(router, '/web');
+
+if (config.enableDocsLink) {
+  require('app/config/swagger')(router, '/web');
+}
 router.use('/web', require('app/feature'));
 router.use('/api', require('app/feature/api'));
 

@@ -9,7 +9,7 @@ module.exports = {
       let folder = req.params.folder;
       let file = path.parse(req.params.file);
       if (config.CDN.exts.indexOf(file.ext.toLowerCase()) == -1) {
-        return res.notfound();
+        return res.notFound();
       }
       let key = `${folder}/${req.params.file}`;
       let data = await s3.get(key, next);

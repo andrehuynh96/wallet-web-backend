@@ -326,6 +326,8 @@ class RewardSystem {
         },
         {
           headers: {
+            "x-use-checksum": true,
+            "x-secret": this.secretKey,
             "Content-Type": "application/json",
             "x-affiliate-type-id": this.typeId,
             Authorization: `Bearer ${accessToken}`,

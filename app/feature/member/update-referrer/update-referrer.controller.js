@@ -31,12 +31,16 @@ module.exports = async (req, res, next) => {
 
 
     const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
+
+    console.log("isCheckReferrerCode", isCheckReferrerCode);
+
     if (referrerCode.httpCode !== 200 ||
       !referrerCode.data.data.isValid) {
       return res.status(referrerCode.httpCode).send(referrerCode.data);
     }
 
     let result = await Affiliate.updateReferrer({ email: member.email, referrerCode: req.body.referrer_code });
+    console.log("updateReferrer", updateReferrer);
 
     if (result.httpCode == 200) {
       if (!result.data.data.isSuccess) {

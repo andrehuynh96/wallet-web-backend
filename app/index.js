@@ -98,7 +98,6 @@ router.get('/', function (req, res) {
   res.json(result);
 });
 router.get('/health', (req, res) => res.send('OK!'));
-
 if (config.enableDocsLink) {
   require('app/config/swagger')(router, '/web');
 }

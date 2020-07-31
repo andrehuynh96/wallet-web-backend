@@ -5,7 +5,6 @@ const config = require('app/config');
 module.exports = function (req, res, next) {
   const form = new formidable.IncomingForm();
   form.maxFileSize = config.CDN.fileSize;
-  const pass = new PassThrough()
   const fields = {};
   form.onPart = part => {
     if (!part.filename) {
@@ -14,6 +13,7 @@ module.exports = function (req, res, next) {
     }
     let file = part.name;
     let data = { file: {} };
+    let pass = new PassThrough()
 
     data.file.name = part.filename
     data.file.type = part.mime

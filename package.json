@@ -34,7 +34,7 @@
     "express-recaptcha": "^5.0.1",
     "express-session": "^1.17.0",
     "form-data": "^3.0.0",
-    "formidable": "^1.2.1",
+    "formidable": "^1.2.2",
     "hashids": "^2.2.1",
     "helmet": "^3.21.2",
     "http-proxy": "^1.18.1",

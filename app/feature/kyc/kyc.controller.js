@@ -17,6 +17,8 @@ const toArray = require("stream-to-array");
 const database = require('app/lib/database').db().wallet;
 const MemberKycMapper = require('app/feature/response-schema/member-kyc.response-schema');
 const MemberKycPropertyMapper = require('app/feature/response-schema/member-kyc-property.response-schema');
+const config = require('app/config');
+const Membership = require('app/lib/reward-system/membership');
 
 module.exports = {
   get: async (req, res, next) => {
@@ -126,11 +128,13 @@ module.exports = {
       let memberData = {};
       for (let p of properties) {
         let value = req.body[p.field_key];
-        if (p.data_type == KycDataType.UPLOAD) {
+        let note = '';
+        if (p.data_type == KycDataType.UPLOAD && req.body[p.field_key]) {
           value = await _uploadFile(p.field_key, req, res, next);
+          note = req.body[p.field_key].file.name;
         }
         if (p.member_field) {
-          memberData[p.member_field] = value;
+          memberData[p.member_field] = value || "";
         }
 
         data.push({
@@ -138,11 +142,18 @@ module.exports = {
           property_id: p.id,
           field_name: p.field_name,
           field_key: p.field_key,
-          value: value
+          value: value || "",
+          note: note || ""
         });
       }
 
-      if (kyc.approve_membership_type_id) {
+      let member = await Member.findOne({
+        where: {
+          id: req.user.id
+        }
+      });
+
+      if (kyc.approve_membership_type_id && !member.membership_type_id) {
         memberData.membership_type_id = kyc.approve_membership_type_id;
       }
 
@@ -151,6 +162,173 @@ module.exports = {
         kyc_id: kyc.id.toString(),
         kyc_level: kyc.key,
         kyc_status: memberKyc.status,
+        ...memberData
+      }, {
+          where: {
+            id: req.user.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
+
+      if (kyc.approve_membership_type_id && !member.membership_type_id) {
+        let result = await Membership.updateMembershipType(
+          {
+            email: member.email,
+            membership_type_id: kyc.approve_membership_type_id
+          });
+        if (result.httpCode !== 200) {
+          await transaction.rollback();
+          return res.status(result.httpCode).send(result.data);
+        }
+      }
+
+      req.session.user = response;
+      await transaction.commit();
+      return res.ok(true);
+    } catch (err) {
+      if (transaction) {
+        await transaction.rollback()
+      };
+      logger.error("submit kyc fail: ", err);
+      next(err);
+    }
+  },
+
+  getKycs: async (req, res, next) => {
+    try {
+      logger.info("member::kyc");
+      const include = [{ model: Kyc, as: 'Kyc' }];
+      const memberKycs = await MemberKyc.findAll({ where: { member_id: req.user.id }, include: include, order: [['kyc_id', 'ASC']] });
+      console.log('memberKycs: ', memberKycs[0].Kyc.name);
+      return res.ok(MemberKycMapper(memberKycs));
+    } catch (err) {
+      logger.error("member kyc fail: ", err);
+      next(err);
+    }
+  },
+
+  getKycProperties: async (req, res, next) => {
+    try {
+      logger.info("kyc::property::schema");
+      const kyc = await Kyc.findOne({ where: { key: req.params.key } });
+      if (!kyc) {
+        return res.badRequest(res.__("KYC_NOT_FOUND"), "KYC_NOT_FOUND");
+      }
+      const memberKyc = await MemberKyc.findOne({ where: { member_id: req.user.id, kyc_id: kyc.id } });
+      if (!memberKyc) {
+        return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
+      }
+      const memberKycProperties = await MemberKycProperty.findAll({ where: { member_kyc_id: memberKyc.id }, order: [['updated_at', 'DESC']] });
+      return res.ok(MemberKycPropertyMapper(memberKycProperties));
+    } catch (err) {
+      logger.error("kyc scheme properties fail: ", err);
+      next(err);
+    }
+  },
+
+  resubmit: async (req, res, next) => {
+    let transaction;
+    try {
+      if (req.user.kyc_level == "LEVEL_2" &&
+        req.user.kyc_status == KycStatus.APPROVED) {
+        return res.badRequest(res.__("KYC_HAVE_BEEN_FINISHED"), "KYC_HAVE_BEEN_FINISHED");
+      }
+      let kyc = await Kyc.findOne({
+        where: {
+          key: req.body.kyc_key,
+        }
+      });
+      if (!kyc) {
+        return res.badRequest(res.__("KYC_NOT_FOUND"), "KYC_NOT_FOUND");
+      }
+      if (!kyc.allow_modify) {
+        return res.badRequest(res.__("NOT_ALLOW_MODIFY_THIS_KYC"), "NOT_ALLOW_MODIFY_THIS_KYC");
+      }
+
+      let memberKyc = await MemberKyc.findOne({
+        where: {
+          kyc_id: kyc.id,
+          member_id: req.user.id,
+        }
+      });
+      if (!memberKyc) {
+        return res.badRequest(res.__("NOT_SUBMIT_KYC_YET"), "NOT_SUBMIT_KYC_YET");
+      }
+
+      const properties = await KycProperty.findAll({
+        where: {
+          kyc_id: kyc.id,
+          enabled_flg: true
+        },
+        order: [['order_index', 'ASC']]
+      });
+
+      delete req.body.kyc_key;
+
+      let vefify = _validateKYCProperties(properties, req.body)
+      if (vefify.error) {
+        return res.badRequest("Missing parameters", vefify.error);
+      }
+
+      transaction = await database.transaction();
+      let data = [];
+      let memberData = {};
+      for (let p of properties) {
+        let value = req.body[p.field_key];
+        let note = '';
+        if (p.data_type == KycDataType.UPLOAD && req.body[p.field_key]) {
+          value = await _uploadFile(p.field_key, req, res, next);
+          note = req.body[p.field_key].file.name;
+        }
+        if (p.member_field) {
+          memberData[p.member_field] = value || "";
+        }
+
+        data.push({
+          member_kyc_id: memberKyc.id,
+          property_id: p.id,
+          field_name: p.field_name,
+          field_key: p.field_key,
+          value: value || "",
+          note: note || "",
+        });
+      }
+
+      let oldProperties = await MemberKycProperty.findAll({
+        where: {
+          member_kyc_id: memberKyc.id
+        }
+      });
+
+      let propertyIds = oldProperties.map(x => x.property_id);
+      let itemCreate = data.filter(x => propertyIds.indexOf(x.property_id) == -1);
+      let itemUpdate = data.filter(x => propertyIds.indexOf(x.property_id) > -1);
+
+      if (itemCreate && itemCreate.length > 0) {
+        await MemberKycProperty.bulkCreate(itemCreate, { transaction: transaction });
+      }
+      if (itemUpdate && itemUpdate.length > 0) {
+        for (let i of itemUpdate) {
+          await MemberKycProperty.update({
+            field_name: i.field_name,
+            field_key: i.field_key,
+            value: i.value,
+            note: i.note,
+          }, {
+              where: {
+                member_kyc_id: i.member_kyc_id,
+                property_id: i.property_id,
+              },
+              returning: true,
+              plain: true,
+              transaction: transaction
+            });
+        }
+      }
+
+      let [_, response] = await Member.update({
         ...memberData
       }, {
           where: {
@@ -171,36 +349,7 @@ module.exports = {
       next(err);
     }
   },
-  getKycs: async (req, res, next) => {
-    try {
-      logger.info("member::kyc");
-      const include = [{ model: Kyc, as: 'Kyc' }];
-      const memberKycs = await MemberKyc.findAll({ where: { member_id: req.user.id }, include: include, order: [['kyc_id', 'ASC']] });
-      console.log('memberKycs: ', memberKycs[0].Kyc.name);
-      return res.ok(MemberKycMapper(memberKycs));
-    } catch (err) {
-      logger.error("member kyc fail: ", err);
-      next(err);
-    }
-  },
-  getKycProperties: async (req, res, next) => {
-    try {
-      logger.info("kyc::property::schema");
-      const kyc = await Kyc.findOne({ where: { key: req.params.key } });
-      if (!kyc) {
-        return res.badRequest(res.__("KYC_NOT_FOUND"), "KYC_NOT_FOUND");
-      }
-      const memberKyc = await MemberKyc.findOne({ where: { member_id: req.user.id, kyc_id: kyc.id } });
-      if (!memberKyc) {
-        return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
-      }
-      const memberKycProperties = await MemberKycProperty.findAll({ where: { member_kyc_id: memberKyc.id }, order: [['updated_at', 'DESC']] });
-      return res.ok(MemberKycPropertyMapper(memberKycProperties));
-    } catch (err) {
-      logger.error("kyc scheme properties fail: ", err);
-      next(err);
-    }
-  }
+
 }
 
 function _validateKYCProperties(properties, data) {
@@ -219,6 +368,9 @@ function _buildJoiFieldValidate(p) {
     case KycDataType.TEXT:
     case KycDataType.PASSWORD: {
       result = Joi.string();
+      if (!p.require_flg) {
+        result = result.allow("")
+      }
       break;
     }
     case KycDataType.EMAIL: {
@@ -238,6 +390,9 @@ function _buildJoiFieldValidate(p) {
     default:
       {
         result = Joi.string();
+        if (!p.require_flg) {
+          result = result.allow("")
+        }
         break;
       }
   }
@@ -256,7 +411,7 @@ async function _uploadFile(field, req, res, next) {
   return new Promise(async (resolve, reject) => {
     let file = path.parse(req.body[field].file.name);
     if (config.CDN.exts.indexOf(file.ext.toLowerCase()) == -1) {
-      reject("NOT_SUPPORT_FILE_EXTENSION");
+      return reject("NOT_SUPPORT_FILE_EXTENSION");
     }
     let uploadName = `${config.CDN.folderKYC}/${file.name}-${Date.now()}${
       file.ext
@@ -274,7 +429,10 @@ async function _uploadFile(field, req, res, next) {
           config.aws.endpoint.lastIndexOf("//") + 2
         )}/${uploadName}`
       );
-      resolve(uploadUrl);
-    } else reject("UPLOAD_S3_FAILED");
+      return resolve(uploadUrl);
+    }
+    else {
+      reject("UPLOAD_S3_FAILED");
+    }
   });
 } 

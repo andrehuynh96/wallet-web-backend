@@ -209,14 +209,15 @@ class RewardSystem {
     }
   }
 
-  async claimReward({ email, currency_symbol, amount }) {
+  async claimReward({ email, currency_symbol, amount, latest_id }) {
     try {
       let accessToken = await this._getToken();
       let result = await axios.post(`${this.baseUrl}/claim-rewards`,
         {
           ext_client_id: email,
           currency_symbol: currency_symbol,
-          amount: amount
+          amount: amount,
+          latest_id: latest_id
         },
         {
           headers: {
@@ -312,6 +313,34 @@ class RewardSystem {
     }
   }
 
+  async updateMembershipType({ email, membership_type_id }) {
+    try {
+      const data = {
+        ext_client_id: email,
+        membership_type_id: membership_type_id,
+      };
+      let accessToken = await this._getToken();
+      let result = await axios.put(`${this.baseUrl}/clients/membership-type`,
+        {
+          ...data
+        },
+        {
+          headers: {
+            "x-use-checksum": true,
+            "x-secret": this.secretKey,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": this.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("Update Membership Type:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
 
   async _getToken() {
     let key = `${redisResource.rewardSystem.token}:${this.typeId}`;

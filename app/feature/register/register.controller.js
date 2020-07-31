@@ -17,6 +17,8 @@ const Affiliate = require('app/lib/reward-system/affiliate');
 const PluTXUserIdApi = require('app/lib/plutx-userid');
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const Membership = require('app/lib/reward-system/membership');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplate = require('app/model/wallet').email_templates;
 
 const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
@@ -146,6 +148,7 @@ async function _createAccount(req, res, next) {
     ...affiliateInfo,
     plutx_userid_id: idOnPlutxUserID,
     membership_type_id: null,
+    current_language: req.body.language
   });
 
   if (!member) {
@@ -186,7 +189,27 @@ async function _createAccount(req, res, next) {
 
 async function _sendEmail(member, otp) {
   try {
-    let subject = `${config.emailTemplate.partnerName} - Create Account`;
+    let templateName = EmailTemplateType.VERIFY_EMAIL 
+    let template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: member.current_language
+      }
+    })
+
+    if(!template){
+      template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: 'en'
+        }
+      })
+    }
+
+    if(!template)
+      return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+  
+    let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
@@ -195,7 +218,7 @@ async function _sendEmail(member, otp) {
     }
     data = Object.assign({}, data, config.email);
 
-    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.verifyEmail);
+    await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
   } catch (err) {
     logger.error("send email create account fail", err);
   }

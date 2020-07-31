@@ -61,6 +61,7 @@ module.exports = {
       claimObject.amount = req.body.amount;
       claimObject.status = ClaimRequestStatus.Pending;
       claimObject.system_type = SystemType.AFFILIATE
+      claimObject.affiliate_latest_id = req.body.latest_id;
 
       transaction = await database.transaction();
       let _resultCreateData = await ClaimRequest.create(claimObject, { transaction });
@@ -68,7 +69,8 @@ module.exports = {
       const dataReward = {
         amount: req.body.amount,
         currency_symbol: req.body.currency_symbol,
-        email: req.user.email
+        email: req.user.email,
+        latest_id: req.body.latest_id
       };
       const dataTrackingReward = {
         member_id: req.user.id,

@@ -96,7 +96,8 @@ const config = {
     endpoint: process.env.AWS_END_POINT,
     accessKey: process.env.AWS_ACCESS_KEY,
     secretKey: process.env.AWS_SECRET_KEY,
-    bucket: process.env.AWS_BUCKET
+    bucket: process.env.AWS_BUCKET,
+    bucketUrls: process.env.AWS_BUCKET_URLS ? process.env.AWS_BUCKET_URLS.split(",") : []
   },
   appLimit: process.env.APP_LIMIT || 10,
   lockUser: {
@@ -259,6 +260,7 @@ const config = {
     CLAIM_AFFILIATE_REWARD_ONG: "CLAIM_AFFILIATE_REWARD_ONG"
   },
   apiKeyIP: process.env.API_IP_KEY || '',
+  bodyTransferLimit: process.env.BODY_TRANSFER_LIMIT || '5mb',
 };
 
 module.exports = config;

@@ -7,6 +7,8 @@ const OTP = require("app/model/wallet").otps;
 const OtpType = require("app/model/wallet/value-object/otp-type");
 const uuidV4 = require('uuid/v4');
 const PluTXUserIdApi = require('app/lib/plutx-userid');
+const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
+const EmailTemplate = require('app/model/wallet').email_templates;
 
 const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
@@ -32,9 +34,29 @@ module.exports = async (req, res, next) => {
 
     const expiredHours = config.expiredVefiryToken;
     if (IS_ENABLED_PLUTX_USERID && member.plutx_userid_id) {
-      const subject = `${config.emailTemplate.partnerName} - Reset Password`;
-      const from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
-      const rawTemplate = mailer.getRawTemplate(config.emailTemplate.resetPassword);
+      let templateName = EmailTemplateType.RESET_PASSWORD
+      let template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: member.current_language
+        }
+      })
+
+      if (!template) {
+        template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: 'en'
+          }
+        })
+      }
+
+      if (!template)
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+
+      let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
+      let from = `${config.emailTemplate.partnerName} <${config.smtp.mailSendAs}>`;
+      const rawTemplate = template.template;
       const data = {
         subject,
         from,
@@ -88,7 +110,27 @@ module.exports = async (req, res, next) => {
 
 async function _sendEmail(member, verifyToken) {
   try {
-    let subject = ` ${config.emailTemplate.partnerName} - Reset Password`;
+    let templateName = EmailTemplateType.RESET_PASSWORD 
+    let template = await EmailTemplate.findOne({
+      where: {
+        name: templateName,
+        language: member.current_language
+      }
+    })
+
+    if(!template){
+      template = await EmailTemplate.findOne({
+        where: {
+          name: templateName,
+          language: 'en'
+        }
+      })
+    }
+
+    if(!template)
+      return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+  
+    let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,
@@ -96,7 +138,7 @@ async function _sendEmail(member, verifyToken) {
       hours: config.expiredVefiryToken
     }
     data = Object.assign({}, data, config.email);
-    await mailer.sendWithTemplate(subject, from, member.email, data, config.emailTemplate.resetPassword);
+    await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);
   } catch (err) {
     logger.error("send email forgot password fail", err);
   }

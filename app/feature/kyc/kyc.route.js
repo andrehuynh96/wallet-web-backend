@@ -29,6 +29,13 @@ router.post(
   controller.submit
 );
 
+router.put(
+  '/me/kyc',
+  parseformdata,
+  authenticate,
+  controller.resubmit
+);
+
 router.get(
   '/me/kycs',
   authenticate,
@@ -473,6 +480,7 @@ module.exports = router;
                   "field_name": "Email",
                   "field_key": "email",
                   "value": "Your Email",
+                  "note": "original file name",
                   "created_at": "2020-07-05T15:37:58.103Z",
                   "updated_at": "2020-07-05T15:37:58.103Z"
                 },
@@ -481,10 +489,57 @@ module.exports = router;
                   "field_name": "Password",
                   "field_key": "password",
                   "value": "Your Password",
+                  "note": "original file name",
                   "created_at": "2020-07-05T15:37:58.103Z",
                   "updated_at": "2020-07-05T15:37:58.103Z"
                 }
               ]
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+
+/**
+ * @swagger
+ * /web/me/kyc:
+ *   put:
+ *     summary: update kyc
+ *     tags:
+ *       - Accounts
+ *     description:
+ *     parameters:
+ *       - name: data
+ *         in: body
+ *         required: true
+ *         description: submit data JSON to verify KYC.
+ *         schema:
+ *            example:
+ *                  {
+                      "kyc_key":"LEVEL_1",
+                      "FILED_FOR_EACH_LEVEL"
+ *                  }
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": true
  *             }
  *       400:
  *         description: Error

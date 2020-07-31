@@ -32,7 +32,7 @@ module.exports = async (req, res, next) => {
 
     const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
 
-    console.log("isCheckReferrerCode", isCheckReferrerCode);
+    console.log("isCheckReferrerCode", referrerCode);
 
     if (referrerCode.httpCode !== 200 ||
       !referrerCode.data.data.isValid) {
@@ -40,7 +40,7 @@ module.exports = async (req, res, next) => {
     }
 
     let result = await Affiliate.updateReferrer({ email: member.email, referrerCode: req.body.referrer_code });
-    console.log("updateReferrer", updateReferrer);
+    console.log("updateReferrer", result);
 
     if (result.httpCode == 200) {
       if (!result.data.data.isSuccess) {

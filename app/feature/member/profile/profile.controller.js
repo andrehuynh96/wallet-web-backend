@@ -262,6 +262,9 @@ module.exports = {
         email: member.email
       });
       if (deactivate.httpCode !== 200) {
+        if (transaction) {
+          await transaction.rollback();
+        }
         return res.status(deactivate.httpCode).send(deactivate.data);
       }
 

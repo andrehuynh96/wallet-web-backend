@@ -15,7 +15,7 @@ module.exports = async (req, res, next) => {
     }
 
     const [_, user] = await Member.update({
-      current_language: req.body.language.tolowercase()
+      current_language: req.body.language.toLowerCase()
     }, {
         where: {
           id: req.user.id,

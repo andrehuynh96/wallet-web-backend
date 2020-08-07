@@ -29,7 +29,6 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
     }
 
-
     const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
 
     if (referrerCode.httpCode !== 200 ||

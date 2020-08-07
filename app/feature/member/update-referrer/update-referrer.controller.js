@@ -32,7 +32,7 @@ module.exports = async (req, res, next) => {
     const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
 
     if (referrerCode.httpCode !== 200) {
-      return res.status(result.httpCode).send(result.data);
+      return res.status(referrerCode.httpCode).send(referrerCode.data);
     }
     if (!referrerCode.data.data.isValid) {
       return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");

@@ -207,7 +207,9 @@ module.exports = router;
                 "data": {
                   "minimun_claim_amount_atom":50,
                   "minimun_claim_amount_iris":50,
-                  "minimun_claim_amount_ong":50
+                  "minimun_claim_amount_ong":50,
+                  "minimun_claim_amount_xtz":50,
+                  "minimun_claim_amount_one":50
                 }
  *             }
  *       400:

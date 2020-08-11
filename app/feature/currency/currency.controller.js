@@ -31,7 +31,7 @@ module.exports = {
         where.default_flg = req.query.default;
       }
       where.status = CurrencyStatus.ENABLED;
-      const { count: total, rows: items } = await Currency.findAndCountAll({ limit, offset, where: where, order: [['symbol', 'ASC']] });
+      const { count: total, rows: items } = await Currency.findAndCountAll({ limit, offset, where: where, order: [['name', 'ASC']] });
 
       return res.ok({
         items: mapper(items),

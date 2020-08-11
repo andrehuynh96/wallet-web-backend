@@ -38,6 +38,16 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
     }
 
+    let memberReferrer = await Member.findOne({
+      where: {
+        referral_code: req.body.referrer_code,
+        deleted_flg: false
+      }
+    });
+    if (!memberReferrer) {
+      return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
+    }
+
     let result = await Affiliate.updateReferrer({ email: member.email, referrerCode: req.body.referrer_code });
 
     if (result.httpCode == 200) {

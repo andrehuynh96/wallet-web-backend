@@ -1,7 +1,7 @@
 const CurrencyStatus = require("./value-object/currency-status");
 const CurrencyType = require("./value-object/currency-type");
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("currencies", {
+  const Model = sequelize.define("currencies", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -68,4 +68,9 @@ module.exports = (sequelize, DataTypes) => {
       underscored: true,
       timestamps: true,
     });
+
+  Model.associate = (models) => {
+    Model.hasMany(models.wallet_priv_keys, { foreignKey: 'platform' });
+  };
+  return Model;
 } 

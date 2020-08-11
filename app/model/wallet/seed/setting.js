@@ -132,7 +132,19 @@ const SETTINGS = [
     "value": "0.5",
     "type": "number",
     "property": "claim_affiliate_reward_ong"
-  }
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_XTZ",
+    "value": "0.5",
+    "type": "number",
+    "property": "minimun_claim_amount_xtz"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_ONE",
+    "value": "0.5",
+    "type": "number",
+    "property": "minimun_claim_amount_one"
+  },
 ];
 
 module.exports = async () => {

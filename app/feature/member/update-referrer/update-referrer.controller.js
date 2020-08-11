@@ -29,15 +29,6 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
     }
 
-    const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
-
-    if (referrerCode.httpCode !== 200) {
-      return res.status(referrerCode.httpCode).send(referrerCode.data);
-    }
-    if (!referrerCode.data.data.isValid) {
-      return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
-    }
-
     let memberReferrer = await Member.findOne({
       where: {
         referral_code: req.body.referrer_code,
@@ -45,6 +36,15 @@ module.exports = async (req, res, next) => {
       }
     });
     if (!memberReferrer) {
+      return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
+    }
+
+    const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
+
+    if (referrerCode.httpCode !== 200) {
+      return res.status(referrerCode.httpCode).send(referrerCode.data);
+    }
+    if (!referrerCode.data.data.isValid) {
       return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
     }
 

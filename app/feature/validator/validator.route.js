@@ -41,9 +41,8 @@ module.exports = router;
                       [
                         {
                           id: "0076d218-08a6-42c8-be55-c4d43fa3f09d",
-                          platform: "ADA",
-                          address: "53215c471b7ac752e3ddf8f2c4c1e6ed111857bfaa675d5e31ce8bce",
-                          created_at: "2020-07-11T04:58:12.834Z"
+                          platform: "TADA",
+                          address: "53215c471b7ac752e3ddf8f2c4c1e6ed111857bfaa675d5e31ce8bce"
                         }
                       ]
  *                 }

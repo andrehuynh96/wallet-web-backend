@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
 
   WalletPrivKey.associate = (models) => {
     WalletPrivKey.belongsTo(models.wallets, { foreignKey: 'wallet_id', targetKey: 'id' });
-    WalletPrivKey.belongsTo(models.currencies, { foreignKey: 'platform', targetKey: 'platform' })
+    WalletPrivKey.belongsTo(models.currencies, { foreignKey: 'platform', targetKey: 'symbol' })
   };
   return WalletPrivKey;
 } 

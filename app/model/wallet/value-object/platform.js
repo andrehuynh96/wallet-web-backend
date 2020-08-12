@@ -92,5 +92,10 @@ module.exports = {
     "symbol": "NEO",
     "name": "NEO",
     "coingeckoId": "neo"
+  },
+  ONE: {
+    "symbol": "ONE",
+    "name": "Harmony",
+    "coingeckoId": "harmony"
   }
 }

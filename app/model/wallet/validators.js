@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
     address: {
       type: DataTypes.STRING(256),
       allowNull: true,
+    },
+    estimate_earn_per_year: {
+      type: DataTypes.NUMERIC,
+      allowNull: true,
     }
   }, {
       underscored: true,

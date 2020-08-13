@@ -1,7 +1,6 @@
 const logger = require('app/lib/logger');
 const config = require('app/config');
-const Validator = require('app/model/wallet').validators;
-const mapper = require('app/feature/response-schema/validator.response-schema');
+const stakingApi = require('app/lib/staking-api')
 
 module.exports = {
   get: async (req, res, next) => {
@@ -10,12 +9,9 @@ module.exports = {
       let platform = req.params.platform ? req.params.platform.toUpperCase() : null
       if(!platform)
         throw 'Missing platform'
-      let where = {
-        platform: platform
-      };
-      let items = await Validator.findAll({where: where});
-
-      return res.ok(mapper(items));
+        
+     let item = await stakingApi.getValidators(platform)
+      return res.ok(items);
     }
     catch (err) {
       logger.error('get list validator fail:', err);

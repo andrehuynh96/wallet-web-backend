@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     answer: {
-      type: DataTypes.STRING(64),
+      type: DataTypes.STRING(1000),
       allowNull: false
     },
     token: {
@@ -26,16 +26,16 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
-    email:{
+    email: {
       type: DataTypes.STRING(64),
       allowNull: false
     },
-    fullname:{
+    fullname: {
       type: DataTypes.STRING(64),
       allowNull: true
     }
   }, {
-    underscored: true,
-    timestamps: true,
-  });
+      underscored: true,
+      timestamps: true,
+    });
 } 

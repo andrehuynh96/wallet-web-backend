@@ -17,7 +17,7 @@ module.exports = async () => {
     display_name: EmailTemplateDisplayName.TRANSACTION_RECEIVED
   }, {
     name: EmailTemplateTypes.TRANSACTION_SENT,
-    subject: 'Send coin/token alert`',
+    subject: 'Send coin/token alert',
     template: fs.readFileSync(path.join(root, 'transaction-sent.ejs'), 'utf-8'),
     display_name: EmailTemplateDisplayName.TRANSACTION_SENT
   }, {

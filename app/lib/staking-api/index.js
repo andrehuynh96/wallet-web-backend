@@ -40,5 +40,22 @@ module.exports = {
       logger.error("getAllStakingPlan fail:", err);
       return err.response.data;
     }
+  },
+  getValidators: async (platform) => {
+    try {
+      let accessToken = await getToken();
+      let result = await axios.get(`${config.stakingApi.url}/validators-info/${platform}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+
+      return result.data.data;
+    }
+    catch (err) {
+      logger.error("getAllStakingPlan fail:", err);
+      return err.response.data;
+    }
   }
 } 

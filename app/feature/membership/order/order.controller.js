@@ -274,7 +274,14 @@ async function _checkConditionCreateOrder(req, paymentType) {
     return "MEMBERSHIP_TYPE_NOT_FOUND";
   }
 
-  if (config.membership.KYCLevelAllowPurchase != req.user.kyc_level || req.user.kyc_status != KycStatus.APPROVED) {
+  let member = await Member.findOne({
+    where: {
+      id: req.user.id,
+    }
+  });
+  req.session.user = member;
+
+  if (config.membership.KYCLevelAllowPurchase != member.kyc_level || member.kyc_status != KycStatus.APPROVED) {
     return "KYC_LEVEL_DONOT_HAVE_PERMISSION";
   }
 

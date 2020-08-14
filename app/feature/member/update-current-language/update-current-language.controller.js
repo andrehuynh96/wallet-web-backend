@@ -13,9 +13,9 @@ module.exports = async (req, res, next) => {
     if (!member) {
       return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
     }
-    
+
     const [_, user] = await Member.update({
-      current_language: req.body.language
+      current_language: req.body.language.toLowerCase()
     }, {
         where: {
           id: req.user.id,

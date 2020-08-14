@@ -28,7 +28,7 @@ module.exports = {
           id: req.user.id,
           deleted_flg: false
         }
-      })
+      });
 
       if (!result) {
         return res.badRequest(res.__("USER_NOT_FOUND"), "USER_NOT_FOUND");
@@ -91,13 +91,13 @@ module.exports = {
         await OTP.update({
           expired: true
         }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.UNSUBSCRIBE
-          },
-          returning: true,
-          transaction
-        })
+            where: {
+              member_id: member.id,
+              action_type: OtpType.UNSUBSCRIBE
+            },
+            returning: true,
+            transaction
+          })
 
         await OTP.create({
           code: verifyToken,
@@ -124,13 +124,13 @@ module.exports = {
         await OTP.update({
           expired: true
         }, {
-          where: {
-            member_id: member.id,
-            action_type: OtpType.UNSUBSCRIBE
-          },
-          returning: true,
-          transaction
-        })
+            where: {
+              member_id: member.id,
+              action_type: OtpType.UNSUBSCRIBE
+            },
+            returning: true,
+            transaction
+          })
 
         await OTP.create({
           code: verifyToken,
@@ -193,22 +193,22 @@ module.exports = {
       await OTP.update({
         expired: true
       }, {
-        where: {
-          member_id: member.id,
-          action_type: OtpType.UNSUBSCRIBE
-        },
-        returning: true,
-        transaction
-      })
+          where: {
+            member_id: member.id,
+            action_type: OtpType.UNSUBSCRIBE
+          },
+          returning: true,
+          transaction
+        })
       await UnsubscribeReason.update({
         confirm_flg: true
       }, {
-        where: {
-          member_id: member.id
-        },
-        returning: true,
-        transaction
-      });
+          where: {
+            member_id: member.id
+          },
+          returning: true,
+          transaction
+        });
 
       let privateKeys = [];
       let wallet = await Wallet.findAll({ where: { member_id: member.id } }, { transaction })
@@ -251,12 +251,12 @@ module.exports = {
       await Member.update({
         deleted_flg: true
       }, {
-        where: {
-          id: member.id
-        },
-        returning: true,
-        transaction
-      });
+          where: {
+            id: member.id
+          },
+          returning: true,
+          transaction
+        });
 
       let deactivate = await Membership.deactivate({
         email: member.email
@@ -301,7 +301,9 @@ module.exports = {
         for (let key of privateKeys) {
           Webhook.removeAddresses(key.platform, key.address);
         }
-      }
+      } 
+      req.session.authenticated = false;
+      req.session.user = undefined;
       return res.ok(true);
     }
     catch (err) {

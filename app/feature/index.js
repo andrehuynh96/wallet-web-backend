@@ -23,6 +23,7 @@ router.use(require('./member-plutx/member-plutx.route'));
 router.use('/membership', require('./membership'));
 router.use('/staking', require('./staking'));
 router.use(require('./static/static.route'));
+router.use(require('./validator/validator.route'));
 
 module.exports = router;
 

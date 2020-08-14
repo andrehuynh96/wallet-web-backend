@@ -29,16 +29,27 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("REFERRER_CODE_SET_ALREADY"), "REFERRER_CODE_SET_ALREADY");
     }
 
+    let memberReferrer = await Member.findOne({
+      where: {
+        referral_code: req.body.referrer_code,
+        deleted_flg: false
+      }
+    });
+    if (!memberReferrer) {
+      return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
+    }
 
     const referrerCode = await Membership.isCheckReferrerCode({ referrerCode: req.body.referrer_code });
 
-    if (referrerCode.httpCode !== 200 ||
-      !referrerCode.data.data.isValid) {
+    if (referrerCode.httpCode !== 200) {
+      return res.status(referrerCode.httpCode).send(referrerCode.data);
+    }
+    if (!referrerCode.data.data.isValid) {
       return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
     }
 
     let result = await Affiliate.updateReferrer({ email: member.email, referrerCode: req.body.referrer_code });
- 
+
     if (result.httpCode == 200) {
       if (!result.data.data.isSuccess) {
         return res.serverInternalError();

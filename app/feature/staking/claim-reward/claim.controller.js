@@ -127,7 +127,9 @@ module.exports = {
             [Op.in]: [
               config.setting.CLAIM_AFFILIATE_REWARD_ATOM,
               config.setting.CLAIM_AFFILIATE_REWARD_IRIS,
-              config.setting.CLAIM_AFFILIATE_REWARD_ONG
+              config.setting.CLAIM_AFFILIATE_REWARD_ONG,
+              config.setting.CLAIM_AFFILIATE_REWARD_XTZ,
+              config.setting.CLAIM_AFFILIATE_REWARD_ONE
             ]
           }
         }
@@ -138,11 +140,15 @@ module.exports = {
       let atom = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ATOM)[0];
       let iris = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_IRIS)[0];
       let ong = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONG)[0];
+      let xtz = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_XTZ)[0];
+      let one = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONE)[0];
 
       return res.ok({
         minimun_claim_amount_atom: parseFloat(atom.value),
         minimun_claim_amount_iris: parseFloat(iris.value),
-        minimun_claim_amount_ong: parseFloat(ong.value)
+        minimun_claim_amount_ong: parseFloat(ong.value),
+        minimun_claim_amount_xtz: parseFloat(xtz.value),
+        minimun_claim_amount_one: parseFloat(one.value)
       });
     } catch (err) {
       logger.error("setting: ", err);

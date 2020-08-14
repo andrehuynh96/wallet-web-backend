@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Deactivate Acount</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
+
+    img {
+      border: none;
+      -ms-interpolation-mode: bicubic;
+      max-width: 100%;
+    }
+
+    a {
+      text-decoration: none !important;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+      line-height: 20px;
+      margin: 0;
+      padding: 0;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+      background: #fff;
+      color: #676767;
+    }
+
+    table {
+      border-collapse: separate;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+      width: 100%;
+    }
+
+    table tr {
+      clear: both;
+    }
+
+    table td {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    /* -------------------------------------
+          BODY & CONTAINER
+      ------------------------------------- */
+
+    /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+    .container {
+      display: block;
+      margin: 0 auto !important;
+      /* makes it centered */
+      max-width: 600px;
+      width: 600px;
+      text-align: center;
+      /* padding: 50px; */
+    }
+
+    /* -------------------------------------
+          HEADER, FOOTER, MAIN
+      ------------------------------------- */
+    .main {
+      width: 100%;
+    }
+
+    p,
+    ul,
+    ol {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px;
+      font-weight: normal;
+      padding-left: 0;
+      margin: 0;
+      line-height: 20px;
+    }
+
+    ul li,
+    ol li {
+      list-style-position: inside;
+      margin-left: 5px;
+    }
+
+    .head-logo {
+      text-align: left;
+      background-color: #ffffff;
+      padding: 35px 65px 20px;
+    }
+
+    a {
+      color: #3498db;
+      text-decoration: underline;
+    }
+
+    /* -------------------------------------
+          RESPONSIVE AND MOBILE FRIENDLY STYLES
+      ------------------------------------- */
+    @media only screen and (max-width: 620px) {
+      .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <table border="0" cellpadding="0" cellspacing="0" class="body" align="center">
+    <tr>
+      <td class="container">
+        <div class="content">
+          <table class="main" style="text-align: center;" align="center">
+            <tr>
+              <td class="head-logo">
+                <img src="<%=imageUrl%>/moon-logo.png" alt="">
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top: 87px">
+                <img src="<%=imageUrl%>/moon-deactive.png" alt="" style="margin-bottom: 20px">
+                <p style="font-size: 18px;font-weight: 500;margin-bottom: -3px; line-height: 30px; color: #182850">
+                  Unsubribed Account </p>
+                <p style="font-size: 18px;font-weight: 500;margin-bottom: 15px; line-height: 30px; color: #182850">
+                  Email: <%=email%></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="margin-left: 50px;text-align: left;">
+                  <p style="margin-bottom: 3px;padding-left: 30px;">Questionare:</p>
+                  <p style="padding: 0 0 30px 50px;"><%=question%>: <%=answer%></p>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </td>
+    </tr>

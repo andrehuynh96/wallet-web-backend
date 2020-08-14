@@ -10,7 +10,7 @@ module.exports = {
       if(!platform)
         throw 'Missing platform'
         
-     let item = await stakingApi.getValidators(platform)
+     let items = await stakingApi.getValidators(platform)
       return res.ok(items);
     }
     catch (err) {

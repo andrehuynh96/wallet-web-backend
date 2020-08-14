@@ -44,7 +44,7 @@ module.exports = {
   getValidators: async (platform) => {
     try {
       let accessToken = await getToken();
-      let result = await axios.get(`${config.stakingApi.url}/validators/${platform}`, {
+      let result = await axios.get(`${config.stakingApi.url}/validators-info/${platform}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`

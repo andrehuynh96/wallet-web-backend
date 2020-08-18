@@ -1,28 +1,109 @@
-<img src="https://wallet.moonstake.io/images/moonstake/moon-logo.png" alt="">
-<p
-  style="color: #182850; font-family: 'Montserrat', sans-serif; font-size: 25px; font-weight: 500; letter-spacing: 0; line-height: 22px; text-align: center;">
-  Transaction Received</p>
-<p
-  style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; text-align: right; padding-right: 15px;">
-  Platform: </p>
-<img src="https://wallet.moonstake.io/images/$_=platforms_$.png" alt=""
-  style="width: 30px; height: 30px; vertical-align: middle; margin-top: -5px; display: inline-block; padding-right: 5px;"><span
-  style="display: inline-block; color: #000000; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;">$_=platform_$</span>
-<p
-  style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; padding-right: 15px;">
-  Transaction ID: </p>
-<p
-  style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px;  display: inline-block;">
-  <a href="$_=txIdLink_$">$_=tx_id_$</a></p>
-<p
-  style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; padding-right: 15px;">
-  Sent from: </p>
-<p
-  style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px; display: inline-block;">
-  <a href="$_=addressLink_$">$_=address_$</a></p>
-<p class="float-r"
-  style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; padding-right: 15px;">
-  Amount received: </p>
-<p
-  style="font-family: 'Montserrat', sans-serif; color: #000000; font-size: 15px; font-weight: 500; letter-spacing: 0; line-height: 19px; display: inline-block;">
-  <strong style="font-weight: 600">$_=amount_$</strong> $_=symbol_$</p>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Transaction received</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
+
+    .head-logo {
+      text-align: left;
+      background-color: #fff;
+      padding: 35px 65px 20px;
+    }
+
+    table tr {
+      padding: 0px;
+    }
+  </style>
+</head>
+
+<body style="margin: 0px; padding: 0px; background-color: #FFFFFF" bgcolor="#FFFFFF">
+  <!-- << bg color for forwarding (leave white) // main bg color >> -->
+  <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+    <tr>
+      <td>
+        <!-- CENTER FLOAT WIDTH -->
+        <table width="600" border="0" valign="top" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+            <td class="head-logo">
+              <img src="$_=banner_$/moon-logo.png" alt="">
+            </td>
+          </tr>
+          <tr style="text-align: center;">
+            <td style="padding-top: 26px; padding-bottom: 34px;">
+              <p
+                style="color: #182850; font-family: 'Montserrat', sans-serif; font-size: 25px; font-weight: 500; letter-spacing: 0; line-height: 22px; text-align: center;">
+                Transaction Received</p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <!-- Master Width of the center panel -->
+
+              <!-- CENTER PANEL BG COLOR (to hide separation of tables on email forward from Outlook (known issue) -->
+              <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#FFFFFF">
+                <tr>
+                  <td style="display: inline-block; width: 36%; text-align: right;  ">
+                    <p
+                      style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; text-align: right; padding-right: 15px;">
+                      Platform: </p>
+                  </td>
+                  <td
+                    style="display: inline-block; color: #000000; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;">
+                    <img src="$_=imageUrl_$" alt=""
+                      style="width: 30px; height: 30px; vertical-align: middle; margin-top: -5px; display: inline-block; padding-right: 5px;"><span
+                      style="display: inline-block; color: #000000; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;">$_=platform_$</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="display: inline-block; width: 36%; text-align: right;  ">
+                    <p
+                      style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; padding-right: 15px;">
+                      Transaction ID: </p>
+                  </td>
+                  <td style="display: inline-block; width: 62%;  ">
+                    <p
+                      style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px;  display: inline-block;">
+                      <a href="$_=txIdLink_$">$_=tx_id_$</a></p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="display: inline-block; width: 36%; text-align: right;  ">
+                    <p
+                      style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; padding-right: 15px;">
+                      Sent from: </p>
+                  </td>
+                  <td style="display: inline-block; width: 62%;  ">
+                    <p
+                      style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px; display: inline-block;">
+                      <a href="$_=addressLink_$">$_=address_$</a></p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="display: inline-block; width: 36%; text-align: right;  ">
+                    <p class="float-r"
+                      style="font-family: 'Montserrat', sans-serif; color: #181835; font-size: 14px; font-weight: 500; letter-spacing: 0; line-height: 20px; display: inline-block; padding-right: 15px;">
+                      Amount received: </p>
+                  </td>
+                  <td style="display: inline-block; width: 62%;  ">
+                    <p
+                      style="font-family: 'Montserrat', sans-serif; color: #000000; font-size: 15px; font-weight: 500; letter-spacing: 0; line-height: 19px; display: inline-block;">
+                      <strong style="font-weight: 600">$_=amount_$</strong> $_=symbol_$</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- /CENTER FLOAT WIDTH -->
+            </td>
+          </tr>
+        </table>
+        <!-- /CENTER FLOAT -->
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>

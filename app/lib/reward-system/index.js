@@ -313,11 +313,12 @@ class RewardSystem {
     }
   }
 
-  async updateMembershipType({ email, membership_type_id }) {
+  async updateMembershipType({ email, membership_type_id, referrer_code }) {
     try {
       const data = {
         ext_client_id: email,
         membership_type_id: membership_type_id,
+        affiliate_code: referrer_code,
       };
       let accessToken = await this._getToken();
       let result = await axios.put(`${this.baseUrl}/clients/membership-type`,

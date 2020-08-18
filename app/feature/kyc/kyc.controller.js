@@ -180,7 +180,8 @@ module.exports = {
         let result = await Membership.updateMembershipType(
           {
             email: member.email,
-            membership_type_id: kyc.approve_membership_type_id
+            membership_type_id: kyc.approve_membership_type_id,
+            referrer_code: member.referrer_code,
           });
         if (result.httpCode !== 200) {
           await transaction.rollback();
@@ -443,4 +444,4 @@ async function _uploadFile(field, req, res, next) {
       reject("UPLOAD_S3_FAILED");
     }
   });
-} 
+}

@@ -200,6 +200,11 @@ const config = {
       txIdLink: process.env.XTZ_TX_ID_LINK,
       addressLink: process.env.XTZ_ADDRESS_LINK
     },
+    VSYS: {
+      platformName: "V systems",
+      txIdLink: process.env.VSYS_TX_ID_LINK,
+      addressLink: process.env.VSYS_ADDRESS_LINK
+    },
   },
   sdk: {
     baseUrl: process.env.SDK_URL,

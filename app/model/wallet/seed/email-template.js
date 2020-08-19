@@ -52,12 +52,18 @@ module.exports = async () => {
     });
 
     if (!emailTemplate) {
-      const data = {
-        ...item,
-        language: 'en',
-      };
+      const data = [
+        {
+          ...item,
+          language: 'en',
+        },
+        {
+          ...item,
+          language: 'ja',
+        },
+      ];
 
-      await EmailTemplate.create(data);
+      await EmailTemplate.bulkCreate(data);
     }
   });
   logger.info('Seeding email templates completed.');

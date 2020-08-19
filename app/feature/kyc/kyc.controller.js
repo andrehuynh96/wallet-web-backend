@@ -316,6 +316,15 @@ module.exports = {
       let itemUpdate = data.filter(x => propertyIds.indexOf(x.property_id) > -1);
 
       if (memberKyc.status == KycStatus.INSUFFICIENT) {
+        let member = await Member.findOne({
+          where: {
+            id: req.user.id
+          }
+        });
+        if (kyc.key == member.kyc_level) {
+          memberData.kyc_status = KycStatus.IN_REVIEW;
+        }
+
         await MemberKyc.update({
           status: KycStatus.IN_REVIEW
         }, {

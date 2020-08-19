@@ -47,15 +47,13 @@ module.exports = async () => {
     const emailTemplate = await EmailTemplate.findAll({
       where: {
         name: item,
-        language: ['en', 'jp']
+        language: 'en'
       }
     });
     if (emailTemplate.length === 0) {
       const unavailableEmail = data.find(x => x.name === item);
       const emailTemplateData = [{
         ...unavailableEmail, language: 'en'
-      }, {
-        ...unavailableEmail, language: 'jp'
       }];
 
       await EmailTemplate.bulkCreate(emailTemplateData, { returning: true });

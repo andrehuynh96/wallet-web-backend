@@ -49,6 +49,17 @@ module.exports = async (req, res, next) => {
       }
     }
 
+    if (req.body.referrer_code) {
+      let memberReferrer = await Member.findOne({
+        where: {
+          referral_code: req.body.referrer_code,
+          deleted_flg: false
+        }
+      });
+      if (!memberReferrer) {
+        return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
+      }
+    }
     let deactiveAccount = await Member.findOne({
       where: {
         deleted_flg: true,
@@ -189,7 +200,7 @@ async function _createAccount(req, res, next) {
 
 async function _sendEmail(member, otp) {
   try {
-    let templateName = EmailTemplateType.VERIFY_EMAIL 
+    let templateName = EmailTemplateType.VERIFY_EMAIL
     let template = await EmailTemplate.findOne({
       where: {
         name: templateName,
@@ -197,7 +208,7 @@ async function _sendEmail(member, otp) {
       }
     })
 
-    if(!template){
+    if (!template) {
       template = await EmailTemplate.findOne({
         where: {
           name: templateName,
@@ -206,10 +217,10 @@ async function _sendEmail(member, otp) {
       })
     }
 
-    if(!template)
+    if (!template)
       return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-  
-    let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
+
+    let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       imageUrl: config.website.urlImages,

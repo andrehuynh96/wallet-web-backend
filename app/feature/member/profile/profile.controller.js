@@ -56,7 +56,7 @@ module.exports = {
         raw: true
       });
 
-      response.new_term_condition = result.term_condition_id != term.id;
+      response.new_term_condition = (term && result.term_condition_id != term.id);
 
       return res.ok(response);
     }

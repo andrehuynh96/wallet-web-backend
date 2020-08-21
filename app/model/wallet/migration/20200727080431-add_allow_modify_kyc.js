@@ -10,7 +10,7 @@ module.exports = {
               return Promise.resolve();
             }
             return queryInterface.addColumn('kycs', 'allow_modify', {
-              type: Sequelize.BOOLEAN,
+              type: Sequelize.DataTypes.BOOLEAN,
               allowNull: false,
               defaultValue: false
             })

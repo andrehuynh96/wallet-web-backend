@@ -58,7 +58,8 @@ module.exports = {
         member_id: req.user.id,
         client_ip: registerIp,
         action: ActionType.AGREE_TERM_CONDITION,
-        user_agent: req.headers['user-agent']
+        user_agent: req.headers['user-agent'],
+        data: term.id
       });
 
       return res.ok(true);

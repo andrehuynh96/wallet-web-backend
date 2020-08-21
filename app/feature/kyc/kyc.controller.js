@@ -315,6 +315,28 @@ module.exports = {
       let itemCreate = data.filter(x => propertyIds.indexOf(x.property_id) == -1);
       let itemUpdate = data.filter(x => propertyIds.indexOf(x.property_id) > -1);
 
+      if (memberKyc.status == KycStatus.INSUFFICIENT) {
+        let member = await Member.findOne({
+          where: {
+            id: req.user.id
+          }
+        });
+        if (kyc.key == member.kyc_level) {
+          memberData.kyc_status = KycStatus.IN_REVIEW;
+        }
+
+        await MemberKyc.update({
+          status: KycStatus.IN_REVIEW
+        }, {
+            where: {
+              id: memberKyc.id
+            },
+            returning: true,
+            plain: true,
+            transaction: transaction
+          });
+      }
+
       if (itemCreate && itemCreate.length > 0) {
         await MemberKycProperty.bulkCreate(itemCreate, { transaction: transaction });
       }

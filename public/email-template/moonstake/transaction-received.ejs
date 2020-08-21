@@ -1,24 +1,21 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<style>
+  @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
 
-<head>
-  <meta name="viewport" content="width=device-width" />
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Transaction received</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800,900&display=swap');
+  .head-logo {
+    text-align: left;
+    background-color: #fff;
+    padding: 35px 65px 20px;
+  }
 
-    .head-logo {
-      text-align: left;
-      background-color: #fff;
-      padding: 35px 65px 20px;
-    }
+  table tr {
+    padding: 0px;
+    border: none !important;
+  }
 
-    table tr {
-      padding: 0px;
-    }
-  </style>
-</head>
+  td {
+    border: none !important;
+  }
+</style>
 
 <body style="margin: 0px; padding: 0px; background-color: #FFFFFF" bgcolor="#FFFFFF">
   <!-- << bg color for forwarding (leave white) // main bg color >> -->
@@ -29,7 +26,7 @@
         <table width="600" border="0" valign="top" align="center" cellpadding="0" cellspacing="0">
           <tr>
             <td class="head-logo">
-              <img src="<%=banner%>/moon-logo.png" alt="">
+              <img src="http://wallet.moonstake.io/images/moonstake/moon-logo.png" alt="">
             </td>
           </tr>
           <tr style="text-align: center;">
@@ -53,9 +50,8 @@
                   </td>
                   <td
                     style="display: inline-block; color: #000000; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;">
-                    <img src="<%=imageUrl%>" alt=""
-                      style="width: 30px; height: 30px; vertical-align: middle; margin-top: -5px; display: inline-block; padding-right: 5px;"><span
-                      style="display: inline-block; color: #000000; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;"><%=platform%></span>
+                    <span
+                      style="display: inline-block; color: #000000; font-family: 'Montserrat', sans-serif; font-size: 14px; letter-spacing: 0; line-height: 18px;">$_=platform_$</span>
                   </td>
                 </tr>
                 <tr>
@@ -67,7 +63,7 @@
                   <td style="display: inline-block; width: 62%;  ">
                     <p
                       style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px;  display: inline-block;">
-                      <a href="<%=txIdLink%>"><%=tx_id%></a></p>
+                      <a href="$_=txIdLink_$">$_=tx_id_$</a></p>
                   </td>
                 </tr>
                 <tr>
@@ -79,7 +75,7 @@
                   <td style="display: inline-block; width: 62%;  ">
                     <p
                       style="font-family: 'Montserrat', sans-serif; color: #0078FF; font-size: 14px; letter-spacing: 0; line-height: 18px; display: inline-block;">
-                      <a href="<%=addressLink%>"><%=address%></a></p>
+                      <a href="$_=addressLink_$">$_=address_$</a></p>
                   </td>
                 </tr>
                 <tr>
@@ -91,7 +87,7 @@
                   <td style="display: inline-block; width: 62%;  ">
                     <p
                       style="font-family: 'Montserrat', sans-serif; color: #000000; font-size: 15px; font-weight: 500; letter-spacing: 0; line-height: 19px; display: inline-block;">
-                      <strong style="font-weight: 600"><%=amount%></strong> <%=symbol%></p>
+                      <strong style="font-weight: 600">$_=amount_$</strong> $_=symbol_$</p>
                   </td>
                 </tr>
               </table>

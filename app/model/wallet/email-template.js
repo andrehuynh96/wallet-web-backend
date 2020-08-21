@@ -8,29 +8,46 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING(256),
-      allowNull: true
+      allowNull: false
     },
-    subject:{
+    subject: {
       type: DataTypes.STRING(1000),
-      allowNull: true,
+      allowNull: false,
     },
     template: {
       type: DataTypes.TEXT('long'),
+      allowNull: false,
+    },
+    group_name: {
+      type: DataTypes.STRING(256),
       allowNull: true,
     },
     language: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false,
+    },
+    display_order: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      default: 0
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       defaultValue: false
-    }
+    },
+    display_name: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+    },
+    option_name: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,
   });
- 
+
   return Model;
-}   
+};

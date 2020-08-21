@@ -20,7 +20,9 @@ module.exports = {
         order: [['applied_date', 'DESC']],
         raw: true
       });
-
+      if (!result) {
+        return res.notFound(res.__('NOT_FOUND_TERM_CONDITION'), 'NOT_FOUND_TERM_CONDITION');
+      }
       return res.ok(mapper(result));
     }
     catch (err) {

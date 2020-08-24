@@ -10,11 +10,12 @@ const Op = Sequelize.Op;
 module.exports = {
   get: async (req, res, next) => {
     try {
+      let now = new Date();
       let result = await Term.findOne({
         where: {
           is_published: true,
           applied_date: {
-            [Op.ne]: null
+            [Op.lte]: now
           }
         },
         order: [['applied_date', 'DESC']],
@@ -36,10 +37,7 @@ module.exports = {
       let term = await Term.findOne({
         where: {
           id: req.params.id,
-          is_published: true,
-          applied_date: {
-            [Op.ne]: null
-          }
+          is_published: true
         }
       });
       if (!term) {

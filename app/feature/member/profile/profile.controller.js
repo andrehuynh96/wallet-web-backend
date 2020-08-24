@@ -45,11 +45,12 @@ module.exports = {
       }
 
       let response = memberMapper(result);
+      let now = new Date();
       let term = await Term.findOne({
         where: {
           is_published: true,
           applied_date: {
-            [Op.ne]: null
+            [Op.lte]: now
           }
         },
         order: [['applied_date', 'DESC']],

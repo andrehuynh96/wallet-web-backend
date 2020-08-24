@@ -24,6 +24,10 @@ module.exports = {
       if (!result) {
         return res.notFound(res.__('NOT_FOUND_TERM_CONDITION'), 'NOT_FOUND_TERM_CONDITION');
       }
+
+      if (req.user.current_language == 'ja') {
+        result.content = result.ja_content;
+      }
       return res.ok(mapper(result));
     }
     catch (err) {

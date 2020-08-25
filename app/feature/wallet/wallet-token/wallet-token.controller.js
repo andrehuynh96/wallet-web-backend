@@ -205,6 +205,7 @@ token.sort = async (req, res, next) => {
       });
 
       if (!token) {
+        await transaction.rollback();
         return res.badRequest(res.__("TOKEN_NOT_FOUND"), "TOKEN_NOT_FOUND", { field: [{ "symbol": i.symbol }, { "platform": i.platform }] });
       }
 

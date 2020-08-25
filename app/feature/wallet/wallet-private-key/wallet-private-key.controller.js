@@ -225,6 +225,7 @@ privkey.sort = async (req, res, next) => {
         }
       });
       if (!coin) {
+        await transaction.rollback();
         return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND", { field: [{ "platform": i.platform }] });
       }
 

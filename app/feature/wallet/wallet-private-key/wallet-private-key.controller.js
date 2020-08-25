@@ -128,20 +128,20 @@ privkey.delete = async (req, res, next) => {
     await WalletToken.update({
       deleted_flg: true
     }, {
-        where: {
-          wallet_id: wallet_id,
-          platform: key.platform
-        },
-        transaction
-      });
+      where: {
+        wallet_id: wallet_id,
+        platform: key.platform
+      },
+      transaction
+    });
     await WalletPrivateKey.update({
       deleted_flg: true
     }, {
-        where: {
-          id: id
-        },
-        transaction
-      });
+      where: {
+        id: id
+      },
+      transaction
+    });
     await transaction.commit();
     Webhook.removeAddresses(key.platform, key.address);
     return res.ok({ deleted: true });
@@ -196,6 +196,60 @@ privkey.getPrivKey = async (req, res, next) => {
   } catch (ex) {
     logger.error(ex);
     next(ex);
+  }
+}
+
+privkey.sort = async (req, res, next) => {
+  let transaction;
+  try {
+    const { params: { wallet_id }, body: { items } } = req;
+    let wallet = await Wallet.findOne({
+      where: {
+        id: wallet_id,
+        member_id: req.user.id,
+        deleted_flg: false
+      }
+    });
+
+    if (!wallet) {
+      return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
+    }
+
+    transaction = await database.transaction();
+    for (let i of items) {
+      const coin = await WalletPrivateKey.findOne({
+        where: {
+          wallet_id: wallet_id,
+          platform: i.platform,
+          deleted_flg: false
+        }
+      });
+      if (!coin) {
+        await transaction.rollback();
+        return res.badRequest(res.__("COIN_NOT_FOUND"), "COIN_NOT_FOUND", { field: [{ "platform": i.platform }] });
+      }
+
+      await WalletPrivateKey.update({
+        order_index: i.index
+      }, {
+        where: {
+          id: coin.id,
+          wallet_id: wallet_id,
+          platform: i.platform,
+          deleted_flg: false
+        },
+        transaction: transaction
+      });
+    }
+    await transaction.commit();
+    return res.ok(true);
+
+  } catch (error) {
+    if (transaction) {
+      await transaction.rollback();
+    }
+    logger.error("update order index fail ", error);
+    next(error);
   }
 }
 

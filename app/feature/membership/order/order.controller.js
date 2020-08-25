@@ -102,7 +102,7 @@ module.exports = {
         referrer_code: req.user.referrer_code,
         order_no: orderId,
         rate_usd: rateUsd,
-        amount_usd: (rateUsd * req.body.amount),
+        amount_usd: membershipType.price,
       }
 
       if (req.body.wallet_id) {

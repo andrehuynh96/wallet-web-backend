@@ -330,3 +330,60 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+  /**
+ * @swagger
+ * /web/wallets/{wallet_id}/tokens/sort:
+ *   put:
+ *     summary: update order index
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet private key.
+ *         schema:
+ *            type: array
+ *            required:
+ *            - items
+ *            example:
+ *               {
+                    "items": [
+                        { "symbol":"BNR", "platform":"ETH", "index": 1 },
+                        { "symbol":"USDT", "platform":"ETH", "index": 2 },
+                        { "symbol":"INFT", "platform":"ETH", "index": 3 },
+                        { "symbol":"MOO", "platform":"ETH", "index": 4 }
+                    ]
+                }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */

@@ -239,7 +239,6 @@ privkey.sort = async (req, res, next) => {
         },
         transaction: transaction
       });
-      console.log(_,response);
     }
     await transaction.commit();
     return res.ok(true);

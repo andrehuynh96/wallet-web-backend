@@ -262,3 +262,65 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+ /**
+ * @swagger
+ * /web/wallets/{wallet_id}/coins/sort:
+ *   put:
+ *     summary: update order index
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet private key.
+ *         schema:
+ *            type: array
+ *            required:
+ *            - items
+ *            example:
+ *               {
+                  "items": [
+                      { "platform":"XTZ", "index": 1 },
+                      { "platform":"ONE", "index": 2 },
+                      { "platform":"ETH", "index": 3 },
+                      { "platform":"ONT", "index": 4 },
+                      { "platform":"TADA", "index": 5 },
+                      { "platform":"IRIS", "index": 6 },
+                      { "platform":"ONG", "index": 7 },
+                      { "platform":"BTC", "index": 8 },
+                      { "platform":"ATOM", "index": 9 }
+                  ]
+              }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */

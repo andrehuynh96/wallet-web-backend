@@ -79,7 +79,7 @@ module.exports = {
         }
       ]
 
-      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [[Currency, 'name', 'ASC']] });
+      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [['order_index','ASC'],[Currency, 'name', 'ASC']] });
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),
         offset: off,

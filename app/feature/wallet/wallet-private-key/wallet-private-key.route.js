@@ -1,7 +1,7 @@
 const express = require('express');
 const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
-const { create, update} = require('./validator');
+const { create, update, sort } = require('./validator');
 const controller = require('./wallet-private-key.controller');
 
 const router = express.Router();
@@ -29,6 +29,13 @@ router.post(
   '/wallets/:wallet_id/keys/:id/private',
   authenticate,
   controller.getPrivKey
+);
+
+router.put(
+  '/wallets/:wallet_id/coins/sort',
+  authenticate,
+  validator(sort),
+  controller.sort
 );
 
 module.exports = router;

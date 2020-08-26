@@ -108,6 +108,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: KycStatus.APPROVED
     },
+    term_condition_date: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    term_condition_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
     deleted_flg: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

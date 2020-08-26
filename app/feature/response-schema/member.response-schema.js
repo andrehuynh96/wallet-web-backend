@@ -30,7 +30,9 @@ const destObject = {
     '[].membership_type_id': '[].membership_type_id?',
     '[].last_name': '[].last_name',
     '[].first_name': '[].first_name',
-    '[].current_language': '[].current_language'
+    '[].current_language': '[].current_language',
+    '[].term_condition_date': '[].term_condition_date',
+    '[].term_condition_id': '[].term_condition_id'
   },
   single: {
     id: 'id',
@@ -61,7 +63,9 @@ const destObject = {
     membership_type_id: 'membership_type_id?',
     first_name: 'first_name',
     last_name: 'last_name',
-    current_language: 'current_language'
+    current_language: 'current_language',
+    term_condition_date: 'term_condition_date',
+    term_condition_id: 'term_condition_id'
   }
 };
 module.exports = srcObject => {

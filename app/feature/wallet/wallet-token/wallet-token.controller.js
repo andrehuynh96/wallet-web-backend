@@ -141,12 +141,23 @@ token.getPrivKey = async (req, res, next) => {
 token.all = async (req, res, next) => {
   try {
     logger.info('tokens::all');
-    const { query: { offset, limit }, params: { wallet_id } } = req;
+    const { query: { offset, limit, order_by }, params: { wallet_id } } = req;
     const where = { deleted_flg: false, wallet_id: wallet_id };
 
     const off = parseInt(offset) || 0;
     const lim = parseInt(limit) || parseInt(config.appLimit);
-
+    let order = [];
+    if (order_by) {
+      for (let sort of order_by.split(',')) {
+        if (sort.includes('-')) {
+            order.push([sort.trim().substring(1), 'DESC'])
+        } else {
+            order.push([sort.trim(), 'ASC'])
+        }
+      }
+    } else {
+      order.push([['order_index','ASC'],['created_at', 'DESC']]);
+    }
     const { count: total, rows: wallet_tokens } = await WalletToken.findAndCountAll({ offset: off, limit: lim, where: where, order: [['order_index','ASC'],['created_at', 'DESC']] });
     return res.ok({
       items: mapper(wallet_tokens),

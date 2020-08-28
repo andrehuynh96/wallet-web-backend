@@ -156,9 +156,9 @@ token.all = async (req, res, next) => {
         }
       }
     } else {
-      order.push([['order_index','ASC'],['created_at', 'DESC']]);
+      order.push(['order_index','ASC'],['created_at', 'DESC']);
     }
-    const { count: total, rows: wallet_tokens } = await WalletToken.findAndCountAll({ offset: off, limit: lim, where: where, order: [['order_index','ASC'],['created_at', 'DESC']] });
+    const { count: total, rows: wallet_tokens } = await WalletToken.findAndCountAll({ offset: off, limit: lim, where: where, order: order });
     return res.ok({
       items: mapper(wallet_tokens),
       offset: off,

@@ -89,6 +89,7 @@ module.exports = {
       next(err);
     }
   },
+
   getHis: async (req, res, next) => {
     try {
       let limit = req.query.limit ? parseInt(req.query.limit) : 10;
@@ -132,6 +133,7 @@ module.exports = {
       next(err);
     }
   },
+
   getTxDetail: async (req, res, next) => {
     try {
       let response = await MemberTransactionHis.findOne({
@@ -162,6 +164,7 @@ module.exports = {
       next(err);
     }
   },
+
   update: async (req, res, next) => {
     try {
       let tx_id = req.params.tx_id;
@@ -267,7 +270,7 @@ async function _getMemberFromAddress(address, member_id) {
   return rs;
 }
 
-function _formatAmount(value, decimal = 5, currency  = null, rate =null){
+function _formatAmount(value, decimal = 5, currency = null, rate = null) {
   if (!value) {
     return 0;
   }

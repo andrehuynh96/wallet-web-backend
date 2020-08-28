@@ -11,7 +11,7 @@ router.get(
 
 router.get(
   '/wallets/:wallet_id/keys',
-  // authenticate,
+  authenticate,
   controller.get
 );
 

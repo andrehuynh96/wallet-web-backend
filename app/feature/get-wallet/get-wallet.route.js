@@ -11,7 +11,7 @@ router.get(
 
 router.get(
   '/wallets/:wallet_id/keys',
-  authenticate,
+  // authenticate,
   controller.get
 );
 
@@ -59,7 +59,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": {
                  "items": [{
                       "id": 1,
@@ -103,7 +103,7 @@ module.exports = router;
  *       - in: path
  *         name: wallet_id
  *         type: string
- *         required: true  
+ *         required: true
  *       - name: platform
  *         in: query
  *         type: string
@@ -122,7 +122,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": {
                  "items": [{
                       "id": 1,
@@ -170,7 +170,7 @@ module.exports = router;
  *       - in: path
  *         name: id
  *         type: string
- *         required: true  
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -178,7 +178,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": {
                   "id": 1,
                   "platform": "ATOM",

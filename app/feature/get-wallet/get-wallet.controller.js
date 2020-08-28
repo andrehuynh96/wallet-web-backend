@@ -84,11 +84,11 @@ module.exports = {
             } else {
               order.push([sort.trim(), 'ASC'])
             }
-            
+
           }
         }
       } else {
-        order.push([['order_index','ASC'],[Currency, 'name', 'ASC']]);
+        order.push(['order_index', 'ASC'], [Currency, 'name', 'ASC']);
       }
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);

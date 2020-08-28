@@ -54,38 +54,9 @@ module.exports = router;
                         "kyc_id": "0",
                         "kyc_level": 1,
                         "kyc_status": "Approved",
-                        "kyc": {
-                          "1": {
-                            "updateAt": "2020-03-26T10:20:34.487Z",
-                            "status": "Approved",
-                            "content": {
-                              "kyc1": {
-                                "email": "sontt@blockchainlabs.asia"
-                              }
-                            },
-                            "expiryDate": "2023-03-27T04:28:49.681Z"
-                          },
-                          "2": {
-                            "updateAt": "2020-03-26T10:20:49.223Z",
-                            "status": "Insufficient",
-                            "content": {
-                              "kyc2": {
-                                "phoneNumber": "0901234567"
-                              }
-                            }
-                          },
-                          "3": {
-                            "updateAt": "2020-03-26T10:26:44.122Z",
-                            "status": "In Review",
-                            "content": {
-                              "kyc3": {
-                                "proofOfResidence": "1585218404031.jpeg",
-                                "passport": "1585218404016.jpeg",
-                                "selfieWithPassport": "1585218404028.jpeg"
-                              }
-                            }
-                          }
-                        }
+                        "term_condition_date": "2020-03-29T10:50:23.236Z",
+                        "term_condition_id": 1,
+                        "new_term_condition": true
                       }
  *             }
  *       400:

@@ -20,12 +20,14 @@ module.exports = async (req, res, next) => {
         where: {
           id: req.user.id,
         },
-        returning: true
+        returning: true,
+        plain: true,
       });
 
-    if (!user || user.length == 0) {
+    if (!user) {
       return res.serverInternalError();
     }
+    req.session.user = user;
     return res.ok(true);
   }
   catch (err) {

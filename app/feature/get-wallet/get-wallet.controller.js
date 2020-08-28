@@ -64,10 +64,31 @@ module.exports = {
   get: async (req, res, next) => {
     try {
       logger.info('coins::all');
-      const { query: { offset, limit, platform }, params: { wallet_id } } = req;
+      const { query: { offset, limit, platform, order_by }, params: { wallet_id } } = req;
       const where = { deleted_flg: false, wallet_id: wallet_id };
       if (platform) {
         where.platform = platform.toUpperCase()
+      }
+      let order = [];
+      if (order_by) {
+        for (let sort of order_by.split(',')) {
+          if (sort.includes('-')) {
+            if (sort.trim().substring(1) == "name") {
+              order.push([Currency, 'name', 'DESC'])
+            } else {
+              order.push([sort.trim().substring(1), 'DESC'])
+            }
+          } else {
+            if (sort.trim() == "name") {
+              order.push([Currency, 'name', 'ASC'])
+            } else {
+              order.push([sort.trim(), 'ASC'])
+            }
+            
+          }
+        }
+      } else {
+        order.push([['order_index','ASC'],[Currency, 'name', 'ASC']]);
       }
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
@@ -79,7 +100,7 @@ module.exports = {
         }
       ]
 
-      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [[Currency, 'name', 'ASC']] });
+      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),
         offset: off,

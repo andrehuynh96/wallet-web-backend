@@ -10,6 +10,7 @@ const mailer = require('app/lib/mailer');
 const db = require("app/model/wallet");
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const BigNumber = require('bignumber.js');
 const memberTrackingHisMapper = require('../response-schema/member-tracking-his.response-schema');
 const Plutx = require('app/lib/plutx');
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
@@ -244,7 +245,7 @@ const sendEmail = {
         platform: config.explorer[content.platform].platformName,
         tx_id: content.tx_id,
         address: content.to_address,
-        amount: content.amount,
+        amount: _formatAmount(content.amount),
         symbol: content.symbol,
         txIdLink: config.explorer[content.platform].txIdLink + content.tx_id,
         addressLink: config.explorer[content.platform].addressLink + content.to_address
@@ -265,3 +266,20 @@ async function _getMemberFromAddress(address, member_id) {
   var rs = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
   return rs;
 }
+
+function _formatAmount(value, decimal = 5, currency  = null, rate =null){
+  if (!value) {
+    return 0;
+  }
+  if (currency && rate) {
+    value = BigNumber(value).times(BigNumber(rate))
+  }
+  value = BigNumber(value);
+  var formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: decimal,
+    minimumFractionDigits: 0
+  });
+  return formatter.format(value.toNumber()).replace("$", "");
+};

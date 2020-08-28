@@ -17,6 +17,7 @@ const Webhook = require('app/lib/webhook');
 const Membership = require('app/lib/reward-system/membership');
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
 const EmailTemplate = require('app/model/wallet').email_templates;
+const Term = require('app/model/wallet').terms;
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
@@ -42,7 +43,23 @@ module.exports = {
           result.referral_code = "";
         }
       }
-      return res.ok(memberMapper(result));
+
+      let response = memberMapper(result);
+      let now = new Date();
+      let term = await Term.findOne({
+        where: {
+          is_published: true,
+          applied_date: {
+            [Op.lte]: now
+          }
+        },
+        order: [['applied_date', 'DESC']],
+        raw: true
+      });
+
+      response.new_term_condition = (term && result.term_condition_id != term.id);
+
+      return res.ok(response);
     }
     catch (err) {
       logger.error('getMe fail:', err);
@@ -301,7 +318,7 @@ module.exports = {
         for (let key of privateKeys) {
           Webhook.removeAddresses(key.platform, key.address);
         }
-      } 
+      }
       req.session.authenticated = false;
       req.session.user = undefined;
       return res.ok(true);

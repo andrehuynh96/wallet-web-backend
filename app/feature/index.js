@@ -24,6 +24,7 @@ router.use('/membership', require('./membership'));
 router.use('/staking', require('./staking'));
 router.use(require('./static/static.route'));
 router.use(require('./validator/validator.route'));
+router.use(require('./term-condition/term-condition.route'));
 
 module.exports = router;
 

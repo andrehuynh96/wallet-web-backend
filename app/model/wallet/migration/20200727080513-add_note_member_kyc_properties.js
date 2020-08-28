@@ -10,7 +10,7 @@ module.exports = {
               return Promise.resolve();
             }
             return queryInterface.addColumn('member_kyc_properties', 'note', {
-              type: Sequelize.TEXT('medium'),
+              type: Sequelize.DataTypes.TEXT('medium'),
               allowNull: true,
             })
           })

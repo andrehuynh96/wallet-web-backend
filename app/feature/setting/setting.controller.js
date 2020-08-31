@@ -2,7 +2,7 @@ const path = require('path');
 const config = require('app/config');
 
 module.exports = {
-  expiredVefiryToken: async (req, res, next) => {
+  expiredVerifyToken: async (req, res, next) => {
     try {
       return res.ok(config.expiredVefiryToken);
     }

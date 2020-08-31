@@ -4,9 +4,9 @@ const authenticate = require('app/middleware/authenticate.middleware');
 const router = express.Router();
 
 router.get(
-  '/settings/expire-vefiry-token',
+  '/settings/expire-verify-token',
   authenticate,
-  controller.expiredVefiryToken
+  controller.expiredVerifyToken
 );
 module.exports = router;
 
@@ -17,9 +17,9 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/settings/expire-vefiry-token:
+ * /web/settings/expire-verify-token:
  *   get:
- *     summary: Get expire vefiry token
+ *     summary: Get expire verify token
  *     tags:
  *       - Setting
  *     description: Get expire vefiry token

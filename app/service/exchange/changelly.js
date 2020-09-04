@@ -27,8 +27,8 @@ class Changelly extends Exchange {
       return await this._makeRequest({
         method: 'getMinAmount',
         params: {
-          from: from,
-          to: to
+          from: from.toLowerCase(),
+          to: to.toLowerCase()
         }
       })
     }

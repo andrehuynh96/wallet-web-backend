@@ -1,6 +1,6 @@
 const Model = require('app/model/wallet').exchange_currencies;
-const ExchangeFactory = require('app/service/exchange/factory')
-const ExchangeProvider = require('app/service/exchange/provider')
+const ExchangeFactory = require('app/service/exchange/factory');
+const ExchangeProvider = require('app/service/exchange/provider');
 
 module.exports = async () => {
   let count = await Model.count();

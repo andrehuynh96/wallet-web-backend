@@ -26,6 +26,7 @@ router.use(require('./static/static.route'));
 router.use(require('./validator/validator.route'));
 router.use(require('./term-condition/term-condition.route'));
 router.use(require('./setting/setting.route'));
+router.use('/exchange', require('./exchange'));
 
 module.exports = router;
 

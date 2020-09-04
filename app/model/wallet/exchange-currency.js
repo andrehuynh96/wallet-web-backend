@@ -22,10 +22,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: true
     },
-    address: {
-      type: DataTypes.STRING(128),
-      allowNull: true
-    },
     decimals: {
       type: DataTypes.INTEGER,
       allowNull: true
@@ -34,28 +30,43 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('medium'),
       allowNull: true
     },
+    contract_address: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
     order_index: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true,
+      defaultValue: 0
     },
     status: {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: Status.ENABLED
     },
+    from_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
+    to_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
     fix_rate_flg: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       defaultValue: false
     },
     created_by: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0
     },
     updated_by: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0
     },
   }, {

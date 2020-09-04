@@ -1,7 +1,10 @@
 
 class Exchange {
   constructor() {
+  }
 
+  async getCurrencies(options) {
+    throw new Error(`You have to implement getCurrencies function in child class`);
   }
 
   async getMinAmount(options) {

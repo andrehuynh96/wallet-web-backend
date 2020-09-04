@@ -1,5 +1,5 @@
 const config = require('app/config');
-const logger = require('app/logger');
+const logger = require('app/lib/logger');
 const crypto = require('crypto');
 const axios = require('axios');
 const Exchange = require("./base");
@@ -7,6 +7,19 @@ const Exchange = require("./base");
 class Changelly extends Exchange {
   constructor() {
     super();
+  }
+
+  async getCurrencies(options) {
+    try {
+      return await this._makeRequest({
+        method: 'getCurrenciesFull',
+        params: {}
+      })
+    }
+    catch (err) {
+      logger.error(`changelly getCurrencies error:`, err);
+    }
+    return null;
   }
 
   async getMinAmount({ from, to }) {
@@ -50,7 +63,7 @@ class Changelly extends Exchange {
     };
 
     let options = {
-      method: method,
+      method: 'post',
       url: config.exchange.changelly.url,
       headers: {
         'Content-Type': 'application/json',

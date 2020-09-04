@@ -1,3 +1,4 @@
+const { Temporalize } = require('sequelize-temporalize');
 const Status = require("./value-object/exchange-transaction-status");
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("exchange_transactions", {
@@ -98,5 +99,14 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     });
 
+  Temporalize({
+    model: Model,
+    sequelize,
+    temporalizeOptions: {
+      blocking: false,
+      full: false,
+      modelSuffix: "_his"
+    }
+  });
   return Model;
 } 

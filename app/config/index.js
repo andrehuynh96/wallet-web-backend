@@ -268,6 +268,13 @@ const config = {
   },
   apiKeyIP: process.env.API_IP_KEY || '',
   bodyTransferLimit: process.env.BODY_TRANSFER_LIMIT || '5mb',
+  exchange: {
+    changelly: {
+      url: process.env.CHANGELLY_URL,
+      apiKey: process.env.CHANGELLY_API_KEY,
+      secretKey: process.env.CHANGELLY_API_SECRET
+    }
+  }
 };
 
 module.exports = config;

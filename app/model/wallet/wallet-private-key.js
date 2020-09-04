@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: 0
     },
-    try_batch_number: {
+    try_batch_num: {
       type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: 0

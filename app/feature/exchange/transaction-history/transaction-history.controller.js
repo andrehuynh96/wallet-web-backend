@@ -5,8 +5,11 @@ const Exchange = require('app/model/wallet').exchange_transactions;
 module.exports = async (req, res, next) => {
   try {
     logger.info('transaction::all');
-    const { query: { offset, limit }, user } = req;
-    const where = { member_id: user.id };
+    const { query: { offset, limit, address }, user } = req;
+    const where = { member_id: user.id};
+    if (address) {
+      where.payin_address = address;
+    }
     const off = parseInt(offset) || 0;
     const lim = parseInt(limit) || parseInt(config.appLimit);
 

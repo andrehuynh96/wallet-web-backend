@@ -31,6 +31,9 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
+ *       - name: address
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:

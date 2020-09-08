@@ -12,14 +12,14 @@ module.exports = async () => {
       let result = currencies.map(x => {
         return {
           symbol: x.ticker.toUpperCase(),
-          platform: (x.contractAddress && x.addressUrl.startsWith("https://etherscan.io")) ? "ETH" : x.ticker.toUpperCase(),
-          name: x.fullName,
+          platform: (x.contract_address && x.address_url.startsWith("https://etherscan.io")) ? "ETH" : x.ticker.toUpperCase(),
+          name: x.full_name,
           icon: x.image,
-          contract_address: x.contractAddress,
-          contract_flg: (x.contractAddress && x.addressUrl.startsWith("https://etherscan.io")) ? true : false,
-          from_flg: x.enabledFrom,
-          to_flg: x.enabledTo,
-          fix_rate_flg: x.fixRateEnabled,
+          contract_address: x.contract_address,
+          from_flg: x.enabled_from,
+          to_flg: x.enabled_to,
+          fix_rate_flg: x.fix_rate_enabled,
+          contract_flg: (x.contract_address && x.address_url.startsWith("https://etherscan.io")) ? true : false,
         }
       });
       await Model.bulkCreate(result, {

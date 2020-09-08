@@ -16,6 +16,7 @@ module.exports = async () => {
           name: x.fullName,
           icon: x.image,
           contract_address: x.contractAddress,
+          contract_flg: (x.contractAddress && x.addressUrl.startsWith("https://etherscan.io")) ? true : false,
           from_flg: x.enabledFrom,
           to_flg: x.enabledTo,
           fix_rate_flg: x.fixRateEnabled,

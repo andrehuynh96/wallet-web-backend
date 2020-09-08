@@ -1,7 +1,7 @@
 const logger = require('app/lib/logger');
 const ExchangeCurrency = require('app/model/wallet').exchange_currencies;
 const ExchangeCurrencyStatus = require('app/model/wallet/value-object/exchange-currency-status');
-const mapper = require('app/feature/response-schema/exchange-currency.response-schema');
+const mapper = require('app/feature/response-schema/exchange/exchange-currency.response-schema');
 
 module.exports = async (req, res, next) => {
   try {

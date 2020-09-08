@@ -25,8 +25,8 @@ module.exports = async (req, res, next) => {
     result = result.result;
     let response = await ExchangeTransaction.create({
       member_id: req.user.id,
-      from_currency: req.body.from_currency,
-      to_currency: req.body.to_currency,
+      from_currency: req.body.from_currency.toUpperCase(),
+      to_currency: req.body.to_currency.toUpperCase(),
       request_recipient_address: req.body.address,
       request_amount: req.body.request_amount,
       request_extra_id: req.body.extra_id,

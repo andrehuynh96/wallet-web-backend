@@ -28,8 +28,8 @@ class Changelly extends Exchange {
       return await this._makeRequest({
         method: 'getMinAmount',
         params: {
-          from: from.toLowerCase(),
-          to: to.toLowerCase()
+          from: from.toUpperCase(),
+          to: to.toUpperCase()
         }
       })
     }
@@ -77,8 +77,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'getExchangeAmount',
       params: [{
-        from: from.toLowerCase(),
-        to: to.toLowerCase(),
+        from: from.toUpperCase(),
+        to: to.toUpperCase(),
         amount: amount
       }]
     })
@@ -88,8 +88,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'getFixRateForAmount',
       params: [{
-        from: from.toLowerCase(),
-        to: to.toLowerCase(),
+        from: from.toUpperCase(),
+        to: to.toUpperCase(),
         amountFrom: amount
       }]
     })
@@ -100,8 +100,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'createTransaction',
       params: {
-        from: from.toLowerCase(),
-        to: to.toLowerCase(),
+        from: from.toUpperCase(),
+        to: to.toUpperCase(),
         amount: amount,
         address: address,
         extraId: extra_id,
@@ -115,8 +115,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'createFixTransaction',
       params: {
-        from: from.toLowerCase(),
-        to: to.toLowerCase(),
+        from: from.toUpperCase(),
+        to: to.toUpperCase(),
         amountFrom: amount,
         address: address,
         extraId: extra_id,

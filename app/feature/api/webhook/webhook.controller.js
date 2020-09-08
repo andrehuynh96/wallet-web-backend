@@ -108,7 +108,7 @@ async function _getMemberFromAddress(platform, address) {
 
 async function _sendEmail(member, content) {
   try {
-    let templateName = EmailTemplateType.TRANSACTION_RECEIVED 
+    let templateName = EmailTemplateType.TRANSACTION_RECEIVED
     let template = await EmailTemplate.findOne({
       where: {
         name: templateName,
@@ -116,7 +116,7 @@ async function _sendEmail(member, content) {
       }
     })
 
-    if(!template){
+    if (!template) {
       template = await EmailTemplate.findOne({
         where: {
           name: templateName,
@@ -125,10 +125,10 @@ async function _sendEmail(member, content) {
       })
     }
 
-    if(!template)
+    if (!template)
       return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-  
-    let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
+
+    let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       banner: config.website.urlImages,

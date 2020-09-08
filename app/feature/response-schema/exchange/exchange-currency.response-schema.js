@@ -9,12 +9,13 @@ const destObject = {
     '[].icon': '[].icon',
     '[].decimals': '[].decimals',
     '[].description': '[].description',
-    '[].contract_address': '[].description',
+    '[].contract_address': '[].contract_address',
     '[].order_index': '[].order_index',
     '[].status': '[].status',
     '[].from_flg': '[].from_flg',
     '[].to_flg': '[].to_flg',
     '[].fix_rate_flg': '[].fix_rate_flg',
+    '[].contract_flg': '[].contract_flg',
   },
   single: {
     id: 'id',
@@ -24,12 +25,13 @@ const destObject = {
     icon: 'icon',
     decimals: 'decimals',
     description: 'description',
-    contract_address: 'description',
+    contract_address: 'contract_address',
     order_index: 'order_index',
     status: 'status',
     from_flg: 'from_flg',
     to_flg: 'to_flg',
     fix_rate_flg: 'fix_rate_flg',
+    contract_flg: 'contract_flg',
   }
 };
 

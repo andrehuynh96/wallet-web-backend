@@ -44,6 +44,7 @@ module.exports = router;
                           "decimals": null,
                           "description": "",
                           "contract_address": "0x221657776846890989a759ba2973e427dff5c9bb",
+                          "contract_flg": true,
                           "order_index": 0,
                           "status": 1,
                           "from_flg": true,

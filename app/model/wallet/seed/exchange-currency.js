@@ -19,6 +19,7 @@ module.exports = async () => {
           from_flg: x.enabled_from,
           to_flg: x.enabled_to,
           fix_rate_flg: x.fix_rate_enabled,
+          contract_flg: (x.contract_address && x.address_url.startsWith("https://etherscan.io")) ? true : false,
         }
       });
       await Model.bulkCreate(result, {

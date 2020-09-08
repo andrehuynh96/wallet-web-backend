@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post(
   '/min-amount',
-  // authenticate,
+  authenticate,
   validator(requestSchema),
   controller
 );
@@ -30,7 +30,7 @@ module.exports = router;
  *     parameters:
  *       - in: body
  *         name: data
- *         description: Data for login.
+ *         description: Data.
  *         schema:
  *            type: object
  *            required:

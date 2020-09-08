@@ -9,10 +9,10 @@ module.exports = async (req, res, next) => {
       from: req.body.from_currency,
       to: req.body.to_currency
     });
-    if (!result) {
-      return res.serverInternalError();
+    if (result.error) {
+      return res.badRequest(res.__("EXCHANGE_PROVIDER_ERROR"), result.error.message);
     }
-    res.ok(result.result);
+    return res.ok(result.result);
   }
   catch (err) {
     logger.error('get min amount fail:', err);

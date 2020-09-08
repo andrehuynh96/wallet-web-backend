@@ -2,6 +2,7 @@ const config = require('app/config');
 const logger = require('app/lib/logger');
 const crypto = require('crypto');
 const axios = require('axios');
+const { toSnakeCase } = require('app/lib/case-style');
 const Exchange = require("./base");
 
 class Changelly extends Exchange {
@@ -18,8 +19,8 @@ class Changelly extends Exchange {
     }
     catch (err) {
       logger.error(`changelly getCurrencies error:`, err);
+      throw err;
     }
-    return null;
   }
 
   async getMinAmount({ from, to }) {
@@ -34,24 +35,97 @@ class Changelly extends Exchange {
     }
     catch (err) {
       logger.error(`changelly getMinAmount error:`, err);
+      throw err;
     }
-    return null;
   }
 
-  async estimate(options) {
-
+  async estimate({ from, to, amount, fix_rate = false }) {
+    try {
+      if (!fix_rate) {
+        return await this._estimate({ from, to, amount });
+      }
+      return await this._estimateFixRate({ from, to, amount });
+    }
+    catch (err) {
+      logger.error(`changelly getExchangeAmount error:`, err);
+      throw err;
+    }
   }
 
-  async makeTransaction(options) {
-
+  async makeTransaction({ from, to, amount, address, extra_id, refund_address, refund_extra_id, rate_id, amount_to }) {
+    try {
+      if (rate_id) {
+        return await this._makeTransactionFixRate({ from, to, amount, address, extra_id, refund_address, refund_extra_id, rate_id, amount_to });
+      }
+      return await this._makeTransaction({ from, to, amount, address, extra_id, refund_address, refund_extra_id });
+    }
+    catch (err) {
+      logger.error(`changelly createTransaction error:`, err);
+      throw err;
+    }
   }
 
   async getTransaction(options) {
 
   }
 
-  async getTransactionDetail(options) {
+  async getStatus(options) {
 
+  }
+
+  async _estimate({ from, to, amount }) {
+    return await this._makeRequest({
+      method: 'getExchangeAmount',
+      params: [{
+        from: from.toLowerCase(),
+        to: to.toLowerCase(),
+        amount: amount
+      }]
+    })
+  }
+
+  async _estimateFixRate({ from, to, amount }) {
+    return await this._makeRequest({
+      method: 'getFixRateForAmount',
+      params: [{
+        from: from.toLowerCase(),
+        to: to.toLowerCase(),
+        amountFrom: amount
+      }]
+    })
+  }
+
+
+  async _makeTransaction({ from, to, amount, address, extra_id, refund_address, refund_extra_id }) {
+    return await this._makeRequest({
+      method: 'createTransaction',
+      params: {
+        from: from.toLowerCase(),
+        to: to.toLowerCase(),
+        amount: amount,
+        address: address,
+        extraId: extra_id,
+        refundAddress: refund_address,
+        refundExtraId: refund_extra_id
+      }
+    })
+  }
+
+  async _makeTransactionFixRate({ from, to, amount, address, extra_id, refund_address, refund_extra_id, rate_id, amount_to }) {
+    return await this._makeRequest({
+      method: 'createFixTransaction',
+      params: {
+        from: from.toLowerCase(),
+        to: to.toLowerCase(),
+        amountFrom: amount,
+        address: address,
+        extraId: extra_id,
+        refundAddress: refund_address,
+        refundExtraId: refund_extra_id,
+        rateId: rate_id,
+        amountTo: amount_to
+      }
+    })
   }
 
   async _makeRequest({ method, params }) {
@@ -76,9 +150,8 @@ class Changelly extends Exchange {
     let response = await axios(options);
     if (response.data.error) {
       logger.error(`changelly service error:`, response.data.error);
-      throw response.data.error;
     }
-    return response.data;
+    return toSnakeCase(response.data);
   }
 
   _sign(message) {

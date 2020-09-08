@@ -23,8 +23,8 @@ class Exchange {
     throw new Error(`You have to implement getTransaction function in child class`);
   }
 
-  async getTransactionDetail(options) {
-    throw new Error(`You have to implement getTransactionDetail function in child class`);
+  async getStatus(options) {
+    throw new Error(`You have to implement getStatus function in child class`);
   }
 }
 

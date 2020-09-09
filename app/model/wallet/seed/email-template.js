@@ -40,17 +40,22 @@ module.exports = async () => {
     subject: 'Invitation Email',
     template: fs.readFileSync(path.join(root, 'referral.ejs'), 'utf-8'),
     display_name: EmailTemplateDisplayName.REFERRAL
-  },
+  }, {
+    name: EmailTemplateTypes.DELETE_WALLET,
+    subject: 'Delete Wallet',
+    template: fs.readFileSync(path.join(root, 'delete-wallet.ejs'), 'utf-8'),
+    display_name: EmailTemplateDisplayName.DELETE_WALLET
+  }
   ];
 
   for (let item of emailNames) {
-    const emailTemplate = await EmailTemplate.findAll({
+    const emailTemplate = await EmailTemplate.findOne({
       where: {
         name: item,
         language: ['en', 'jp']
       }
     });
-    if (emailTemplate.length === 0) {
+    if (!emailTemplate) {
       const unavailableEmail = data.find(x => x.name === item);
       const emailTemplateData = [{
         ...unavailableEmail, language: 'en'

@@ -2,15 +2,15 @@ const EmailTemplate = require('app/model/wallet').email_templates;
 const EmailTemplateTypes = require('app/model/wallet/value-object/email-template-type');
 const EmailTemplateDisplayName = require('app/model/wallet/value-object/email-template-display-name');
 const fs = require('fs');
+const { forEach } = require('p-iteration');
 const logger = require('app/lib/logger');
 const path = require("path");
 
 module.exports = async () => {
-  const emailNames = Object.values(EmailTemplateTypes);
   let root = path.resolve(
     __dirname + "../../../../../public/email-template/moonstake/"
   );
-  const data = [{
+  const emailTemplates = [{
     name: EmailTemplateTypes.TRANSACTION_RECEIVED,
     subject: 'Received coin/token alert',
     template: fs.readFileSync(path.join(root, 'transaction-received.ejs'), 'utf-8'),
@@ -43,23 +43,28 @@ module.exports = async () => {
   },
   ];
 
-  for (let item of emailNames) {
-    const emailTemplate = await EmailTemplate.findAll({
+  await forEach(emailTemplates, async item => {
+    const emailTemplate = await EmailTemplate.findOne({
       where: {
-        name: item,
-        language: ['en', 'jp']
+        name: item.name,
+        language: 'en',
       }
     });
-    if (emailTemplate.length === 0) {
-      const unavailableEmail = data.find(x => x.name === item);
-      const emailTemplateData = [{
-        ...unavailableEmail, language: 'en'
-      }, {
-        ...unavailableEmail, language: 'jp'
-      }];
 
-      await EmailTemplate.bulkCreate(emailTemplateData, { returning: true });
-      logger.info('insert email template', item);
+    if (!emailTemplate) {
+      const data = [
+        {
+          ...item,
+          language: 'en',
+        },
+        {
+          ...item,
+          language: 'ja',
+        },
+      ];
+
+      await EmailTemplate.bulkCreate(data);
     }
-  }
+  });
+  logger.info('Seeding email templates completed.');
 };

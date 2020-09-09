@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const ejs = require('ejs');
 const EmailTemplate = require('email-templates');
+const logger = require('app/lib/logger');
 
 const root = path.resolve(__dirname + "../../../../public/email-template/");
 
@@ -73,14 +74,22 @@ transporter.sendWithDBTemplate = async function (
   data,
   template
 ) {
-  let mailContent = await transporter.getMailDBTemplate(template, data);
-  console.log('Send email to',to);
-  return await transporter.sendMail({
-    from: from,
-    to: to,
-    subject: subject,
-    html: mailContent
-  });
+  try {
+    let mailContent = await transporter.getMailDBTemplate(template, data);
+    console.log(`sendWithDBTemplate to: ${to}`);
+    let result = await transporter.sendMail({
+      from: from,
+      to: to,
+      subject: subject,
+      html: mailContent
+    });
+    console.log(`sendWithDBTemplate result: ${JSON.stringify(result)}`);
+    return result;
+  }
+  catch (err) {
+    logger.error("sendWithDBTemplate failed:", err);
+    throw err;
+  }
 };
 
 module.exports = transporter;

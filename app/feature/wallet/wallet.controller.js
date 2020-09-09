@@ -181,7 +181,7 @@ wallet.confirm = async (req, res, next) => {
         transaction
       });
     await transaction.commit();
-    return res.ok({ deleted: true });
+    return res.ok({ deleted: true, wallet_name: wallet.name });
     
   } catch (error) {
     logger.error(error);

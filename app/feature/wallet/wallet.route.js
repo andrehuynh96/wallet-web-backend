@@ -177,9 +177,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
-                      "deleted": true
-                    }
+ *                 "data":true
  *             }
  *       400:
  *         description: Error
@@ -265,7 +263,10 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":true
+ *                 "data": {
+ *                    deleted: true,
+ *                    wallet_name: "ABC"
+ *                  }
  *             }
  *       400:
  *         description: Error

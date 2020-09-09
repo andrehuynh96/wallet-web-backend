@@ -180,8 +180,6 @@ async function _createKyc(member) {
   }
 }
 
-
-
 function _validateKYCProperties(properties, data) {
   let obj = {};
   for (let p of properties) {

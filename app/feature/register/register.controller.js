@@ -8,15 +8,10 @@ const MembershipTypeName = require('app/model/wallet/value-object/membership-typ
 const memberMapper = require('app/feature/response-schema/member.response-schema');
 const bcrypt = require('bcrypt');
 const mailer = require('app/lib/mailer');
-const database = require('app/lib/database').db().wallet;
-const otplib = require("otplib");
-const Hashids = require('hashids/cjs');
-const base58chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 const uuidV4 = require('uuid/v4');
 const Affiliate = require('app/lib/reward-system/affiliate');
 const PluTXUserIdApi = require('app/lib/plutx-userid');
 const MemberStatus = require("app/model/wallet/value-object/member-status");
-const Membership = require('app/lib/reward-system/membership');
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
 const EmailTemplate = require('app/model/wallet').email_templates;
 
@@ -80,6 +75,7 @@ module.exports = async (req, res, next) => {
 
 async function _activeAccount(member, req, res, next) {
   member.password_hash = bcrypt.hashSync(req.body.password, 10);
+  member.member_sts = MemberStatus.UNACTIVATED;
 
   const now = new Date();
   let verifyToken = Buffer.from(uuidV4()).toString('base64');

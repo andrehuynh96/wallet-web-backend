@@ -1,7 +1,7 @@
 const express = require('express');
 const validator = require('app/middleware/validator.middleware');
 const authenticate = require('app/middleware/authenticate.middleware');
-const { create} = require('./validator');
+const { create, sort} = require('./validator');
 const controller = require('./wallet-token.controller');
 
 const router = express.Router();
@@ -35,6 +35,13 @@ router.post(
   '/wallets/:wallet_id/tokens/:id/private',
   authenticate,
   controller.getPrivKey
+);
+
+router.put(
+  '/wallets/:wallet_id/tokens/sort',
+  authenticate,
+  validator(sort),
+  controller.sort
 );
 
 module.exports = router;
@@ -126,6 +133,9 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
+ *       - name: order_by
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
@@ -305,6 +315,63 @@ module.exports = router;
  *                 "data":{
                         "encrypted_private_key": ""
                     }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+  /**
+ * @swagger
+ * /web/wallets/{wallet_id}/tokens/sort:
+ *   put:
+ *     summary: update order index
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet private key.
+ *         schema:
+ *            type: array
+ *            required:
+ *            - items
+ *            example:
+ *               {
+                    "items": [
+                        { "symbol":"BNR", "platform":"ETH", "index": 1 },
+                        { "symbol":"USDT", "platform":"ETH", "index": 2 },
+                        { "symbol":"INFT", "platform":"ETH", "index": 3 },
+                        { "symbol":"MOO", "platform":"ETH", "index": 4 }
+                    ]
+                }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
  *             }
  *       400:
  *         description: Error

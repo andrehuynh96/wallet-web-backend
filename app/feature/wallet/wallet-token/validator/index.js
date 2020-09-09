@@ -1,5 +1,6 @@
 const create = require('./create');
-
+const sort = require('./sort');
 module.exports = {
-  create: create
+  create: create,
+  sort: sort
 };

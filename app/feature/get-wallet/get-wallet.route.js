@@ -59,7 +59,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": {
                  "items": [{
                       "id": 1,
@@ -103,7 +103,7 @@ module.exports = router;
  *       - in: path
  *         name: wallet_id
  *         type: string
- *         required: true  
+ *         required: true
  *       - name: platform
  *         in: query
  *         type: string
@@ -115,6 +115,9 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
+ *       - name: order_by
+ *         in: query
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:
@@ -122,7 +125,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": {
                  "items": [{
                       "id": 1,
@@ -170,7 +173,7 @@ module.exports = router;
  *       - in: path
  *         name: id
  *         type: string
- *         required: true  
+ *         required: true
  *     produces:
  *       - application/json
  *     responses:
@@ -178,7 +181,7 @@ module.exports = router;
  *         description: Ok
  *         examples:
  *           application/json:
- *             {  
+ *             {
                "data": {
                   "id": 1,
                   "platform": "ATOM",

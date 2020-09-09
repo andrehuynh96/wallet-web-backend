@@ -6,6 +6,7 @@ const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/wallet-token.response-schema');
 const speakeasy = require('speakeasy');
 const config = require('app/config');
+const database = require('app/lib/database').db().wallet;
 
 var token = {};
 
@@ -140,13 +141,24 @@ token.getPrivKey = async (req, res, next) => {
 token.all = async (req, res, next) => {
   try {
     logger.info('tokens::all');
-    const { query: { offset, limit }, params: { wallet_id } } = req;
+    const { query: { offset, limit, order_by }, params: { wallet_id } } = req;
     const where = { deleted_flg: false, wallet_id: wallet_id };
 
     const off = parseInt(offset) || 0;
     const lim = parseInt(limit) || parseInt(config.appLimit);
-
-    const { count: total, rows: wallet_tokens } = await WalletToken.findAndCountAll({ offset: off, limit: lim, where: where, order: [['created_at', 'DESC']] });
+    let order = [];
+    if (order_by) {
+      for (let sort of order_by.split(',')) {
+        if (sort.includes('-')) {
+            order.push([sort.trim().substring(1), 'DESC'])
+        } else {
+            order.push([sort.trim(), 'ASC'])
+        }
+      }
+    } else {
+      order.push(['order_index','ASC'],['created_at', 'DESC']);
+    }
+    const { count: total, rows: wallet_tokens } = await WalletToken.findAndCountAll({ offset: off, limit: lim, where: where, order: order });
     return res.ok({
       items: mapper(wallet_tokens),
       offset: off,
@@ -174,6 +186,63 @@ token.get = async (req, res, next) => {
   catch (err) {
     logger.error("get key: ", err);
     next(err);
+  }
+}
+token.sort = async (req, res, next) => {
+  let transaction;
+  try {
+    const { params: { wallet_id }, body: { items } } = req;
+    let wallet = await Wallet.findOne({
+      where: {
+        id: wallet_id,
+        member_id: req.user.id,
+        deleted_flg: false
+      }
+    });
+
+    if (!wallet) {
+      return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND");
+    }
+
+    transaction = await database.transaction();
+    for (let i of items) {
+      const token = await WalletToken.findOne({
+        where: {
+          wallet_id: wallet_id,
+          symbol: i.symbol,
+          platform: i.platform,
+          deleted_flg: false
+        }
+      });
+
+      if (!token) {
+        await transaction.rollback();
+        return res.badRequest(res.__("TOKEN_NOT_FOUND"), "TOKEN_NOT_FOUND", { field: [{ "symbol": i.symbol }, { "platform": i.platform }] });
+      }
+
+      await WalletToken.update({
+        order_index: i.index
+      }, {
+        where: {
+          id: token.id,
+          wallet_id: wallet_id,
+          symbol: i.symbol,
+          platform: i.platform,
+          deleted_flg: false
+        },
+        transaction: transaction
+      });
+    }
+
+    await transaction.commit();
+    return res.ok(true);
+
+  } catch (error) {
+    if (transaction) {
+      await transaction.rollback();
+    }
+    logger.error("update order index fail ", error);
+    next(error);
   }
 }
 

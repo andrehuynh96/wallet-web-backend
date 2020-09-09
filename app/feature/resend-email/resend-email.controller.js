@@ -15,7 +15,7 @@ module.exports = {
     try {
       let member = await Member.findOne({
         where: {
-          deleted_flg: false,
+          // deleted_flg: false,
           email: req.body.email.toLowerCase()
         }
       });
@@ -74,7 +74,7 @@ module.exports = {
       let member = await Member.findOne({
         where: {
           id: otp.member_id,
-          deleted_flg: false
+          // deleted_flg: false
         }
       })
       if (member.member_sts == MemberStatus.LOCKED) {
@@ -127,7 +127,7 @@ const _sendEmail = {
         }
       })
 
-      if(!template){
+      if (!template) {
         template = await EmailTemplate.findOne({
           where: {
             name: templateName,
@@ -136,10 +136,10 @@ const _sendEmail = {
         })
       }
 
-      if(!template)
+      if (!template)
         return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-    
-      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
+
+      let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -162,7 +162,7 @@ const _sendEmail = {
         }
       })
 
-      if(!template){
+      if (!template) {
         template = await EmailTemplate.findOne({
           where: {
             name: templateName,
@@ -171,10 +171,10 @@ const _sendEmail = {
         })
       }
 
-      if(!template)
+      if (!template)
         return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-    
-      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
+
+      let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,
@@ -197,7 +197,7 @@ const _sendEmail = {
         }
       })
 
-      if(!template){
+      if (!template) {
         template = await EmailTemplate.findOne({
           where: {
             name: templateName,
@@ -206,10 +206,10 @@ const _sendEmail = {
         })
       }
 
-      if(!template)
+      if (!template)
         return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-    
-      let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
+
+      let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         imageUrl: config.website.urlImages,

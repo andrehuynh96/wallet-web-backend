@@ -91,6 +91,7 @@ const config = {
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/',
     ssoLoginUrl: process.env.WEBSITE_URL + '/sign-in?token=',
+    urlDeleteWallet: process.env.WEBSITE_URL + '/sign-in?type=delete_wallet&token='
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,

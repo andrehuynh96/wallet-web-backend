@@ -14,6 +14,8 @@ const EmailTemplateType = require('app/model/wallet/value-object/email-template-
 const EmailTemplate = require('app/model/wallet').email_templates;
 const uuidV4 = require('uuid/v4');
 const mailer = require('app/lib/mailer');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 var wallet = {};
 
 wallet.create = async (req, res, next) => {
@@ -143,6 +145,29 @@ wallet.confirm = async (req, res, next) => {
       }
     });
 
+    if (wallet.default_flg) {
+      let defaultWallet = await Wallet.findOne({
+        where: {
+          member_id: req.user.id,
+          deleted_flg: false,
+          default_flg: false,
+          id: {
+            [Op.ne]: wallet.id
+          }
+        }
+      });
+      if (defaultWallet) {
+        await Wallet.update({
+          default_flg: true
+        }, {
+            where: {
+              id: defaultWallet.id
+            },
+            transaction
+          });
+      }
+    }
+
     await WalletPrivateKey.update({
       deleted_flg: true
     }, {
@@ -168,7 +193,7 @@ wallet.confirm = async (req, res, next) => {
         transaction
       });
     
-
+    
     for (let key of keys) {
       Webhook.removeAddresses(key.platform, key.address);
     }
@@ -279,7 +304,7 @@ wallet.delete = async (req, res, next) => {
       return res.serverInternalError();
     }
 
-    await _sendEmail(member, wallet, otp);
+    _sendEmail(member, wallet, otp);
     return res.ok(true);
   } catch (err) {
     logger.error()

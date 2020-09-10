@@ -112,7 +112,7 @@ wallet.confirm = async (req, res, next) => {
     logger.info('wallet::confirm delete');
     let otp = await OTP.findOne({
       where: {
-        code: req.query.token,
+        code: req.body.token,
         action_type: OtpType.DELETE_WALLET
       }
     });

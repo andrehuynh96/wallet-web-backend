@@ -35,7 +35,7 @@ router.get(
   controller.getPassphrase
 );
 
-router.get(
+router.post(
   '/wallets/confirm',
   authenticate,
   controller.confirm
@@ -246,15 +246,23 @@ module.exports = router;
  /**
  * @swagger
  * /web/wallets/confirm:
- *   get:
+ *   post:
  *     summary: confirm delete wallet
  *     tags:
  *       - Wallets
  *     description:
  *     parameters:
- *       - in: query
- *         name: token
- *         type: string
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - token
+ *            example:
+ *               {     
+                    "token": ""
+                  }
  *     produces:
  *       - application/json
  *     responses:

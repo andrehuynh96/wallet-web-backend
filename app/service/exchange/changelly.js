@@ -23,10 +23,10 @@ class Changelly extends Exchange {
     }
   }
 
-  async getMinAmount({ from, to }) {
+  async getMinAmount({ from, to, fix_rate = false }) {
     try {
       return await this._makeRequest({
-        method: 'getMinAmount',
+        method: 'getPairsParams',
         params: {
           from: from.toUpperCase(),
           to: to.toUpperCase()
@@ -94,8 +94,6 @@ class Changelly extends Exchange {
       }]
     })
   }
-
-
   async _makeTransaction({ from, to, amount, address, extra_id, refund_address, refund_extra_id }) {
     return await this._makeRequest({
       method: 'createTransaction',

@@ -18,7 +18,7 @@ const schema = Joi.object().keys({
     .allow(null)
     .optional(),
   rate_id: Joi.string().optional(),
-  amount_to: Joi.number().optional()
+  //amount_to: Joi.number().optional()
 });
 
 module.exports = schema;

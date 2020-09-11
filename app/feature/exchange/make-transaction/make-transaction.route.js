@@ -46,8 +46,7 @@ module.exports = router;
                       "extra_id": "",
                       "refund_address": "",
                       "refund_extra_id": "",
-                      "rate_id": "",
-                      "amount_to": ""
+                      "rate_id": ""
                   }
  *     produces:
  *       - application/json

@@ -49,7 +49,14 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": "0.00727689"
+ *                 "data": {
+ *                    "from": "btc",
+                      "to": "eth",
+                      "min_amount_float": "0.00309663",
+                      "max_amount_float": null,
+                      "min_amount_fixed": "0.00516105",
+                      "max_amount_fixed": "5.0000000000000000000000"
+ *                  }
  *             }
  *       400:
  *         description: Error

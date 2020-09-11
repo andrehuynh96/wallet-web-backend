@@ -10,7 +10,7 @@ module.exports = async (req, res, next) => {
       to: req.body.to_currency
     });
     if (result.error) {
-      return res.badRequest(res.__("EXCHANGE_PROVIDER_ERROR"), result.error.message);
+      return res.badRequest(result.error.message, "EXCHANGE_PROVIDER_ERROR");
     }
     return res.ok(result.result);
   }

@@ -12,7 +12,7 @@ module.exports = async (req, res, next) => {
       fix_rate: req.body.fix_rate,
     });
     if (result.error) {
-      return res.badRequest(res.__("EXCHANGE_PROVIDER_ERROR"), result.error.message);
+      return res.badRequest(result.error.message, "EXCHANGE_PROVIDER_ERROR");
     }
     res.ok(result.result[0]);
   }

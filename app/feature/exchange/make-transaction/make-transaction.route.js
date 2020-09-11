@@ -74,7 +74,7 @@ module.exports = router;
                       "api_extra_fee": "0",
                       "payin_extra_id": null,
                       "payout_extra_id": null,
-                      "status": "NEW",
+                      "status": "NEW|WAITING|CONFIRMING|EXCHANGING|SENDING|FINISHED|FAILED|REFUNDED|EXPIRED|OVERDUE|HOLD",
                       "amount_expected_from": "1",
                       "amount_expected_to": "29.61103860",
                       "amount_to": "0",

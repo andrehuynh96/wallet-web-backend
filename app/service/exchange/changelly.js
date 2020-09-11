@@ -112,6 +112,18 @@ class Changelly extends Exchange {
   }
 
   async _makeTransactionFixRate({ from, to, amount, address, extra_id, refund_address, refund_extra_id, rate_id, amount_to }) {
+    console.log({
+      from: from.toUpperCase(),
+      to: to.toUpperCase(),
+      amountFrom: amount,
+      address: address,
+      extraId: extra_id,
+      refundAddress: refund_address,
+      refundExtraId: refund_extra_id,
+      rateId: rate_id,
+      amountTo: amount_to
+    });
+
     return await this._makeRequest({
       method: 'createFixTransaction',
       params: {

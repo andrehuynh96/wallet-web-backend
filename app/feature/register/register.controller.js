@@ -116,7 +116,7 @@ async function _createAccount(req, res, next) {
   let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
   if (createAffiliate.httpCode == 200) {
     affiliateInfo.referral_code = createAffiliate.data.data.code;
-    affiliateInfo.referrer_code = req.body.referrer_code || "";
+    affiliateInfo.referrer_code = req.body.referrer_code || null ;
     affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
   }
   else {

@@ -26,6 +26,13 @@ module.exports = router;
  *       - Exchange
  *     description:
  *     parameters:
+ *       - name: fix_rate
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *           example:
+ *             true
  *     produces:
  *       - application/json
  *     responses:

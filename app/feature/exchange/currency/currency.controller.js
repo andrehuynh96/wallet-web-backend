@@ -5,9 +5,14 @@ const mapper = require('app/feature/response-schema/exchange/exchange-currency.r
 
 module.exports = async (req, res, next) => {
   try {
+    let where = {};
+    if (req.query.fix_rate) {
+      where.fix_rate_flg = req.query.fix_rate;
+    }
     let result = await ExchangeCurrency.findAll({
       where: {
-        status: ExchangeCurrencyStatus.ENABLED
+        status: ExchangeCurrencyStatus.ENABLED,
+        ...where
       },
       order: [['order_index', 'ASC'], ['id', 'ASC']],
       raw: true

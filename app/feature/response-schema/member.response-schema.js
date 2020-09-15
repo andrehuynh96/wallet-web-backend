@@ -18,7 +18,7 @@ const destObject = {
     '[].post_code': '[].post_code',
     '[].country': '[].country',
     '[].referral_code': '[].referral_code?',
-    '[].referrer_code': '[].referrer_code?',
+    '[].referrer_code': '[].referrer_code',
     '[].infinito_id': '[].infinito_id',
     '[].latest_login_at': '[].latest_login_at',
     '[].kyc_id': '[].kyc_id',
@@ -51,7 +51,7 @@ const destObject = {
     post_code: 'post_code',
     country: 'country',
     referral_code: 'referral_code?',
-    referrer_code: 'referrer_code?',
+    referrer_code: 'referrer_code',
     infinito_id: 'infinito_id',
     latest_login_at: 'latest_login_at',
     kyc_id: 'kyc_id',
@@ -73,10 +73,18 @@ module.exports = srcObject => {
     if (srcObject === undefined || srcObject.length == 0) {
       return srcObject;
     } else {
+      srcObject.forEach(item=> {
+        if (!item.referrer_code) {
+          item.referrer_code = "";
+        }
+      });
       return objectMapper(srcObject, destObject.array);
     }
   }
   else {
+    if(!srcObject.referrer_code) {
+      srcObject.referrer_code = "";
+    }
     return objectMapper(srcObject, destObject.single);
   }
 };

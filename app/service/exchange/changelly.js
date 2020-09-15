@@ -86,11 +86,11 @@ class Changelly extends Exchange {
 
   async _estimateFixRate({ from, to, amount }) {
     return await this._makeRequest({
-      method: 'getFixRateForAmount',
+      method: 'getFixRate',
       params: [{
         from: from.toUpperCase(),
         to: to.toUpperCase(),
-        amountFrom: amount
+        // amountFrom: amount
       }]
     })
   }

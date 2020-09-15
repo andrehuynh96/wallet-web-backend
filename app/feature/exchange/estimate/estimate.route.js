@@ -26,7 +26,7 @@ module.exports = router;
  *     summary: estimate
  *     tags:
  *       - Exchange
- *     description: For case Fix rate will response {id,from, to, result, amount_from, amount_to},  not fix rate {from, to, result, network_fee, amount, visible_amount,rate,fee }
+ *     description: For case Fix rate will response {id,from, to, result, max_from, max_to,min_from,min_to},  not fix rate {from, to, result, network_fee, amount, visible_amount,rate,fee }
  *     parameters:
  *       - in: body
  *         name: data
@@ -63,8 +63,8 @@ module.exports = router;
                       "rate": "29.2441911144578313253",
                       "fee": "0.1169767644578313253012",
                       "id": "fe8993badf88c62f6c1e4d505d8a44b392f59d842e8023a9b3c601d627c1a3495d254d3cedd72571f3408f616230e7e11310bf82011d0bed6cc11b158662d4f395bac63aec2c73d565436f53c124392ef9",
-                      "amount_from": "1",
-                      "amount_to": "28.10839175"
+                      "max_from": "1",
+                      "max_to": "28.10839175"
  *                  }
  *             }
  *       400:

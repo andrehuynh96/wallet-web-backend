@@ -82,7 +82,6 @@ module.exports = {
         ...additionalInfo
       });
       if (req.body.send_email_flg) await sendEmail[req.body.action](user, req.body);
-      logger.info("create::tracking::create", JSON.stringify(response))
       return res.ok(memberTrackingHisMapper(response));
     } catch (err) {
       logger.error("alert send coin/token fail: ", err);
@@ -264,13 +263,13 @@ async function _getMemberFromAddress(address, member_id) {
   var sql = `
   SELECT *
       FROM wallet_priv_keys as k INNER JOIN wallets as w on k.wallet_id = w.id
-      WHERE k.address ILIKE '${address}' AND w.member_id='${member_id}' 
+      WHERE k.address ILIKE '${address}' AND w.member_id='${member_id}'
     `;
   var rs = await db.sequelize.query(sql, { type: db.sequelize.QueryTypes.SELECT });
   return rs;
 }
 
-function _formatAmount(value, decimal = 5, currency = null, rate = null) {
+function _formatAmount(value, decimal = 6, currency = null, rate = null) {
   if (!value) {
     return 0;
   }

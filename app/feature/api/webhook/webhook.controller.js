@@ -32,13 +32,14 @@ module.exports = async (req, res, next) => {
           tx_id: data.tx_id
         }
       });
-      data.amount = _formatAmount(data.amount);
       if (!tx) {
         await MemberTransactionHis.create({
           member_id: member.id,
           ...data
         });
       }
+      data.amount = _formatAmount(data.amount);
+
       _sendEmail(member, data);
     }
 

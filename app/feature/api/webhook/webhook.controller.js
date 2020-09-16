@@ -32,13 +32,14 @@ module.exports = async (req, res, next) => {
           tx_id: data.tx_id
         }
       });
-
       if (!tx) {
         await MemberTransactionHis.create({
           member_id: member.id,
           ...data
         });
       }
+      data.amount = _formatAmount(data.amount);
+
       _sendEmail(member, data);
     }
 
@@ -147,4 +148,21 @@ async function _sendEmail(member, content) {
     logger.error("Received coin/token alert email fail", err);
     throw err
   }
-} 
+}
+
+function _formatAmount(value, decimal = 6, currency = null, rate = null) {
+  if (!value) {
+    return 0;
+  }
+  if (currency && rate) {
+    value = BigNumber(value).times(BigNumber(rate))
+  }
+  value = BigNumber(value);
+  var formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: decimal,
+    minimumFractionDigits: 0
+  });
+  return formatter.format(value.toNumber()).replace("$", "");
+};

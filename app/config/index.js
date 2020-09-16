@@ -206,6 +206,21 @@ const config = {
       txIdLink: process.env.VSYS_TX_ID_LINK,
       addressLink: process.env.VSYS_ADDRESS_LINK
     },
+    CENNZ: {
+      platformName: "Centrality",
+      txIdLink: process.env.CENZ_TX_ID_LINK || '#',
+      addressLink: process.env.CENZ_ADDRESS_LINK || '#'
+    },
+    CPAY: {
+      platformName: "CentraPay",
+      txIdLink: process.env.CPAY_TX_ID_LINK || '#',
+      addressLink: process.env.CPAY_ADDRESS_LINK || '#'
+    },
+    ONE: {
+      platformName: "Harmony",
+      txIdLink: process.env.ONE_TX_ID_LINK,
+      addressLink: process.env.ONE_ADDRESS_LINK
+    },
   },
   sdk: {
     baseUrl: process.env.SDK_URL,

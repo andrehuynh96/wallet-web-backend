@@ -2,15 +2,15 @@ const EmailTemplate = require('app/model/wallet').email_templates;
 const EmailTemplateTypes = require('app/model/wallet/value-object/email-template-type');
 const EmailTemplateDisplayName = require('app/model/wallet/value-object/email-template-display-name');
 const fs = require('fs');
-const { forEach } = require('p-iteration');
 const logger = require('app/lib/logger');
 const path = require("path");
 
 module.exports = async () => {
+  const emailNames = Object.values(EmailTemplateTypes);
   let root = path.resolve(
     __dirname + "../../../../../public/email-template/moonstake/"
   );
-  const emailTemplates = [{
+  const data = [{
     name: EmailTemplateTypes.TRANSACTION_RECEIVED,
     subject: 'Received coin/token alert',
     template: fs.readFileSync(path.join(root, 'transaction-received.ejs'), 'utf-8'),
@@ -40,31 +40,31 @@ module.exports = async () => {
     subject: 'Invitation Email',
     template: fs.readFileSync(path.join(root, 'referral.ejs'), 'utf-8'),
     display_name: EmailTemplateDisplayName.REFERRAL
-  },
+  }, {
+    name: EmailTemplateTypes.DELETE_WALLET,
+    subject: 'Delete Wallet',
+    template: fs.readFileSync(path.join(root, 'delete-wallet.ejs'), 'utf-8'),
+    display_name: EmailTemplateDisplayName.DELETE_WALLET
+  }
   ];
 
-  await forEach(emailTemplates, async item => {
+  for (let item of emailNames) {
     const emailTemplate = await EmailTemplate.findOne({
       where: {
-        name: item.name,
-        language: 'en',
+        name: item,
+        language: ['en', 'jp']
       }
     });
-
     if (!emailTemplate) {
-      const data = [
-        {
-          ...item,
-          language: 'en',
-        },
-        {
-          ...item,
-          language: 'ja',
-        },
-      ];
+      const unavailableEmail = data.find(x => x.name === item);
+      const emailTemplateData = [{
+        ...unavailableEmail, language: 'en'
+      }, {
+        ...unavailableEmail, language: 'jp'
+      }];
 
-      await EmailTemplate.bulkCreate(data);
+      await EmailTemplate.bulkCreate(emailTemplateData, { returning: true });
+      logger.info('insert email template', item);
     }
-  });
-  logger.info('Seeding email templates completed.');
+  }
 };

@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(125),
       allowNull: true,
       defaultValue: SystemType.MEMBERSHIP
+    },
+    payout_transferred: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
       underscored: true,
@@ -60,4 +64,4 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
   return Model;
-} 
+}

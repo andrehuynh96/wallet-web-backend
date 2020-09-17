@@ -32,13 +32,14 @@ module.exports = async (req, res, next) => {
           tx_id: data.tx_id
         }
       });
-
       if (!tx) {
         await MemberTransactionHis.create({
           member_id: member.id,
           ...data
         });
       }
+      data.amount = _formatAmount(data.amount);
+
       _sendEmail(member, data);
     }
 
@@ -108,7 +109,7 @@ async function _getMemberFromAddress(platform, address) {
 
 async function _sendEmail(member, content) {
   try {
-    let templateName = EmailTemplateType.TRANSACTION_RECEIVED 
+    let templateName = EmailTemplateType.TRANSACTION_RECEIVED
     let template = await EmailTemplate.findOne({
       where: {
         name: templateName,
@@ -116,7 +117,7 @@ async function _sendEmail(member, content) {
       }
     })
 
-    if(!template){
+    if (!template) {
       template = await EmailTemplate.findOne({
         where: {
           name: templateName,
@@ -125,10 +126,10 @@ async function _sendEmail(member, content) {
       })
     }
 
-    if(!template)
+    if (!template)
       return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
-  
-    let subject =`${config.emailTemplate.partnerName} - ${template.subject}`;
+
+    let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       banner: config.website.urlImages,
@@ -147,4 +148,21 @@ async function _sendEmail(member, content) {
     logger.error("Received coin/token alert email fail", err);
     throw err
   }
-} 
+}
+
+function _formatAmount(value, decimal = 6, currency = null, rate = null) {
+  if (!value) {
+    return 0;
+  }
+  if (currency && rate) {
+    value = BigNumber(value).times(BigNumber(rate))
+  }
+  value = BigNumber(value);
+  var formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: decimal,
+    minimumFractionDigits: 0
+  });
+  return formatter.format(value.toNumber()).replace("$", "");
+};

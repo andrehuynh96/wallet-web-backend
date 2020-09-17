@@ -35,6 +35,12 @@ router.get(
   controller.getPassphrase
 );
 
+router.post(
+  '/wallets/confirm',
+  authenticate,
+  controller.confirm
+);
+
 module.exports = router;
 
 /*********************************************************************/
@@ -171,9 +177,7 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data":{
-                      "deleted": true
-                    }
+ *                 "data":true
  *             }
  *       400:
  *         description: Error
@@ -220,6 +224,57 @@ module.exports = router;
  *                 "data":{
                         "encrypted_passphrase": ""
                     }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/wallets/confirm:
+ *   post:
+ *     summary: confirm delete wallet
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data for wallet.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - token
+ *            example:
+ *               {     
+                    "token": ""
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+ *                    deleted: true,
+ *                    wallet_name: "ABC"
+ *                  }
  *             }
  *       400:
  *         description: Error

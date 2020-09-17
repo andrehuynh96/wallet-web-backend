@@ -11,7 +11,8 @@ const destObject = {
     '[].tx_id': '[].tx_id',
     '[].note': '[].note',
     '[].createdAt': '[].created_at',
-    '[].updatedAt': '[].updated_at'
+    '[].updatedAt': '[].updated_at',
+    '[].payout_transferred': '[].payout_transferred',
   },
   single: {
     id: 'id',
@@ -23,7 +24,8 @@ const destObject = {
     tx_id: 'tx_id',
     note: 'note',
     createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    updatedAt: 'updated_at',
+    payout_transferred: 'payout_transferred',
   }
 };
 module.exports = srcObject => {
@@ -37,4 +39,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-}; 
+};

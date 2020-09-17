@@ -35,6 +35,16 @@ module.exports = (sequelize, DataTypes) => {
     order_index: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    run_batch_day: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
+    try_batch_num: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
     }
   }, {
       underscored: true,

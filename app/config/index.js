@@ -91,6 +91,7 @@ const config = {
     urlImages: process.env.PARTNER_NAME ? process.env.WEBSITE_URL + '/images/' + process.env.PARTNER_NAME.toLowerCase() : process.env.WEBSITE_URL + '/images',
     urlIcon: process.env.WEBSITE_URL + '/images/platforms/',
     ssoLoginUrl: process.env.WEBSITE_URL + '/sign-in?token=',
+    urlDeleteWallet: process.env.WEBSITE_URL + '/sign-in?type=delete_wallet&token='
   },
   aws: {
     endpoint: process.env.AWS_END_POINT,
@@ -205,6 +206,21 @@ const config = {
       txIdLink: process.env.VSYS_TX_ID_LINK,
       addressLink: process.env.VSYS_ADDRESS_LINK
     },
+    CENNZ: {
+      platformName: "Centrality",
+      txIdLink: process.env.CENZ_TX_ID_LINK || '#',
+      addressLink: process.env.CENZ_ADDRESS_LINK || '#'
+    },
+    CPAY: {
+      platformName: "CentraPay",
+      txIdLink: process.env.CPAY_TX_ID_LINK || '#',
+      addressLink: process.env.CPAY_ADDRESS_LINK || '#'
+    },
+    ONE: {
+      platformName: "Harmony",
+      txIdLink: process.env.ONE_TX_ID_LINK,
+      addressLink: process.env.ONE_ADDRESS_LINK
+    },
   },
   sdk: {
     baseUrl: process.env.SDK_URL,
@@ -268,6 +284,13 @@ const config = {
   },
   apiKeyIP: process.env.API_IP_KEY || '',
   bodyTransferLimit: process.env.BODY_TRANSFER_LIMIT || '5mb',
+  exchange: {
+    changelly: {
+      url: process.env.CHANGELLY_URL,
+      apiKey: process.env.CHANGELLY_API_KEY,
+      secretKey: process.env.CHANGELLY_API_SECRET
+    }
+  }
 };
 
 module.exports = config;

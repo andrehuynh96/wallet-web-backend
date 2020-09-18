@@ -44,7 +44,7 @@ module.exports = {
           membership_orders.txid,
           membership_orders.rate_usd,
           membership_orders.status,
-          membership_orders.created_at, 
+          membership_orders.created_at,
           membership_orders.updated_at,
         membership_types.type as membership_type
         FROM membership_orders INNER JOIN membership_types on membership_orders.membership_type_id = membership_types.id
@@ -82,7 +82,7 @@ module.exports = {
         }
       });
 
-      let rateUsd = await CoinGeckoPrice.getPrice({ platform_name: receivingAddress.currency_symbol, currency: 'usd' });
+      let { price: rateUsd } = await CoinGeckoPrice.getPrice({ platform_name: receivingAddress.currency_symbol, currency: 'usd' });
 
       let salt = `${Date.now().toString()}-${req.user.id}`;
       let hashids = new Hashids(salt, 8);

@@ -30,7 +30,11 @@ router.get('/coin-gecko/prices',
 *         examples:
 *           application/json:
 *             {
-                "data": 0.00597856
+                "data":
+                    {
+                      "price":5.15,
+                      "usd_24h_change":5.0521196510214885
+                    }
               }
 *       400:
 *         description: Error
@@ -73,7 +77,12 @@ router.get('/coin-gecko/histories',
 *         name: date_type
 *         type: string
 *         required: true
-*         description: valid date_type belong time unit
+*         description: minute | hour | day | week | month |year
+*       - in: query
+*         name: date_num
+*         type: number
+*         required: true
+*         description:
 *     responses:
 *       200:
 *         description: Ok

@@ -77,6 +77,12 @@ module.exports = (sequelize, DataTypes) => {
   }, {
       underscored: true,
       timestamps: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ['symbol', 'platform']
+        }
+      ]
     });
 
   return Model;

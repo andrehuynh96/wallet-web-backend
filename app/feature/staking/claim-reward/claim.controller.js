@@ -13,6 +13,7 @@ const config = require('app/config');
 const SystemType = require('app/model/wallet/value-object/system-type');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const BigNumber = require('bignumber.js');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -56,7 +57,6 @@ module.exports = {
 
       const searchClaimNwFee = `${config.setting.CLAIM_AFFILIATE_REWARD_}${req.body.currency_symbol}_NETWORK_FEE`;
 
-
       const setting = await Setting.findOne({
         where: {
           key: searchClaim
@@ -75,6 +75,10 @@ module.exports = {
         networkFee = parseFloat(settingNwFee.value);
       }
 
+      if (req.body.amount <= networkFee) {
+        return res.badRequest(res.__("AMOUNT_LESS_THAN_NETWORK_FEE"), "AMOUNT_LESS_THAN_NETWORK_FEE");
+      }
+
       if (!setting)
         return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
       let minimumClaimAmount = parseFloat(setting.value);
@@ -82,14 +86,16 @@ module.exports = {
         return res.badRequest(res.__("AMOUNT_TOO_SMALL"), "AMOUNT_TOO_SMALL");
       }
 
+      let amount = parseFloat(new BigNumber(req.body.amount).minus(networkFee));
+
       let claimObject = {
         ...createClaimRequestMapper(memberAccount),
         original_amount: req.body.amount,
-        network_fee: req.body.latest_id
+        network_fee: networkFee
       };
 
       claimObject.member_account_id = memberAccount.id;
-      claimObject.amount = (req.body.amount - networkFee);
+      claimObject.amount = amount;
       claimObject.status = ClaimRequestStatus.Pending;
       claimObject.system_type = SystemType.AFFILIATE
       claimObject.affiliate_latest_id = req.body.latest_id;
@@ -98,18 +104,20 @@ module.exports = {
       let _resultCreateData = await ClaimRequest.create(claimObject, { transaction });
 
       const dataReward = {
-        amount: (req.body.amount - networkFee),
+        amount: amount,
         currency_symbol: req.body.currency_symbol,
         email: req.user.email,
-        latest_id: req.body.latest_id
+        latest_id: req.body.latest_id,
+        network_fee: networkFee
       };
       const dataTrackingReward = {
         member_id: req.user.id,
         currency_symbol: req.body.currency_symbol,
-        amount: (req.body.amount - networkFee),
+        amount: amount,
         tx_id: _resultCreateData.tx_id,
         note: memberAccount.wallet_address,
-        system_type: SystemType.AFFILIATE
+        system_type: SystemType.AFFILIATE,
+        network_fee: networkFee
       };
 
       await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });

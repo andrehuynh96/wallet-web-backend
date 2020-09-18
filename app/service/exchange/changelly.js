@@ -5,6 +5,10 @@ const axios = require('axios');
 const { toSnakeCase } = require('app/lib/case-style');
 const Exchange = require("./base");
 
+const mappingCoin = {
+  "USDT": "USDT20"
+}
+
 class Changelly extends Exchange {
   constructor() {
     super();
@@ -28,8 +32,8 @@ class Changelly extends Exchange {
       return await this._makeRequest({
         method: 'getPairsParams',
         params: {
-          from: from.toUpperCase(),
-          to: to.toUpperCase()
+          from: _getPlatform(from.toUpperCase()),
+          to: _getPlatform(to.toUpperCase())
         }
       })
     }
@@ -77,8 +81,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'getExchangeAmount',
       params: [{
-        from: from.toUpperCase(),
-        to: to.toUpperCase(),
+        from: _getPlatform(from.toUpperCase()),
+        to: _getPlatform(to.toUpperCase()),
         amount: amount
       }]
     })
@@ -88,8 +92,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'getFixRate',
       params: [{
-        from: from.toUpperCase(),
-        to: to.toUpperCase(),
+        from: _getPlatform(from.toUpperCase()),
+        to: _getPlatform(to.toUpperCase()),
         // amountFrom: amount
       }]
     })
@@ -98,8 +102,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'createTransaction',
       params: {
-        from: from.toUpperCase(),
-        to: to.toUpperCase(),
+        from: _getPlatform(from.toUpperCase()),
+        to: _getPlatform(to.toUpperCase()),
         amount: amount,
         address: address,
         extraId: extra_id,
@@ -113,8 +117,8 @@ class Changelly extends Exchange {
     return await this._makeRequest({
       method: 'createFixTransaction',
       params: {
-        from: from.toUpperCase(),
-        to: to.toUpperCase(),
+        from: _getPlatform(from.toUpperCase()),
+        to: _getPlatform(to.toUpperCase()),
         amountFrom: amount,
         address: address,
         extraId: extra_id,
@@ -167,5 +171,14 @@ class Changelly extends Exchange {
     });
   };
 }
+
+function _getPlatform(platform) {
+  if (mappingCoin[platform]) {
+    return mappingCoin[platform];
+  }
+
+  return platform;
+}
+
 
 module.exports = Changelly;

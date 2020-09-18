@@ -5,6 +5,7 @@ const destObject = {
     '[].id': '[].id',
     '[].name': '[].name',
     '[].default_flg': '[].default_flg',
+    '[].order_index': '[].order_index',
     '[].backup_passphrase_flg': '[].backup_passphrase_flg',
     '[].createdAt': '[].created_at'
   },
@@ -12,6 +13,7 @@ const destObject = {
     id: 'id',
     name: 'name',
     default_flg: 'default_flg',
+    order_index: 'order_index',
     backup_passphrase_flg: 'backup_passphrase_flg',
     createdAt: 'created_at'
   }
@@ -27,4 +29,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-}; 
+};

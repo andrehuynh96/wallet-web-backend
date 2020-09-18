@@ -290,7 +290,8 @@ const config = {
       apiKey: process.env.CHANGELLY_API_KEY,
       secretKey: process.env.CHANGELLY_API_SECRET
     }
-  }
+  },
+  cacheDurationTime: process.env.CACHE_DURATION_TIME || 10
 };
 
 module.exports = config;

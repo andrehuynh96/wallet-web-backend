@@ -14,7 +14,7 @@ module.exports = {
       if (platform_name == "USDT") {
         return 1;
       }
-      platform_name = _getplatform(platform_name);
+      platform_name = _getPlatform(platform_name);
       logger.info('getPrice: getPrice');
       const key = platform_name + '_' + currency;
       let price = await cache.getAsync(key);
@@ -25,6 +25,7 @@ module.exports = {
           vs_currencies: [currency]
         });
         price = coinPrices.data[Platform[platform_name].coingeckoId.toLowerCase()][currency];
+        console.log(price);
         //10p
         await cache.setAsync(key, price, "EX", 30);
       }
@@ -34,10 +35,26 @@ module.exports = {
       logger.info('coinGeckoClient.simple.price no found data with currency' + platform_name);
       throw err;
     }
+  },
+  getHistories: async ({ platform_name, from, to }) => {
+    try {
+      if (platform_name == "USDT") {
+        return 1;
+      }
+      platform_name = _getPlatform(platform_name);
+      const coinGeckoClient = new CoinGecko();
+      const coingeckoId = Platform[platform_name].coingeckoId;
+      const coinHistories = await coinGeckoClient.coins.fetchMarketChartRange(coingeckoId, { from: from, to: to });
+      return coinHistories.data;
+    }
+    catch (error) {
+      logger.info('coinGeckoClient.coins.fetchMarketChartRange no found data with currency' + platform_name);
+      throw error;
+    }
   }
 }
 
-function _getplatform(platform) {
+function _getPlatform(platform) {
   if (mappingCoin[platform]) {
     return mappingCoin[platform];
   }

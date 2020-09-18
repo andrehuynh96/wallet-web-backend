@@ -7,7 +7,7 @@ const WalletToken = require('app/model/wallet').wallet_tokens;
 const walletMapper = require('app/feature/response-schema/wallet.response-schema');
 const walletPrivateKeyMapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const Sequelize = require('sequelize');
-
+const database = require('app/lib/database').db().wallet;
 module.exports = {
   getAll: async (req, res, next) => {
     try {
@@ -48,7 +48,7 @@ module.exports = {
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 
-      const { count: total, rows: wallets } = await Wallet.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [['created_at', 'DESC']] });
+      const { count: total, rows: wallets } = await Wallet.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [['order_index', 'ASC']] });
       return res.ok({
         items: walletMapper(wallets),
         offset: off,
@@ -128,6 +128,56 @@ module.exports = {
     catch (err) {
       logger.error("get key: ", err);
       next(err);
+    }
+  },
+  saveIndex: async (req,res,next) => {
+    let transaction;
+    try {
+      const { items } = req.body;
+
+      const memberWallets = await Wallet.findAll({
+        where: {
+          member_id: req.user.id,
+          deleted_flg: false
+        }
+      });
+      const cache = memberWallets.reduce((result, value) => {
+        result[value.id] = value;
+
+        return result;
+      }, {});
+      const notFoundIdList = [];
+      items.forEach(item => {
+        if (!cache[item.wallet_id]) {
+          notFoundIdList.push(item.wallet_id);
+        }
+      });
+      if (notFoundIdList.length > 0) {
+        return res.badRequest(res.__("WALLET_NOT_FOUND"), "WALLET_NOT_FOUND", {
+          field: ['wallet_id'],
+          notFoundIdList,
+        });
+      }
+      const transaction = await database.transaction();
+      for(let item of items) {
+        await Wallet.update({
+          order_index: item.index
+        },{
+          where: {
+            id: item.wallet_id
+          },
+          transaction: transaction
+        })
+      }
+      transaction.commit();
+      return res.ok(true);
+    }
+    catch (error) {
+      if(transaction) {
+        transaction.rollback();
+      }
+      logger.error('save wallet index fail',error);
+      next(error);
     }
   }
 }

@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    order_index: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
   }, {
       underscored: true,
@@ -54,4 +58,4 @@ module.exports = (sequelize, DataTypes) => {
     Wallet.belongsTo(models.members, { foreignKey: 'member_id', targetKey: 'id' });
   };
   return Wallet;
-} 
+}

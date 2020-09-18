@@ -1,6 +1,8 @@
 const express = require('express');
 const controller = require('./get-wallet.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
+const validator = require('app/middleware/validator.middleware');
+const { sort } = require('./validator');
 const router = express.Router();
 
 router.get(
@@ -19,6 +21,12 @@ router.get(
   '/wallets/:wallet_id/keys/:id',
   authenticate,
   controller.getKey
+);
+
+router.put('/wallets/sorts',
+  authenticate,
+  validator(sort),
+  controller.saveIndex
 );
 
 module.exports = router;
@@ -189,6 +197,61 @@ module.exports = router;
                   "hd_path": "",
                   "created_at": "2020-01-07 20:22:04.728+09"
                 }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/wallets/sort:
+ *   put:
+ *     summary: update order index of wallets
+ *     tags:
+ *       - Wallets
+ *     description:
+ *     parameters:
+ *       - in: path
+ *         name: wallet_id
+ *         type: string
+ *         required: true
+ *       - in: body
+ *         name: data
+ *         description: Data for wallets.
+ *         schema:
+ *            type: array
+ *            required:
+ *            - items
+ *            example:
+ *               {
+                  "items": [
+                      { "wallet_id":"037198c7-6ae7-4b2e-9405-2d827f5dee02", "index": 1 },
+                      { "wallet_id":"5f444da8-71c7-408d-aecd-af1b285a4bd6", "index": 2 }
+                  ]
+              }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
  *             }
  *       400:
  *         description: Error

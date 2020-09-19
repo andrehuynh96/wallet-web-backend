@@ -87,7 +87,7 @@ module.exports = {
       let _resultCreateData = await ClaimRequest.create(claimObject, { transaction });
 
       const dataReward = {
-        amount: amount,
+        amount: req.body.amount,
         currency_symbol: req.body.currency_symbol,
         email: req.user.email,
         latest_id: req.body.latest_id,

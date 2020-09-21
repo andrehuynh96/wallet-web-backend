@@ -58,7 +58,8 @@ module.exports = router;
                           "status": 1,
                           "from_flg": true,
                           "to_flg": true,
-                          "fix_rate_flg": true
+                          "fix_rate_flg": true,
+                          "fixed_time": 900000
  *                      }
  *
  *                  ]

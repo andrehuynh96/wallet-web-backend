@@ -48,7 +48,7 @@ module.exports = {
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 
-      const { count: total, rows: wallets } = await Wallet.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [['order_index', 'ASC']] });
+      const { count: total, rows: wallets } = await Wallet.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [['order_index', 'ASC'],['created_at','DESC']] });
       return res.ok({
         items: walletMapper(wallets),
         offset: off,

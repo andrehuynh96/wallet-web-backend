@@ -166,7 +166,9 @@ module.exports = router;
                      "txid": "C52FD3D80BD7249D5094BDB5793317C2FCEBC221BCF313987AFA230A0518ECCD",
                      "updated_at": "2020-06-17 14:06:22",
                      "affiliate_claim_reward_id": "e8bdecb9-8cf4-468c-8ca3-3d58ca50924d",
-                     "amount": 1
+                     "amount": 1,
+                     "original_amount": 2,
+                     "network_fee":1
                    }
 *             }
 *       400:
@@ -209,7 +211,12 @@ module.exports = router;
                   "minimun_claim_amount_iris":50,
                   "minimun_claim_amount_ong":50,
                   "minimun_claim_amount_xtz":50,
-                  "minimun_claim_amount_one":50
+                  "minimun_claim_amount_one":50,
+                  "claim_amount_atom_network_fee":50,
+                  "claim_amount_iris_network_fee":50,
+                  "claim_amount_ong_network_fee":50,
+                  "claim_amount_xtz_network_fee":50,
+                  "claim_amount_one_network_fee":50
                 }
  *             }
  *       400:

@@ -42,7 +42,48 @@ module.exports = {
       logger.error('get price history of platform fail', error);
       next();
     }
-  }
+  },
+  getTokenPrice: async(req,res,next) => {
+    try {
+      const { query } = req;
+      const { platform, contract_addresses } = query;
+      if (!Platform[platform] || !query.contract_addresses) {
+        return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
+      }
+
+      const tokenPrice = await coinGeckoClient.getTokenPrice({ platform_name: platform,contract_addresses: contract_addresses});
+
+      return res.ok(tokenPrice);
+    }
+    catch (error) {
+      logger.error('get token price of platform fail', error);
+      next();
+    }
+  },
+
+  getTokenHistories: async (req, res, next) => {
+    try {
+      const { date_type, platform, contract_addresses } = req.query;
+      const date_num = req.query.date_num || 1;
+      if (!date_type || !TimeUnit[date_type.toUpperCase()] || !Platform[platform] || !contract_addresses) {
+        return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
+      }
+
+      const { from, to } = _getDateRangeUnitTimeStamp(date_type.toUpperCase(), date_num);
+      const histories = await coinGeckoClient.getTokenHistories({
+        platform_name: platform,
+        contract_addresses: contract_addresses,
+        from: from,
+        to: to
+      })
+
+      return res.ok(histories);
+    }
+    catch (error) {
+      logger.error('get price history of platform fail', error);
+      next();
+    }
+  },
 };
 
 function _getDateRangeUnitTimeStamp(dateType,dateNum) {

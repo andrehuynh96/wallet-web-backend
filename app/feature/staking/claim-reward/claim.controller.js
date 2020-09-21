@@ -13,6 +13,7 @@ const config = require('app/config');
 const SystemType = require('app/model/wallet/value-object/system-type');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const BigNumber = require('bignumber.js');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -52,13 +53,49 @@ module.exports = {
         return res.badRequest(res.__("NOT_FOUND_MEMBER_ACCOUNT"), "NOT_FOUND_MEMBER_ACCOUNT");
       }
 
+      const searchClaim = `${config.setting.CLAIM_AFFILIATE_REWARD_}${req.body.currency_symbol.toUpperCase()}`;
+
+      const searchClaimNwFee = `${config.setting.CLAIM_AFFILIATE_REWARD_}${req.body.currency_symbol.toUpperCase()}_NETWORK_FEE`;
+
+      const setting = await Setting.findOne({
+        where: {
+          key: searchClaim
+        }
+      });
+
+      let networkFee = 0;
+
+      const settingNwFee = await Setting.findOne({
+        where: {
+          key: searchClaimNwFee
+        }
+      });
+
+      if (settingNwFee) {
+        networkFee = parseFloat(settingNwFee.value);
+      }
+
+      if (req.body.amount <= networkFee) {
+        return res.badRequest(res.__("AMOUNT_LESS_THAN_NETWORK_FEE"), "AMOUNT_LESS_THAN_NETWORK_FEE");
+      }
+
+      if (!setting)
+        return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
+      let minimumClaimAmount = parseFloat(setting.value);
+      if ((req.body.amount < minimumClaimAmount)) {
+        return res.badRequest(res.__("AMOUNT_TOO_SMALL"), "AMOUNT_TOO_SMALL");
+      }
+
+      let amount = parseFloat(new BigNumber(req.body.amount).minus(networkFee));
 
       let claimObject = {
         ...createClaimRequestMapper(memberAccount),
+        original_amount: req.body.amount,
+        network_fee: networkFee
       };
 
       claimObject.member_account_id = memberAccount.id;
-      claimObject.amount = req.body.amount;
+      claimObject.amount = amount;
       claimObject.status = ClaimRequestStatus.Pending;
       claimObject.system_type = SystemType.AFFILIATE
       claimObject.affiliate_latest_id = req.body.latest_id;
@@ -70,15 +107,17 @@ module.exports = {
         amount: req.body.amount,
         currency_symbol: req.body.currency_symbol,
         email: req.user.email,
-        latest_id: req.body.latest_id
+        latest_id: req.body.latest_id,
+        network_fee: networkFee
       };
       const dataTrackingReward = {
         member_id: req.user.id,
         currency_symbol: req.body.currency_symbol,
-        amount: req.body.amount,
+        amount: amount,
         tx_id: _resultCreateData.tx_id,
         note: memberAccount.wallet_address,
-        system_type: SystemType.AFFILIATE
+        system_type: SystemType.AFFILIATE,
+        network_fee: networkFee
       };
 
       await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
@@ -129,7 +168,12 @@ module.exports = {
               config.setting.CLAIM_AFFILIATE_REWARD_IRIS,
               config.setting.CLAIM_AFFILIATE_REWARD_ONG,
               config.setting.CLAIM_AFFILIATE_REWARD_XTZ,
-              config.setting.CLAIM_AFFILIATE_REWARD_ONE
+              config.setting.CLAIM_AFFILIATE_REWARD_ONE,
+              config.setting.CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE,
+              config.setting.CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE,
+              config.setting.CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE,
+              config.setting.CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE,
+              config.setting.CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE
             ]
           }
         }
@@ -143,12 +187,25 @@ module.exports = {
       let xtz = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_XTZ)[0];
       let one = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONE)[0];
 
+      let atomNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE)[0];
+      let irisNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE)[0];
+      let ongNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE)[0];
+      let xtzNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE)[0];
+      let oneNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE)[0];
+
       return res.ok({
         minimun_claim_amount_atom: parseFloat(atom.value),
         minimun_claim_amount_iris: parseFloat(iris.value),
         minimun_claim_amount_ong: parseFloat(ong.value),
         minimun_claim_amount_xtz: parseFloat(xtz.value),
-        minimun_claim_amount_one: parseFloat(one.value)
+        minimun_claim_amount_one: parseFloat(one.value),
+
+        claim_atom_network_fee: parseFloat(atomNwFee.value),
+        claim_iris_network_fee: parseFloat(irisNwFee.value),
+        claim_ong_network_fee: parseFloat(ongNwFee.value),
+        claim_xtz_network_fee: parseFloat(xtzNwFee.value),
+        claim_one_network_fee: parseFloat(oneNwFee.value)
+
       });
     } catch (err) {
       logger.error("setting: ", err);

@@ -22,14 +22,18 @@ module.exports = {
         const coinGeckoClient = new CoinGecko();
         const coinPrices = await coinGeckoClient.simple.price({
           ids: [Platform[platform_name].coingeckoId],
-          vs_currencies: [currency]
+          vs_currencies: [currency],
+          include_24hr_change: true
         });
         price = coinPrices.data[Platform[platform_name].coingeckoId.toLowerCase()][currency];
-        console.log(price);
+        usd_24h_change = coinPrices.data[Platform[platform_name].coingeckoId.toLowerCase()].usd_24h_change;
         //10p
         await cache.setAsync(key, price, "EX", 30);
       }
-      return price;
+      return {
+        price: price,
+        usd_24h_change: usd_24h_change
+      };
     }
     catch (err) {
       logger.info('coinGeckoClient.simple.price no found data with currency' + platform_name);

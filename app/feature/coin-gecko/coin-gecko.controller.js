@@ -24,12 +24,12 @@ module.exports = {
   getHistories: async (req, res, next) => {
     try {
       const { date_type, platform } = req.query;
-
+      const date_num = req.query.date_num || 1;
       if (!date_type || !TimeUnit[date_type.toUpperCase()] || !Platform[platform]) {
         return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
       }
 
-      const { from, to } = _getDateRangeUnitTimeStamp(date_type.toUpperCase());
+      const { from, to } = _getDateRangeUnitTimeStamp(date_type.toUpperCase(), date_num);
       const histories = await coinGeckoClient.getHistories({
         platform_name: platform,
         from: from,
@@ -45,36 +45,36 @@ module.exports = {
   }
 };
 
-function _getDateRangeUnitTimeStamp(dateType) {
+function _getDateRangeUnitTimeStamp(dateType,dateNum) {
   const today = new Date();
   let fromDate = 0;
   const toDate = moment(today).valueOf();
   switch (dateType) {
     case 'MINUTE': {
-      fromDate = moment(today).subtract(1, 'minute').valueOf();
+      fromDate = moment(today).subtract(dateNum, 'minute').valueOf();
       break;
     }
     case 'HOUR': {
-      fromDate = moment(today).subtract(1, 'hour').valueOf();
+      fromDate = moment(today).subtract(dateNum, 'hour').valueOf();
       break;
     }
     case 'DAY': {
-      fromDate = moment(today).subtract(24, 'hour').valueOf();
+      fromDate = moment(today).subtract(24*dateNum, 'hour').valueOf();
       break;
     }
     case 'WEEK': {
-      fromDate = moment(today).subtract(7, 'day').valueOf();
+      fromDate = moment(today).subtract(7*dateNum, 'day').valueOf();
     }
     case 'MONTH': {
-      fromDate = moment(today).subtract(1, 'month').valueOf();
+      fromDate = moment(today).subtract(dateNum, 'month').valueOf();
       break;
     }
     case 'YEAR': {
-      fromDate = moment(today).subtract(1, 'year').valueOf();
+      fromDate = moment(today).subtract(dateNum, 'year').valueOf();
       break;
     }
     default: {
-      fromDate = moment(today).subtract(24, 'hour').valueOf();
+      fromDate = moment(today).subtract(24*dateNum, 'hour').valueOf();
       break;
     }
   }

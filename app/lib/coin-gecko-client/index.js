@@ -56,13 +56,11 @@ module.exports = {
       throw error;
     }
   },
-  getTokenPrice: async({ platform_name, contract_addresses }) => {
+  getTokenPrice: async({ coingecko_id, contract_addresses }) => {
     try {
-      platform_name = _getPlatform(platform_name);
       const coinGeckoClient = new CoinGecko();
-      const coingeckoId = Platform[platform_name].coingeckoId;
       const tokenPrices = await coinGeckoClient.simple.fetchTokenPrice({
-        ids: [Platform[platform_name].coingeckoId],
+        ids: coingecko_id,
         contract_addresses : contract_addresses,
         vs_currencies: 'usd',
         include_24hr_change: true
@@ -75,12 +73,10 @@ module.exports = {
     }
   },
 
-  getTokenHistories: async ({ platform_name, contract_addresses , from, to }) => {
+  getTokenHistories: async ({ coingecko_id, contract_addresses , from, to }) => {
     try {
-      platform_name = _getPlatform(platform_name);
       const coinGeckoClient = new CoinGecko();
-      const coingeckoId = Platform[platform_name].coingeckoId;
-      const tokenHistories = await coinGeckoClient.coins.fetchCoinContractMarketChartRange(contract_addresses,coingeckoId, { from: from, to: to });
+      const tokenHistories = await coinGeckoClient.coins.fetchCoinContractMarketChartRange(contract_addresses,coingecko_id, { from: from, to: to });
       return tokenHistories.data;
     }
     catch (error) {

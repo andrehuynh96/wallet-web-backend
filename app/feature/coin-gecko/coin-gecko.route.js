@@ -184,7 +184,7 @@ router.get('/coin-gecko/token-prices',
 *     description:
 *     parameters:
 *       - in: query
-*         name: platform
+*         name: ref_id
 *         type: string
 *         required: true
 *       - in: query
@@ -238,7 +238,7 @@ router.get('/coin-gecko/token-histories',
 *     description:
 *     parameters:
 *       - in: query
-*         name: platform
+*         name: ref_id
 *         type: string
 *         required: true
 *       - in: query

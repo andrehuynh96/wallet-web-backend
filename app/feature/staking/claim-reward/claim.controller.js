@@ -53,9 +53,9 @@ module.exports = {
         return res.badRequest(res.__("NOT_FOUND_MEMBER_ACCOUNT"), "NOT_FOUND_MEMBER_ACCOUNT");
       }
 
-      const searchClaim = `${config.setting.CLAIM_AFFILIATE_REWARD_}${req.body.currency_symbol}`;
+      const searchClaim = `${config.setting.CLAIM_AFFILIATE_REWARD_}${req.body.currency_symbol.toUpperCase()}`;
 
-      const searchClaimNwFee = `${config.setting.CLAIM_AFFILIATE_REWARD_}${req.body.currency_symbol}_NETWORK_FEE`;
+      const searchClaimNwFee = `${config.setting.CLAIM_AFFILIATE_REWARD_}${req.body.currency_symbol.toUpperCase()}_NETWORK_FEE`;
 
       const setting = await Setting.findOne({
         where: {
@@ -82,7 +82,7 @@ module.exports = {
       if (!setting)
         return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
       let minimumClaimAmount = parseFloat(setting.value);
-      if ((req.body.amount < minimumClaimAmount) || ((req.body.amount - networkFee) <= 0)) {
+      if ((req.body.amount < minimumClaimAmount)) {
         return res.badRequest(res.__("AMOUNT_TOO_SMALL"), "AMOUNT_TOO_SMALL");
       }
 

@@ -55,7 +55,39 @@ module.exports = {
       logger.info('coinGeckoClient.coins.fetchMarketChartRange no found data with currency' + platform_name);
       throw error;
     }
-  }
+  },
+  getTokenPrice: async({ platform_name, contract_addresses }) => {
+    try {
+      platform_name = _getPlatform(platform_name);
+      const coinGeckoClient = new CoinGecko();
+      const coingeckoId = Platform[platform_name].coingeckoId;
+      const tokenPrices = await coinGeckoClient.simple.fetchTokenPrice({
+        ids: [Platform[platform_name].coingeckoId],
+        contract_addresses : contract_addresses,
+        vs_currencies: 'usd',
+        include_24hr_change: true
+      });
+      return tokenPrices.data;
+    }
+    catch (error) {
+      logger.info('coinGeckoClient.simple.token_price no found data with currency and contract address' + contract_addresses);
+      throw error;
+    }
+  },
+
+  getTokenHistories: async ({ platform_name, contract_addresses , from, to }) => {
+    try {
+      platform_name = _getPlatform(platform_name);
+      const coinGeckoClient = new CoinGecko();
+      const coingeckoId = Platform[platform_name].coingeckoId;
+      const tokenHistories = await coinGeckoClient.coins.fetchCoinContractMarketChartRange(contract_addresses,coingeckoId, { from: from, to: to });
+      return tokenHistories.data;
+    }
+    catch (error) {
+      logger.info('coinGeckoClient.coins.fetchCoinContractMarketChartRange no found data with contract address' + contract_addresses);
+      throw error;
+    }
+  },
 }
 
 function _getPlatform(platform) {

@@ -74,6 +74,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    original_amount: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
+    network_fee: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+    },
   }, {
     underscored: true,
     timestamps: true,

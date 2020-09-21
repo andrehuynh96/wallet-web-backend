@@ -166,7 +166,9 @@ module.exports = router;
                      "txid": "C52FD3D80BD7249D5094BDB5793317C2FCEBC221BCF313987AFA230A0518ECCD",
                      "updated_at": "2020-06-17 14:06:22",
                      "affiliate_claim_reward_id": "e8bdecb9-8cf4-468c-8ca3-3d58ca50924d",
-                     "amount": 1
+                     "amount": 1,
+                     "original_amount":"1",
+                     "network_fee":"0.5",
                    }
 *             }
 *       400:
@@ -205,7 +207,8 @@ module.exports = router;
  *           application/json:
  *             {
                 "data": {
-                  "minimun_claim_amount":50
+                  "minimun_claim_amount":50,
+                  "membership_commission_usdt_network_fee":5
                 }
  *             }
  *       400:

@@ -112,5 +112,10 @@ module.exports = {
     "symbol": "BNB",
     "name": "Binance Coin",
     "coingeckoId": "binancecoin"
+  },
+  GAS: {
+    "symbol": "GAS",
+    "name": "Gas",
+    "coingeckoId": "gas"
   }
 }

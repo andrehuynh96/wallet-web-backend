@@ -14,6 +14,7 @@ const SystemType = require('app/model/wallet/value-object/system-type');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const BigNumber = require('bignumber.js');
+const { getFormatDecimalDigits } = require('app/lib/utils');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -72,7 +73,7 @@ module.exports = {
       });
 
       if (settingNwFee) {
-        networkFee = parseFloat(settingNwFee.value);
+        networkFee = getFormatDecimalDigits(parseFloat(settingNwFee.value), req.body.currency_symbol);
       }
 
       if (req.body.amount <= networkFee) {
@@ -81,7 +82,7 @@ module.exports = {
 
       if (!setting)
         return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
-      let minimumClaimAmount = parseFloat(setting.value);
+      let minimumClaimAmount = getFormatDecimalDigits(parseFloat(setting.value), req.body.currency_symbol);
       if ((req.body.amount < minimumClaimAmount)) {
         return res.badRequest(res.__("AMOUNT_TOO_SMALL"), "AMOUNT_TOO_SMALL");
       }

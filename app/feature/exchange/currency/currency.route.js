@@ -59,7 +59,8 @@ module.exports = router;
                           "from_flg": true,
                           "to_flg": true,
                           "fix_rate_flg": true,
-                          "fixed_time": 900000
+                          "fixed_time": 900000,
+                          "extra_id_name": ""
  *                      }
  *
  *                  ]

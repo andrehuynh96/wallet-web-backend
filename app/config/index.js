@@ -54,6 +54,7 @@ const config = {
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT),
     secure: process.env.SMTP_SECURE.toLowerCase() === 'true',
+    ignoreTLS: (process.env.SMTP_IGNORE_TLS || '').toLowerCase() === 'true',
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
   },
@@ -281,7 +282,6 @@ const config = {
     CLAIM_AFFILIATE_REWARD_ONG: "CLAIM_AFFILIATE_REWARD_ONG",
     CLAIM_AFFILIATE_REWARD_XTZ: "CLAIM_AFFILIATE_REWARD_XTZ",
     CLAIM_AFFILIATE_REWARD_ONE: "CLAIM_AFFILIATE_REWARD_ONE",
-    CLAIM_AFFILIATE_REWARD_ONE: "CLAIM_AFFILIATE_REWARD_ONE",
     CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE: "CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE",
     CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE: "CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE",
     CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE: "CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE",
@@ -298,7 +298,10 @@ const config = {
       secretKey: process.env.CHANGELLY_API_SECRET
     }
   },
-  cacheDurationTime: process.env.CACHE_DURATION_TIME || 10
+  cacheDurationTime: process.env.CACHE_DURATION_TIME || 10,
+  webWallet: {
+    apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
+  }
 };
 
 module.exports = config;

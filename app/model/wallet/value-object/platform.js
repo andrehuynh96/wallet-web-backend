@@ -97,5 +97,20 @@ module.exports = {
     "symbol": "ONE",
     "name": "Harmony",
     "coingeckoId": "harmony"
+  },
+  VSYS: {
+    "symbol": "VSYS",
+    "name": "V.systems",
+    "coingeckoId": "v-systems"
+  },
+  QTUM: {
+    "symbol": "QTUM",
+    "name": "Qtum",
+    "coingeckoId": "qtum"
+  },
+  BNB: {
+    "symbol": "BNB",
+    "name": "Binance Coin",
+    "coingeckoId": "binancecoin"
   }
 }

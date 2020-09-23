@@ -71,7 +71,6 @@ module.exports = {
         return res.badRequest(res.__("NOT_FOUND_MEMBER_ACCOUNT"), "NOT_FOUND_MEMBER_ACCOUNT");
       }
 
-
       let claimObject = {
         ...createClaimRequestMapper(memberAccount),
       };
@@ -87,7 +86,7 @@ module.exports = {
       let _resultCreateData = await ClaimRequest.create(claimObject, { transaction });
 
       const dataReward = {
-        amount: req.body.amount,
+        amount: amount,
         currency_symbol: req.body.currency_symbol,
         email: req.user.email,
         latest_id: req.body.latest_id,

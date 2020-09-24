@@ -1,4 +1,6 @@
 const logger = require('app/lib/logger');
+const config = require('app/config');
+const { query } = require('express');
 const EmailLogging = require('app/model/wallet').email_loggings;
 
 const pixelBytes = new Buffer(35);
@@ -39,5 +41,38 @@ module.exports = {
     // Always send a 200 with the 1x1 pixel
     res.send(pixelBytes, { 'Content-Type': 'image/gif' }, 200);
   },
+  webHook: async (req, res, next) => {
+    try {
+      const { params, body, query } = req;
+      const token = query.token;
+      if (token !== config.webWallet.trackingEmailApiToken) {
+        return res.forbidden(res.__("TRACKING_EMAIL_WRONG_TOKEN"), "TRACKING_EMAIL_WRONG_TOKEN");
+      }
 
+      const emailLogging = await EmailLogging.findOne({
+        where: {
+          id: params.id,
+        }
+      });
+
+      if (emailLogging) {
+        await EmailLogging.update(
+          {
+
+          },
+          {
+            where: {
+              id: emailLogging.id,
+            },
+          }
+        );
+      }
+
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('webHook fail', err);
+      next(err);
+    }
+  },
 };

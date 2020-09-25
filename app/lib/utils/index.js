@@ -1,3 +1,3 @@
 const { getFormatDecimalDigits } = require('./currency-helper');
-
-module.exports = { getFormatDecimalDigits };
+const { getDateRangeUnitTimeStamp } = require('./unix-timestamp-helper');
+module.exports = { getFormatDecimalDigits, getDateRangeUnitTimeStamp };

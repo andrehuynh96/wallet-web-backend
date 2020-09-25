@@ -62,6 +62,7 @@ module.exports = router;
  *                 "data": {
                       "items": [
                         {
+                          "symbol":"IRIS",
                           "reward": 18,
                           "staked": 20,
                           "sort": "2020-09-23 17:00"

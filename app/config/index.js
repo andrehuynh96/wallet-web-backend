@@ -301,6 +301,7 @@ const config = {
   cacheDurationTime: process.env.CACHE_DURATION_TIME || 10,
   webWallet: {
     apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
+    trackingEmailApiToken: process.env.WEB_WALLET_TRACKING_EMAIL_API_TOKEN,
   }
 };
 

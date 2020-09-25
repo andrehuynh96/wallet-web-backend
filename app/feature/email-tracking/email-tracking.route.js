@@ -7,4 +7,8 @@ router.get('/email-trackings/:id',
   controller.view
 );
 
+router.post('/email-trackings/webhook',
+  controller.webhook
+);
+
 module.exports = router;

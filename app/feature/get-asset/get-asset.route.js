@@ -9,28 +9,26 @@ router.get(
   controller.getAssetList
 );
 
+router.get(
+  '/history',
+  authenticate,
+  controller.getAssetHistory
+);
+
 module.exports = router;
 
 
 /*********************************************************************/
 
+
 /**
  * @swagger
- * /web/asset/asset-list:
+ * /web/asset/history:
  *   get:
- *     summary: currency list
+ *     summary: history list
  *     tags:
  *       - Asset
  *     description:
- *     parameters:
- *       - name: platform
- *         in: query
- *         type: string
- *         format: string
- *       - name: type
- *         in: query
- *         type: string
- *         enum: ['all', 'day', 'week', 'month', 'year']
  *     produces:
  *       - application/json
  *     responses:
@@ -40,18 +38,65 @@ module.exports = router;
  *           application/json:
  *             {
  *                 "data": {
-                      "items": {
-                        "ATOM": [
-                          {
-                            "reward": 18,
-                            "staked": 20,
-                            "date": "2020-09-28"
-                          }
-                        ]
-                      },
-                      begin_data: 1601202386,
-                      end_date: 1601115986,
-                      type: "WEEK"
+                      "items": [
+                        {
+                          "symbol":"IRIS",
+                          "reward": 18,
+                          "staked": 20,
+                          "create_at": "2020-09-23 17:00"
+                        }
+                      ],
+                      "offset": 0,
+                      "limit": 10,
+                      "total": 1
+ *                 }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/asset/history:
+ *   get:
+ *     summary: history list
+ *     tags:
+ *       - Asset
+ *     description:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+                      "items": [
+                        {
+                          "symbol":"IRIS",
+                          "reward": 18,
+                          "staked": 20,
+                          "create_at": "2020-09-23 17:00"
+                        }
+                      ],
+                      "offset": 0,
+                      "limit": 10,
+                      "total": 1
  *                 }
  *             }
  *       400:

@@ -2,61 +2,36 @@ const logger = require('app/lib/logger');
 const Sequelize = require('sequelize');
 const db = require("app/model/wallet");
 const moment = require('moment');
+const Joi = require('joi');
 const BigNumber = require('bignumber.js');
+const { schema } = require('./validator');
 
 module.exports = {
-    getTotalAssetList: async (req, res, next) => {
+    getAssetList: async (req, res, next) => {
         try {
-            let filter = req.body.filter && 'all' !== req.body.filter.trim().toLowerCase()
-                ? req.body.filter.trim().toUpperCase() : '';
-            let platform = req.body.platform && 'all' !== req.body.platform.trim().toLowerCase()
-                ? req.body.platform.trim().toUpperCase() : '';
-            let offset = req.body.offset ? req.body.offset : 0;
-            let limit = req.body.limit ? req.body.limit : 25;
-            let { from, to } = _getDateRangeUnitTimeStamp(filter.toUpperCase(), 1);
+            const validate = Joi.validate(req.query, schema);
+            if (validate.error) {
+                console.log(validate.error);
+                return res.badRequest("Missing parameters", validate.error);
+            }
+
+            let { type, platform } = req.query;
+            type = type ? type.trim().toUpperCase() : 'ALL';
+            platform = platform ? platform.trim().toUpperCase() : 'ALL';
+            let { from, to } = _getDateRangeUnitTimeStamp(type.toUpperCase(), 1);
 
             let where = {
                 memberId: req.user.id,
                 platform,
-                filter,
                 to,
                 from,
-                offset,
-                limit
             }
 
-            const timeFilter = _getDateFilter(filter.toUpperCase(), "created_at");
-
-            let sqlTotal = `
-                        SELECT COUNT(T.*) AS total 
-                        FROM
-                        (SELECT 
-                        ${timeFilter} AS ct,
-                        platform AS currency 
-                        FROM member_assets 
-                        WHERE member_assets.address IN (
-                            SELECT wpk.address 
-                            FROM 
-                                wallets AS w
-                            RIGHT JOIN 
-                                wallet_priv_keys AS wpk 
-                                ON w.id = wpk.wallet_id 
-                            WHERE 
-                                w.member_id = :memberId
-                        )   
-                        ${'' !== filter ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
-                        ${'' !== platform ? ' AND platform = :platform ' : ''}
-                        GROUP BY ct, currency) AS T`;
-
-            const totalResults = await db.sequelize.query(sqlTotal, {
-                replacements: where,
-                type: db.sequelize.QueryTypes.SELECT
-            });
-            const total = parseInt(totalResults[0].total);
+            const timeFilter = _getDateFilter(type.toUpperCase(), "created_at");
 
             let sqlItems = `SELECT 
-                        SUM(Reward) AS reward, 
-                        SUM(Amount) AS staked, 
+                        SUM(reward) AS reward, 
+                        SUM(amount) AS staked, 
                         platform AS currency,
                         COUNT(platform) AS number_row,
                         ${timeFilter} AS ct 
@@ -71,29 +46,33 @@ module.exports = {
                             WHERE 
                                 w.member_id = :memberId
                         )  
-                        ${'' !== filter ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
-                        ${'' !== platform ? ' AND platform = :platform ' : ''}
-                        GROUP BY ct, currency LIMIT :limit OFFSET :offset`;
+                        ${'ALL' !== type ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
+                        ${'ALL' !== platform ? ' AND platform = :platform ' : ''}
+                        GROUP BY ct, currency ORDER BY currency`;
 
             const itemResults = await db.sequelize.query(sqlItems, {
                 replacements: where,
                 type: db.sequelize.QueryTypes.SELECT
             });
 
-            let items = itemResults.map(item => {
-                return {
-                    symbol: item.currency,
-                    reward: (new BigNumber(item.reward)),
-                    staked: parseFloat((new BigNumber(item.staked)).div(parseFloat(item.number_row))),
-                    sort: item.ct
-                };
-            });
+            let items = {};
+            for (let i = 0; i < itemResults.length; i++) {
+                if (!items[itemResults[i].currency]) {
+                    items[itemResults[i].currency] = [];
+                }
+
+                items[itemResults[i].currency].push({
+                    reward: parseFloat((new BigNumber(itemResults[i].reward))),
+                    staked: parseFloat((new BigNumber(itemResults[i].staked)).div(parseFloat(itemResults[i].number_row))),
+                    date: itemResults[i].ct
+                });
+            }
 
             return res.ok({
-                items: items,
-                offset: offset,
-                limit: limit,
-                total: total
+                items,
+                begin_date: to,
+                end_date: from,
+                type
             });
         }
         catch (err) {
@@ -101,98 +80,6 @@ module.exports = {
             next(err);
         }
     },
-
-    getAssetList: async (req, res, next) => {
-        try {
-            let filter = req.body.filter && 'all' !== req.body.filter.trim().toLowerCase()
-                ? req.body.filter.trim().toUpperCase() : '';
-            let platform = req.body.platform && 'all' !== req.body.platform.trim().toLowerCase()
-                ? req.body.platform.trim().toUpperCase() : '';
-            let offset = req.body.offset ? req.body.offset : 0;
-            let limit = req.body.limit ? req.body.limit : 25;
-            let { from, to } = _getDateRangeUnitTimeStamp(filter.toUpperCase(), 1);
-
-            let where = {
-                memberId: req.user.id,
-                platform,
-                to,
-                from,
-                offset,
-                limit
-            }
-
-            let sqlTotal = `
-                        SELECT COUNT(T.Currency) AS Total 
-                        FROM
-                        (SELECT 
-                        platform AS currency 
-                        FROM member_assets 
-                        WHERE member_assets.address IN (
-                            SELECT wpk.address 
-                            FROM 
-                                wallets AS w
-                            RIGHT JOIN 
-                                wallet_priv_keys AS wpk 
-                                ON w.id = wpk.wallet_id 
-                            WHERE 
-                                w.member_id = :memberId
-                        )  
-                        ${'' !== filter ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
-                        ${'' !== platform ? ' AND platform = :platform ' : ''}
-                        GROUP BY platform) AS T`;
-
-            const totalResults = await db.sequelize.query(sqlTotal, {
-                replacements: where,
-                type: db.sequelize.QueryTypes.SELECT
-            });
-
-            const total = parseInt(totalResults[0].total);
-
-            let sqlItems = `SELECT 
-                        platform AS currency, 
-                        SUM(Reward) AS Reward, 
-                        SUM(Amount) AS Staked, 
-                        COUNT(platform) AS number_row 
-                        FROM member_assets 
-                        WHERE member_assets.address IN (
-                            SELECT wpk.address 
-                            FROM 
-                                wallets AS w
-                            RIGHT JOIN 
-                                wallet_priv_keys AS wpk 
-                                ON w.id = wpk.wallet_id 
-                            WHERE 
-                                w.member_id = :memberId
-                        )   
-                        ${'' !== filter ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
-                        ${'' !== platform ? ' AND platform = :platform ' : ''}
-                        GROUP BY platform LIMIT :limit OFFSET :offset`;
-
-            const itemResults = await db.sequelize.query(sqlItems, {
-                replacements: where,
-                type: db.sequelize.QueryTypes.SELECT
-            });
-
-            let items = itemResults.map(item => {
-                return {
-                    symbol: item.currency,
-                    reward: parseFloat((new BigNumber(item.reward))),
-                    staked: parseFloat((new BigNumber(item.staked)).div(parseFloat(item.number_row)))
-                };
-            });
-
-            return res.ok({
-                items: items,
-                offset: offset,
-                limit: limit,
-                total: total
-            });
-        }
-        catch (err) {
-            logger.error('get asset list fail:', err);
-            next(err);
-        }
-    }
 };
 
 function _getDateRangeUnitTimeStamp(dateType, dateNum) {
@@ -258,6 +145,12 @@ function _getDateFilter(dateType, columnName) {
             break;
 
         case 'WEEK':
+            query = `CONCAT(
+                DATE_PART('YEAR', ${columnName}),
+                '-',
+                DATE_PART('WEEK', ${columnName}))`;
+            break;
+
         case 'MONTH':
             query = `CONCAT(
                 DATE_PART('YEAR', ${columnName}),
@@ -272,6 +165,10 @@ function _getDateFilter(dateType, columnName) {
                 DATE_PART('YEAR', ${columnName}),
                 '-',
                 DATE_PART('MONTH', ${columnName}))`;
+            break;
+
+        case 'ALL':
+            query = `DATE_PART('YEAR', ${columnName})`;
             break;
 
         default:

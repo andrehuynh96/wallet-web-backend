@@ -1,3 +1,3 @@
 module.exports = {
-    filter: require('./filter')
+    schema: require('./schema')
 };

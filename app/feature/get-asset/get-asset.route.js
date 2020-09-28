@@ -45,12 +45,12 @@ module.exports = router;
                           {
                             "reward": 18,
                             "staked": 20,
-                            "date": "2020-40"
+                            "date": "2020-09-28"
                           }
                         ]
                       },
-                      begin_data: "2020-09-18 00:00:00.00+09",
-                      end_date: "2020-09-24 00:00:00.00+09",
+                      begin_data: 1601202386,
+                      end_date: 1601115986,
                       type: "WEEK"
  *                 }
  *             }

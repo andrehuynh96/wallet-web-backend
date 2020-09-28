@@ -145,12 +145,6 @@ function _getDateFilter(dateType, columnName) {
             break;
 
         case 'WEEK':
-            query = `CONCAT(
-                DATE_PART('YEAR', ${columnName}),
-                '-',
-                DATE_PART('WEEK', ${columnName}))`;
-            break;
-
         case 'MONTH':
             query = `CONCAT(
                 DATE_PART('YEAR', ${columnName}),

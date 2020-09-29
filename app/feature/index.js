@@ -28,6 +28,7 @@ router.use(require('./term-condition/term-condition.route'));
 router.use(require('./setting/setting.route'));
 router.use('/exchange', require('./exchange'));
 router.use(require('./email-tracking/email-tracking.route'));
+router.use('/asset', require('./get-asset/get-asset.route'));
 router.use('/coin-gecko', require('./coin-gecko'));
 
 module.exports = router;

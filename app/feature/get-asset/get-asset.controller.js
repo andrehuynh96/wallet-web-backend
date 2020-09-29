@@ -15,14 +15,16 @@ module.exports = {
                 return res.badRequest("Missing parameters", validate.error);
             }
 
-            let { type, platform } = req.query;
+            let { type, platform, wallet_id } = req.query;
             type = type ? type.trim().toUpperCase() : 'ALL';
             platform = platform ? platform.trim().toUpperCase() : 'ALL';
+            wallet_id = wallet_id ? wallet_id : '';
             let { from, to } = _getDateRangeUnitTimeStamp(type.toUpperCase(), 1);
 
             let where = {
                 memberId: req.user.id,
                 platform,
+                wallet_id,
                 to,
                 from,
             }
@@ -45,6 +47,7 @@ module.exports = {
                                 ON w.id = wpk.wallet_id 
                             WHERE 
                                 w.member_id = :memberId
+                                ${wallet_id ? ' AND w.id = :wallet_id' : ''}
                         )  
                         ${'ALL' !== type ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
                         ${'ALL' !== platform ? ' AND platform = :platform ' : ''}

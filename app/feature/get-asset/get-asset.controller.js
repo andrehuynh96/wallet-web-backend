@@ -82,12 +82,17 @@ module.exports = {
     },
     getAssetHistory: async (req, res, next) => {
         try {
-            const { offset, limit } = req.query;
-            console.log(req.query);
+            let { platform, offset, limit } = req.query;
+
+            platform = platform ? platform.toUpperCase() : '';
+            offset = offset ? offset : 0;
+            limit = limit ? limit : 25;
+
             let where = {
                 memberId: req.user.id,
-                offset: offset ? offset : 0,
-                limit: limit ? limit : 25
+                platform,
+                offset,
+                limit
             }
 
             let sqlTotal = `                       
@@ -103,7 +108,9 @@ module.exports = {
                                 ON w.id = wpk.wallet_id 
                             WHERE 
                                 w.member_id = :memberId
-                        )`;
+                        ) 
+                        ${'' !== platform ? ' AND platform = :platform' : ''}
+                        `;
 
             const totalResults = await db.sequelize.query(sqlTotal, {
                 replacements: where,
@@ -128,6 +135,7 @@ module.exports = {
                             WHERE 
                                 w.member_id = :memberId
                         ) 
+                        ${'' !== platform ? ' AND platform = :platform' : ''}
                         ORDER BY created_at DESC LIMIT :limit OFFSET :offset`;
 
             const itemResults = await db.sequelize.query(sqlItems, {

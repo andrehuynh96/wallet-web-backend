@@ -99,6 +99,10 @@ module.exports = router;
 *         in: query
 *         type: string
 *         enum: ['all', 'day', 'week', 'month', 'year']
+*       - name: wallet_id
+*         in: query
+*         type: string
+*         format: uuid
 *     produces:
 *       - application/json
 *     responses:

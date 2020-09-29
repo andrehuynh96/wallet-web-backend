@@ -26,7 +26,7 @@ module.exports = (srcObject, selected_lang) => {
     else
         selected_lang = '';
 
-    let destCloned = Object.assign({}, destObject);
+    let destCloned = JSON.parse(JSON.stringify(destObject)); // Object.assign({}, destObject);
     destCloned.array[`[].Notification.title${selected_lang}`] = '[].title';
     destCloned.array[`[].Notification.content${selected_lang}`] = '[].content';
     destCloned.single[`Notification.title${selected_lang}`] = 'title';
@@ -36,9 +36,9 @@ module.exports = (srcObject, selected_lang) => {
         if (srcObject === undefined || srcObject.length == 0) {
             return srcObject;
         } else {
-            return objectMapper(srcObject, destObject.array);
+            return objectMapper(srcObject, destCloned.array);
         }
     } else {
-        return objectMapper(srcObject, destObject.single);
+        return objectMapper(srcObject, destCloned.single);
     }
 };

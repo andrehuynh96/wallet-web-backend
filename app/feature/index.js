@@ -26,6 +26,7 @@ router.use(require('./static/static.route'));
 router.use(require('./validator/validator.route'));
 router.use(require('./term-condition/term-condition.route'));
 router.use(require('./setting/setting.route'));
+router.use(require('./notification/notification.route'));
 router.use('/exchange', require('./exchange'));
 router.use(require('./email-tracking/email-tracking.route'));
 router.use('/asset', require('./get-asset/get-asset.route'));

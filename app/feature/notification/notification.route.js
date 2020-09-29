@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get(
     '/notification',
+    authenticate,
     controller.getAll
 );
 // router.get(

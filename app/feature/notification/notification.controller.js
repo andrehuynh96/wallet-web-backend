@@ -13,6 +13,7 @@ module.exports = {
             const { query } = req;
             const limit = query.limit ? parseInt(req.query.limit) : 10;
             const offset = query.offset ? parseInt(req.query.offset) : 0;
+            const filter = query.filter ? req.query.filter : 'all';
 
             const userId = req.user.id;
             let selected_lang = 'en';
@@ -31,6 +32,15 @@ module.exports = {
                 member_id: userId,
                 deleted_flg: false
             };
+
+            switch (filter) {
+                case 'read':
+                    where_notification_details.read_flg = true;
+                    break;
+                case 'unread':
+                    where_notification_details.read_flg = false;
+                    break;
+            }
 
             const { count: total, rows: items } = await NotificationDetails.findAndCountAll({
                 limit,

@@ -9,11 +9,6 @@ router.get(
     authenticate,
     controller.getAll
 );
-// router.get(
-//   '/notification',
-//   authenticate,
-//   controller.getAll
-// );
 
 
 module.exports = router;
@@ -24,11 +19,11 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/currencies:
+ * /web/notification:
  *   get:
  *     summary: currency list
  *     tags:
- *       - Currency
+ *       - Notification
  *     description:
  *     parameters:
  *       - name: offset
@@ -38,13 +33,10 @@ module.exports = router;
  *       - name: limit
  *         in: query
  *         type: integer
- *         format: int32
- *       - name: search
+ *       - name: filter
  *         in: query
  *         type: string
- *       - name: default
- *         in: query
- *         type: boolean
+ *         description: should be all, read, unread. all is default if null
  *     produces:
  *       - application/json
  *     responses:
@@ -56,24 +48,20 @@ module.exports = router;
  *                 "data": {
                       "items": [
                         {
-                          "id":"2",
-                          "name":"Ethereum",
-                          "symbol":"ETH",
-                          "decimals": 18,
-                          "icon":"https://static.chainservices.info/staking/platforms/eth.png",
-                          "description":"AWS token",
-                          "order_index":1,
-                          "type":"NATIVE",
-                          "platform": "ETH",
-                          "sc_token_address":"0x423822D571Bb697dDD993c04B507dD40E754cF05",
-                          "created_at":"2020-01-13T06:47:41.248Z",
-                          "updated_at":"2020-01-13T06:47:41.248Z",
-                          "default_flg": true
+                          "id": 6,
+                          "description": "やあ！すずきちゃ",
+                          "type": "SYSTEM",
+                          "event": "NEW_INFORMATION",
+                          "read_flg": false,
+                          "created_at": "2020-09-28T09:04:39.821Z",
+                          "updated_at": "2020-09-28T09:04:39.821Z",
+                          "title": "FOO title JA2020-09-28 17:57:49.181112+09",
+                          "content": "こんにちは2020-09-28 17:57:49.181112+09"
                         }
                       ],
                       "offset": 0,
                       "limit": 10,
-                      "total": 1
+                      "total": 100
  *                 }
  *             }
  *       400:

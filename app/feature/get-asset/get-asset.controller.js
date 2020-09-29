@@ -74,8 +74,8 @@ module.exports = {
 
             return res.ok({
                 items,
-                begin_date: to,
-                end_date: from,
+                begin_date: from,
+                end_date: to,
                 type
             });
         }

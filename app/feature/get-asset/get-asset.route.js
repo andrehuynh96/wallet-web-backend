@@ -29,6 +29,19 @@ module.exports = router;
  *     tags:
  *       - Asset
  *     description:
+ *     parameters:
+ *       - name: platform
+ *         in: query
+ *         type: string
+ *         format: string
+ *       - name: offset
+ *         in: query
+ *         type: integer
+ *         format: int32
+ *       - name: limit
+ *         in: query
+ *         type: integer
+ *         format: int32
  *     produces:
  *       - application/json
  *     responses:

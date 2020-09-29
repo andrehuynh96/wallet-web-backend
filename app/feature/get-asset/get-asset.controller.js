@@ -15,10 +15,11 @@ module.exports = {
                 return res.badRequest("Missing parameters", validate.error);
             }
 
-            let { type, platform, wallet_id } = req.query;
+            let { type, platform, wallet_id, sort } = req.query;
             type = type ? type.trim().toUpperCase() : 'ALL';
             platform = platform ? platform.trim().toUpperCase() : 'ALL';
             wallet_id = wallet_id ? wallet_id : '';
+            sort = sort && 'asc' === sort.trim() ? 'ASC' : 'DESC';
             let { from, to } = _getDateRangeUnitTimeStamp(type.toUpperCase(), 1);
 
             let where = {
@@ -51,7 +52,7 @@ module.exports = {
                         )  
                         ${'ALL' !== type ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
                         ${'ALL' !== platform ? ' AND platform = :platform ' : ''}
-                        GROUP BY ct, currency ORDER BY currency`;
+                        GROUP BY ct, currency ORDER BY ct ${sort}`;
 
             const itemResults = await db.sequelize.query(sqlItems, {
                 replacements: where,

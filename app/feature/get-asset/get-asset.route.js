@@ -103,6 +103,10 @@ module.exports = router;
 *         in: query
 *         type: string
 *         format: uuid
+*       - name: sort
+*         in: query
+*         type: string
+*         enum: ['asc', 'desc']
 *     produces:
 *       - application/json
 *     responses:

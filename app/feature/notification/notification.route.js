@@ -10,6 +10,12 @@ router.get(
     controller.getAll
 );
 
+router.get(
+    '/notification/:message_id',
+    authenticate,
+    controller.getMessage
+);
+
 
 module.exports = router;
 
@@ -21,7 +27,7 @@ module.exports = router;
  * @swagger
  * /web/notification:
  *   get:
- *     summary: currency list
+ *     summary: notification list by filter
  *     tags:
  *       - Notification
  *     description:
@@ -81,3 +87,51 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+/*********************************************************************/
+
+/**
+* @swagger
+* /web/notification/{message_id}:
+*   get:
+*     summary: notification of user by id
+*     tags:
+*       - Notification
+*     description:
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": {
+                    "id": 3,
+                    "description": "やあ！すずきちゃ",
+                    "type": "SYSTEM",
+                    "event": "NEW_INFORMATION",
+                    "read_flg": false,
+                    "created_at": "2020-09-28T09:04:34.117Z",
+                    "updated_at": "2020-09-28T09:04:34.117Z",
+                    "title": "FOO title JA2020-09-28 17:57:45.70184+09",
+                    "content": "こんにちは2020-09-28 17:57:45.70184+09"
+*                 }
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/

@@ -81,7 +81,58 @@ module.exports = {
 
             return res.ok(mapper(user_notification, selected_lang));
         } catch (err) {
-            logger.error('get list notification fail:', err);
+            logger.error('getMessage fail:', err);
+            next(err);
+        }
+    },
+
+    deleteMessage: async(req, res, next) => {
+        try {
+            const { params: { message_id } } = req;
+
+            const userId = req.user.id;
+
+
+            let where_notification_details = {
+                member_id: userId
+            };
+
+            if (message_id)
+                where_notification_details.notification_id = message_id;
+
+            NotificationDetails.update({
+                deleted_flg: true
+            }, { where: where_notification_details });
+
+            return res.ok(true);
+        } catch (err) {
+            logger.error('deleteMessage fail:', err);
+            next(err);
+        }
+    },
+
+    markReadMessage: async(req, res, next) => {
+        try {
+            const { params: { message_id } } = req;
+
+            const userId = req.user.id;
+
+
+            let where_notification_details = {
+                member_id: userId,
+                deleted_flg: false
+            };
+
+            if (message_id)
+                where_notification_details.notification_id = message_id;
+
+            NotificationDetails.update({
+                read_flg: true
+            }, { where: where_notification_details });
+
+            return res.ok(true);
+        } catch (err) {
+            logger.error('deleteMessage fail:', err);
             next(err);
         }
     }

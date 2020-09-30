@@ -1,11 +1,9 @@
 const logger = require('app/lib/logger');
-const config = require('app/config');
 const Notification = require('app/model/wallet').notifications;
 const NotificationDetails = require('app/model/wallet').notification_details;
 const Member = require('app/model/wallet').members;
 const mapper = require('app/feature/response-schema/notification.response-schema');
 const Sequelize = require('sequelize');
-const Op = Sequelize.Op;
 
 module.exports = {
     getAll: async(req, res, next) => {
@@ -16,17 +14,7 @@ module.exports = {
             const filter = query.filter ? req.query.filter : 'all';
 
             const userId = req.user.id;
-            let selected_lang = 'en';
-
-            let member = await Member.findOne({
-                where: {
-                    id: userId,
-                    deleted_flg: false
-                }
-            });
-            if (member && member.current_language) {
-                selected_lang = member.current_language;
-            }
+            let selected_lang = await _getMemberCurrentLanguage(userId);
 
             let where_notification_details = {
                 member_id: userId,
@@ -65,5 +53,51 @@ module.exports = {
             logger.error('get list notification fail:', err);
             next(err);
         }
+    },
+
+    getMessage: async(req, res, next) => {
+        try {
+            const { params: { message_id } } = req;
+
+            const userId = req.user.id;
+            let selected_lang = await _getMemberCurrentLanguage(userId);
+
+            let where_notification_details = {
+                member_id: userId,
+                notification_id: message_id,
+                deleted_flg: false
+            };
+
+            const user_notification = await NotificationDetails.findOne({
+                where: where_notification_details,
+                include: [{
+                    model: Notification,
+                    as: "Notification"
+                }],
+                order: [
+                    ['created_at', 'DESC']
+                ]
+            });
+
+            return res.ok(mapper(user_notification, selected_lang));
+        } catch (err) {
+            logger.error('get list notification fail:', err);
+            next(err);
+        }
     }
+}
+
+async function _getMemberCurrentLanguage(userId) {
+    let selected_lang = 'en';
+
+    let member = await Member.findOne({
+        where: {
+            id: userId,
+            deleted_flg: false
+        }
+    });
+    if (member && member.current_language) {
+        selected_lang = member.current_language;
+    }
+    return selected_lang;
 }

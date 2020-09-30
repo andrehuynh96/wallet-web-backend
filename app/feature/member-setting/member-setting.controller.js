@@ -50,7 +50,7 @@ module.exports = {
           },
           returning: true
         });
-      if (!response || response.length == 0) {
+      if (!response) {
         return res.notFound(res.__("MEMBER_SETTING_NOT_FOUND"), "MEMBER_SETTING_NOT_FOUND");
       }
       return res.ok(true);

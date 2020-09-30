@@ -25,7 +25,8 @@ const destObject = {
     "[].amount_to": "[].amount_to",
     "[].payin_address": "[].payin_address",
     "[].payout_address": "[].payout_address",
-    "[].createdAt": "[].created_at"
+    "[].createdAt": "[].created_at",
+    "[].tx_id": "[].tx_id"
   },
   single: {
     "id": "id",
@@ -51,7 +52,8 @@ const destObject = {
     "amount_to": "amount_to",
     "payin_address": "payin_address",
     "payout_address": "payout_address",
-    "createdAt": "created_at"
+    "createdAt": "created_at",
+    "tx_id": "tx_id"
   }
 };
 module.exports = srcObject => {

@@ -145,6 +145,42 @@ const SETTINGS = [
     "type": "number",
     "property": "minimun_claim_amount_one"
   },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE",
+    "value": "0",
+    "type": "number",
+    "property": "claim_atom_network_fee"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE",
+    "value": "0",
+    "type": "number",
+    "property": "claim_iris_network_fee"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE",
+    "value": "0",
+    "type": "number",
+    "property": "claim_ong_network_fee"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE",
+    "value": "0",
+    "type": "number",
+    "property": "claim_xtz_network_fee"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE",
+    "value": "0",
+    "type": "number",
+    "property": "claim_one_network_fee"
+  },
+  {
+    "key": "MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE",
+    "value": "0",
+    "type": "number",
+    "property": "membership_commission_usdt_network_fee"
+  },
 ];
 
 module.exports = async () => {

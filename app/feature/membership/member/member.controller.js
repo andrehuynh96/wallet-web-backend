@@ -62,7 +62,7 @@ module.exports = {
     try {
       logger.info('getPrice::getPrice');
       console.log('req.params.currency_symbol', req.params.currency_symbol);
-      const price = await CoinGeckoPrice.getPrice({ platform_name: req.params.currency_symbol, currency: 'usd' });
+      const { price } = await CoinGeckoPrice.getPrice({ platform_name: req.params.currency_symbol, currency: 'usd' });
       let crypto = {
         rate_usd: price
       };

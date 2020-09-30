@@ -16,6 +16,8 @@ const destObject = {
     '[].to_flg': '[].to_flg',
     '[].fix_rate_flg': '[].fix_rate_flg',
     '[].contract_flg': '[].contract_flg',
+    '[].fixed_time': '[].fixed_time',
+    '[].extra_id_name': '[].extra_id_name',
   },
   single: {
     id: 'id',
@@ -32,6 +34,8 @@ const destObject = {
     to_flg: 'to_flg',
     fix_rate_flg: 'fix_rate_flg',
     contract_flg: 'contract_flg',
+    fixed_time: 'fixed_time',
+    extra_id_name: 'extra_id_name'
   }
 };
 

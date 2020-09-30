@@ -42,7 +42,7 @@ module.exports = async (req, res, next) => {
       status: result.status.toUpperCase(),
       amount_expected_from: result.amount_expected_from,
       amount_expected_to: result.amount_expected_to,
-      amount_to: result.amount_to,
+      amount_to: result.amount_to > 0 ? result.amount_to : result.amount_expected_to,
       payin_address: result.payin_address,
       payout_address: result.payout_address,
       response: JSON.stringify(result)

@@ -68,7 +68,8 @@ module.exports = router;
                       "amount_to": "0",
                       "payin_address": "3AxCrxtX4qv479oLYzM7pjnvWWnVkhnNYZ",
                       "payout_address": "0x95970e5869799a6d7b8efe5dc7bcbedd4b95b604",
-                      "created_at": "2020-09-08T05:06:38.673Z"
+                      "created_at": "2020-09-08T05:06:38.673Z",
+                      "tx_id":"tx_id"
                     }
                   ],
                   "offset": 0,

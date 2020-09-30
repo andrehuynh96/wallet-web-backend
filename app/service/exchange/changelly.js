@@ -73,8 +73,19 @@ class Changelly extends Exchange {
 
   }
 
-  async getStatus(options) {
-
+  async getStatus({ transaction_id }) {
+    try {
+      return await this._makeRequest({
+        method: 'getStatus',
+        params: {
+          id: transaction_id
+        }
+      })
+    }
+    catch (err) {
+      logger.error(`changelly getStatus error:`, err);
+      throw err;
+    }
   }
 
   async _estimate({ from, to, amount }) {

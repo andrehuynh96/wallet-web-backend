@@ -11,6 +11,7 @@ const ClaimRequestStatus = require('app/model/wallet/value-object/claim-request-
 const Setting = require('app/model/wallet').settings;
 const config = require('app/config');
 const SystemType = require('app/model/wallet/value-object/system-type');
+const BigNumber = require('bignumber.js');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -39,49 +40,65 @@ module.exports = {
   create: async (req, res, next) => {
     let transaction;
     try {
-      const setting = await Setting.findOne({
+      const settingMinClaimAmount = await Setting.findOne({
         where: {
           key: config.setting.MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT
         }
       });
-      if (!setting)
+      const settingNetWorkFee = await Setting.findOne({
+        where: {
+          key: config.setting.MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE
+        }
+      });
+
+      if (!settingMinClaimAmount)
         return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
-      let minimunClaimAmount = parseFloat(setting.value);
+      if (!settingNetWorkFee)
+        return res.badRequest(res.__('MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE_NOT_FOUND'), 'MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE_NOT_FOUND');
+
+      let minimunClaimAmount = parseFloat(settingMinClaimAmount.value);
+      let netWorkFee = parseFloat(settingNetWorkFee.value);
       if (req.body.amount < minimunClaimAmount) {
         return res.badRequest(res.__("AMOUNT_TOO_SMALL"), "AMOUNT_TOO_SMALL");
       }
-
+      if (req.body.amount <= netWorkFee) {
+        return res.badRequest(res.__("AMOUNT_LESS_THAN_NETWORK_FEE"), "AMOUNT_LESS_THAN_NETWORK_FEE");
+      }
+      let amount = parseFloat(new BigNumber(req.body.amount).minus(netWorkFee));
       const where = { id: req.body.member_account_id };
       const memberAccount = await MemberAccount.findOne({ where: where });
       if (!memberAccount) {
         return res.badRequest(res.__("NOT_FOUND_MEMBER_ACCOUNT"), "NOT_FOUND_MEMBER_ACCOUNT");
       }
 
-
       let claimObject = {
         ...createClaimRequestMapper(memberAccount),
       };
 
       claimObject.member_account_id = memberAccount.id;
-      claimObject.amount = req.body.amount;
+      claimObject.amount = amount;
       claimObject.status = ClaimRequestStatus.Pending;
       claimObject.affiliate_latest_id = req.body.latest_id;
+      claimObject.original_amount = req.body.amount;
+      claimObject.network_fee = netWorkFee;
 
       transaction = await database.transaction();
       let _resultCreateData = await ClaimRequest.create(claimObject, { transaction });
 
       const dataReward = {
-        amount: req.body.amount,
+        amount: amount,
         currency_symbol: req.body.currency_symbol,
         email: req.user.email,
-        latest_id: req.body.latest_id
+        latest_id: req.body.latest_id,
+        network_fee: netWorkFee
       };
       const dataTrackingReward = {
         member_id: req.user.id,
         currency_symbol: req.body.currency_symbol,
-        amount: req.body.amount,
+        amount: amount,
         tx_id: _resultCreateData.tx_id,
-        note: memberAccount.wallet_address
+        note: memberAccount.wallet_address,
+        network_fee: netWorkFee
       };
 
       await MemberRewardTransactionHis.create(dataTrackingReward, { transaction });
@@ -125,19 +142,29 @@ module.exports = {
 
   setting: async (req, res, next) => {
     try {
-      const setting = await Setting.findOne({
+      const settingMinClaimAmount = await Setting.findOne({
         where: {
           key: config.setting.MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT
         }
       });
-      if (!setting)
+      const settingNetWorkFee = await Setting.findOne({
+        where: {
+          key: config.setting.MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE
+        }
+      });
+
+      if (!settingMinClaimAmount)
         return res.badRequest(res.__('MINIMUM_CLAIM_AMOUNT_NOT_FOUND'), 'MINIMUM_CLAIM_AMOUNT_NOT_FOUND');
+      if (!settingNetWorkFee)
+        return res.badRequest(res.__('MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE_NOT_FOUND'), 'MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE_NOT_FOUND');
+
       return res.ok({
-        minimun_claim_amount: parseFloat(setting.value)
+        minimun_claim_amount: parseFloat(settingMinClaimAmount.value),
+        membership_commission_usdt_network_fee: parseFloat(settingNetWorkFee.value)
       });
     } catch (err) {
       logger.error("setting: ", err);
       next(err);
     }
   },
-}; 
+};

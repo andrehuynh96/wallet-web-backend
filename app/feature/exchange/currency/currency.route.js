@@ -1,12 +1,14 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./currency.controller');
+const cache = require('app/middleware/cache.middleware');
 
 const router = express.Router();
 
 router.get(
   '/currencies',
   authenticate,
+  //cache(10),
   controller
 );
 
@@ -56,7 +58,9 @@ module.exports = router;
                           "status": 1,
                           "from_flg": true,
                           "to_flg": true,
-                          "fix_rate_flg": true
+                          "fix_rate_flg": true,
+                          "fixed_time": 900000,
+                          "extra_id_name": ""
  *                      }
  *
  *                  ]

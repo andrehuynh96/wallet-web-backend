@@ -209,7 +209,7 @@ class RewardSystem {
     }
   }
 
-  async claimReward({ email, currency_symbol, amount, latest_id }) {
+  async claimReward({ email, currency_symbol, amount, latest_id, network_fee }) {
     try {
       let accessToken = await this._getToken();
       let result = await axios.post(`${this.baseUrl}/claim-rewards`,
@@ -217,7 +217,8 @@ class RewardSystem {
           ext_client_id: email,
           currency_symbol: currency_symbol,
           amount: amount,
-          latest_id: latest_id
+          latest_id: latest_id,
+          network_fee: network_fee
         },
         {
           headers: {

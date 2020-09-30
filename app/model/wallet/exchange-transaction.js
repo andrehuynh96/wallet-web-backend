@@ -72,6 +72,34 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('medium'),
       allowNull: true
     },
+    provider_track_url: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    payout_tx_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    network_fee: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: 0
+    },
+    total_fee: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: 0
+    },
+    rate: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: 0
+    },
+    amount_from: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: 0
+    },
     amount_expected_from: {
       type: DataTypes.DECIMAL,
       allowNull: true,
@@ -109,6 +137,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('medium'),
       allowNull: true
     },
+    tx_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
   }, {
       underscored: true,
       timestamps: true,
@@ -123,5 +155,14 @@ module.exports = (sequelize, DataTypes) => {
       modelSuffix: "_his"
     }
   });
+
+  Model.associate = (models) => {
+    Model.belongsTo(models.members, {
+      as: 'Member',
+      foreignKey: 'member_id',
+      targetKey: 'id'
+    });
+  };
+
   return Model;
 } 

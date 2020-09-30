@@ -164,9 +164,9 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   Member.associate = (models) => {
     Member.hasMany(models.wallets, { foreignKey: 'member_id', as: "wallets" });
@@ -179,6 +179,13 @@ module.exports = (sequelize, DataTypes) => {
     Member.belongsTo(models.membership_types, {
       as: 'MembershipType',
       foreignKey: 'membership_type_id',
+    });
+
+    Member.hasOne(models.member_settings, {
+      as: "MemberSetting",
+      foreignKey: 'member_id',
+      sourceKey: 'id',
+      constraints: false,
     });
   };
 

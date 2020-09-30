@@ -1,19 +1,21 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./get-asset.controller');
+const controller = require('./notification.controller');
+
 const router = express.Router();
 
 router.get(
-  '/asset-list',
-  authenticate,
-  controller.getAssetList
+    '/notification',
+    authenticate,
+    controller.getAll
 );
 
 router.get(
-  '/history',
-  authenticate,
-  controller.getAssetHistory
+    '/notification/:message_id',
+    authenticate,
+    controller.getMessage
 );
+
 
 module.exports = router;
 
@@ -23,17 +25,13 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/asset/history:
+ * /web/notification:
  *   get:
- *     summary: history list
+ *     summary: notification list by filter
  *     tags:
- *       - Asset
+ *       - Notification
  *     description:
  *     parameters:
- *       - name: platform
- *         in: query
- *         type: string
- *         format: string
  *       - name: offset
  *         in: query
  *         type: integer
@@ -41,7 +39,10 @@ module.exports = router;
  *       - name: limit
  *         in: query
  *         type: integer
- *         format: int32
+ *       - name: filter
+ *         in: query
+ *         type: string
+ *         description: should be all, read, unread. all is default if null
  *     produces:
  *       - application/json
  *     responses:
@@ -53,15 +54,20 @@ module.exports = router;
  *                 "data": {
                       "items": [
                         {
-                          "symbol":"IRIS",
-                          "reward": 18,
-                          "staked": 20,
-                          "create_at": "2020-09-23 17:00"
+                          "id": 6,
+                          "description": "やあ！すずきちゃ",
+                          "type": "SYSTEM",
+                          "event": "NEW_INFORMATION",
+                          "read_flg": false,
+                          "created_at": "2020-09-28T09:04:39.821Z",
+                          "updated_at": "2020-09-28T09:04:39.821Z",
+                          "title": "FOO title JA2020-09-28 17:57:49.181112+09",
+                          "content": "こんにちは2020-09-28 17:57:49.181112+09"
                         }
                       ],
                       "offset": 0,
                       "limit": 10,
-                      "total": 1
+                      "total": 100
  *                 }
  *             }
  *       400:
@@ -82,31 +88,16 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
+/*********************************************************************/
+
 /**
 * @swagger
-* /web/asset/asset-list:
+* /web/notification/{message_id}:
 *   get:
-*     summary: asset list
+*     summary: notification of user by id
 *     tags:
-*       - Asset
+*       - Notification
 *     description:
-*     parameters:
-*       - name: platform
-*         in: query
-*         type: string
-*         format: string
-*       - name: type
-*         in: query
-*         type: string
-*         enum: ['all', 'day', 'week', 'month', 'year']
-*       - name: wallet_id
-*         in: query
-*         type: string
-*         format: uuid
-*       - name: sort
-*         in: query
-*         type: string
-*         enum: ['asc', 'desc']
 *     produces:
 *       - application/json
 *     responses:
@@ -116,18 +107,15 @@ module.exports = router;
 *           application/json:
 *             {
 *                 "data": {
-                     "items": {
-                       "ATOM": [
-                         {
-                           "reward": 18,
-                           "staked": 20,
-                           "date": "2020-40"
-                         }
-                       ]
-                     },
-                     begin_data: "2020-09-18 00:00:00.00+09",
-                     end_date: "2020-09-24 00:00:00.00+09",
-                     type: "WEEK"
+                    "id": 3,
+                    "description": "やあ！すずきちゃ",
+                    "type": "SYSTEM",
+                    "event": "NEW_INFORMATION",
+                    "read_flg": false,
+                    "created_at": "2020-09-28T09:04:34.117Z",
+                    "updated_at": "2020-09-28T09:04:34.117Z",
+                    "title": "FOO title JA2020-09-28 17:57:45.70184+09",
+                    "content": "こんにちは2020-09-28 17:57:45.70184+09"
 *                 }
 *             }
 *       400:

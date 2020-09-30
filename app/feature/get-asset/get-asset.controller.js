@@ -15,14 +15,17 @@ module.exports = {
                 return res.badRequest("Missing parameters", validate.error);
             }
 
-            let { type, platform } = req.query;
+            let { type, platform, wallet_id, sort } = req.query;
             type = type ? type.trim().toUpperCase() : 'ALL';
             platform = platform ? platform.trim().toUpperCase() : 'ALL';
+            wallet_id = wallet_id ? wallet_id : '';
+            sort = sort && 'asc' === sort.trim() ? 'ASC' : 'DESC';
             let { from, to } = _getDateRangeUnitTimeStamp(type.toUpperCase(), 1);
 
             let where = {
                 memberId: req.user.id,
                 platform,
+                wallet_id,
                 to,
                 from,
             }
@@ -45,10 +48,11 @@ module.exports = {
                                 ON w.id = wpk.wallet_id 
                             WHERE 
                                 w.member_id = :memberId
+                                ${wallet_id ? ' AND w.id = :wallet_id' : ''}
                         )  
                         ${'ALL' !== type ? ' AND created_at >= TO_TIMESTAMP(:from) AND created_at <= TO_TIMESTAMP(:to)' : ''} 
                         ${'ALL' !== platform ? ' AND platform = :platform ' : ''}
-                        GROUP BY ct, currency ORDER BY currency`;
+                        GROUP BY ct, currency ORDER BY ct ${sort}`;
 
             const itemResults = await db.sequelize.query(sqlItems, {
                 replacements: where,
@@ -70,8 +74,8 @@ module.exports = {
 
             return res.ok({
                 items,
-                begin_date: to,
-                end_date: from,
+                begin_date: from,
+                end_date: to,
                 type
             });
         }
@@ -82,12 +86,17 @@ module.exports = {
     },
     getAssetHistory: async (req, res, next) => {
         try {
-            const { offset, limit } = req.query;
-            console.log(req.query);
+            let { platform, offset, limit } = req.query;
+
+            platform = platform ? platform.toUpperCase() : '';
+            offset = offset ? offset : 0;
+            limit = limit ? limit : 25;
+
             let where = {
                 memberId: req.user.id,
-                offset: offset ? offset : 0,
-                limit: limit ? limit : 25
+                platform,
+                offset,
+                limit
             }
 
             let sqlTotal = `                       
@@ -103,7 +112,9 @@ module.exports = {
                                 ON w.id = wpk.wallet_id 
                             WHERE 
                                 w.member_id = :memberId
-                        )`;
+                        ) 
+                        ${'' !== platform ? ' AND platform = :platform' : ''}
+                        `;
 
             const totalResults = await db.sequelize.query(sqlTotal, {
                 replacements: where,
@@ -128,6 +139,7 @@ module.exports = {
                             WHERE 
                                 w.member_id = :memberId
                         ) 
+                        ${'' !== platform ? ' AND platform = :platform' : ''}
                         ORDER BY created_at DESC LIMIT :limit OFFSET :offset`;
 
             const itemResults = await db.sequelize.query(sqlItems, {

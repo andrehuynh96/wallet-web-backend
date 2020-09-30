@@ -13,7 +13,7 @@ module.exports = {
         }
       });
       if (!response || response.length == 0) {
-        res.notFound('Not Found');
+        return res.notFound(res.__("MEMBER_SETTING_NOT_FOUND"), "MEMBER_SETTING_NOT_FOUND");
       }
       return res.ok(
         mapper(response)
@@ -42,15 +42,16 @@ module.exports = {
         value.is_receiced_marketing_notification_flg = body.is_receiced_marketing_notification_flg;
       }
 
-      const response = await MemberSetting.update(
+      const [_, response] = await MemberSetting.update(
         value,
         {
           where: {
             member_id: params.memberId
-          }
+          },
+          returning: true
         });
       if (!response || response.length == 0) {
-        res.notFound('Not Found');
+        return res.serverInternalError();
       }
       return res.ok(true);
     }

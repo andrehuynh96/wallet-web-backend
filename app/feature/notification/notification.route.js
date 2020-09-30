@@ -16,6 +16,18 @@ router.get(
     controller.getMessage
 );
 
+router.delete(
+    '/notification/:message_id?',
+    authenticate,
+    controller.deleteMessage
+);
+
+router.put(
+    '/notification/read/:message_id?',
+    //authenticate,
+    controller.markReadMessage
+);
+
 
 module.exports = router;
 
@@ -27,7 +39,7 @@ module.exports = router;
  * @swagger
  * /web/notification:
  *   get:
- *     summary: notification list by filter
+ *     summary: notification list of user by filter
  *     tags:
  *       - Notification
  *     description:
@@ -94,7 +106,7 @@ module.exports = router;
 * @swagger
 * /web/notification/{message_id}:
 *   get:
-*     summary: notification of user by id
+*     summary: notification detail of user by id
 *     tags:
 *       - Notification
 *     description:
@@ -135,3 +147,81 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/notification/{message_id}:
+ *   delete:
+ *     summary: delete notification of user by id
+ *     tags:
+ *       - Notification
+ *     description: message_id is optional value, delete all if null
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/notification/read/{message_id}:
+ *   put:
+ *     summary: mark read status of notification by id
+ *     tags:
+ *       - Notification
+ *     description: message_id is optional value, select all if null
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */

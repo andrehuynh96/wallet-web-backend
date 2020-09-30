@@ -1,6 +1,8 @@
 const express = require("express");
 const controller = require('./member-setting.controller');
 const authenticate = require('app/middleware/authenticate.middleware');
+const validator = require('app/middleware/validator.middleware');
+const requestSchema = require('./member-setting.request-schema');
 const router = express.Router();
 
 router.get(
@@ -12,7 +14,8 @@ module.exports = router;
 
 router.put(
   '/member-settings/:memberId',
-   authenticate,
+  authenticate,
+  validator(requestSchema),
   controller.update
 );
 module.exports = router;

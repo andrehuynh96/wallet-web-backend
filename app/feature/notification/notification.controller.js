@@ -132,7 +132,7 @@ module.exports = {
 
             return res.ok(true);
         } catch (err) {
-            logger.error('deleteMessage fail:', err);
+            logger.error('markReadMessage fail:', err);
             next(err);
         }
     }

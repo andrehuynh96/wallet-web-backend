@@ -28,6 +28,12 @@ router.put(
     controller.markReadMessage
 );
 
+router.get(
+    '/notification/unread/count',
+    authenticate,
+    controller.countUnreadMessage
+);
+
 
 module.exports = router;
 
@@ -147,6 +153,44 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+/*********************************************************************/
+
+/**
+ * @swagger
+ * /web/notification/unread/count:
+ *   get:
+ *     summary: return total unread notification of user
+ *     tags:
+ *       - Notification
+ *     description:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": 122
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
 
 
 /*********************************************************************/

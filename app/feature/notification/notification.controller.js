@@ -136,7 +136,26 @@ module.exports = {
             logger.error('markReadMessage fail:', err);
             next(err);
         }
-    }
+    },
+
+    countUnreadMessage: async(req, res, next) => {
+        try {
+            const userId = req.user.id;
+
+            let where_notification_details = {
+                member_id: userId,
+                read_flg: false,
+                deleted_flg: false
+            };
+
+
+            var total = await NotificationDetails.count({ where: where_notification_details });
+            return res.ok(total);
+        } catch (err) {
+            logger.error('countUnreadMessage fail:', err);
+            next(err);
+        }
+    },
 }
 
 async function _getMemberCurrentLanguage(userId) {

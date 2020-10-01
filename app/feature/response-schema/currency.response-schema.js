@@ -14,7 +14,8 @@ const destObject = {
     '[].sc_token_address': '[].sc_token_address',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
-    '[].default_flg': '[].default_flg'
+    '[].default_flg': '[].default_flg',
+    '[].status': '[].status'
   },
   single: {
     id: 'id',
@@ -29,7 +30,8 @@ const destObject = {
     sc_token_address: 'sc_token_address',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
-    default_flg: 'default_flg'
+    default_flg: 'default_flg',
+    status: 'status'
   }
 };
 module.exports = srcObject => {

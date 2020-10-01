@@ -22,6 +22,23 @@ module.exports = {
             sort = sort && 'asc' === sort.trim() ? 'ASC' : 'DESC';
             let { from, to } = _getDateRangeUnitTimeStamp(type.toUpperCase(), 1);
 
+            if ('ALL' === type) {
+                const getTimeResults = await db.sequelize.query(
+                    `SELECT MAX(created_at), MIN(created_at) FROM member_assets;`,
+                    { type: db.sequelize.QueryTypes.SELECT }
+                );
+
+                if (getTimeResults && getTimeResults.length > 0) {
+                    if (null != getTimeResults[0].min) {
+                        from = Math.floor(getTimeResults[0].min.getTime() / 1000);
+                    }
+
+                    if (null != getTimeResults[0].max) {
+                        to = Math.floor(getTimeResults[0].max.getTime() / 1000);
+                    }
+                }
+            }
+
             let where = {
                 memberId: req.user.id,
                 platform,
@@ -185,35 +202,30 @@ function _getDateRangeUnitTimeStamp(dateType, dateNum) {
     today.setDate(today.getDate() - 1);
     let fromDate = 0;
     const toDate = moment(today).valueOf();
-    let unit = 'minute';
+
     switch (dateType) {
         case 'MINUTE':
             fromDate = moment(today).subtract(dateNum, 'minute').valueOf();
             break;
 
         case 'HOUR':
-            unit = 'hour';
             fromDate = moment(today).subtract(dateNum, 'hour').valueOf();
             break;
 
         case 'DAY':
-            unit = 'hour';
             fromDate = moment(today).subtract(24 * dateNum, 'hour').valueOf();
             break;
 
         case 'WEEK':
-            unit = 'day';
-            fromDate = moment(today).subtract(7 * dateNum, 'day').valueOf();
+            fromDate = moment(today).subtract(6 * dateNum, 'day').valueOf();
             break;
 
         case 'MONTH':
-            unit = 'month';
-            fromDate = moment(today).subtract(dateNum, 'month').valueOf();
+            fromDate = moment(today).add(1, 'day').subtract(dateNum, 'month').valueOf();
             break;
 
         case 'YEAR':
-            unit = 'year';
-            fromDate = moment(today).subtract(dateNum, 'year').valueOf();
+            fromDate = moment(today).add(1, 'day').subtract(dateNum, 'year').valueOf();
             break;
 
         default:
@@ -223,7 +235,7 @@ function _getDateRangeUnitTimeStamp(dateType, dateNum) {
     }
     const from = Math.floor(fromDate / 1000); // second
     const to = Math.floor(toDate / 1000);
-    return { from, to, unit }
+    return { from, to }
 }
 
 function _getDateFilter(dateType, columnName) {

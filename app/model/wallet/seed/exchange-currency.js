@@ -11,7 +11,6 @@ module.exports = async () => {
   }
   currencies = currencies.result.filter(x => x.enabled);
   if (count == 0) {
-    currencies = currencies.result.filter(x => x.enabled);
     let result = currencies.map(x => {
       return {
         symbol: x.ticker.toUpperCase(),

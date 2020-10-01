@@ -16,15 +16,15 @@ router.get(
     controller.getMessage
 );
 
-router.delete(
-    '/notification/:message_id?',
+router.put(
+    '/notification/delete',
     authenticate,
     controller.deleteMessage
 );
 
 router.put(
-    '/notification/read/:message_id?',
-    //authenticate,
+    '/notification/read',
+    authenticate,
     controller.markReadMessage
 );
 
@@ -153,12 +153,23 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/notification/{message_id}:
- *   delete:
- *     summary: delete notification of user by id
+ * /web/notification/delete:
+ *   put:
+ *     summary: delete notification of user by list of id
  *     tags:
  *       - Notification
- *     description: message_id is optional value, delete all if null
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: message_ids is optional value, delete all if null or empty
+ *         schema:
+ *            type: object
+ *            required:
+ *            example:
+ *                {
+                      "message_ids":[1,2,3]
+                  }
  *     produces:
  *       - application/json
  *     responses:
@@ -192,12 +203,23 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/notification/read/{message_id}:
+ * /web/notification/read:
  *   put:
- *     summary: mark read status of notification by id
+ *     summary: mark read status of notification by list of id
  *     tags:
  *       - Notification
- *     description: message_id is optional value, select all if null
+ *     description: 
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: message_ids is optional value, select all if null or empty
+ *         schema:
+ *            type: object
+ *            required:
+ *            example:
+ *                {
+                      "message_ids":[1,2,3]
+                  }
  *     produces:
  *       - application/json
  *     responses:

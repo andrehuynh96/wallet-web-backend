@@ -88,7 +88,7 @@ module.exports = {
 
     deleteMessage: async(req, res, next) => {
         try {
-            const { params: { message_id } } = req;
+            const message_ids = req.body.message_ids;
 
             const userId = req.user.id;
 
@@ -97,8 +97,9 @@ module.exports = {
                 member_id: userId
             };
 
-            if (message_id)
-                where_notification_details.notification_id = message_id;
+            if (message_ids && message_ids.length && message_ids.length > 0) {
+                where_notification_details.notification_id = message_ids;
+            }
 
             NotificationDetails.update({
                 deleted_flg: true
@@ -113,18 +114,18 @@ module.exports = {
 
     markReadMessage: async(req, res, next) => {
         try {
-            const { params: { message_id } } = req;
+            const message_ids = req.body.message_ids;
 
             const userId = req.user.id;
-
 
             let where_notification_details = {
                 member_id: userId,
                 deleted_flg: false
             };
 
-            if (message_id)
-                where_notification_details.notification_id = message_id;
+            if (message_ids && message_ids.length && message_ids.length > 0) {
+                where_notification_details.notification_id = message_ids;
+            }
 
             NotificationDetails.update({
                 read_flg: true

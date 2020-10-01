@@ -1,3 +1,4 @@
 module.exports = {
-    schema: require('./schema')
+    assetListSchema: require('./assetListSchema'),
+    historySchema: require('./historySchema'),
 };

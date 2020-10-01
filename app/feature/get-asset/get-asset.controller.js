@@ -4,12 +4,12 @@ const db = require("app/model/wallet");
 const moment = require('moment');
 const Joi = require('joi');
 const BigNumber = require('bignumber.js');
-const { schema } = require('./validator');
+const { assetListSchema, historySchema } = require('./validator');
 
 module.exports = {
     getAssetList: async (req, res, next) => {
         try {
-            const validate = Joi.validate(req.query, schema);
+            const validate = Joi.validate(req.query, assetListSchema);
             if (validate.error) {
                 console.log(validate.error);
                 return res.badRequest("Missing parameters", validate.error);
@@ -86,15 +86,25 @@ module.exports = {
     },
     getAssetHistory: async (req, res, next) => {
         try {
-            let { platform, offset, limit } = req.query;
+
+            const validate = Joi.validate(req.query, historySchema);
+            if (validate.error) {
+                console.log(validate.error);
+                return res.badRequest("Missing parameters", validate.error);
+            }
+
+            let { platform, wallet_id, sort, offset, limit } = req.query;
 
             platform = platform ? platform.toUpperCase() : '';
             offset = offset ? offset : 0;
             limit = limit ? limit : 25;
+            wallet_id = wallet_id ? wallet_id : '';
+            sort = sort && 'asc' === sort.trim() ? 'ASC' : 'DESC';
 
             let where = {
                 memberId: req.user.id,
                 platform,
+                wallet_id,
                 offset,
                 limit
             }
@@ -111,7 +121,7 @@ module.exports = {
                                 wallet_priv_keys AS wpk 
                                 ON w.id = wpk.wallet_id 
                             WHERE 
-                                w.member_id = :memberId
+                                w.member_id = :memberId ${wallet_id ? ' AND w.id = :wallet_id' : ''}
                         ) 
                         ${'' !== platform ? ' AND platform = :platform' : ''}
                         `;
@@ -137,10 +147,10 @@ module.exports = {
                                 wallet_priv_keys AS wpk 
                                 ON w.id = wpk.wallet_id 
                             WHERE 
-                                w.member_id = :memberId
+                                w.member_id = :memberId ${wallet_id ? ' AND w.id = :wallet_id' : ''}
                         ) 
                         ${'' !== platform ? ' AND platform = :platform' : ''}
-                        ORDER BY created_at DESC LIMIT :limit OFFSET :offset`;
+                        ORDER BY created_at ${sort} LIMIT :limit OFFSET :offset`;
 
             const itemResults = await db.sequelize.query(sqlItems, {
                 replacements: where,

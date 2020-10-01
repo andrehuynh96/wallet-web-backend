@@ -14,6 +14,7 @@ const PluTXUserIdApi = require('app/lib/plutx-userid');
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
 const EmailTemplate = require('app/model/wallet').email_templates;
+const MemberSetting = require('app/model/wallet').member_settings;
 
 const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
@@ -83,12 +84,12 @@ async function _activeAccount(member, req, res, next) {
   await OTP.update({
     expired: true
   }, {
-      where: {
-        member_id: member.id,
-        action_type: OtpType.REGISTER
-      },
-      returning: true
-    });
+    where: {
+      member_id: member.id,
+      action_type: OtpType.REGISTER
+    },
+    returning: true
+  });
 
   let otp = await OTP.create({
     code: verifyToken,
@@ -116,7 +117,7 @@ async function _createAccount(req, res, next) {
   let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
   if (createAffiliate.httpCode == 200) {
     affiliateInfo.referral_code = createAffiliate.data.data.code;
-    affiliateInfo.referrer_code = req.body.referrer_code || null ;
+    affiliateInfo.referrer_code = req.body.referrer_code || null;
     affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
   }
   else {
@@ -168,12 +169,12 @@ async function _createAccount(req, res, next) {
   await OTP.update({
     expired: true
   }, {
-      where: {
-        member_id: member.id,
-        action_type: OtpType.REGISTER
-      },
-      returning: true
-    });
+    where: {
+      member_id: member.id,
+      action_type: OtpType.REGISTER
+    },
+    returning: true
+  });
 
   let otp = await OTP.create({
     code: verifyToken,
@@ -186,6 +187,12 @@ async function _createAccount(req, res, next) {
   if (!otp) {
     return res.serverInternalError();
   }
+
+  const memberSetting = await MemberSetting.create({ member_id: member.id });
+  if (!memberSetting) {
+    return res.serverInternalError();
+  }
+
   _sendEmail(member, otp);
   // }
 

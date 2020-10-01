@@ -42,6 +42,14 @@ module.exports = router;
  *         in: query
  *         type: integer
  *         format: int32
+ *       - name: wallet_id
+ *         in: query
+ *         type: string
+ *         format: uuid
+*       - name: sort
+ *         in: query
+ *         type: string
+ *         enum: ['asc', 'desc']
  *     produces:
  *       - application/json
  *     responses:

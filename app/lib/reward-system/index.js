@@ -40,6 +40,31 @@ class RewardSystem {
     }
   }
 
+  async unregister(email) {
+    try {
+      let accessToken = await this._getToken();
+      let result = await axios.post(`${this.baseUrl}/clients`,
+        {
+          ext_client_id: email,
+        },
+        {
+          headers: {
+            "x-use-checksum": true,
+            "x-secret": this.secretKey,
+            "Content-Type": "application/json",
+            "x-affiliate-type-id": this.typeId,
+            Authorization: `Bearer ${accessToken}`,
+          }
+        });
+      return { httpCode: 200, data: result.data };
+
+    }
+    catch (err) {
+      logger.error("unregister client fail:", err);
+      return { httpCode: err.response.status, data: err.response.data };
+    }
+  }
+
   async updateReferrer({ email, referrerCode }) {
     try {
       let accessToken = await this._getToken();

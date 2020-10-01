@@ -39,10 +39,10 @@ module.exports = {
       where.status = { [Op.or]: [CurrencyStatus.ENABLED, CurrencyStatus.MAINTENANCE] };
       const { count: total, rows: items } = await Currency.findAndCountAll({ limit, offset, where: where, order: [['name', 'ASC']] });
 
-      items.forEach(item => {
-        item.status = CURRENCY_STATUS_TEXT_CACHE[item.status];
-      });
-      
+      // items.forEach(item => {
+      //   item.status = CURRENCY_STATUS_TEXT_CACHE[item.status];
+      // });
+
       return res.ok({
         items: mapper(items),
         offset: offset,

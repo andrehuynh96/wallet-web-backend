@@ -11,5 +11,6 @@ router.use(require('./update-referrer/update-referrer.route'));
 router.use(require('./list-referral/list-referral.route'));
 router.use(require('./sso-link/sso-link.route'));
 router.use(require('./update-current-language/update-current-language.route'))
+router.use(require('./setting/member-setting.route'))
 
 module.exports = router;

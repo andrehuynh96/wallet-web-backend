@@ -6,10 +6,9 @@ const mapper = require('app/feature/response-schema/member-setting.response-sche
 module.exports = {
   get: async (req, res, next) => {
     try {
-      const { params } = req;
       const response = await MemberSetting.findOne({
         where: {
-          member_id: params.memberId
+          member_id: req.user.id
         }
       });
       if (!response || response.length == 0) {
@@ -27,26 +26,22 @@ module.exports = {
 
   update: async (req, res, next) => {
     try {
-      const { params, body } = req;
+      const { body } = req;
       let value = {};
-      if (body.is_receiced_system_notification_flg != undefined) {
-        value.is_receiced_system_notification_flg = body.is_receiced_system_notification_flg;
+      // if (body.is_receiced_system_notification_flg != undefined) {
+      //   value.is_receiced_system_notification_flg = body.is_receiced_system_notification_flg;
+      // }
+      // if (body.is_receiced_activity_notification_flg != undefined) {
+      //   value.is_receiced_activity_notification_flg = body.is_receiced_activity_notification_flg;
+      // }
+      if (body.is_allow_message_flg != undefined) {
+        value.is_allow_message_flg = body.is_allow_message_flg;
       }
-      if (body.is_receiced_activity_notification_flg != undefined) {
-        value.is_receiced_activity_notification_flg = body.is_receiced_activity_notification_flg;
-      }
-      if (body.is_receiced_news_notification_flg != undefined) {
-        value.is_receiced_news_notification_flg = body.is_receiced_news_notification_flg;
-      }
-      if (body.is_receiced_marketing_notification_flg != undefined) {
-        value.is_receiced_marketing_notification_flg = body.is_receiced_marketing_notification_flg;
-      }
-
       const [_, response] = await MemberSetting.update(
         value,
         {
           where: {
-            member_id: params.memberId
+            member_id: req.user.id
           },
           returning: true
         });

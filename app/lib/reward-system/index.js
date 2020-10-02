@@ -43,7 +43,7 @@ class RewardSystem {
   async unregister(email) {
     try {
       let accessToken = await this._getToken();
-      let result = await axios.post(`${this.baseUrl}/clients`,
+      let result = await axios.post(`${this.baseUrl}/clients/unregister`,
         {
           ext_client_id: email,
         },

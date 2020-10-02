@@ -119,11 +119,12 @@ async function _createAccount(req, res, next) {
   try {
     let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
     if (createAffiliate.httpCode == 200) {
-      affiliateInfo.referral_code = createAffiliate.data.data.code;
-      affiliateInfo.referrer_code = req.body.referrer_code || null;
-      affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
-    }
-    else {
+      affiliateInfo = {
+        referral_code: createAffiliate.data.data.code,
+        referrer_code: req.body.referrer_code || null,
+        affiliate_id: createAffiliate.data.data.client_affiliate_id,
+      };
+    } else {
       return res.status(createAffiliate.httpCode).send(createAffiliate.data);
     }
 
@@ -189,7 +190,7 @@ async function _createAccount(req, res, next) {
     }, {
       transaction: transaction
     });
-    const memberSetting = await MemberSetting.create({
+    await MemberSetting.create({
       member_id: member.id
     }, {
       transaction: transaction

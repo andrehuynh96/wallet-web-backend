@@ -19,6 +19,7 @@ module.exports = {
       }
       case 'WEEK': {
         fromDate = moment(today).subtract(7*dateNum, 'day').valueOf();
+        break;
       }
       case 'MONTH': {
         fromDate = moment(today).subtract(dateNum, 'month').valueOf();

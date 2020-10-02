@@ -6,14 +6,13 @@ const requestSchema = require('./member-setting.request-schema');
 const router = express.Router();
 
 router.get(
-  '/member-settings/:memberId',
-   authenticate,
+  '/me/setting',
+  authenticate,
   controller.get
 );
-module.exports = router;
 
 router.put(
-  '/member-settings/:memberId',
+  '/me/setting',
   authenticate,
   validator(requestSchema),
   controller.update
@@ -25,17 +24,13 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/member-settings/{memberId}:
+ * /web/me/setting:
  *   get:
  *     summary: Get member setting
  *     tags:
- *       - Setting
+ *       - Accounts
  *     description: Get member setting
  *     parameters:
- *       - name: memberId
- *         in: query
- *         type: integer
- *         format: int32
  *     produces:
  *       - application/json
  *     responses:
@@ -45,11 +40,8 @@ module.exports = router;
  *           application/json:
  *             {
   *       "data": {
-  *           "member_id": "a87548d2-6275-4001-a0b8-20752f178710",
-  *           "is_receiced_system_notification_flg": true,
-  *            "is_receiced_activity_notification_flg": true,
-  *            "is_receiced_news_notification_flg": true,
-  *            "is_receiced_marketing_notification_flg": true,
+  *            "member_id": "a87548d2-6275-4001-a0b8-20752f178710",
+  *            "is_allow_message_flg": true,
   *            "created_at": "2020-09-29T06:13:21.033Z",
   *            "updated_at": "2020-09-29T06:13:21.033Z"
   *       }
@@ -74,17 +66,13 @@ module.exports = router;
 
 /**
 * @swagger
-* /web/member-settings/{memberId}:
+* /web/me/setting:
 *   put:
 *     summary: update member setting
 *     tags:
-*       - Setting
+*       - Accounts
 *     description: update member setting
 *     parameters:
-*       - name: memberId
-*         in: query
-*         type: integer
-*         format: int32
 *       - in: body
 *         name: data
 *         description: Data submit for update member setting.
@@ -92,10 +80,7 @@ module.exports = router;
 *            type: object
 *            example:
 *             {
-*                	"is_receiced_system_notification_flg": false,
-*                  "is_receiced_activity_notification_flg": false,
-*                  "is_receiced_news_notification_flg": false,
-*                  "is_receiced_marketing_notification_flg": true
+*                "is_allow_message_flg": false
 *             }
 *     responses:
 *       200:

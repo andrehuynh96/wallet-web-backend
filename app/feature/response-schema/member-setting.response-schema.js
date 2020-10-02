@@ -7,6 +7,7 @@ const destObject = {
     '[].is_receiced_activity_notification_flg': '[].is_receiced_activity_notification_flg',
     '[].is_receiced_news_notification_flg': '[].is_receiced_news_notification_flg',
     '[].is_receiced_marketing_notification_flg': '[].is_receiced_marketing_notification_flg',
+    '[].is_allow_message_flg': '[].is_allow_message_flg',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
   },
@@ -16,6 +17,7 @@ const destObject = {
     is_receiced_activity_notification_flg: 'is_receiced_activity_notification_flg',
     is_receiced_news_notification_flg: 'is_receiced_news_notification_flg',
     is_receiced_marketing_notification_flg: 'is_receiced_marketing_notification_flg',
+    is_allow_message_flg: 'is_allow_message_flg',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }

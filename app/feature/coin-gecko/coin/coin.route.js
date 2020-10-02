@@ -270,5 +270,83 @@ router.get('/multi-prices',
 *           $ref: '#/definitions/500'
 */
 
+router.get('/markets',
+  authenticate,
+  cache(config.cacheDurationTime),
+  controller.getMarkets
+);
+
+/**
+* @swagger
+* /web/coin-gecko/markets:
+*   get:
+*     summary: get coin prices
+*     tags:
+*       - Coin Gecko
+*     description:
+*     parameters:
+*       - in: query
+*         name: platform
+*         type: string
+*         required: true
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+                "data": [
+                    {
+                        "id": "cosmos",
+                        "symbol": "atom",
+                        "name": "Cosmos",
+                        "image": "https://assets.coingecko.com/coins/images/1481/large/cosmos_hub.png?1555657960",
+                        "current_price": 5.2,
+                        "market_cap": 1241404064,
+                        "market_cap_rank": 22,
+                        "fully_diluted_valuation": null,
+                        "total_volume": 273894506,
+                        "high_24h": 5.59,
+                        "low_24h": 4.99,
+                        "price_change_24h": -0.26771986,
+                        "price_change_percentage_24h": -4.89236,
+                        "market_cap_change_24h": -63858187.21392417,
+                        "market_cap_change_percentage_24h": -4.89236,
+                        "circulating_supply": 238526146.88641,
+                        "total_supply": null,
+                        "max_supply": null,
+                        "ath": 8.84,
+                        "ath_change_percentage": -41.24688,
+                        "ath_date": "2020-08-25T11:49:21.269Z",
+                        "atl": 1.16,
+                        "atl_change_percentage": 347.67122,
+                        "atl_date": "2020-03-13T02:27:44.591Z",
+                        "roi": {
+                            "times": 51.04477915027155,
+                            "currency": "usd",
+                            "percentage": 5104.477915027155
+                        },
+                        "last_updated": "2020-10-02T03:51:05.452Z"
+                    }
+                ]
+            }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
+
 module.exports = router;
 

@@ -76,5 +76,22 @@ module.exports = {
       logger.error('get price of multi platform fail', error);
       next(error);
     }
+  },
+  getMarkets: async(req,res,next) => {
+    try {
+      const platform = req.query.platform;
+
+      if (!Platform[platform]) {
+        return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
+      }
+
+      const markets = await coinGeckoClient.getMarkets({ platform_name: platform });
+
+      return res.ok(markets);
+    }
+    catch (error) {
+      logger.error('get market of platform fail', error);
+      next(error);
+    }
   }
 }

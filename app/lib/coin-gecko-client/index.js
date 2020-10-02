@@ -97,6 +97,25 @@ module.exports = {
       throw error;
     }
   },
+  getMarkets: async ({ platform_name }) => {
+    try {
+      if (platform_name == "USDT") {
+      return 1;
+      }
+    platform_name = _getPlatform(platform_name);
+    const coinGeckoClient = new CoinGecko();
+    const coingeckoId = Platform[platform_name].coingeckoId;
+    const result = await coinGeckoClient.coins.markets({
+      ids: [coingeckoId],
+      vs_currency: 'usd'
+    });
+      return result.data;
+    }
+    catch (err) {
+      logger.info('coinGeckoClient.coins.markets no found data with' + platform_name);
+      throw err;
+    }
+  }
 }
 
 function _getPlatform(platform) {

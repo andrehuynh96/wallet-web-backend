@@ -77,7 +77,7 @@ router.get('/histories',
 *         name: date_type
 *         type: string
 *         required: true
-*         description: minute | hour | day | week | month |year
+*         description: minute | hour | day | week | month |year | all
 *       - in: query
 *         name: date_num
 *         type: number

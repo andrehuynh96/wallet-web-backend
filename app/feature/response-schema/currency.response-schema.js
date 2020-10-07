@@ -1,5 +1,4 @@
 const objectMapper = require('object-mapper');
-
 const destObject = {
   array: {
     '[].id': '[].id',
@@ -15,7 +14,12 @@ const destObject = {
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
     '[].default_flg': '[].default_flg',
-    '[].status': '[].status'
+    '[].status': '[].status',
+    '[].web_site_url': '[].web_site_url',
+    '[].network': '[].network',
+    '[].explore_url': '[].explore_url',
+    '[].transaction_format_link': '[].transaction_format_link',
+    '[].address_format_link': '[].address_format_link'
   },
   single: {
     id: 'id',
@@ -31,7 +35,12 @@ const destObject = {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
     default_flg: 'default_flg',
-    status: 'status'
+    status: 'status',
+    web_site_url:'web_site_url',
+    network:'network',
+    explore_url:'explore_url',
+    transaction_format_link:'transaction_format_link',
+    address_format_link:'address_format_link'
   }
 };
 module.exports = srcObject => {
@@ -45,4 +54,4 @@ module.exports = srcObject => {
   else {
     return objectMapper(srcObject, destObject.single);
   }
-}; 
+};

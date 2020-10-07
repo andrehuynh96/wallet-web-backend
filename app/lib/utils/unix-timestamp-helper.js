@@ -29,6 +29,10 @@ module.exports = {
         fromDate = moment(today).subtract(dateNum, 'year').valueOf();
         break;
       }
+      case 'ALL': {
+        fromDate = 631152000000;
+        break;
+      }
       default: {
         fromDate = moment(today).subtract(24*dateNum, 'hour').valueOf();
         break;

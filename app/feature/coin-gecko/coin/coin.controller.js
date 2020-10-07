@@ -27,7 +27,9 @@ module.exports = {
       const { date_type, platform } = req.query;
       const date_num = req.query.date_num || 1;
       if (!date_type || !TimeUnit[date_type.toUpperCase()] || !Platform[platform]) {
-        return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
+        if (date_type.toUpperCase()!= "ALL"){
+          return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
+        }
       }
 
       const { from, to } = getDateRangeUnitTimeStamp(date_type.toUpperCase(), date_num);

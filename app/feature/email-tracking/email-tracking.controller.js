@@ -2,6 +2,7 @@ const { forEach } = require('p-iteration');
 const logger = require('app/lib/logger');
 const config = require('app/config');
 const EmailLogging = require('app/model/wallet').email_loggings;
+const BlacklistEmail = require('app/model/wallet').blacklist_emails;
 
 const pixelBytes = new Buffer(35);
 pixelBytes.write("R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=", "base64");
@@ -62,8 +63,11 @@ module.exports = {
 
       logger.info(JSON.stringify(message));
       const { notificationType, bounce, mail } = message || {};
-      const { bounceType, bounceSubType, bouncedRecipients } = bounce || {};
       const mailMessageId = (mail && mail.commonHeaders) ? mail.commonHeaders.messageId : null;
+      let { bounceType, bounceSubType, bouncedRecipients } = bounce || {};
+      bouncedRecipients = bouncedRecipients || [];
+      bounceType = bounceType || '';
+      bounceSubType = bounceSubType || '';
 
       if (mailMessageId) {
         await forEach((bouncedRecipients || []), async bouncedRecipient => {
@@ -81,6 +85,22 @@ module.exports = {
             }
           );
         });
+      }
+
+      // Save this email to blacklist
+      if ((notificationType || '').toUpperCase() === 'BOUNCE') {
+        if (bounceType.toUpperCase() === 'PERMANENT') {
+          await forEach((bouncedRecipients || []), async bouncedRecipient => {
+            const { emailAddress, diagnosticCode } = bouncedRecipient;
+
+            await BlacklistEmail.create({
+              email: emailAddress.trim().toLowerCase(),
+              bounce_type: bounceType,
+              bounce_sub_type: bounceSubType,
+              diagnostic_code: diagnosticCode,
+            });
+          });
+        }
       }
 
       return res.ok(true);

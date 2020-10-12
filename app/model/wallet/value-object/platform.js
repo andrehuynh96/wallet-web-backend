@@ -117,5 +117,10 @@ module.exports = {
     "symbol": "GAS",
     "name": "Gas",
     "coingeckoId": "gas"
+  },
+  CENNZ: {
+    "symbol": "CENNZ",
+    "name": "Centrality",
+    "coingeckoId": "Centrality"
   }
 }

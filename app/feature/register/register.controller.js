@@ -85,12 +85,12 @@ async function _activeAccount(member, req, res, next) {
   await OTP.update({
     expired: true
   }, {
-    where: {
-      member_id: member.id,
-      action_type: OtpType.REGISTER
-    },
-    returning: true
-  });
+      where: {
+        member_id: member.id,
+        action_type: OtpType.REGISTER
+      },
+      returning: true
+    });
 
   let otp = await OTP.create({
     code: verifyToken,

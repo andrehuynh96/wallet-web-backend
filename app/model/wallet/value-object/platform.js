@@ -121,6 +121,6 @@ module.exports = {
   CENNZ: {
     "symbol": "CENNZ",
     "name": "Centrality",
-    "coingeckoId": "Centrality"
+    "coingeckoId": "centrality"
   }
 }

@@ -50,17 +50,7 @@ module.exports = {
         return res.forbidden(res.__("TRACKING_EMAIL_WRONG_TOKEN"), "TRACKING_EMAIL_WRONG_TOKEN");
       }
 
-      let message = null;
-      try {
-        message = JSON.parse(body.Message);
-      } catch (error1) {
-        return res.badRequest(res.__("CAN_NOT_PARSE_MESSAGE"), "CAN_NOT_PARSE_MESSAGE");
-      }
-
-      if (!message) {
-        return res.ok(true);
-      }
-
+      let message = body;
       logger.info(JSON.stringify(message));
       const { notificationType, bounce, mail } = message || {};
       const mailMessageId = (mail && mail.commonHeaders) ? mail.commonHeaders.messageId : null;

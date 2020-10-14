@@ -17,7 +17,10 @@ module.exports = {
     try {
       logger.info('getMemberType::getMemberType');
       const where = { type: MembershipTypeName.Paid, deleted_flg: false, is_enabled: true };
-      const membershipTypes = await MembershipType.findAll({ where: where });
+      const membershipTypes = await MembershipType.findAll({
+        where: where,
+        order: [['display_order', 'DESC']],
+      });
       return res.ok(memberTypeMapper(membershipTypes));
     }
     catch (err) {

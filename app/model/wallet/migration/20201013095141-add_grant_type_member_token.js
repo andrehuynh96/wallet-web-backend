@@ -18,7 +18,7 @@ module.exports = {
         queryInterface.changeColumn('member_tokens', 'member_id', {
           type: Sequelize.DataTypes.UUID,
           allowNull: true,
-        }, { transaction: t })
+        })
       ]);
     });
   },

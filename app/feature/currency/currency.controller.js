@@ -6,6 +6,12 @@ const mapper = require('app/feature/response-schema/currency.response-schema');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
+const CURRENCY_STATUS_TEXT_CACHE = Object.entries(CurrencyStatus).reduce((result, items) => {
+  result[items[1]] = items[0];
+
+  return result;
+}, {});
+
 module.exports = {
   getAll: async (req, res, next) => {
     try {
@@ -30,8 +36,12 @@ module.exports = {
       if (req.query.default != undefined) {
         where.default_flg = req.query.default;
       }
-      where.status = CurrencyStatus.ENABLED;
+      where.status = { [Op.or]: [CurrencyStatus.ENABLED, CurrencyStatus.MAINTENANCE] };
       const { count: total, rows: items } = await Currency.findAndCountAll({ limit, offset, where: where, order: [['name', 'ASC']] });
+
+      // items.forEach(item => {
+      //   item.status = CURRENCY_STATUS_TEXT_CACHE[item.status];
+      // });
 
       return res.ok({
         items: mapper(items),

@@ -2,7 +2,6 @@ const logger = require('app/lib/logger');
 const Platform = require('app/model/wallet/value-object/platform');
 const CoinGecko = require('coingecko-api');
 const redis = require("app/lib/redis");
-const { StepFunctions } = require('aws-sdk');
 const cache = redis.client();
 const mappingCoin = {
   "BTCSW": "BTC"
@@ -72,7 +71,6 @@ module.exports = {
       throw error;
     }
   },
-
   getTokenHistories: async ({ coingecko_id, contract_addresses , from, to }) => {
     try {
       const coinGeckoClient = new CoinGecko();
@@ -84,6 +82,40 @@ module.exports = {
       throw error;
     }
   },
+  getMultiPrice: async(platforms) => {
+    try {
+      const coinGeckoClient = new CoinGecko();
+        const coinPrices = await coinGeckoClient.simple.price({
+          ids: platforms,
+          vs_currencies: 'usd',
+          include_24hr_change: true
+        });
+      return coinPrices.data;
+
+    } catch (error) {
+      logger.info('coinGeckoClient.simple.price no found with platforms');
+      throw error;
+    }
+  },
+  getMarkets: async ({ platform_name }) => {
+    try {
+      if (platform_name == "USDT") {
+      return 1;
+      }
+    platform_name = _getPlatform(platform_name);
+    const coinGeckoClient = new CoinGecko();
+    const coingeckoId = Platform[platform_name].coingeckoId;
+    const result = await coinGeckoClient.coins.markets({
+      ids: [coingeckoId],
+      vs_currency: 'usd'
+    });
+      return result.data;
+    }
+    catch (err) {
+      logger.info('coinGeckoClient.coins.markets no found data with' + platform_name);
+      throw err;
+    }
+  }
 }
 
 function _getPlatform(platform) {

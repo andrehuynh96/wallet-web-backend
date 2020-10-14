@@ -1,5 +1,8 @@
+const { forEach } = require('p-iteration');
 const logger = require('app/lib/logger');
+const config = require('app/config');
 const EmailLogging = require('app/model/wallet').email_loggings;
+const BlacklistEmail = require('app/model/wallet').blacklist_emails;
 
 const pixelBytes = new Buffer(35);
 pixelBytes.write("R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=", "base64");
@@ -39,5 +42,62 @@ module.exports = {
     // Always send a 200 with the 1x1 pixel
     res.send(pixelBytes, { 'Content-Type': 'image/gif' }, 200);
   },
+  webhook: async (req, res, next) => {
+    try {
+      const { body, query } = req;
+      const token = query.token;
+      if (token !== config.webWallet.trackingEmailApiToken) {
+        return res.forbidden(res.__("TRACKING_EMAIL_WRONG_TOKEN"), "TRACKING_EMAIL_WRONG_TOKEN");
+      }
 
+      let message = body;
+      logger.info(JSON.stringify(message));
+      const { notificationType, bounce, mail } = message || {};
+      const mailMessageId = (mail && mail.commonHeaders) ? mail.commonHeaders.messageId : null;
+      let { bounceType, bounceSubType, bouncedRecipients } = bounce || {};
+      bouncedRecipients = bouncedRecipients || [];
+      bounceType = bounceType || '';
+      bounceSubType = bounceSubType || '';
+
+      if (mailMessageId) {
+        await forEach((bouncedRecipients || []), async bouncedRecipient => {
+          const { emailAddress, action, diagnosticCode } = bouncedRecipient;
+          await EmailLogging.update(
+            {
+              status: action,
+              diagnostic_code: diagnosticCode,
+            },
+            {
+              where: {
+                mail_message_id: mailMessageId,
+                email: emailAddress,
+              },
+            }
+          );
+        });
+      }
+
+      // Save this email to blacklist
+      if ((notificationType || '').toUpperCase() === 'BOUNCE') {
+        if (bounceType.toUpperCase() === 'PERMANENT') {
+          await forEach((bouncedRecipients || []), async bouncedRecipient => {
+            const { emailAddress, diagnosticCode } = bouncedRecipient;
+
+            await BlacklistEmail.create({
+              email: emailAddress.trim().toLowerCase(),
+              bounce_type: bounceType,
+              bounce_sub_type: bounceSubType,
+              diagnostic_code: diagnosticCode,
+            });
+          });
+        }
+      }
+
+      return res.ok(true);
+    }
+    catch (err) {
+      logger.error('webHook fail', err);
+      next(err);
+    }
+  },
 };

@@ -14,6 +14,8 @@ const PluTXUserIdApi = require('app/lib/plutx-userid');
 const MemberStatus = require("app/model/wallet/value-object/member-status");
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
 const EmailTemplate = require('app/model/wallet').email_templates;
+const MemberSetting = require('app/model/wallet').member_settings;
+const database = require('app/lib/database').db().wallet;
 
 const IS_ENABLED_PLUTX_USERID = config.plutxUserID.isEnabled;
 
@@ -83,12 +85,12 @@ async function _activeAccount(member, req, res, next) {
   await OTP.update({
     expired: true
   }, {
-      where: {
-        member_id: member.id,
-        action_type: OtpType.REGISTER
-      },
-      returning: true
-    });
+    where: {
+      member_id: member.id,
+      action_type: OtpType.REGISTER
+    },
+    returning: true
+  });
 
   let otp = await OTP.create({
     code: verifyToken,
@@ -112,86 +114,109 @@ async function _createAccount(req, res, next) {
   const email = req.body.email.toLowerCase().trim();
 
   // TODO: Check email is exists on Affiliate and PluTX UserID before register this email on these system
-  let affiliateInfo = {};
-  let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
-  if (createAffiliate.httpCode == 200) {
-    affiliateInfo.referral_code = createAffiliate.data.data.code;
-    affiliateInfo.referrer_code = req.body.referrer_code || null ;
-    affiliateInfo.affiliate_id = createAffiliate.data.data.client_affiliate_id;
-  }
-  else {
-    return res.status(createAffiliate.httpCode).send(createAffiliate.data);
-  }
+  let affiliateInfo = null;
+  let transaction;
+  try {
+    let createAffiliate = await Affiliate.register({ email, referrerCode: req.body.referrer_code || "" });
+    if (createAffiliate.httpCode == 200) {
+      affiliateInfo = {
+        referral_code: createAffiliate.data.data.code,
+        referrer_code: req.body.referrer_code || null,
+        affiliate_id: createAffiliate.data.data.client_affiliate_id,
+      };
+    } else {
+      return res.status(createAffiliate.httpCode).send(createAffiliate.data);
+    }
 
-  let emailConfirmed = false;
-  let idOnPlutxUserID = null;
-  const now = new Date();
+    let emailConfirmed = false;
+    let idOnPlutxUserID = null;
+    const now = new Date();
 
-  if (IS_ENABLED_PLUTX_USERID) {
-    const registerMemberResult = await PluTXUserIdApi.register({
+    if (IS_ENABLED_PLUTX_USERID) {
+      const registerMemberResult = await PluTXUserIdApi.register({
+        email,
+        password: req.body.password,
+        createdAt: now,
+        emailConfirmed: false,
+        isActived: false,
+      });
+
+      if (registerMemberResult.httpCode === 200) {
+        emailConfirmed = registerMemberResult.data.confirmed_flg;
+        idOnPlutxUserID = registerMemberResult.data.id;
+      } else {
+        return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
+      }
+    }
+
+    transaction = await database.transaction();
+    const memberStatus = !emailConfirmed ? MemberStatus.UNACTIVATED : MemberStatus.ACTIVATED;
+    let password = bcrypt.hashSync(req.body.password, 10);
+
+    let member = await Member.create({
       email,
-      password: req.body.password,
-      createdAt: now,
-      emailConfirmed: false,
-      isActived: false,
+      password_hash: password,
+      member_sts: memberStatus,
+      phone: req.body.phone || "",
+      ...affiliateInfo,
+      plutx_userid_id: idOnPlutxUserID,
+      membership_type_id: null,
+      current_language: req.body.language
+    }, {
+      transaction: transaction
     });
 
-    if (registerMemberResult.httpCode === 200) {
-      emailConfirmed = registerMemberResult.data.confirmed_flg;
-      idOnPlutxUserID = registerMemberResult.data.id;
-    } else {
-      return res.status(registerMemberResult.httpCode).send(registerMemberResult.data);
-    }
-  }
-
-  const memberStatus = !emailConfirmed ? MemberStatus.UNACTIVATED : MemberStatus.ACTIVATED;
-  let password = bcrypt.hashSync(req.body.password, 10);
-
-  let member = await Member.create({
-    email,
-    password_hash: password,
-    member_sts: memberStatus,
-    phone: req.body.phone || "",
-    ...affiliateInfo,
-    plutx_userid_id: idOnPlutxUserID,
-    membership_type_id: null,
-    current_language: req.body.language
-  });
-
-  if (!member) {
-    return res.serverInternalError();
-  }
-
-  //if (memberStatus !== MemberStatus.ACTIVATED) {
-  let verifyToken = Buffer.from(uuidV4()).toString('base64');
-  now.setHours(now.getHours() + config.expiredVefiryToken);
-  await OTP.update({
-    expired: true
-  }, {
+    // if (memberStatus !== MemberStatus.ACTIVATED) {
+    let verifyToken = Buffer.from(uuidV4()).toString('base64');
+    now.setHours(now.getHours() + config.expiredVefiryToken);
+    await OTP.update({
+      expired: true
+    }, {
       where: {
         member_id: member.id,
         action_type: OtpType.REGISTER
       },
-      returning: true
+      returning: true,
+      transaction: transaction,
     });
 
-  let otp = await OTP.create({
-    code: verifyToken,
-    used: false,
-    expired: false,
-    expired_at: now,
-    member_id: member.id,
-    action_type: OtpType.REGISTER
-  });
-  if (!otp) {
-    return res.serverInternalError();
-  }
-  _sendEmail(member, otp);
-  // }
+    let otp = await OTP.create({
+      code: verifyToken,
+      used: false,
+      expired: false,
+      expired_at: now,
+      member_id: member.id,
+      action_type: OtpType.REGISTER
+    }, {
+      transaction: transaction
+    });
+    await MemberSetting.create({
+      member_id: member.id
+    }, {
+      transaction: transaction
+    });
 
-  member.referral_code = "";
-  let response = memberMapper(member);
-  return res.ok(response);
+    _sendEmail(member, otp);
+    // }
+    await transaction.commit();
+
+    member.referral_code = "";
+    let response = memberMapper(member);
+    return res.ok(response);
+  }
+  catch (err) {
+    logger.error('register fail:', err);
+    if (transaction) {
+      await transaction.rollback();
+    }
+    // Remove affiliate data
+    if (affiliateInfo) {
+      const result = await Affiliate.unregister(email);
+      logger.info('unregister fail:', result);
+    }
+
+    next(err);
+  }
 }
 
 async function _sendEmail(member, otp) {
@@ -229,4 +254,4 @@ async function _sendEmail(member, otp) {
   } catch (err) {
     logger.error("send email create account fail", err);
   }
-} 
+}

@@ -63,14 +63,34 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    web_site_url: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
+    network: {
+      type: DataTypes.STRING(128),
+      allowNull: false,
+    },
+    explore_url: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
+    transaction_format_link: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
+    address_format_link: {
+      type: DataTypes.STRING(500),
+      allowNull: true
     }
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   Model.associate = (models) => {
     Model.hasMany(models.wallet_priv_keys, { foreignKey: 'platform' });
   };
   return Model;
-} 
+}

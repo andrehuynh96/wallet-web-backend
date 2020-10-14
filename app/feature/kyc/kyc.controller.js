@@ -157,10 +157,12 @@ module.exports = {
 
       let isCanUpdateMembershipId = true;
       if (member.membership_type_id) {
-        let membershipType = await MembershipType.findOne({ id: member.membership_type_id });
-        if (!membershipType) {
-          isCanUpdateMembershipId = false;
-        } else {
+        let membershipType = await MembershipType.findOne({
+          where: {
+            id: member.membership_type_id
+          }
+        });
+        if (membershipType) {
           isCanUpdateMembershipId = MembershipTypeName.Free === membershipType.type;
         }
       }

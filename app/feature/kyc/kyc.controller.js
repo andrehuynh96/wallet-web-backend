@@ -19,6 +19,8 @@ const MemberKycMapper = require('app/feature/response-schema/member-kyc.response
 const MemberKycPropertyMapper = require('app/feature/response-schema/member-kyc-property.response-schema');
 const config = require('app/config');
 const Membership = require('app/lib/reward-system/membership');
+const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
+const MembershipType = require('app/model/wallet').membership_types;
 
 module.exports = {
   get: async (req, res, next) => {
@@ -153,9 +155,18 @@ module.exports = {
         }
       });
 
+      let isCanUpdateMembershipId = true;
+      if (member.membership_type_id) {
+        let membershipType = await MembershipType.findOne({ id: member.membership_type_id });
+        if (!membershipType) {
+          isCanUpdateMembershipId = false;
+        } else {
+          isCanUpdateMembershipId = MembershipTypeName.Free === membershipType.type;
+        }
+      }
+
       if (memberKyc.status == KycStatus.APPROVED &&
-        kyc.approve_membership_type_id &&
-        !member.membership_type_id) {
+        kyc.approve_membership_type_id && isCanUpdateMembershipId) {
         memberData.membership_type_id = kyc.approve_membership_type_id;
       }
 
@@ -166,17 +177,16 @@ module.exports = {
         kyc_status: memberKyc.status,
         ...memberData
       }, {
-          where: {
-            id: req.user.id
-          },
-          returning: true,
-          plain: true,
-          transaction: transaction
-        });
+        where: {
+          id: req.user.id
+        },
+        returning: true,
+        plain: true,
+        transaction: transaction
+      });
 
       if (memberKyc.status == KycStatus.APPROVED &&
-        kyc.approve_membership_type_id &&
-        !member.membership_type_id) {
+        kyc.approve_membership_type_id && isCanUpdateMembershipId) {
         let result = await Membership.updateMembershipType(
           {
             email: member.email,
@@ -328,13 +338,13 @@ module.exports = {
         await MemberKyc.update({
           status: KycStatus.IN_REVIEW
         }, {
-            where: {
-              id: memberKyc.id
-            },
-            returning: true,
-            plain: true,
-            transaction: transaction
-          });
+          where: {
+            id: memberKyc.id
+          },
+          returning: true,
+          plain: true,
+          transaction: transaction
+        });
       }
 
       if (itemCreate && itemCreate.length > 0) {
@@ -348,27 +358,27 @@ module.exports = {
             value: i.value,
             note: i.note,
           }, {
-              where: {
-                member_kyc_id: i.member_kyc_id,
-                property_id: i.property_id,
-              },
-              returning: true,
-              plain: true,
-              transaction: transaction
-            });
+            where: {
+              member_kyc_id: i.member_kyc_id,
+              property_id: i.property_id,
+            },
+            returning: true,
+            plain: true,
+            transaction: transaction
+          });
         }
       }
 
       let [_, response] = await Member.update({
         ...memberData
       }, {
-          where: {
-            id: req.user.id
-          },
-          returning: true,
-          plain: true,
-          transaction: transaction
-        });
+        where: {
+          id: req.user.id
+        },
+        returning: true,
+        plain: true,
+        transaction: transaction
+      });
       req.session.user = response;
       await transaction.commit();
       return res.ok(true);
@@ -444,8 +454,7 @@ async function _uploadFile(field, req, res, next) {
     if (config.CDN.exts.indexOf(file.ext.toLowerCase()) == -1) {
       return reject("NOT_SUPPORT_FILE_EXTENSION");
     }
-    let uploadName = `${config.CDN.folderKYC}/${file.name}-${Date.now()}${
-      file.ext
+    let uploadName = `${config.CDN.folderKYC}/${file.name}-${Date.now()}${file.ext
       }`;
     let buff = await toArray(req.body[field].data).then(function (parts) {
       const buffers = parts.map(part =>

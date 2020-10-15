@@ -91,7 +91,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     infinito_id: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(64),
       allowNull: true
     },
     kyc_id: {

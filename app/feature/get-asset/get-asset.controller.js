@@ -201,40 +201,46 @@ function _getDateRangeUnitTimeStamp(dateType, dateNum) {
     const today = new Date();
     today.setDate(today.getDate() - 1);
     let fromDate = 0;
-    const toDate = moment(today).valueOf();
+    let toDate = moment(today);
 
     switch (dateType) {
-        case 'MINUTE':
-            fromDate = moment(today).subtract(dateNum, 'minute').valueOf();
-            break;
-
-        case 'HOUR':
-            fromDate = moment(today).subtract(dateNum, 'hour').valueOf();
-            break;
-
         case 'DAY':
-            fromDate = moment(today).subtract(24 * dateNum, 'hour').valueOf();
+            fromDate = moment(today);
+            toDate.set({ hour: 23, minute: 59, second: 0 });
+            fromDate.set({ hour: 0, minute: 0, second: 0 });
             break;
 
         case 'WEEK':
-            fromDate = moment(today).subtract(6 * dateNum, 'day').valueOf();
+            fromDate = moment(today).subtract(6 * dateNum, 'day');
             break;
 
         case 'MONTH':
-            fromDate = moment(today).add(1, 'day').subtract(dateNum, 'month').valueOf();
+            fromDate = moment(today).add(1, 'day').subtract(dateNum, 'month');
             break;
 
         case 'YEAR':
-            fromDate = moment(today).add(1, 'day').subtract(dateNum, 'year').valueOf();
+            fromDate = moment(today).add(1, 'day').subtract(dateNum, 'year');
             break;
 
         default:
-            fromDate = moment(today).subtract(24 * dateNum, 'hour').valueOf();
+            fromDate = moment(today).subtract(24 * dateNum, 'hour');
             break;
 
     }
-    const from = Math.floor(fromDate / 1000); // second
-    const to = Math.floor(toDate / 1000);
+
+    switch (dateType) {
+        case 'WEEK':
+        case 'MONTH':
+        case 'YEAR':
+            // toDate.endOf('day'); // set hour 23 minute 59 second 59
+            toDate.set({ hour: 23, minute: 59, second: 59 });
+            // fromDate.startOf('day'); // set hour 0 minute 0 second 0
+            fromDate.set({ hour: 0, minute: 0, second: 0 });
+            break;
+    }
+
+    const from = Math.floor(fromDate.valueOf() / 1000); // second
+    const to = Math.floor(toDate.valueOf() / 1000);
     return { from, to }
 }
 

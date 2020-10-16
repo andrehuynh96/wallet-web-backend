@@ -122,5 +122,10 @@ module.exports = {
     "symbol": "CENNZ",
     "name": "Centrality",
     "coingeckoId": "centrality"
+  },
+  XQC: {
+    "symbol": "XQC",
+    "name": "Quras",
+    "coingeckoId": "quras-token"
   }
 }

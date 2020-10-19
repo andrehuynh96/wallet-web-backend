@@ -31,6 +31,12 @@ router.put(
   controller.update
 );
 
+router.get(
+  '/tracking/transactions',
+  //authenticate,
+  controller.getTransactions
+);
+
 module.exports = router;
 
 /*********************************************************************/
@@ -307,3 +313,73 @@ module.exports = router;
 *         schema:
 *           $ref: '#/definitions/500'
 */
+
+
+
+/**
+ * @swagger
+ * /web/tracking/transactions:
+ *   get:
+ *     summary: get list transaction
+ *     tags:
+ *       - Tracking
+ *     description:
+ *     parameters:
+ *       - name: txs
+ *         in: query
+ *         type: string
+ *         description: separate by ,
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+                  "data": [
+                          {
+                              "tx_id": "5a427cfb6ad59d49205bc6665c12fbc0e323b74662370da67ce5c1fbf04819e3",
+                              "platform": "ETH",
+                              "symbol": "IFNT",
+                              "amount": 1.898739824,
+                              "action": "SEND",
+                              "sender_note": "test create tracking",
+                              "receiver_note": "test create tracking",
+                              "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "to_address": "aaa",
+                              "domain_name": "a",
+                              "member_domain_name": "a"
+                          },
+                          {
+                              "tx_id": "5a427cfb6ad59d49205bc6665c12fbc0e323b74662370da67ce5c1fbf04819e3",
+                              "platform": "ETH",
+                              "symbol": "IFNT",
+                              "amount": 1.898739824,
+                              "action": "SEND",
+                              "sender_note": "test create tracking",
+                              "receiver_note": "test create tracking",
+                              "from_address": "0x5dA1D9eC5DF67f3deFf8EC6aBa205F9c4638E04E",
+                              "to_address": "aaa"
+                          }
+                      ]
+ *            }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/*********************************************************************/

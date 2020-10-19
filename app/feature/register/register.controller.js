@@ -163,8 +163,8 @@ async function _createAccount(req, res, next) {
       membership_type_id: null,
       current_language: req.body.language
     }, {
-      transaction: transaction
-    });
+        transaction: transaction
+      });
 
     // if (memberStatus !== MemberStatus.ACTIVATED) {
     let verifyToken = Buffer.from(uuidV4()).toString('base64');
@@ -172,13 +172,13 @@ async function _createAccount(req, res, next) {
     await OTP.update({
       expired: true
     }, {
-      where: {
-        member_id: member.id,
-        action_type: OtpType.REGISTER
-      },
-      returning: true,
-      transaction: transaction,
-    });
+        where: {
+          member_id: member.id,
+          action_type: OtpType.REGISTER
+        },
+        returning: true,
+        transaction: transaction,
+      });
 
     let otp = await OTP.create({
       code: verifyToken,
@@ -188,13 +188,13 @@ async function _createAccount(req, res, next) {
       member_id: member.id,
       action_type: OtpType.REGISTER
     }, {
-      transaction: transaction
-    });
+        transaction: transaction
+      });
     await MemberSetting.create({
       member_id: member.id
     }, {
-      transaction: transaction
-    });
+        transaction: transaction
+      });
 
     _sendEmail(member, otp);
     // }

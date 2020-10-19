@@ -221,7 +221,7 @@ module.exports = {
       txs = txs.map(x => x.trim());
 
       let result = await MemberTransactionHis.findAll({
-        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('tx_id')), 'tx_id'], 'platform', 'symbol', 'amount', 'action', 'sender_note', 'from_address', 'to_address', 'domain_name', 'member_domain_name', 'from_address'],
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('tx_id')), 'tx_id'], 'platform', 'symbol', 'amount', 'action', 'sender_note', 'from_address', 'to_address', 'domain_name', 'member_domain_name', 'from_address', 'receiver_note', 'reward_percentage', 'validator_fee'],
         where: {
           tx_id: {
             [Op.in]: txs

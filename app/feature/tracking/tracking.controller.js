@@ -213,7 +213,30 @@ module.exports = {
       logger.error("update transaction detail fail: ", err);
       next(err);
     }
-  }
+  },
+
+  getTransactions: async (req, res, next) => {
+    try {
+      let txs = req.query.txs ? req.query.txs.split(",") : [];
+      txs = txs.map(x => x.trim());
+
+      let result = await MemberTransactionHis.findAll({
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('tx_id')), 'tx_id'], 'platform', 'symbol', 'amount', 'action', 'sender_note', 'from_address', 'to_address', 'domain_name', 'member_domain_name', 'from_address', 'receiver_note', 'reward_percentage', 'validator_fee'],
+        where: {
+          tx_id: {
+            [Op.in]: txs
+          }
+        }
+      });
+
+      let response = result && result.length > 0 ? memberTrackingHisMapper(result) : [];
+      return res.ok(response);
+    }
+    catch (err) {
+      logger.error("get list transaction detail fail: ", err);
+      next(err);
+    }
+  },
 };
 
 const sendEmail = {

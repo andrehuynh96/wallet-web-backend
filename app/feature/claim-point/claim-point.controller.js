@@ -2,6 +2,8 @@ const logger = require('app/lib/logger');
 const config = require('app/config');
 const ClaimPoint = require('app/model/wallet').claim_points;
 const claimPointMapper = require('app/feature/response-schema/claim-point.response-schema');
+const MembershipType = require('app/model/wallet').membership_types;
+const Setting = require('app/model/wallet').settings;
 module.exports = {
   getAll: async (req, res, next) => {
     try {
@@ -21,6 +23,29 @@ module.exports = {
     }
     catch (err) {
       logger.error("get all claim point fail: ", err);
+      next(err);
+    }
+  },
+  setting: async (req, res, next) => {
+    try {
+      logger.info('claim-point::setting');
+      let membershipType = await MembershipType.findOne({
+        where: {
+          id: req.user.membership_type_id,
+          deleted_flg: false
+        }
+      })
+      let setting = await Setting.findOne({
+        where: {
+          key: config.setting.MS_POINT_DELAY_TIME_IN_SECONDS
+        }
+      })
+      return res.ok({
+        amount: membershipType ? membershipType.claim_points : undefined,
+        time: setting ? parseInt(setting.value) : undefined
+      })
+    } catch (err) {
+      logger.error("get setting claim point fail: ", err);
       next(err);
     }
   }

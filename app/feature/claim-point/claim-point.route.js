@@ -9,6 +9,12 @@ router.get(
   controller.getAll
 );
 
+router.get(
+  '/claim-points/setting',
+  authenticate,
+  controller.setting
+)
+
 module.exports = router;
 
 
@@ -55,6 +61,46 @@ module.exports = router;
                       "offset": 0,
                       "limit": 10,
                       "total": 1
+ *                 }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+
+ /**
+ * @swagger
+ * /web/claim-points/setting:
+ *   get:
+ *     summary: get setting
+ *     tags:
+ *       - Claim Point
+ *     description:
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": {
+                      "amount": 100,
+                      "time": 86400
  *                 }
  *             }
  *       400:

@@ -71,5 +71,40 @@ module.exports = {
       logger.error("create claim point fail: ", err);
       next(err);
     }
+  },
+  check: async (req, res, next) => {
+    try {
+      let membershipType = await MembershipType.findOne({
+        where: {
+          id: req.user.membership_type_id,
+          deleted_flg: false
+        }
+      })
+      if (membershipType) {
+        let claim = await ClaimPoint.findOne({
+          where: {
+            member_id: req.user.id,
+          },
+          order: [['created_at','DESC']]
+        });
+        let setting = await Setting.findOne({
+          where: {
+            key: config.setting.MS_POINT_DELAY_TIME_IN_SECONDS
+          }
+        })
+        let next_time = Date.parse(claim.createdAt) / 1000 + parseInt(setting.value);
+        return res.ok({
+          claimable: true,
+          next_time: next_time
+        });
+      } else {
+        return res.ok({
+          claimable: false
+        });
+      } 
+    } catch (err) {
+      logger.error("check claim point fail: ", err);
+      next(err);
+    }
   }
 }

@@ -4,9 +4,9 @@ const controller = require('./claim-point.controller');
 const router = express.Router();
 
 router.get(
-  '/history',
+  '/claim-points',
   authenticate,
-  controller.getHistory
+  controller.getAll
 );
 
 module.exports = router;
@@ -17,7 +17,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/claim-point/history:
+ * /web/claim-points:
  *   get:
  *     summary: history list
  *     tags:

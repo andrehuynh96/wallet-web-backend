@@ -15,6 +15,12 @@ router.get(
   controller.setting
 )
 
+router.post(
+  '/claim-points',
+  authenticate,
+  controller.create
+)
+
 module.exports = router;
 
 
@@ -102,6 +108,52 @@ module.exports = router;
                       "amount": 100,
                       "time": 86400
  *                 }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/claim-points:
+ *   post:
+ *     summary: create claim point
+ *     tags:
+ *       - Claim Point
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data for claim point.
+ *         schema:
+ *            type: object
+ *            example:
+ *               {
+                        "currency_symbol":"MS_POINT",
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
  *             }
  *       400:
  *         description: Error

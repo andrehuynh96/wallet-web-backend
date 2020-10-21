@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: ClaimPointStatus.Pending
+      defaultValue: ClaimPointStatus.Claim
     },
     amount: {
       type: DataTypes.DECIMAL,

@@ -154,7 +154,8 @@ module.exports = {
                         platform AS currency, 
                         reward, 
                         amount AS staked, 
-                        created_at
+                        created_at,
+                        updated_at
                         FROM member_assets 
                         WHERE member_assets.address IN (
                             SELECT wpk.address 
@@ -179,7 +180,7 @@ module.exports = {
           symbol: item.currency,
           reward: parseFloat((new BigNumber(item.reward))),
           staked: parseFloat((new BigNumber(item.staked))),
-          create_at: item.created_at
+          create_at: item.updated_at
         };
       });
 
@@ -230,12 +231,13 @@ function _getDateRangeUnitTimeStamp(dateType, dateNum) {
     case 'WEEK':
     case 'MONTH':
     case 'YEAR':
-      toDate.zone(0);
-      fromDate.zone(0);
+      toDate.utcOffset(0);
+      fromDate.utcOffset(0);
       toDate.set({ hour: 23, minute: 59, second: 59 });
       fromDate.set({ hour: 0, minute: 0, second: 0 });
       break;
   }
+
   const from = Math.floor(fromDate.valueOf() / 1000); // second
   const to = Math.floor(toDate.valueOf() / 1000);
   return { from, to }

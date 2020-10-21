@@ -1,6 +1,5 @@
 const ClaimPointStatus = {
-  Claim: "Claim",
-  Pending: "Pending"
+  Claim: "Claim"
 };
 
 module.exports = ClaimPointStatus;

@@ -110,8 +110,14 @@ module.exports = {
         return res.badRequest("Missing parameters", validate.error);
       }
 
-      let { platform, wallet_id, sort, offset, limit } = req.query;
+      const today = new Date(new Date().toUTCString());
+      today.setDate(today.getDate() - 1);
+      let toDate = moment(today);
+      toDate.utcOffset(0);
+      toDate.set({ hour: 23, minute: 59, second: 59 });
+      const to = Math.floor(toDate.valueOf() / 1000);
 
+      let { platform, wallet_id, sort, offset, limit } = req.query;
       platform = platform ? platform.toUpperCase() : '';
       offset = offset ? offset : 0;
       limit = limit ? limit : 25;
@@ -123,7 +129,8 @@ module.exports = {
         platform,
         wallet_id,
         offset,
-        limit
+        limit,
+        to
       }
 
       let sqlTotal = `                       
@@ -138,10 +145,10 @@ module.exports = {
                                 wallet_priv_keys AS wpk 
                                 ON w.id = wpk.wallet_id 
                             WHERE 
-                                w.member_id = :memberId ${wallet_id ? ' AND w.id = :wallet_id' : ''}
+                                w.member_id = :memberId ${wallet_id ? ' AND w.id = :wallet_id' : ''} 
                         ) 
-                        ${'' !== platform ? ' AND platform = :platform' : ''}
-                        `;
+                        ${'' !== platform ? ' AND platform = :platform' : ''} AND created_at <= TO_TIMESTAMP(:to)`;
+      // 
 
       const totalResults = await db.sequelize.query(sqlTotal, {
         replacements: where,
@@ -167,7 +174,7 @@ module.exports = {
                             WHERE 
                                 w.member_id = :memberId ${wallet_id ? ' AND w.id = :wallet_id' : ''}
                         ) 
-                        ${'' !== platform ? ' AND platform = :platform' : ''}
+                        ${'' !== platform ? ' AND platform = :platform' : ''} AND created_at <= TO_TIMESTAMP(:to) 
                         ORDER BY created_at ${sort} LIMIT :limit OFFSET :offset`;
 
       const itemResults = await db.sequelize.query(sqlItems, {
@@ -180,7 +187,7 @@ module.exports = {
           symbol: item.currency,
           reward: parseFloat((new BigNumber(item.reward))),
           staked: parseFloat((new BigNumber(item.staked))),
-          create_at: item.updated_at
+          create_at: item.created_at
         };
       });
 

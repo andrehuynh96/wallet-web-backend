@@ -72,7 +72,7 @@ module.exports = {
             key: config.setting.MS_POINT_DELAY_TIME_IN_SECONDS
           }
         })
-        let next_time = Date.parse(claim.createdAt) / 1000 + parseInt(setting.value);
+        let next_time = claim ? Date.parse(claim.createdAt) / 1000 + parseInt(setting.value) : 0;
         if (Date.now() / 1000 < next_time)
           return res.badRequest(res.__("CANNOT_CLAIM_POINT"), "CANNOT_CLAIM_POINT", {
             next_time
@@ -124,7 +124,7 @@ module.exports = {
             key: config.setting.MS_POINT_DELAY_TIME_IN_SECONDS
           }
         })
-        let next_time = Date.parse(claim.createdAt) / 1000 + parseInt(setting.value);
+        let next_time = claim ? Date.parse(claim.createdAt) / 1000 + parseInt(setting.value) : 0;
         let claimable = true;
         let now = Date.now() / 1000;
         if (now < next_time) 

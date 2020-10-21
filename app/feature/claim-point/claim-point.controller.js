@@ -109,8 +109,12 @@ module.exports = {
           }
         })
         let next_time = Date.parse(claim.createdAt) / 1000 + parseInt(setting.value);
+        let claimable = true;
+        let now = Date.now() / 1000;
+        if (now < next_time) 
+          claimable = false;
         return res.ok({
-          claimable: true,
+          claimable: claimable,
           next_time: next_time
         });
       } else {

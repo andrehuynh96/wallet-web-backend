@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./claim-point.controller');
+const controller = require('./point.controller');
 const router = express.Router();
 
 router.get(
@@ -65,7 +65,10 @@ module.exports = router;
                           "currency_symbol": "MS_POINT",
                           "amount": 100,
                           "system_type": "MEMBERSHIP",
-                          "status": "Claim",
+                          "status": "APPROVED",
+                          "action": "CLAIM",
+                          "tx_id": "",
+                          "description": "",
                           "create_at": "2020-09-23 17:00",
                           "update_at": "2020-09-23 17:00"
                         }

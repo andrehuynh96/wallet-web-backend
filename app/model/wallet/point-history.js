@@ -1,8 +1,9 @@
-const ClaimPointStatus = require("./value-object/point-status");
+const PointStatus = require("./value-object/point-status");
 const SystemType = require('./value-object/system-type');
+const PointAction = require("./value-object/point-action");
 
 module.exports = (sequelize, DataTypes) => {
-  const ClaimPoint = sequelize.define("claim_points", {
+  const Model = sequelize.define("point_histories", {
     id: {
       type: DataTypes.BIGINT,
       primaryKey: true,
@@ -15,7 +16,12 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      defaultValue: ClaimPointStatus.PENDING
+      defaultValue: PointStatus.PENDING
+    },
+    action: {
+      type: DataTypes.STRING(50),
+      allowNull: false,
+      defaultValue: PointAction.CLAIM
     },
     amount: {
       type: DataTypes.DECIMAL,
@@ -29,6 +35,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(125),
       allowNull: true,
       defaultValue: SystemType.MEMBERSHIP
+    },
+    tx_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+    },
+    description: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true,
     },
   }, {
       underscored: true,
@@ -54,12 +68,12 @@ module.exports = (sequelize, DataTypes) => {
       ],
     });
 
-  ClaimPoint.associate = (models) => {
-    ClaimPoint.belongsTo(models.members, {
+  Model.associate = (models) => {
+    Model.belongsTo(models.members, {
       as: 'Member',
       foreignKey: 'member_id',
     });
   };
 
-  return ClaimPoint;
+  return Model;
 };

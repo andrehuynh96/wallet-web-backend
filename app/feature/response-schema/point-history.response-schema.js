@@ -5,6 +5,9 @@ const destObject = {
     '[].currency_symbol': '[].currency_symbol',
     '[].amount': '[].amount',
     '[].status': '[].status',
+    '[].action': '[].action',
+    '[].tx_id': '[].tx_id',
+    '[].description': '[].description',
     '[].system_type': '[].system_type',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at'
@@ -14,6 +17,9 @@ const destObject = {
     currency_symbol: 'currency_symbol',
     amount: 'amount',
     status: 'status',
+    action: 'action',
+    tx_id: 'tx_id',
+    description: 'description',
     system_type: 'system_type',
     createdAt: 'created_at',
     updatedAt: 'updated_at'

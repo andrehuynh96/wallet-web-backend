@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
       indexes: [
         {
-          name: 'claim_points_amount_01',
+          name: 'point_historis_amount_01',
           fields: [
             {
               attribute: 'created_at',

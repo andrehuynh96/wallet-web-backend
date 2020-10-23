@@ -34,6 +34,9 @@ module.exports = router;
  *       - name: address
  *         in: query
  *         type: string
+ *       - name: sent
+ *         in: query
+ *         type: boolean
  *     produces:
  *       - application/json
  *     responses:

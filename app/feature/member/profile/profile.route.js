@@ -56,7 +56,8 @@ module.exports = router;
                         "kyc_status": "Approved",
                         "term_condition_date": "2020-03-29T10:50:23.236Z",
                         "term_condition_id": 1,
-                        "new_term_condition": true
+                        "new_term_condition": true,
+                        "points": 100
                       }
  *             }
  *       400:

@@ -1,7 +1,6 @@
 const Status = require("./value-object/fiat-currency-status");
 module.exports = (sequelize, DataTypes) => {
   const Model = sequelize.define("fiat_cryptocurrencies", {
-
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,

@@ -12,6 +12,8 @@ const Setting = require('app/model/wallet').settings;
 const config = require('app/config');
 const SystemType = require('app/model/wallet/value-object/system-type');
 const BigNumber = require('bignumber.js');
+const MemberKyc = require('app/model/wallet').member_kycs;
+const KycLevel = require('app/model/wallet/value-object/kyc-level');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -40,6 +42,21 @@ module.exports = {
   create: async (req, res, next) => {
     let transaction;
     try {
+      const memberKyc = await MemberKyc.findOne({
+        where: {
+          member_id: req.user.id
+        }
+      })
+      if (!memberKyc) {
+        return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
+      }
+      const kyc = await Kyc.findOne({ where: { key: memberKyc.kyc_id } });
+      if (!kyc) {
+        return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
+      }
+      if(kyc.key != KycLevel.LEVEL_2) {
+        return res.badRequest(res.__("MEMBER_KYC_NOT_LEVEL_2"), "MEMBER_KYC_NOT_LEVEL_2");
+      }
       const settingMinClaimAmount = await Setting.findOne({
         where: {
           key: config.setting.MEMBERSHIP_COMMISSION_USDT_MINIMUM_CLAIM_AMOUNT

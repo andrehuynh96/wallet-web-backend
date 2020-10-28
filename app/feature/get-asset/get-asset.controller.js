@@ -161,6 +161,7 @@ module.exports = {
                         platform AS currency, 
                         reward, 
                         amount AS staked, 
+                        missed_daily,
                         created_at,
                         updated_at
                         FROM member_assets 
@@ -187,7 +188,8 @@ module.exports = {
           symbol: item.currency,
           reward: parseFloat((new BigNumber(item.reward))),
           staked: parseFloat((new BigNumber(item.staked))),
-          create_at: item.created_at
+          create_at: item.created_at,
+          missed_daily: item.missed_daily,
         };
       });
 

@@ -3,6 +3,8 @@ const Member = require("app/model/wallet").members;
 const MemberStatus = require('app/model/wallet/value-object/member-status');
 const Affiliate = require('app/lib/reward-system/affiliate');
 const Membership = require('app/lib/reward-system/membership');
+const MembershipType = require('app/model/wallet').membership_types;
+const MembershipTypeName = require('app/model/wallet/value-object/membership-type');
 
 module.exports = async (req, res, next) => {
   try {
@@ -54,10 +56,20 @@ module.exports = async (req, res, next) => {
       if (!result.data.data.isSuccess) {
         return res.serverInternalError();
       }
-
-      let [_, response] = await Member.update({
+      let membershipType = await MembershipType.findOne({
+        where: {
+          is_enabled: true,
+          deleted_flg: false,
+          name: MembershipTypeName.Gold
+        }
+      })
+      let data = {
         referrer_code: req.body.referrer_code
-      }, {
+      }
+      if (membershipType) {
+        data.membership_type_id = membershipType.id
+      }
+      let [_, response] = await Member.update(data, {
           where: {
             id: member.id
           },

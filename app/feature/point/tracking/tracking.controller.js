@@ -49,7 +49,6 @@ module.exports = {
       if (!membershipType) {
         return res.serverInternalError();
       }
-      console.log(membershipType)
 
       transaction = await database.transaction();
       await PointHistory.create({
@@ -73,6 +72,15 @@ module.exports = {
           transaction
         })
       transaction.commit();
+
+      _sendNotification({
+        member_id: req.user.id,
+        amount: req.body.amount,
+        platform: req.body.platform,
+        point: membershipType.staking_points,
+        tx_id: req.body.tx_id
+      });
+
       return res.ok(true);
     }
     catch (err) {
@@ -82,5 +90,14 @@ module.exports = {
       }
       next(err);
     }
+  }
+}
+
+async function _sendNotification({ member_id, point, platform, tx_id, amount }) {
+  try {
+
+  }
+  catch (err) {
+    logger.error(`point tracking _sendNotification::`, err);
   }
 }

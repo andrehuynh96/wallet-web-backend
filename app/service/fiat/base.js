@@ -15,10 +15,6 @@ class Fiat {
     throw new Error(`You have to implement getCurrencies function in child class`);
   }
 
-  async getMinAmount(options) {
-    throw new Error(`You have to implement getMinAmount function in child class`);
-  }
-
   async estimate(options) {
     throw new Error(`You have to implement estimate function in child class`);
   }
@@ -31,9 +27,10 @@ class Fiat {
     throw new Error(`You have to implement getTransaction function in child class`);
   }
 
-  async getStatus(options) {
-    throw new Error(`You have to implement getStatus function in child class`);
+  async getOrder(options) {
+    throw new Error(`You have to implement getOrder function in child class`);
   }
+
 }
 
-module.exports = Exchange;
+module.exports = Fiat;

@@ -22,15 +22,15 @@ class Wyre extends Fiat {
     throw new Error(`You have not implemented getCountries function yet`);
   }
 
-  async estimate({ source_currency, dest_currency, amount, dest_address,  country }) {
+  async estimate({ sourceCurrency, destCurrency, amount, destAddress, country }) {
     try {
       const timestamp = new Date().getTime();
       const path = `/v3/orders/quote/partner?timestamp=${timestamp}`;
       const params = {
           amount: amount,
-          sourceCurrency: source_currency,
-          destCurrency: dest_currency,
-          dest: dest_address,
+          sourceCurrency: sourceCurrency,
+          destCurrency: destCurrency,
+          dest: destAddress,
           accountId: config.fiat.wyre.accountId,
           country: country
       }
@@ -43,21 +43,26 @@ class Wyre extends Fiat {
     }
   }
 
-  async makeTransaction({ source_currency, dest_currency, amount, dest_address, payment_method, country, email, phone }) {
+  async makeTransaction({ sourceCurrency, destCurrency, amount, destAddress, paymentMethod, country, email, phone, firstName, lastName, postalCode, city, address }) {
     try {
       const timestamp = new Date().getTime();
       const path = `/v3/orders/reserve?timestamp=${timestamp}`;
       const method = "POST";
       let params = {
         amount: amount,
-        sourceCurrency: source_currency,
-        destCurrency: dest_currency,
-        dest: dest_address,
+        sourceCurrency: sourceCurrency,
+        destCurrency: destCurrency,
+        dest: destAddress,
         referrerAccountId: config.fiat.wyre.accountId,
-        paymentMethod: payment_method,
+        paymentMethod: paymentMethod.toLowerCase(),
         country: country,
         email: email,
-        phone: phone  
+        phone: phone,
+        firstName: firstName,
+        lastName: lastName,
+        postalCode: postalCode,
+        city: city,
+        street1: address
       }
       return await this._makeRequest({path, method, params})
     }
@@ -67,7 +72,7 @@ class Wyre extends Fiat {
     }
   }
 
-  async getTransaction(transferId) {
+  async getTransaction({transferId}) {
     try {
       const path = `/v2/transfer/${transferId}/track`;
       let response = await axios.get(config.fiat.wyre.url + path);
@@ -79,7 +84,7 @@ class Wyre extends Fiat {
     }
   }
 
-  async getOrder (orderId) {
+  async getOrder ({orderId}) {
     try {
       const path = `/v3/orders/${orderId}`;
       let response = await axios.get(config.fiat.wyre.url + path);

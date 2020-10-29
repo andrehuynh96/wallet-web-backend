@@ -303,6 +303,14 @@ const config = {
   webWallet: {
     apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
     trackingEmailApiToken: process.env.WEB_WALLET_TRACKING_EMAIL_API_TOKEN,
+  },
+  fiat: {
+    wyre: {
+      url: process.env.WYRE_URL,
+      apiKey: process.env.WYRE_API_KEY,
+      secretKey: process.env.WYRE_SECRET_KEY,
+      accountId: process.env.WYRE_ACCOUNT_ID
+    }
   }
 };
 

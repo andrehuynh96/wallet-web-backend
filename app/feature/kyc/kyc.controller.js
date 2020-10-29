@@ -21,6 +21,7 @@ const config = require('app/config');
 const Membership = require('app/lib/reward-system/membership');
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type-name');
 const MembershipType = require('app/model/wallet').membership_types;
+const MembershipTypeId = require('app/model/wallet/value-object/membership-type');
 
 module.exports = {
   get: async (req, res, next) => {
@@ -166,10 +167,19 @@ module.exports = {
           isCanUpdateMembershipId = MembershipTypeName.Free === membershipType.type;
         }
       }
-
+      let membershipType = await MembershipType.findOne({
+        where: {
+          is_enabled: true,
+          deleted_flg: false,
+          name: MembershipTypeId.Gold
+        }
+      })
       if (memberKyc.status == KycStatus.APPROVED &&
         kyc.approve_membership_type_id && isCanUpdateMembershipId) {
         memberData.membership_type_id = kyc.approve_membership_type_id;
+        if (member.referrer_code && membershipType) {
+          memberData.membership_type_id = membershipType.id
+        }
       }
 
       await MemberKycProperty.bulkCreate(data, { transaction: transaction });
@@ -189,10 +199,14 @@ module.exports = {
 
       if (memberKyc.status == KycStatus.APPROVED &&
         kyc.approve_membership_type_id && isCanUpdateMembershipId) {
+        let membership_type_id = kyc.approve_membership_type_id;
+        if (member.referrer_code && membershipType) {
+          membership_type_id = membershipType.id
+        }
         let result = await Membership.updateMembershipType(
           {
             email: member.email,
-            membership_type_id: kyc.approve_membership_type_id,
+            membership_type_id: membership_type_id,
             referrer_code: member.referrer_code,
           });
         if (result.httpCode !== 200) {

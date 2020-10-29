@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(16),
       allowNull: true
     },
+    payment_method_name: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true
+    },
     from_amount: {
       type: DataTypes.DECIMAL,
       allowNull: true
@@ -35,6 +39,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     to_address: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    payment_url: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true
+    },
+    reservation: {
       type: DataTypes.STRING(256),
       allowNull: true
     },
@@ -69,6 +81,18 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL,
       allowNull: true,
       defaultValue: 0
+    },
+    fees: {
+      type: DataTypes.JSON,
+      allowNull: true
+    },
+    order_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    order_type: {
+      type: DataTypes.STRING(256),
+      allowNull: true
     },
     transaction_id: {
       type: DataTypes.STRING(256),

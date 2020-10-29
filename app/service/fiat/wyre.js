@@ -1,6 +1,6 @@
 const config = require('app/config');
 const logger = require('app/lib/logger');
-const crypto = require('crypto');
+const CryptoJS = require('crypto-js');
 const axios = require('axios');
 const { toSnakeCase } = require('app/lib/case-style');
 const Fiat = require("./base");
@@ -43,7 +43,7 @@ class Wyre extends Fiat {
     }
   }
 
-  async makeTransaction({ source_currency, dest_currency, amount, dest_address,  country }) {
+  async makeTransaction({ source_currency, dest_currency, amount, dest_address, payment_method, country, email, phone }) {
     try {
       const timestamp = new Date().getTime();
       const path = `/v3/orders/reserve?timestamp=${timestamp}`;
@@ -54,12 +54,15 @@ class Wyre extends Fiat {
         destCurrency: dest_currency,
         dest: dest_address,
         referrerAccountId: config.fiat.wyre.accountId,
-        country: country  
+        paymentMethod: payment_method,
+        country: country,
+        email: email,
+        phone: phone  
       }
       return await this._makeRequest({path, method, params})
     }
     catch (err) {
-      logger.error(`changelly createTransaction error:`, err);
+      logger.error(`Wyre make transaction error:`, err);
       throw err;
     }
   }
@@ -68,10 +71,22 @@ class Wyre extends Fiat {
     try {
       const path = `/v2/transfer/${transferId}/track`;
       let response = await axios.get(config.fiat.wyre.url + path);
-      return response.data;
+      return toSnakeCase(response.data);
     }
     catch (err) {
-      logger.error(`changelly getStatus error:`, err);
+      logger.error(`Wyre get transaction error:`, err);
+      throw err;
+    }
+  }
+
+  async getOrder (orderId) {
+    try {
+      const path = `/v3/orders/${orderId}`;
+      let response = await axios.get(config.fiat.wyre.url + path);
+      return toSnakeCase(response.data);
+    }
+    catch (err) {
+      console.error(`Wyre get order error:`, err);
       throw err;
     }
   }
@@ -98,7 +113,7 @@ class Wyre extends Fiat {
 
   _signature(url, data){
     const dataToSign = url + data;
-    const token = Crypto.enc.Hex.stringify(Crypto.HmacSHA256(dataToSign.toString(Crypto.enc.Utf8), config.fiat.wyre.secretKey));
+    const token = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(dataToSign.toString(CryptoJS.enc.Utf8), config.fiat.wyre.secretKey));
     return token;
   }
 

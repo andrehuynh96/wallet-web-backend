@@ -36,9 +36,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       defaultValue: SystemType.MEMBERSHIP
     },
+    object_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true,
+    },
     tx_id: {
       type: DataTypes.STRING(256),
       allowNull: true,
+    },
+    platform: {
+      type: DataTypes.STRING(32),
+      allowNull: true,
+    },
+    source_amount: {
+      type: DataTypes.DECIMAL,
+      allowNull: true,
+      defaultValue: 0
     },
     description: {
       type: DataTypes.TEXT('medium'),

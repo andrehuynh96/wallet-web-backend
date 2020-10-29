@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
     }
     result = result.result;
 
-    let estimateAmountUSD = await _getAmountUSD(req.body.from_currency.toUpperCase(), (result.amount_to > 0 ? result.amount_to : result.amount_expected_to));
+    let estimateAmountUSD = await _getAmountUSD(req.body.from_currency.toUpperCase(), result.amount_expected_from);
     let response = await ExchangeTransaction.create({
       member_id: req.user.id,
       from_currency: req.body.from_currency.toUpperCase(),

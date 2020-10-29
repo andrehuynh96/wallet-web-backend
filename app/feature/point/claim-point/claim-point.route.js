@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./point.controller');
+const controller = require('./claim-point.controller');
 const router = express.Router();
 
 router.get(
@@ -39,7 +39,7 @@ module.exports = router;
  *   get:
  *     summary: history list
  *     tags:
- *       - Claim Point
+ *       - Point
  *     description:
  *     parameters:
  *       - name: offset
@@ -60,7 +60,7 @@ module.exports = router;
  *             {
  *                 "data": {
                       "items": [
-                        { 
+                        {
                           "id": 1,
                           "currency_symbol": "MS_POINT",
                           "amount": 100,
@@ -103,7 +103,7 @@ module.exports = router;
  *   get:
  *     summary: get setting
  *     tags:
- *       - Claim Point
+ *       - Point
  *     description:
  *     produces:
  *       - application/json
@@ -142,7 +142,7 @@ module.exports = router;
  *   post:
  *     summary: create claim point
  *     tags:
- *       - Claim Point
+ *       - Point
  *     description:
  *     parameters:
  *       - in: body
@@ -188,7 +188,7 @@ module.exports = router;
  *   get:
  *     summary: check
  *     tags:
- *       - Claim Point
+ *       - Point
  *     description:
  *     produces:
  *       - application/json

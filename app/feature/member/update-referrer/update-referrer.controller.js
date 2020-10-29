@@ -5,6 +5,7 @@ const Affiliate = require('app/lib/reward-system/affiliate');
 const Membership = require('app/lib/reward-system/membership');
 const MembershipType = require('app/model/wallet').membership_types;
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type');
+const KycLevel = require('app/model/wallet/value-object/kyc-level');
 
 module.exports = async (req, res, next) => {
   try {
@@ -56,18 +57,20 @@ module.exports = async (req, res, next) => {
       if (!result.data.data.isSuccess) {
         return res.serverInternalError();
       }
-      let membershipType = await MembershipType.findOne({
-        where: {
-          is_enabled: true,
-          deleted_flg: false,
-          name: MembershipTypeName.Gold
-        }
-      })
       let data = {
         referrer_code: req.body.referrer_code
       }
-      if (membershipType) {
-        data.membership_type_id = membershipType.id
+      if(member.kyc_level == KycLevel.LEVEL_1) {
+        let membershipType = await MembershipType.findOne({
+          where: {
+            is_enabled: true,
+            deleted_flg: false,
+            name: MembershipTypeName.Gold
+          }
+        })
+        if (membershipType) {
+          data.membership_type_id = membershipType.id
+        }
       }
       let [_, response] = await Member.update(data, {
           where: {

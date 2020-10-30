@@ -6,8 +6,11 @@ const Membership = require('app/lib/reward-system/membership');
 const MembershipType = require('app/model/wallet').membership_types;
 const MembershipTypeName = require('app/model/wallet/value-object/membership-type');
 const KycLevel = require('app/model/wallet/value-object/kyc-level');
+const PointService = require('app/lib/point');
+const database = require('app/lib/database').db().wallet;
 
 module.exports = async (req, res, next) => {
+  let transaction;
   try {
     let member = await Member.findOne({
       where: {
@@ -51,43 +54,69 @@ module.exports = async (req, res, next) => {
       return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
     }
 
-    let result = await Affiliate.updateReferrer({ email: member.email, referrerCode: req.body.referrer_code });
+    let result = await Affiliate.updateReferrer({
+      email: member.email,
+      referrerCode: req.body.referrer_code
+    });
 
-    if (result.httpCode == 200) {
-      if (!result.data.data.isSuccess) {
-        return res.serverInternalError();
-      }
-      let data = {
-        referrer_code: req.body.referrer_code
-      }
-      if(member.kyc_level == KycLevel.LEVEL_1) {
-        let membershipType = await MembershipType.findOne({
-          where: {
-            is_enabled: true,
-            deleted_flg: false,
-            name: MembershipTypeName.Gold
-          }
-        })
-        if (membershipType) {
-          data.membership_type_id = membershipType.id
+    if (result.httpCode != 200) {
+      return res.status(result.httpCode).send(result.data);
+    }
+    if (!result.data.data.isSuccess) {
+      return res.serverInternalError();
+    }
+    let data = {
+      referrer_code: req.body.referrer_code
+    }
+    if (member.kyc_level == KycLevel.LEVEL_1) {
+      let membershipType = await MembershipType.findOne({
+        where: {
+          is_enabled: true,
+          deleted_flg: false,
+          name: MembershipTypeName.Gold
         }
+      })
+      if (membershipType) {
+        data.membership_type_id = membershipType.id
       }
-      let [_, response] = await Member.update(data, {
-          where: {
-            id: member.id
-          },
-          returning: true,
-          plain: true
-        });
-
-      req.session.user = response;
-      return res.ok(true)
     }
 
-    return res.status(result.httpCode).send(result.data);
+    transaction = await database.transaction();
+    let [_, response] = await Member.update(data, {
+      where: {
+        id: member.id
+      },
+      returning: true,
+      plain: true,
+      transaction: transaction
+    });
+
+    if (data.membership_type_id) {
+      result = await Membership.updateMembershipType(
+        {
+          email: response.email,
+          membership_type_id: data.membership_type_id,
+          referrer_code: response.referrer_code,
+        });
+      if (result.httpCode !== 200) {
+        await transaction.rollback();
+        return res.status(result.httpCode).send(result.data);
+      }
+    }
+
+    req.session.user = response;
+    await transaction.commit();
+    PointService.upgradeMembership({
+      member_id: response.id,
+      membership_type_id: response.membership_type_id
+    });
+    return res.ok(true)
   }
   catch (err) {
     logger.error('create link kyc fail:', err);
+    if (transaction) {
+      await transaction.rollback()
+    };
     next(err);
   }
 } 

@@ -32,7 +32,7 @@ router.use(require('./email-tracking/email-tracking.route'));
 router.use('/asset', require('./get-asset/get-asset.route'));
 router.use('/coin-gecko', require('./coin-gecko'));
 router.use(require('./point'));
-router.use(require('./fiat/fiat.route'))
+router.use('/fiat', require('./fiat'))
 
 module.exports = router;
 

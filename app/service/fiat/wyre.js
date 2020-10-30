@@ -3,6 +3,7 @@ const logger = require('app/lib/logger');
 const CryptoJS = require('crypto-js');
 const axios = require('axios');
 const { toSnakeCase } = require('app/lib/case-style');
+const FiatCryptoCurrency = require('app/model/wallet').fiat_cryptocurrencies;
 const Fiat = require("./base");
 
 class Wyre extends Fiat {
@@ -26,11 +27,31 @@ class Wyre extends Fiat {
     try {
       const timestamp = new Date().getTime();
       const path = `/v3/orders/quote/partner?timestamp=${timestamp}`;
+      let currency = await FiatCryptoCurrency.findOne({
+        where: {
+          symbol: destCurrency.toUpperCase()
+        }
+      })
+      let dest = destAddress;
+      if (currency) {
+        if (currency.symbol == currency.platform) {
+          dest = currency.name.toLowerCase() + ":" + destAddress;
+        } else {
+          let crypto = await FiatCryptoCurrency.findOne({
+            where: {
+              symbol: currency.platform
+            }
+          })
+          if (crypto) {
+            dest = crypto.name.toLowerCase() + ":" + destAddress;
+          }
+        }
+      }  
       const params = {
           amount: amount,
           sourceCurrency: sourceCurrency,
           destCurrency: destCurrency,
-          dest: destAddress,
+          dest: dest,
           accountId: config.fiat.wyre.accountId,
           country: country
       }

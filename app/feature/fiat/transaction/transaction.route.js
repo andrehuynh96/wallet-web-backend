@@ -1,26 +1,26 @@
 const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
-const controller = require('./fiat.controller');
+const controller = require('./transaction.controller');
 const validator = require('app/middleware/validator.middleware');
 const { estimate, create, update } = require('./validator');
 const router = express.Router();
 
 router.post(
-  '/fiat/estimate',
+  '/estimate',
   authenticate,
   validator(estimate),
   controller.estmate
 );
 
 router.post(
-  '/fiat/transactions',
+  '/transactions',
   authenticate,
   validator(create),
   controller.create
 );
 
 router.put(
-  '/fiat/transactions/:id',
+  '/transactions/:id',
   authenticate,
   validator(update),
   controller.update

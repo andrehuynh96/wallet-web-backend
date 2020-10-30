@@ -38,6 +38,8 @@ module.exports = {
         destCurrency: req.body.dest_currency,
         destAddress: req.body.dest_address,
         paymentMethod: req.body.payment_method,
+        failureRedirectUrl: req.body.failure_redirect_url,
+        redirectUrl: req.body.redirect_url,
         email: member.email,
         country: member.country,
         phone: member.phone,
@@ -58,7 +60,9 @@ module.exports = {
         to_cryptocurrency: req.body.dest_currency,
         to_address: req.body.dest_address,
         payment_method: req.body.payment_method,
-        from_amount: req.body.from_amount
+        from_amount: req.body.amount,
+        failure_redirect_url: req.body.failure_redirect_url,
+        redirect_url: req.body.redirect_url
       }
       let transaction = await FiatTransaction.create(data);
       result.id = transaction.id 

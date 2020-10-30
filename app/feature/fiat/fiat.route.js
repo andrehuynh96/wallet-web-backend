@@ -145,7 +145,9 @@ module.exports = router;
                         "dest_currency":"BTC",
                         "amount": 1,
                         "dest_address": "moTXHK5dfgT62Y8XMM6RxRAVV8ojmofAnR",
-                        "payment_method":"debit-card"
+                        "payment_method":"debit-card",
+                        "redirect_url": "https://www.google.com",
+                        "failure_redirect_url": "https://www.google.com"
                   }
  *     produces:
  *       - application/json

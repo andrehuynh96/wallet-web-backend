@@ -76,14 +76,28 @@ module.exports = {
     try {
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
       let result = await Service.getOrder({orderId : req.body.order_id});
-      await FiatTransaction.update({
+      let data = {
         order_id: result.id,
         status: result.status,
         from_amount: result.sourceAmount,
         transaction_id: result.transferId,
         payment_method_name: result.paymentMethodName,
         order_type: result.orderType
-      }, {
+      }
+      if (result.transferId) {
+        let transaction = await Service.getTransaction({transferId: result.transferId});
+        if (transaction) {
+          data.tx_id = transaction.blockchainNetworkTx;
+          data.rate = transaction.rate;
+          data.to_amount = transaction.destAmount;
+          data.fee_currency = transaction.feeCurrency;
+          data.message = transaction.message;
+          data.fees = transaction.fees;
+          data.total_fee = transaction.fee;
+          data.response = JSON.stringify(transaction)
+        }
+      } 
+      await FiatTransaction.update(data, {
         where: {
           member_id: req.user.id,
           id: req.params.id

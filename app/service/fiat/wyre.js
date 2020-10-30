@@ -43,7 +43,7 @@ class Wyre extends Fiat {
     }
   }
 
-  async makeTransaction({ sourceCurrency, destCurrency, amount, destAddress, paymentMethod, country, email, phone, firstName, lastName, postalCode, city, address }) {
+  async makeTransaction({ sourceCurrency, destCurrency, amount, destAddress, paymentMethod, redirectUrl, failureRedirectUrl, country, email, phone, firstName, lastName, postalCode, city, address }) {
     try {
       const timestamp = new Date().getTime();
       const path = `/v3/orders/reserve?timestamp=${timestamp}`;
@@ -55,6 +55,8 @@ class Wyre extends Fiat {
         dest: destAddress,
         referrerAccountId: config.fiat.wyre.accountId,
         paymentMethod: paymentMethod.toLowerCase(),
+        redirectUrl: redirectUrl,
+        failureRedirectUrl: failureRedirectUrl,
         country: country,
         email: email,
         phone: phone,

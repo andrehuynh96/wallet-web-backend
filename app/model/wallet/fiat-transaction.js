@@ -65,7 +65,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     fee_currency: {
       type: DataTypes.STRING(16),
-      allowNull: false
+      allowNull: false,
+      defaultValue: 0
     },
     total_fee: {
       type: DataTypes.DECIMAL,
@@ -102,7 +103,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: true
     },
-    tx_status: {
+    transaction_status: {
       type: DataTypes.STRING(32),
       allowNull: true
     },

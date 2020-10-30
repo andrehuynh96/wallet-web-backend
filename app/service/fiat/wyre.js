@@ -76,7 +76,7 @@ class Wyre extends Fiat {
     try {
       const path = `/v2/transfer/${transferId}/track`;
       let response = await axios.get(config.fiat.wyre.url + path);
-      return toSnakeCase(response.data);
+      return response.data;
     }
     catch (err) {
       logger.error(`Wyre get transaction error:`, err);
@@ -88,7 +88,7 @@ class Wyre extends Fiat {
     try {
       const path = `/v3/orders/${orderId}`;
       let response = await axios.get(config.fiat.wyre.url + path);
-      return toSnakeCase(response.data);
+      return response.data;
     }
     catch (err) {
       console.error(`Wyre get order error:`, err);
@@ -103,13 +103,13 @@ class Wyre extends Fiat {
     headers['Content-Type'] = 'application/json';
     headers['X-Api-Key'] = config.fiat.wyre.apiKey;
     headers['X-Api-Signature'] = this._signature(url, details);
-    const config = {
+    const options = {
         method: method,
         url: url,
         headers: headers,
         data: details
     }
-    const response = await axios(config);
+    const response = await axios(options);
     if (response.data.error) {
       logger.error(`Wyre service error:`, response.data.error);
     }

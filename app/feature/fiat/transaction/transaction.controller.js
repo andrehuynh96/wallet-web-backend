@@ -65,7 +65,7 @@ module.exports = {
         redirect_url: req.body.redirect_url
       }
       let transaction = await FiatTransaction.create(data);
-      result.id = transaction.id 
+      result.id = transaction.id
       return res.ok(result);
     } catch (err) {
       logger.error('create fiat transaction fail:', err);
@@ -75,7 +75,7 @@ module.exports = {
   update: async (req, res, next) => {
     try {
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
-      let result = await Service.getOrder({orderId : req.body.order_id});
+      let result = await Service.getOrder({ orderId: req.body.order_id });
       let data = {
         order_id: result.id,
         status: result.status,
@@ -85,7 +85,7 @@ module.exports = {
         order_type: result.orderType
       }
       if (result.transferId) {
-        let transaction = await Service.getTransaction({transferId: result.transferId});
+        let transaction = await Service.getTransaction({ transferId: result.transferId });
         if (transaction) {
           data.tx_id = transaction.blockchainNetworkTx;
           data.rate = transaction.rate;
@@ -96,17 +96,56 @@ module.exports = {
           data.total_fee = transaction.fee;
           data.response = JSON.stringify(transaction)
         }
-      } 
+      }
       await FiatTransaction.update(data, {
         where: {
           member_id: req.user.id,
           id: req.params.id
         }
-      }) 
+      })
       return res.ok(true);
     } catch (err) {
       logger.error('update fiat transaction fail:', err);
       next(err);
+    }
+  },
+  getTxById: async (req, res, next) => {
+    try {
+      let transaction = await FiatTransaction.findOne({
+        where: {
+          id: req.params.id
+        }
+      })
+      if (!transaction) {
+        return res.notFound();
+      }
+      else {
+        return res.ok(transaction)
+      }
+    } catch (err) {
+      logger.error('get fiat transaction fail:', err);
+      next(err);
+    }
+  },
+  getTxs: async (req, res, next) => {
+    try {
+      let { rpp, page } = req.params
+      let txs = await FiatTransaction.findAll({
+        where: {
+          member_id: req.user.id,
+        },
+        limit: rpp,
+        offset: (page - 1) * rpp
+      })
+      if (!txs) {
+        return res.notFound();
+      }
+      else {
+        return res.ok(txs);
+      }
+    } catch (err) {
+      logger.error('get fiat transaction by user fail:', err);
+      next(err)
     }
   }
 }

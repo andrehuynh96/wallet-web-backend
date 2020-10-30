@@ -56,7 +56,7 @@ module.exports = router;
                         "source_currency":"USD",
                         "dest_currency":"BTC",
                         "amount": 1,
-                        "dest_address": "bitcoin:moTXHK5dfgT62Y8XMM6RxRAVV8ojmofAnR",
+                        "dest_address": "moTXHK5dfgT62Y8XMM6RxRAVV8ojmofAnR",
                         "country": "VN"
                   }
  *     produces:
@@ -144,7 +144,7 @@ module.exports = router;
                         "source_currency":"USD",
                         "dest_currency":"BTC",
                         "amount": 1,
-                        "dest_address": "bitcoin:moTXHK5dfgT62Y8XMM6RxRAVV8ojmofAnR",
+                        "dest_address": "moTXHK5dfgT62Y8XMM6RxRAVV8ojmofAnR",
                         "payment_method":"debit-card"
                   }
  *     produces:

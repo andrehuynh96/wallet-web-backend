@@ -3,6 +3,8 @@ const FiatFactory = require('app/service/fiat/factory');
 const FiatProvider = require('app/service/fiat/provider');
 const Member = require('app/model/wallet').members;
 const FiatTransaction = require('app/model/wallet').fiat_transactions;
+const Mapper = require('app/feature/response-schema/fiat-transaction.response-schema');
+const conf = require("app/config")
 module.exports = {
   estmate: async (req, res, next) => {
     try {
@@ -65,7 +67,7 @@ module.exports = {
         redirect_url: req.body.redirect_url
       }
       let transaction = await FiatTransaction.create(data);
-      result.id = transaction.id 
+      result.id = transaction.id
       return res.ok(result);
     } catch (err) {
       logger.error('create fiat transaction fail:', err);
@@ -75,7 +77,7 @@ module.exports = {
   update: async (req, res, next) => {
     try {
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
-      let result = await Service.getOrder({orderId : req.body.order_id});
+      let result = await Service.getOrder({ orderId: req.body.order_id });
       let data = {
         order_id: result.id,
         status: result.status,
@@ -85,7 +87,7 @@ module.exports = {
         order_type: result.orderType
       }
       if (result.transferId) {
-        let transaction = await Service.getTransaction({transferId: result.transferId});
+        let transaction = await Service.getTransaction({ transferId: result.transferId });
         if (transaction) {
           data.tx_id = transaction.blockchainNetworkTx;
           data.rate = transaction.rate;
@@ -96,17 +98,59 @@ module.exports = {
           data.total_fee = transaction.fee;
           data.response = JSON.stringify(transaction)
         }
-      } 
+      }
       await FiatTransaction.update(data, {
         where: {
           member_id: req.user.id,
           id: req.params.id
         }
-      }) 
+      })
       return res.ok(true);
     } catch (err) {
       logger.error('update fiat transaction fail:', err);
       next(err);
+    }
+  },
+  getTxById: async (req, res, next) => {
+    try {
+      const where = { member_id: req.user.id, id: req.params.id };
+      let transaction = await FiatTransaction.findOne({
+        where: where
+      });
+      if (!transaction) {
+        return res.badRequest(res.__("TRANSACTION_NOT_FOUND"), "TRANSACTION_NOT_FOUND", {
+          fields: ['id'],
+        });
+      }
+      else {
+        return res.ok(Mapper(transaction));
+      }
+    } catch (err) {
+      logger.error('get fiat transaction fail:', err);
+      next(err);
+    }
+  },
+  getTxs: async (req, res, next) => {
+    try {
+      let { query: { offset, limit }, user } = req;
+      const where = { member_id: user.id };
+      const off = parseInt(offset) || 0;
+      const lim = parseInt(limit) || parseInt(conf.appLimit)
+      let { count: total, rows: transactions } = await FiatTransaction.findAndCountAll({
+        where: where,
+        limit: lim,
+        offset: off,
+        order: [['created_at', 'DESC']]
+      });
+      return res.ok({
+        items: Mapper(transactions),
+        offset: off,
+        limit: lim,
+        total: total
+      });
+    } catch (err) {
+      logger.error('get fiat transaction by user fail:', err);
+      next(err)
     }
   }
 }

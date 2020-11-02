@@ -85,7 +85,8 @@ class Wyre extends Fiat {
         lastName: lastName,
         postalCode: postalCode,
         city: city,
-        street1: address
+        street1: address,
+        lockFields: ['amount', 'sourceCurrency', 'destCurrency', 'dest']
       }
       return await this._makeRequest({path, method, params})
     }

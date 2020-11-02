@@ -28,13 +28,13 @@ router.put(
 
 router.get(
   '/transactions/:id',
-  // authenticate,
+  authenticate,
   controller.getTxById
 )
 
 router.get(
   '/transactions/:rpp/:page',
-  // authenticate,
+  authenticate,
   controller.getTxs
 )
 

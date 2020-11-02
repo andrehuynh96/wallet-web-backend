@@ -3,6 +3,8 @@ const FiatFactory = require('app/service/fiat/factory');
 const FiatProvider = require('app/service/fiat/provider');
 const Member = require('app/model/wallet').members;
 const FiatTransaction = require('app/model/wallet').fiat_transactions;
+const Mapper = require('app/feature/response-schema/fiat-transaction.response-schema');
+const conf = require("app/config")
 module.exports = {
   estmate: async (req, res, next) => {
     try {
@@ -111,16 +113,17 @@ module.exports = {
   },
   getTxById: async (req, res, next) => {
     try {
+      const where = { member_id: req.user.id, id: req.params.id };
       let transaction = await FiatTransaction.findOne({
-        where: {
-          id: req.params.id
-        }
-      })
+        where: where
+      });
       if (!transaction) {
-        return res.notFound();
+        return res.badRequest(res.__("TRANSACTION_NOT_FOUND"), "TRANSACTION_NOT_FOUND", {
+          fields: ['id'],
+        });
       }
       else {
-        return res.ok(transaction)
+        return res.ok(Mapper(transaction));
       }
     } catch (err) {
       logger.error('get fiat transaction fail:', err);
@@ -129,20 +132,22 @@ module.exports = {
   },
   getTxs: async (req, res, next) => {
     try {
-      let { rpp, page } = req.params
-      let txs = await FiatTransaction.findAll({
-        where: {
-          member_id: req.user.id,
-        },
-        limit: rpp,
-        offset: (page - 1) * rpp
-      })
-      if (!txs) {
-        return res.notFound();
-      }
-      else {
-        return res.ok(txs);
-      }
+      let { query: { offset, limit }, user } = req;
+      const where = { member_id: user.id };
+      const off = parseInt(offset) || 0;
+      const lim = parseInt(limit) || parseInt(conf.appLimit)
+      let { count: total, rows: transactions } = await FiatTransaction.findAndCountAll({
+        where: where,
+        limit: lim,
+        offset: off,
+        order: [['created_at', 'DESC']]
+      });
+      return res.ok({
+        items: Mapper(transactions),
+        offset: off,
+        limit: lim,
+        total: total
+      });
     } catch (err) {
       logger.error('get fiat transaction by user fail:', err);
       next(err)

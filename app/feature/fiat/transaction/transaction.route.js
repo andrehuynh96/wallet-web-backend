@@ -33,7 +33,7 @@ router.get(
 )
 
 router.get(
-  '/transactions/:rpp/:page',
+  '/transactions',
   authenticate,
   controller.getTxs
 )
@@ -321,21 +321,21 @@ module.exports = router;
 
 /**
  * @swagger
- * /web/fiat/transactions/{rpp}/{page}:
+ * /web/fiat/transactions:
  *   get:
  *     summary: get transaction by current log in user
  *     tags:
  *       - Fiat
  *     description:
   *     parameters:
- *       - in: path
- *         name: rpp
- *         description: row per page
- *         required: true
- *       - in: path
- *         name: page
- *         description: page number
- *         required: true
+ *       - in: query
+ *         name: offset
+ *         type: integer
+ *         format: int32
+ *       - in: query
+ *         name: limit
+ *         type: integer
+ *         format: int32
  *     produces:
  *       - application/json
  *     responses:
@@ -344,9 +344,10 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": [{
+ *              "data": {
+ *                "items": [
+ *                  {
  *                    "id":"",
- *                    "member_id":"",
  *                    "from_currency": "",
  *                    "to_cryptocurrency": "",
  *                    "payment_method": "",
@@ -376,8 +377,13 @@ module.exports = router;
  *                    "device_code": ,
  *                    "createdAt": "",
  *                    "updatedAt": ""
- *                }]
- *             }
+ *                  }
+ *                 ],
+ *                 "offset": 0,
+ *                 "limit": 10,
+ *                 "total": 1
+ *               }
+ *              }
  *       400:
  *         description: Error
  *         schema:

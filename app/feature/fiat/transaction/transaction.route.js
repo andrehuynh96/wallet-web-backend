@@ -336,6 +336,12 @@ module.exports = router;
  *         name: limit
  *         type: integer
  *         format: int32
+ *       - in: query
+ *         name: sort_field
+ *         type: string
+ *       - in: query
+ *         name: sort_by
+ *         type: string
  *     produces:
  *       - application/json
  *     responses:

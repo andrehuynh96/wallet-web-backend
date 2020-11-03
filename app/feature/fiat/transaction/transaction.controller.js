@@ -132,15 +132,17 @@ module.exports = {
   },
   getTxs: async (req, res, next) => {
     try {
-      let { query: { offset, limit }, user } = req;
+      let { query: { offset, limit, sort_field, sort_by }, user } = req;
       const where = { member_id: user.id };
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(conf.appLimit)
+      const field = sort_field || 'createdAt'
+      const by = sort_by && (sort_by.toUpperCase() == 'DESC' || sort_by.toUpperCase() =='ASC') ? sort_by.toUpperCase() : 'DESC'
       let { count: total, rows: transactions } = await FiatTransaction.findAndCountAll({
         where: where,
         limit: lim,
         offset: off,
-        order: [['created_at', 'DESC']]
+        order: [[field, by]]
       });
       return res.ok({
         items: Mapper(transactions),

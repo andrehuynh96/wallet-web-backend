@@ -423,10 +423,6 @@ module.exports = router;
  *       - Fiat
  *     description:
  *     parameters:
- *       - in: path
- *         name: id
- *         type: string
- *         required: true
  *       - in: body
  *         name: data
  *         description: Data.

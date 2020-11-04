@@ -442,7 +442,10 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
- *                 "data": true
+ *                 "data": {
+ *                     "success": true,
+ *                     "status": 1
+ *                   }
  *             }
  *       400:
  *         description: Error

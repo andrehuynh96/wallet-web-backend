@@ -69,11 +69,31 @@ class Wyre extends Fiat {
       const timestamp = new Date().getTime();
       const path = `/v3/orders/reserve?timestamp=${timestamp}`;
       const method = "POST";
+      let currency = await FiatCryptoCurrency.findOne({
+        where: {
+          symbol: destCurrency.toUpperCase()
+        }
+      })
+      let dest = destAddress;
+      if (currency) {
+        if (currency.symbol == currency.platform) {
+          dest = currency.name.toLowerCase() + ":" + destAddress;
+        } else {
+          let crypto = await FiatCryptoCurrency.findOne({
+            where: {
+              symbol: currency.platform
+            }
+          })
+          if (crypto) {
+            dest = crypto.name.toLowerCase() + ":" + destAddress;
+          }
+        }
+      }
       let params = {
         amount: amount,
         sourceCurrency: sourceCurrency,
         destCurrency: destCurrency,
-        dest: destAddress,
+        dest: dest,
         referrerAccountId: config.fiat.wyre.accountId,
         paymentMethod: paymentMethod.toLowerCase(),
         redirectUrl: redirectUrl,

@@ -65,8 +65,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     fee_currency: {
       type: DataTypes.STRING(16),
-      allowNull: false,
-      defaultValue: 0
+      allowNull: false
     },
     total_fee: {
       type: DataTypes.DECIMAL,

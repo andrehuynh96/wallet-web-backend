@@ -64,7 +64,8 @@ module.exports = {
         payment_method: req.body.payment_method,
         from_amount: req.body.amount,
         failure_redirect_url: req.body.failure_redirect_url,
-        redirect_url: req.body.redirect_url
+        redirect_url: req.body.redirect_url,
+        fee_currency: req.body.source_currency.toUpperCase()
       }
       let transaction = await FiatTransaction.create(data);
       result.id = transaction.id

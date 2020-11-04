@@ -57,12 +57,7 @@ module.exports = {
           data.response = JSON.stringify(transaction)
         }
       }
-      await FiatTransaction.update(data, {
-        where: {
-          member_id: req.user.id,
-          id: req.params.id
-        }
-      })
+      await FiatTransaction.create(data);
       return res.ok(true);
     } catch (err) {
       logger.error('create fiat transaction fail:', err);

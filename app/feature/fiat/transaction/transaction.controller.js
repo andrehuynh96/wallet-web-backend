@@ -29,6 +29,13 @@ module.exports = {
   create: async (req, res, next) => {
     try {
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
+      let transaction = await FiatTransaction.findOne({
+        where: {
+          order_id: req.body.order_id
+        }
+      });
+      if (transaction)
+        return res.ok(false);
       let result = await Service.getOrder({ orderId: req.body.order_id });
       if (!result)
         return res.ok(false);

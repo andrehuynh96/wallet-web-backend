@@ -20,7 +20,7 @@ router.post(
 );
 
 router.post(
-  '/transactions/make-transaction',
+  '/make-transaction',
   authenticate,
   validator(create),
   controller.make
@@ -140,7 +140,7 @@ module.exports = router;
 
  /**
  * @swagger
- * /web/fiat/transactions/make-transaction:
+ * /web/fiat/make-transaction:
  *   post:
  *     summary: make transaction
  *     tags:

@@ -43,7 +43,6 @@ module.exports = {
         failureRedirectUrl: req.body.failure_redirect_url,
         redirectUrl: req.body.redirect_url,
         email: member.email,
-        country: member.country,
         phone: member.phone,
         firstName: member.first_name,
         lastName: member.last_name,

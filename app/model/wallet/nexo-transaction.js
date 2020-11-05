@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: DataTypes.UUIDV4()
     },
+    wallet_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
     nexo_member_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

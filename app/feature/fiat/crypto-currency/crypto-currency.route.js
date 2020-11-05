@@ -39,7 +39,9 @@ module.exports = router;
                           "symbol": "BTC",
                           "platform": "BTC",
                           "name": "Bitcoin",
-                          "icon": "https://web-api.changelly.com/api/coins/rep.png"
+                          "icon": "https://web-api.changelly.com/api/coins/rep.png",
+                          "contract_address": "",
+                          "contract_flg": true
  *                      }
  *
  *                  ]

@@ -314,6 +314,13 @@ const config = {
       secretKey: process.env.WYRE_SECRET_KEY,
       accountId: process.env.WYRE_ACCOUNT_ID
     }
+  },
+  banking: {
+    nexo: {
+      usingIBP: process.env.NEXO_USING_IBP == "1",
+      url: process.env.NEXO_URL,
+      apiKey: process.env.NEXO_API_KEY,
+    }
   }
 };
 

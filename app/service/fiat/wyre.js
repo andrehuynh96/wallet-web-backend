@@ -46,17 +46,17 @@ class Wyre extends Fiat {
             dest = crypto.name.toLowerCase() + ":" + destAddress;
           }
         }
-      }  
+      }
       const params = {
-          amount: amount,
-          sourceCurrency: sourceCurrency,
-          destCurrency: destCurrency,
-          dest: dest,
-          accountId: config.fiat.wyre.accountId,
-          country: country
+        amount: amount,
+        sourceCurrency: sourceCurrency,
+        destCurrency: destCurrency,
+        dest: dest,
+        accountId: config.fiat.wyre.accountId,
+        country: country
       }
       const method = "POST";
-      return await this._makeRequest({path, method, params})
+      return await this._makeRequest({ path, method, params })
     }
     catch (err) {
       logger.error(`Wyre estimate error:`, err);
@@ -109,7 +109,7 @@ class Wyre extends Fiat {
         lockFields: ['amount', 'sourceCurrency', 'destCurrency', 'dest'],
         hideTrackBtn: true
       }
-      return await this._makeRequest({path, method, params})
+      return await this._makeRequest({ path, method, params })
     }
     catch (err) {
       logger.error(`Wyre make transaction error:`, err);
@@ -117,7 +117,7 @@ class Wyre extends Fiat {
     }
   }
 
-  async getTransaction({transferId}) {
+  async getTransaction({ transferId }) {
     try {
       const path = `/v2/transfer/${transferId}/track`;
       let response = await axios.get(config.fiat.wyre.url + path);
@@ -129,7 +129,7 @@ class Wyre extends Fiat {
     }
   }
 
-  async getOrder ({orderId}) {
+  async getOrder({ orderId }) {
     try {
       const path = `/v3/orders/${orderId}`;
       let response = await axios.get(config.fiat.wyre.url + path);
@@ -149,10 +149,10 @@ class Wyre extends Fiat {
     headers['X-Api-Key'] = config.fiat.wyre.apiKey;
     headers['X-Api-Signature'] = this._signature(url, details);
     const options = {
-        method: method,
-        url: url,
-        headers: headers,
-        data: details
+      method: method,
+      url: url,
+      headers: headers,
+      data: details
     }
     const response = await axios(options);
     if (response.data.error) {
@@ -161,7 +161,7 @@ class Wyre extends Fiat {
     return toSnakeCase(response.data);
   }
 
-  _signature(url, data){
+  _signature(url, data) {
     const dataToSign = url + data;
     const token = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(dataToSign.toString(CryptoJS.enc.Utf8), config.fiat.wyre.secretKey));
     return token;

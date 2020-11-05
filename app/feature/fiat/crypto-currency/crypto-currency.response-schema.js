@@ -5,14 +5,18 @@ const destObject = {
     '[].name': '[].name',
     '[].symbol': '[].symbol',
     '[].platform': '[].platform',
-    '[].icon': '[].icon'
+    '[].icon': '[].icon',
+    '[].contract_address': '[].contract_address',
+    '[].contract_flg': '[].contract_flg'
   },
   single: {
     id: 'id',
     name: 'name',
     symbol: 'symbol',
     platform: 'platform',
-    icon: 'icon'
+    icon: 'icon',
+    contract_address: 'contract_address',
+    contract_flg: 'contract_flg'
   }
 };
 module.exports = srcObject => {

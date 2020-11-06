@@ -29,7 +29,7 @@ module.exports = {
       const where = { member_id: user.id };
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(conf.appLimit);
-      const field = sort_field || 'createdAt';
+      let field = sort_field || 'createdAt';
       field = (field == 'created_at' ? 'createdAt' : field);
       field = (field == 'updated_at' ? 'updatedAt' : field);
       const by = sort_by && (sort_by.toUpperCase() == 'DESC' || sort_by.toUpperCase() == 'ASC') ? sort_by.toUpperCase() : 'DESC'

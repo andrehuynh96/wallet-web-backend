@@ -15,8 +15,15 @@ router.post(
 router.post(
   '/transactions',
   authenticate,
-  validator(create),
+  validator(update),
   controller.create
+);
+
+router.post(
+  '/make-transaction',
+  authenticate,
+  validator(create),
+  controller.make
 );
 
 router.put(
@@ -131,120 +138,119 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/fiat/transactions:
- *   post:
- *     summary: make transaction
- *     tags:
- *       - Fiat
- *     description:
- *     parameters:
- *       - in: body
- *         name: data
- *         description: Data.
- *         schema:
- *            type: object
- *            required:
- *            - amount
- *            - source_currency
- *            - dest_currency
- *            - dest_address
- *            - payment_method
- *            example:
- *               {
-                        "source_currency":"USD",
-                        "dest_currency":"BTC",
-                        "amount": 1,
-                        "dest_address": "moTXHK5dfgT62Y8XMM6RxRAVV8ojmofAnR",
-                        "payment_method":"debit-card",
-                        "redirect_url": "https://www.google.com",
-                        "failure_redirect_url": "https://www.google.com"
-                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": {
-                    url: "",
-                    id: "",
-                    reservation: ""
-                }
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/fiat/make-transaction:
+*   post:
+*     summary: make transaction
+*     tags:
+*       - Fiat
+*     description:
+*     parameters:
+*       - in: body
+*         name: data
+*         description: Data.
+*         schema:
+*            type: object
+*            required:
+*            - amount
+*            - source_currency
+*            - dest_currency
+*            - dest_address
+*            - payment_method
+*            example:
+*               {
+                       "source_currency":"USD",
+                       "dest_currency":"BTC",
+                       "amount": 1,
+                       "dest_address": "moTXHK5dfgT62Y8XMM6RxRAVV8ojmofAnR",
+                       "payment_method":"debit-card",
+                       "redirect_url": "https://www.google.com",
+                       "failure_redirect_url": "https://www.google.com"
+                 }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": {
+                   url: "",
+                   reservation: ""
+               }
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 
- /**
- * @swagger
- * /web/fiat/transactions/{id}:
- *   put:
- *     summary: update transaction
- *     tags:
- *       - Fiat
- *     description:
- *     parameters:
- *       - in: path
- *         name: id
- *         type: string
- *         required: true
- *       - in: body
- *         name: data
- *         description: Data.
- *         schema:
- *            type: object
- *            required:
- *            - order_id
- *            example:
- *               {
-                        "order_id":""
-                  }
- *     produces:
- *       - application/json
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/fiat/transactions/{id}:
+*   put:
+*     summary: update transaction
+*     tags:
+*       - Fiat
+*     description:
+*     parameters:
+*       - in: path
+*         name: id
+*         type: string
+*         required: true
+*       - in: body
+*         name: data
+*         description: Data.
+*         schema:
+*            type: object
+*            required:
+*            - order_id
+*            example:
+*               {
+                       "order_id":""
+                 }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": true
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
 /**
  * @swagger
@@ -297,8 +303,8 @@ module.exports = router;
  *                    "message": ,
  *                    "response": ,
  *                    "device_code": ,
- *                    "createdAt": "",
- *                    "updatedAt": ""
+ *                    "created_at": "",
+ *                    "updated_at": ""
  *                }
  *             }
  *       400:
@@ -381,8 +387,8 @@ module.exports = router;
  *                    "message": ,
  *                    "response": ,
  *                    "device_code": ,
- *                    "createdAt": "",
- *                    "updatedAt": ""
+ *                    "created_at": "",
+ *                    "updated_at": ""
  *                  }
  *                 ],
  *                 "offset": 0,
@@ -407,3 +413,54 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+/**
+* @swagger
+* /web/fiat/transactions:
+*   post:
+*     summary: create transaction
+*     tags:
+*       - Fiat
+*     description:
+*     parameters:
+*       - in: body
+*         name: data
+*         description: Data.
+*         schema:
+*            type: object
+*            required:
+*            - order_id
+*            example:
+*               {
+                       "order_id":""
+                 }
+*     produces:
+*       - application/json
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                 "data": {
+*                     "success": true,
+*                     "status": 1
+*                   }
+*             }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/

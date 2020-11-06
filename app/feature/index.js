@@ -33,6 +33,7 @@ router.use('/asset', require('./get-asset/get-asset.route'));
 router.use('/coin-gecko', require('./coin-gecko'));
 router.use(require('./point'));
 router.use('/fiat', require('./fiat'));
+router.use('/nexo', require('./nexo/transaction.route'));
 router.use('/bank', require('./bank'));
 
 module.exports = router;

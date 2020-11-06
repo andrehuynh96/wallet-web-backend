@@ -266,7 +266,7 @@ async function _getIbpToken() {
     secret: config.sdk.secretKey,
     url: `${config.sdk.baseUrl}/iam/token`
   };
-  tokenProvider = new TokenProvider(opts);
+  let tokenProvider = new TokenProvider(opts);
   token = await tokenProvider.getLatestToken();
   if (cache) {
     await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60);
@@ -275,6 +275,12 @@ async function _getIbpToken() {
 }
 
 function _getChecksumIbp(method, url, body, time) {
+  const opts = {
+    apiKey: config.sdk.apiKey,
+    secret: config.sdk.secretKey,
+    url: `${config.sdk.baseUrl}/iam/token`
+  };
+  let tokenProvider = new TokenProvider(opts);
   return tokenProvider.getChecksum({
     secretKey: config.sdk.secretKey,
     httpVerb: method,

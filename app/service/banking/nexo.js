@@ -256,7 +256,7 @@ class Nexo extends Banking {
 }
 
 async function _getIbpToken() {
-  let token = await  cache.getAsync(CACHE_KEY) ;
+  let token = await cache.getAsync(CACHE_KEY);
   if (token) {
     return token;
   }
@@ -267,8 +267,8 @@ async function _getIbpToken() {
     url: `${config.sdk.baseUrl}/iam/token`
   };
   let tokenProvider = new TokenProvider(opts);
-  token = await tokenProvider.getLatestToken(); 
-  await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60); 
+  token = await tokenProvider.getLatestToken();
+  await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60);
   return token;
 }
 

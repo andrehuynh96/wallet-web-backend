@@ -36,10 +36,10 @@ module.exports = {
         }
       });
       if (transaction)
-        return res.ok({success: false});
+        return res.ok({ success: false });
       let result = await Service.getOrder({ orderId: req.body.order_id });
       if (!result)
-        return res.ok({success: false});
+        return res.ok({ success: false });
       let data = {
         order_id: result.id,
         status: result.status,
@@ -171,7 +171,9 @@ module.exports = {
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(conf.appLimit)
       const field = sort_field || 'createdAt'
-      const by = sort_by && (sort_by.toUpperCase() == 'DESC' || sort_by.toUpperCase() =='ASC') ? sort_by.toUpperCase() : 'DESC'
+      field = (field == 'created_at' ? 'createdAt' : field);
+      field = (field == 'updated_at' ? 'updatedAt' : field);
+      const by = sort_by && (sort_by.toUpperCase() == 'DESC' || sort_by.toUpperCase() == 'ASC') ? sort_by.toUpperCase() : 'DESC'
       let { count: total, rows: transactions } = await FiatTransaction.findAndCountAll({
         where: where,
         limit: lim,

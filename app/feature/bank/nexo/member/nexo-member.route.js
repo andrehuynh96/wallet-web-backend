@@ -12,12 +12,12 @@ router.post(
   controller.create
 );
 
-// router.post(
-//   '/members/verify',
-//   authenticate,
-//   validator(verify),
-//   controller.verify
-// );
+router.post(
+  '/members/verify',
+  authenticate,
+  validator(verify),
+  controller.verify
+);
 
 
 module.exports = router;
@@ -67,6 +67,56 @@ module.exports = router;
                       "created_at": "",
                       "updated_at": ""
                   }
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/bank/nexo/members/verify:
+ *   post:
+ *     summary: verify nexo account
+ *     tags:
+ *       - Bank
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - email
+ *            - code
+ *            example:
+ *               {
+ *                  "email": "thangdv@deliomart.com",
+                    "code":"41827922"
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
  *             }
  *       400:
  *         description: Error

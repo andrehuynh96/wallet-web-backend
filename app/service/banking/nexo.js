@@ -2,27 +2,19 @@ const format = require("string-template")
 const config = require('app/config')
 const Banking = require("./base");
 const InfinitoApi = require('node-infinito-api');
-const { Http } = require('node-infinito-util');
+const { Http, TokenProvider } = require('node-infinito-util');
 const NexoIBP = require("./nexo.ibp.json");
 const { toSnakeCase } = require('app/lib/case-style');
 const axios = require('axios');
 const logger = require('app/lib/logger');
-const Url = require('url');
+const redis = require("app/lib/redis");
+const cache = redis.client();
+const CACHE_KEY = 'INFINITO_TOKEN';
 
 class Nexo extends Banking {
   constructor({ ibp = true }) {
     super();
     this.ibp = ibp;
-    if (this.ibp) {
-      const opts = {
-        apiKey: config.sdk.apiKey,
-        secret: config.sdk.secretKey,
-        baseUrl: config.sdk.baseUrl
-      };
-      const api = new InfinitoApi(opts);
-      api.extendMethod('nexo', NexoIBP, api);
-      this.service = api;
-    }
   }
 
   async createAccount({ first_name, last_name, email }) {
@@ -34,9 +26,6 @@ class Nexo extends Banking {
           firstName: first_name,
           lastName: last_name,
           email: email
-        },
-        ibp_options: {
-          func_name: 'createAccount'
         }
       })
     }
@@ -54,11 +43,7 @@ class Nexo extends Banking {
         body: {
           code: code
         },
-        secret: secret,
-        ibp_options: {
-          params: [nexo_id],
-          func_name: 'verifyEmail'
-        }
+        secret: secret
       })
     }
     catch (err) {
@@ -74,9 +59,6 @@ class Nexo extends Banking {
         method: "POST",
         body: {
           email: email
-        },
-        ibp_options: {
-          func_name: 'requestRecoveryCode'
         }
       })
     }
@@ -99,9 +81,6 @@ class Nexo extends Banking {
         body: {
           email: email,
           code: code
-        },
-        ibp_options: {
-          func_name: 'verifyRecoveryCode'
         }
       })
     }
@@ -116,11 +95,7 @@ class Nexo extends Banking {
       return await this._makeRequest({
         path: `/v1/user/${nexo_id}/balance`,
         method: "GET",
-        secret: secret,
-        ibp_options: {
-          params: [nexo_id],
-          func_name: 'getBalance'
-        }
+        secret: secret
       })
     }
     catch (err) {
@@ -134,11 +109,7 @@ class Nexo extends Banking {
       return await this._makeRequest({
         path: `/v1/user/${nexo_id}/deposit/${currency_id}/wallet`,
         method: "GET",
-        secret: secret,
-        ibp_options: {
-          params: [nexo_id, currency_id],
-          func_name: 'getDepositAddress'
-        }
+        secret: secret
       })
     }
     catch (err) {
@@ -158,11 +129,7 @@ class Nexo extends Banking {
           wallet_address,
           tag
         },
-        secret: secret,
-        ibp_options: {
-          params: [nexo_id],
-          func_name: 'withdraw'
-        }
+        secret: secret
       })
     }
     catch (err) {
@@ -179,11 +146,7 @@ class Nexo extends Banking {
         body: {
           code,
         },
-        secret: secret,
-        ibp_options: {
-          params: [nexo_id],
-          func_name: 'verifyWithdraw'
-        }
+        secret: secret
       })
     }
     catch (err) {
@@ -197,11 +160,7 @@ class Nexo extends Banking {
       return await this._makeRequest({
         path: `/v1/user/${nexo_id}/transactions/withdraw`,
         method: "GET",
-        secret: secret,
-        ibp_options: {
-          params: [nexo_id],
-          func_name: 'getWithdrawTransactions'
-        }
+        secret: secret
       })
     }
     catch (err) {
@@ -213,16 +172,9 @@ class Nexo extends Banking {
   async _makeRequest({ path, method, body, secret = null, ibp_options }) {
     let response;
     if (this.ibp) {
-      this._setHeaderIBP(secret);
-      let data = [];
-      if (ibp_options.params) {
-        data.push(ibp_options.params)
-      }
-      if (body) {
-        data.push(body)
-      }
-      response = await this.service.nexo[ibp_options.func_name](...data);
-      response = response.data;
+      response = await this._makeRequestThroughIBP({
+        path, method, params: body, secret
+      })
     }
     else {
       response = await this._makeRequestThroughNexo({
@@ -256,6 +208,37 @@ class Nexo extends Banking {
     return response.data;
   }
 
+  async _makeRequestThroughIBP({ path, method, params, secret = null }) {
+    let token = await _getIbpToken();
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+    if (secret) {
+      headers['X-Auth-User-Secret'] = secret;
+    }
+    if (method.toUpperCase() == "POST") {
+      let time = Date.now();
+      let checksum = _getChecksumIbp(method, `/nexo${path}`, params, time);
+      headers['x-time'] = time;
+      headers['x-checksum'] = checksum;
+    }
+
+    const options = {
+      method: method,
+      url: `${config.sdk.baseUrl}/nexo${path}`,
+      headers: headers,
+      data: params
+    }
+    const response = await axios(options);
+    if (response.data.error) {
+      logger.error(`IBP service error: `, response.data.error);
+      throw response.data.error;
+    }
+
+    return response.data.data;
+  }
+
   _setHeaderIBP(secret) {
     Http.send = async (url, method = 'GET', headers, data) => {
       if (!headers) {
@@ -270,6 +253,35 @@ class Nexo extends Banking {
       });
     }
   }
+}
+
+async function _getIbpToken() {
+  let token = await cache ? cache.getAsync(CACHE_KEY) : null;
+  if (token) {
+    return token;
+  }
+
+  const opts = {
+    apiKey: config.sdk.apiKey,
+    secret: config.sdk.secretKey,
+    url: `${config.sdk.baseUrl}/iam/token`
+  };
+  tokenProvider = new TokenProvider(opts);
+  token = await tokenProvider.getLatestToken();
+  if (cache) {
+    await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60);
+  }
+  return token;
+}
+
+function _getChecksumIbp(method, url, body, time) {
+  return tokenProvider.getChecksum({
+    secretKey: config.sdk.secretKey,
+    httpVerb: method,
+    url: url,
+    jsonEncodeBody: JSON.stringify(body),
+    xTime: time
+  })
 }
 
 module.exports = Nexo;

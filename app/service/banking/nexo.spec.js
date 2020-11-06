@@ -1,17 +1,22 @@
 /*eslint no-process-env: "off"*/
 require('dotenv').config();
 require('rootpath')();
+const sleep = require('sleep-promise');
+const redis = require('app/lib/redis');
 const NEXO = require("./nexo");
 const chai = require('chai');
 chai.should();
 
 let instance;
-const nexoId = '5fa3a62daeb8a8263663f293';
-const secret = '854e3aa6aa2da83457eb4c91da4058bebdbeaa7aef9dfc13080cf0b41352a8dd03534c12f3fd3a2d6181e5b6e3c9cfa62ebcc2d47b5112510cfbe89baf3efd10'
-const VerifyCode = '99410720';
+const nexoId = '5fa4cc9aaeb8a8263663f2c5';
+const secret = '4fdb6be21608c8079aec45217871ef7240b4a3dcdc34595f94dcc9813eb05f98eb8c60105004c541c0a0a8d7187069f0a83f051a9577f6604de21fe0ca4f9896'
+const VerifyCode = '70498035';
 
 describe('Test NEXO', function () {
   beforeEach(async () => {
+    redis.init(async err => {
+    });
+    await sleep(2000);
     instance = new NEXO({ ibp: true });
   });
 
@@ -22,6 +27,7 @@ describe('Test NEXO', function () {
       last_name: "Hoang",
       email: `huyht+${time}@blockchainlabs.asia`
     });
+    console.log(result);
     result.should.have.property('id');
     result.should.have.property('secret');
   });

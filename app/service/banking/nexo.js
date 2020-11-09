@@ -15,6 +15,7 @@ class Nexo extends Banking {
   constructor({ ibp = true }) {
     super();
     this.ibp = ibp;
+
   }
 
   async createAccount({ first_name, last_name, email }) {
@@ -256,9 +257,11 @@ class Nexo extends Banking {
 }
 
 async function _getIbpToken() {
-  let token = await cache.getAsync(CACHE_KEY);
-  if (token) {
-    return token;
+  if (cache) {
+    let token = await cache.getAsync(CACHE_KEY);
+    if (token) {
+      return token;
+    }
   }
 
   const opts = {
@@ -268,7 +271,9 @@ async function _getIbpToken() {
   };
   let tokenProvider = new TokenProvider(opts);
   token = await tokenProvider.getLatestToken();
-  await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60);
+  if (cache) {
+    await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60);
+  }
   return token;
 }
 

@@ -5,12 +5,15 @@ const sleep = require('sleep-promise');
 const redis = require('app/lib/redis');
 const NEXO = require("./nexo");
 const chai = require('chai');
+const expect = chai.expect;
+const assert = chai.assert;
 chai.should();
 
 let instance;
-const nexoId = '5fa4cc9aaeb8a8263663f2c5';
-const secret = '4fdb6be21608c8079aec45217871ef7240b4a3dcdc34595f94dcc9813eb05f98eb8c60105004c541c0a0a8d7187069f0a83f051a9577f6604de21fe0ca4f9896'
-const VerifyCode = '70498035';
+const nexoId = '5fa8b7e9bcf58e63ce0d87f0';
+const secret = '4e9db926c2444b7c5fb86e50583b271dc765cf93a76b9a3fdfd88f5b83e62ba74ca5c3b711616216e51b068b1a8e51b5f75a4eeafac3e76c90f942bb0e475473'
+const VerifyCode = '14521283';
+const nexoEmail = "huyht+1604892647537@blockchainlabs.asia"
 
 describe('Test NEXO', function () {
   beforeEach(async () => {
@@ -22,22 +25,30 @@ describe('Test NEXO', function () {
 
   it('Create account', async () => {
     let time = Date.now()
+    let email = `huyht+${time}@blockchainlabs.asia`;
     let result = await instance.createAccount({
       first_name: "Huy",
       last_name: "Hoang",
-      email: `huyht+${time}@blockchainlabs.asia`
+      email: email
     });
-    console.log(result);
+    console.log({ email, ...result });
     result.should.have.property('id');
     result.should.have.property('secret');
   });
 
-  it.only('Verify account', async () => {
+  it('Verify account', async () => {
     let result = await instance.verifyEmail({
       nexo_id: nexoId,
       code: VerifyCode,
       secret: secret
     });
-    console.log('Verify account::', result)
+    console.log('Verify account::', result);
+  });
+
+  it.only('requestRecoveryCode account', async () => {
+    let result = await instance.requestRecoveryCode({
+      email: nexoEmail
+    });
+    console.log('requestRecoveryCode account::', result)
   });
 });

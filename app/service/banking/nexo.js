@@ -93,11 +93,13 @@ class Nexo extends Banking {
 
   async getBalance({ nexo_id, secret }) {
     try {
-      return await this._makeRequest({
+      let result = await this._makeRequest({
         path: `/v1/user/${nexo_id}/balance`,
         method: "GET",
         secret: secret
-      })
+      });
+
+      return result.balances;
     }
     catch (err) {
       logger.error(`nexo getBalance error:`, err);

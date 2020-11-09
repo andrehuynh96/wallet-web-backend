@@ -1,7 +1,7 @@
 {
   "name": "staking-wallet-web-backend",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "v1.16.0-ms-rc",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@kevit/log4js-hangout": "^1.0.3",
     "aes256": "^1.0.4",
     "aws-sdk": "^2.622.0",
     "axios": "^0.19.2",

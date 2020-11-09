@@ -13,7 +13,14 @@ let instance;
 const nexoId = '5fa8c4b95d23de26301dbbe4';
 const secret = 'bc8136a77f720c603ac06b11d3b76efb1bbccc1484915acc56fb5d441b3ffdd9ab9771ff1bc061d32e6be5bb31681c05d6d870694789242fc6815eb86305debd'
 const VerifyCode = '36132006';
-const nexoEmail = "huyht+1604895928020@blockchainlabs.asia";
+
+// const nexoId = '5fa90d3bde111a217326fc7f';
+// const secret = '15466502b28e9f2b619cbc7b1ff61b1a4e5a7be7ac1e59da4987ab41fb43e6a2b39e435b0c85d252e98dd849510cb4fcf028c6696974dffb0dab5123dcff6591'
+// const VerifyCode = '68536443';
+
+const nexoEmail = "huyht+1604914489519@blockchainlabs.asia";
+const currencyId = 'NXTcJinsNucsB'//BTC: 'NXTcJinsNucsB';
+const walletAddress = 'mxSb3XcRUURLthzA4GFvzyTu1jK5Uro4kS';
 
 describe('Test NEXO', function () {
   beforeEach(async () => {
@@ -64,7 +71,7 @@ describe('Test NEXO', function () {
     result.should.have.property('secret');
   });
 
-  it('getBalance', async () => {
+  it.only('getBalance', async () => {
     let result = await instance.getBalance({
       nexo_id: nexoId,
       secret: secret
@@ -80,8 +87,48 @@ describe('Test NEXO', function () {
     //     min_earnable: '0.001',
     //     deposit_enabled: true,
     //     withdraw_enabled: true
-    //   }
+    //   },
+    // {
+    //   id: 'NXTYMFU8gS7vM',
+    //   name: 'USDT',
+    //   interest_rate: 8,
+    //   interest_earned: '0.00000000',
+    //   amount: '0.00000000',
+    //   min_earnable: '1',
+    //   deposit_enabled: true,
+    //   withdraw_enabled: true
+    // },
     // ]
+  });
+
+  it('getDepositAddress account', async () => {
+    let result = await instance.getDepositAddress({
+      nexo_id: nexoId,
+      secret: secret,
+      currency_id: currencyId
+    });
+    console.log('getDepositAddress::', result);
+    result.should.have.property('address');
+    result.should.have.property('status');
+    // {
+    //   status: 'ready',
+    //   address: '2N8TDLdRi77SdnRYEcjPyPtyReL3Lq5w6YA',
+    //   tag: null,
+    //   short_name: 'BTC'
+    // }
+  });
+
+  it('withdraw account', async () => {
+    let result = await instance.withdraw({
+      nexo_id: nexoId,
+      secret: secret,
+      currency_id: currencyId,
+      amount: 0.001,
+      wallet_address: walletAddress
+    });
+    console.log('withdraw::', result);
+    result.should.have.property('address');
+    result.should.have.property('status');
   });
 
 });

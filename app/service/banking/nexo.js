@@ -31,7 +31,8 @@ class Nexo extends Banking {
       })
     }
     catch (err) {
-      logger.error(`nexo createAccount error:`, err);
+      console.log(err.response.data);
+      //logger.error(`nexo createAccount error:`, err);
       throw err;
     }
   }
@@ -116,6 +117,7 @@ class Nexo extends Banking {
       })
     }
     catch (err) {
+      console.log(err.response.data);
       logger.error(`nexo getDepositAddress error:`, err);
       throw err;
     }
@@ -136,7 +138,8 @@ class Nexo extends Banking {
       })
     }
     catch (err) {
-      logger.error(`nexo withdraw error:`, err);
+      console.log(err.response.data);
+      //   logger.error(`nexo withdraw error:`, err);
       throw err;
     }
   }

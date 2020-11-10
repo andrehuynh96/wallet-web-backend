@@ -11,7 +11,7 @@ module.exports = {
         where: {
           email: req.body.email
         }
-      })
+      });
       if (member)
         return res.badRequest(res.__("EMAIL_EXISTED"), "EMAIL_EXISTED");
       const Service = BankFactory.create(BankProvider.Nexo, {});
@@ -26,7 +26,7 @@ module.exports = {
       });
       return res.ok(mapper(nexoMember));
     } catch (err) {
-      logger.error('create nexo account fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('create nexo account fail:', err);
       next(err);
     }
   },
@@ -37,7 +37,7 @@ module.exports = {
           member_id: req.user.id,
           email: req.body.email
         }
-      })
+      });
       if (!member)
         return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
       const Service = BankFactory.create(BankProvider.Nexo, {});
@@ -58,7 +58,7 @@ module.exports = {
       });
       return res.ok(true);
     } catch (err) {
-      logger.error('create nexo account fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('verify nexo account fail:', err);
       next(err);
     }
   },
@@ -79,7 +79,7 @@ module.exports = {
         return res.badRequest(result.error.message, "NEXO_ERROR");
       return res.ok(true);
     } catch (err) {
-      logger.error('request recovery nexo account fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('request recovery nexo account fail:', err);
       next(err);
     }
   },
@@ -110,8 +110,8 @@ module.exports = {
       });
       return res.ok(true);
     } catch (err) {
-      logger.error('verify recovery nexo account code fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('verify recovery nexo account code fail:', err);
       next(err);
     }
   }
-}
+};

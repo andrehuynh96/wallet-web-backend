@@ -2,7 +2,7 @@ const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./nexo-member.controller');
 const validator = require('app/middleware/validator.middleware');
-const { create, verify } = require('./validator');
+const { create, verify, recovery_request, recovery_verify } = require('./validator');
 const router = express.Router();
 
 router.post(
@@ -19,6 +19,19 @@ router.post(
   controller.verify
 );
 
+router.post(
+  '/members/recovery/request',
+  authenticate,
+  validator(recovery_request),
+  controller.recoveryRequest
+)
+
+router.post(
+  '/members/recovery/verify',
+  authenticate,
+  validator(recovery_verify),
+  controller.verifyRecovery
+)
 
 module.exports = router;
 
@@ -107,6 +120,105 @@ module.exports = router;
  *               {
  *                  "email": "thangdv@deliomart.com",
                     "code":"41827922"
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+/**
+ * @swagger
+ * /web/bank/nexo/members/recovery/request:
+ *   post:
+ *     summary: recovery nexo account request
+ *     tags:
+ *       - Bank
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - email
+ *            example:
+ *               {
+ *                  "email": "jackpercy@olympios.com",
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+
+/**
+ * @swagger
+ * /web/bank/nexo/members/recovery/verify:
+ *   post:
+ *     summary: verify nexo recovery account code
+ *     tags:
+ *       - Bank
+ *     description:
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - email
+ *            - code
+ *            example:
+ *               {
+ *                  "email": "jackpercy@olympios.com",
+ *                   "code": "123456"
                   }
  *     produces:
  *       - application/json

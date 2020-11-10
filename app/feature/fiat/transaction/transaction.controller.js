@@ -23,7 +23,7 @@ module.exports = {
       return res.ok(result);
     }
     catch (err) {
-      logger.error('estimate fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('estimate fail:', err);
       next(err);
     }
   },
@@ -51,7 +51,7 @@ module.exports = {
         from_currency: result.sourceCurrency,
         to_cryptocurrency: result.destCurrency,
         to_address: result.dest
-      }
+      };
       if (result.transferId) {
         let transaction = await Service.getTransaction({ transferId: result.transferId });
         if (transaction) {
@@ -62,7 +62,7 @@ module.exports = {
           data.message = transaction.message;
           data.fees = transaction.fees;
           data.total_fee = transaction.fee;
-          data.response = JSON.stringify(transaction)
+          data.response = JSON.stringify(transaction);
         }
       }
       await FiatTransaction.create(data);
@@ -71,7 +71,7 @@ module.exports = {
         status: result.status == FiatStatus.FAILED ? 0 : 1
       });
     } catch (err) {
-      logger.error('create fiat transaction fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('create fiat transaction fail:', err);
       next(err);
     }
   },
@@ -104,7 +104,7 @@ module.exports = {
       }
       return res.ok(result);
     } catch (err) {
-      logger.error('create fiat transaction fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('make fiat transaction fail:', err);
       next(err);
     }
   },
@@ -119,7 +119,7 @@ module.exports = {
         transaction_id: result.transferId,
         payment_method_name: result.paymentMethodName,
         order_type: result.orderType
-      }
+      };
       if (result.transferId) {
         let transaction = await Service.getTransaction({ transferId: result.transferId });
         if (transaction) {
@@ -130,7 +130,7 @@ module.exports = {
           data.message = transaction.message;
           data.fees = transaction.fees;
           data.total_fee = transaction.fee;
-          data.response = JSON.stringify(transaction)
+          data.response = JSON.stringify(transaction);
         }
       }
       await FiatTransaction.update(data, {
@@ -138,10 +138,10 @@ module.exports = {
           member_id: req.user.id,
           id: req.params.id
         }
-      })
+      });
       return res.ok(true);
     } catch (err) {
-      logger.error('update fiat transaction fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('update fiat transaction fail:', err);
       next(err);
     }
   },
@@ -160,7 +160,7 @@ module.exports = {
         return res.ok(Mapper(transaction));
       }
     } catch (err) {
-      logger.error('get fiat transaction fail:', err);
+      logger[err.canLogAxiosError ? 'error' : 'info']('get fiat transaction fail:', err);
       next(err);
     }
   },
@@ -169,11 +169,11 @@ module.exports = {
       let { query: { offset, limit, sort_field, sort_by }, user } = req;
       const where = { member_id: user.id };
       const off = parseInt(offset) || 0;
-      const lim = parseInt(limit) || parseInt(conf.appLimit)
-      let field = sort_field || 'createdAt'
+      const lim = parseInt(limit) || parseInt(conf.appLimit);
+      let field = sort_field || 'createdAt';
       field = (field == 'created_at' ? 'createdAt' : field);
       field = (field == 'updated_at' ? 'updatedAt' : field);
-      const by = sort_by && (sort_by.toUpperCase() == 'DESC' || sort_by.toUpperCase() == 'ASC') ? sort_by.toUpperCase() : 'DESC'
+      const by = sort_by && (sort_by.toUpperCase() == 'DESC' || sort_by.toUpperCase() == 'ASC') ? sort_by.toUpperCase() : 'DESC';
       let { count: total, rows: transactions } = await FiatTransaction.findAndCountAll({
         where: where,
         limit: lim,
@@ -187,8 +187,8 @@ module.exports = {
         total: total
       });
     } catch (err) {
-      logger.error('get fiat transaction by user fail:', err);
-      next(err)
+      logger[err.canLogAxiosError ? 'error' : 'info']('get fiat transaction by user fail:', err);
+      next(err);
     }
   }
-}
+};

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const config = require('app/config');
 const logger = require('app/lib/logger');
 const CryptoJS = require('crypto-js');
@@ -59,7 +60,7 @@ class Wyre extends Fiat {
       return await this._makeRequest({ path, method, params });
     }
     catch (err) {
-      logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre estimate error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre estimate error:`, err);
       throw err;
     }
   }
@@ -112,7 +113,7 @@ class Wyre extends Fiat {
       return await this._makeRequest({ path, method, params });
     }
     catch (err) {
-      logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre make transaction error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre make transaction error:`, err);
       throw err;
     }
   }
@@ -124,7 +125,7 @@ class Wyre extends Fiat {
       return response.data;
     }
     catch (err) {
-      logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre get transaction error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre get transaction error:`, err);
       throw err;
     }
   }
@@ -136,7 +137,7 @@ class Wyre extends Fiat {
       return response.data;
     }
     catch (err) {
-      console.error(`Wyre get order error:`, err);
+      // console.error(`Wyre get order error:`, err);
       throw err;
     }
   }

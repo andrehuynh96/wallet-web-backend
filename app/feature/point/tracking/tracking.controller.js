@@ -120,7 +120,7 @@ async function _sendNotification({ member_id, point, platform, tx_id, amount }) 
         firstName: member.first_name,
         lastName: member.last_name,
         point: point,
-        point_unit: 'MS_POINT',
+        point_unit: 'points',
         amount: amount,
         platform: platform
       });

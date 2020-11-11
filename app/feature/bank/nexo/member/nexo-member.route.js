@@ -24,13 +24,25 @@ router.post(
   authenticate,
   validator(recovery_request),
   controller.recoveryRequest
-)
+);
 
 router.post(
   '/members/recovery/verify',
   authenticate,
   validator(recovery_verify),
   controller.verifyRecovery
+);
+
+router.get(
+  '/members',
+  authenticate,
+  controller.getAccount
+);
+
+router.get(
+  '/members/balance',
+  authenticate,
+  controller.getBalance
 )
 
 module.exports = router;
@@ -230,6 +242,95 @@ module.exports = router;
  *             {
  *                 "data": true
  *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/bank/nexo/members:
+ *   get:
+ *     summary: get nexo account
+ *     tags:
+ *       - Bank
+ *     description:
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                "data": {
+                        "id":"",
+                        "email":"",
+                        "first_name": "",
+                        "last_name": "",
+                        "nexo_id": "",
+                        "created_at": "",
+                        "updated_at": ""
+                    }
+ *              }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+ /**
+ * @swagger
+ * /web/bank/nexo/members/balance:
+ *   get:
+ *     summary: get balance by current log in user nexo account
+ *     tags:
+ *       - Bank
+ *     description:
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *              "data": {
+ *                "items": [
+ *                  {
+                      'id': '',
+                      'name': '',
+                      'interest_rate': '',
+                      'interest_earned': '',
+                      'amount': '',
+                      'min_earnable': '',
+                      'deposit_enabled': '',
+                      'withdraw_enabled': '' 
+ *                  }
+ *                 ]
+ *               }
+ *              }
  *       400:
  *         description: Error
  *         schema:

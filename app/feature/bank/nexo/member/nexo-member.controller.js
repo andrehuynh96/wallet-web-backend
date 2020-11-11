@@ -4,6 +4,7 @@ const BankProvider = require('app/service/banking/provider');
 const NexoMember = require('app/model/wallet').nexo_members;
 const Status = require('app/model/wallet/value-object/nexo-member-status');
 const mapper = require('./nexo-member.response-schema');
+const balanceMapper = require('./nexo-balance.response-schema');
 module.exports = {
   create: async (req, res, next) => {
     try {
@@ -111,6 +112,43 @@ module.exports = {
       return res.ok(true);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('verify recovery nexo account code fail:', err);
+      next(err);
+    }
+  },
+  getAccount: async (req, res, next) => {
+    try {
+      let account = await NexoMember.findOne({
+        where: {
+          member_id: req.user.id
+        }
+      });
+      if (!account)
+        return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
+      return res.ok(mapper(account));
+    } catch (err) {
+      logger[err.canLogAxiosError ? 'error' : 'info']('get nexo account fail:', err);
+      next(err);
+    }
+  },
+  getBalance: async (req, res, next) => {
+    try {
+      let account = await NexoMember.findOne({
+        where: {
+          member_id: req.user.id
+        }
+      });
+      if (!account)
+        return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
+      const Service = BankFactory.create(BankProvider.Nexo, {});
+      const result = await Service.getBalance({
+        nexo_id: account.nexo_id,
+        secret: account.user_secret
+      });
+      if (result.error)
+        return res.badRequest(result.error.message, "NEXO_ERROR");
+      return res.ok(balanceMapper(result))
+    } catch (err) {
+      logger[err.canLogAxiosError ? 'error' : 'info']('get balance by nexo account fail:', err);
       next(err);
     }
   }

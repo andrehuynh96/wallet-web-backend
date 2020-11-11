@@ -17,7 +17,7 @@ module.exports = {
       const Service = BankFactory.create(BankProvider.Nexo, {});
       let account = await Service.createAccount(req.body);
       if (account.error)
-        return res.badRequest(account.error.message, "NEXO_ERROR");
+        return res.badRequest(account.error.message, "NEXO_CREATE_ACCOUNT_ERROR");
       let nexoMember = await NexoMember.create({
         ...req.body,
         member_id: req.user.id,
@@ -27,6 +27,9 @@ module.exports = {
       return res.ok(mapper(nexoMember));
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('create nexo account fail:', err);
+      if (err.response.status == 400) {
+        return res.badRequest(err.response.data.error.detail, "NEXO_CREATE_ACCOUNT_ERROR");
+      }
       next(err);
     }
   },
@@ -47,7 +50,7 @@ module.exports = {
         code: req.body.code
       });
       if (result.error)
-        return res.badRequest(result.error.message, "NEXO_ERROR");
+        return res.badRequest(result.error.message, "NEXO_VERIFY_ACCOUNT_ERROR");
       await NexoMember.update({
         status: Status.ACTIVATED
       }, {
@@ -59,6 +62,9 @@ module.exports = {
       return res.ok(true);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('verify nexo account fail:', err);
+      if (err.response.status == 400) {
+        return res.badRequest(err.response.data.error.detail, "NEXO_VERIFY_ACCOUNT_ERROR");
+      }
       next(err);
     }
   },

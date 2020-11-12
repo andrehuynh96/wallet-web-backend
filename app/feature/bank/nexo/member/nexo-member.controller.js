@@ -83,10 +83,13 @@ module.exports = {
         email: req.body.email
       });
       if (result.error)
-        return res.badRequest(result.error.message, "NEXO_ERROR");
+        return res.badRequest(result.error.message, "NEXO_PROVIDER_ERROR");
       return res.ok(true);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('request recovery nexo account fail:', err);
+      if (err.response.status == 400) {
+        return res.badRequest(err.response.data.error.detail, "NEXO_PROVIDER_ERROR");
+      }
       next(err);
     }
   },
@@ -105,7 +108,7 @@ module.exports = {
         code: req.body.code
       });
       if (result.error)
-        return res.badRequest(result.error.message, "NEXO_ERROR");
+        return res.badRequest(result.error.message, "NEXO_PROVIDER_ERROR");
       await NexoMember.update({
         nexo_id: result.id,
         user_secret: result.secret,
@@ -118,6 +121,9 @@ module.exports = {
       return res.ok(true);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('verify recovery nexo account code fail:', err);
+      if (err.response.status == 400) {
+        return res.badRequest(err.response.data.error.detail, "NEXO_PROVIDER_ERROR");
+      }
       next(err);
     }
   },
@@ -151,10 +157,13 @@ module.exports = {
         secret: account.user_secret
       });
       if (result.error)
-        return res.badRequest(result.error.message, "NEXO_ERROR");
+        return res.badRequest(result.error.message, "NEXO_PROVIDER_ERROR");
       return res.ok(balanceMapper(result))
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('get balance by nexo account fail:', err);
+      if (err.response.status == 400) {
+        return res.badRequest(err.response.data.error.detail, "NEXO_PROVIDER_ERROR");
+      }
       next(err);
     }
   }

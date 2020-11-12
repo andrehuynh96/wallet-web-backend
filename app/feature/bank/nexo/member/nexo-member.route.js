@@ -89,6 +89,7 @@ module.exports = router;
                       "first_name": "",
                       "last_name": "",
                       "nexo_id": "5fa4bfedbcf58e63ce0d87b8",
+                      "status": "UNACTIVATED/ACTIVATED"
                       "created_at": "",
                       "updated_at": ""
                   }

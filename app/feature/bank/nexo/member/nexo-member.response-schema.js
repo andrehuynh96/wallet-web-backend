@@ -7,6 +7,7 @@ const destObject = {
     '[].first_name': '[].first_name',
     '[].last_name': '[].last_name',
     '[].nexo_id': '[].nexo_id',
+    '[].status': '[].status',
     '[].createdAt': '[].created_at',
     '[].updatedAt': '[].updated_at',
   },
@@ -16,6 +17,7 @@ const destObject = {
     first_name: 'first_name',
     last_name: 'last_name',
     nexo_id: 'nexo_id',
+    status: 'status',
     createdAt: 'created_at',
     updatedAt: 'updated_at',
   }

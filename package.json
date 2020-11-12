@@ -13,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@kevit/log4js-hangout": "^1.0.3",
     "aes256": "^1.0.4",
     "aws-sdk": "^2.622.0",
     "axios": "^0.19.2",
@@ -63,7 +62,7 @@
     "redis": "^2.8.0",
     "request-ip": "^2.1.3",
     "rootpath": "^0.1.2",
-    "staking-logging": "^0.1.5",
+    "staking-logging": "^0.1.7",
     "sequelize": "^5.21.3",
     "sequelize-cli": "^5.5.1",
     "sequelize-temporal": "^1.0.8",

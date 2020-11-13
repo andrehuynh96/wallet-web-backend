@@ -3,5 +3,6 @@ const router = express.Router();
 router.use(require("./member/nexo-member.route"));
 router.use(require("./transaction/nexo-transaction.route"));
 router.use(require("./deposit/nexo-deposit.route"));
+router.use(require("./withdraw/nexo-withdraw.route"));
 
 module.exports = router;

@@ -7,16 +7,18 @@ const MembershipType = require('app/model/wallet').membership_types;
 const Setting = require('app/model/wallet').settings;
 const Member = require('app/model/wallet').members;
 const database = require('app/lib/database').db().wallet;
+const PointAction = require("app/model/wallet/value-object/point-action");
+
 module.exports = {
   getAll: async (req, res, next) => {
     try {
       logger.info('claim-point::all');
-      const { query: { offset, limit}, user } = req;
+      const { query: { offset, limit }, user } = req;
       const where = { member_id: user.id };
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 
-      const { count: total, rows: claims } = await ClaimPoint.findAndCountAll({ offset: off, limit: lim, where: where, order: [['created_at','DESC']] });
+      const { count: total, rows: claims } = await ClaimPoint.findAndCountAll({ offset: off, limit: lim, where: where, order: [['created_at', 'DESC']] });
       return res.ok({
         items: claimPointMapper(claims),
         offset: off,
@@ -66,7 +68,7 @@ module.exports = {
           where: {
             member_id: req.user.id,
           },
-          order: [['created_at','DESC']]
+          order: [['created_at', 'DESC']]
         });
         let setting = await Setting.findOne({
           where: {
@@ -87,7 +89,7 @@ module.exports = {
         }, transaction);
         await Member.increment({
           points: parseInt(membershipType.claim_points)
-        },{
+        }, {
           where: {
             id: req.user.id
           },
@@ -97,10 +99,10 @@ module.exports = {
         return res.ok(true);
       } else {
         return res.ok(false);
-      }    
+      }
     } catch (err) {
       logger.error("create claim point fail: ", err);
-      if(transaction) {
+      if (transaction) {
         transaction.rollback();
       }
       next(err);
@@ -118,8 +120,9 @@ module.exports = {
         let claim = await ClaimPoint.findOne({
           where: {
             member_id: req.user.id,
+            action: PointAction.CLAIM
           },
-          order: [['created_at','DESC']]
+          order: [['created_at', 'DESC']]
         });
         let setting = await Setting.findOne({
           where: {
@@ -129,7 +132,7 @@ module.exports = {
         let next_time = claim ? Date.parse(claim.createdAt) / 1000 + parseInt(setting.value) : 0;
         let claimable = true;
         let now = Date.now() / 1000;
-        if (now < next_time) 
+        if (now < next_time)
           claimable = false;
         return res.ok({
           claimable: claimable,
@@ -139,7 +142,7 @@ module.exports = {
         return res.ok({
           claimable: false
         });
-      } 
+      }
     } catch (err) {
       logger.error("check claim point fail: ", err);
       next(err);

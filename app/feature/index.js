@@ -31,6 +31,7 @@ router.use('/exchange', require('./exchange'));
 router.use(require('./email-tracking/email-tracking.route'));
 router.use('/asset', require('./get-asset/get-asset.route'));
 router.use('/coin-gecko', require('./coin-gecko'));
+router.use(require('./point/point.route'));
 
 module.exports = router;
 

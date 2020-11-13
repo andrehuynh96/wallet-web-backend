@@ -71,7 +71,7 @@ describe('Test NEXO', function () {
     result.should.have.property('secret');
   });
 
-  it.only('getBalance', async () => {
+  it('getBalance', async () => {
     let result = await instance.getBalance({
       nexo_id: nexoId,
       secret: secret

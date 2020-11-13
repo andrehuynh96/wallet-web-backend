@@ -261,9 +261,9 @@ function _getDateFilter(dateType, columnName) {
       query = `CONCAT(
             DATE_PART('YEAR', ${columnName}),
             '-',
-            DATE_PART('MONTH', ${columnName}), 
+            lpad(DATE_PART('MONTH', ${columnName}),2,'0'), 
             '-',
-            DATE_PART('DAY', ${columnName}), 
+            lpad(DATE_PART('DAY', ${columnName}),2,'0'), 
             ' ',
             DATE_PART('HOUR', ${columnName}),
             ':00')`;
@@ -274,9 +274,9 @@ function _getDateFilter(dateType, columnName) {
       query = `CONCAT(
                 DATE_PART('YEAR', ${columnName}),
                 '-',
-                DATE_PART('MONTH', ${columnName}), 
+                lpad(DATE_PART('MONTH', ${columnName}),2,'0'), 
                 '-',
-                DATE_PART('DAY', ${columnName}))`;
+                lpad(DATE_PART('DAY', ${columnName}),2,'0'))`;
       break;
 
     case 'YEAR':

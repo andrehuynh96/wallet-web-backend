@@ -16,6 +16,7 @@ const destObject = {
     "[].tx_id": "[].tx_id",
     "[].status": "[].status",
     "[].response": "[].response",
+    "[].nexo_transaction_id": "[].nexo_transaction_id",
     "[].device_code": "[].device_code",
     "[].createdAt": "[].created_at",
     "[].updatedAt": "[].updated_at"
@@ -37,6 +38,7 @@ const destObject = {
     "status": "status",
     "response": "response",
     "device_code": "device_code",
+    "nexo_transaction_id": "nexo_transaction_id",
     "createdAt": "created_at",
     "updatedAt": "updated_at"
   }

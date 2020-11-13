@@ -78,6 +78,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT('long'),
       allowNull: true
     },
+    nexo_transaction_id: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    }
   }, {
     underscored: true,
     timestamps: true,

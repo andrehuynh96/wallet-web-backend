@@ -6,7 +6,9 @@ const config = require("app/config");
     await Promise.all([require("./member")(),
     require("./currency")(),
     require("./membership-type")(),
-    require("./setting")()]);
+    require("./setting")(),
+    require("./fiat-currency")(),
+    require("./fiat-cryptocurrency")()]);
     await require("./level")();
     await require("./level-property")();
     await require("./email-template")();

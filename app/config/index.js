@@ -288,7 +288,10 @@ const config = {
     CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE: "CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE",
     CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE: "CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE",
     MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE: "MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE",
-    MS_POINT_DELAY_TIME_IN_SECONDS: "MS_POINT_DELAY_TIME_IN_SECONDS"
+    MS_POINT_DELAY_TIME_IN_SECONDS: "MS_POINT_DELAY_TIME_IN_SECONDS",
+    MS_POINT_STAKING_IS_ENABLED: "MS_POINT_STAKING_IS_ENABLED",
+    MS_POINT_EXCHANGE_IS_ENABLED: "MS_POINT_EXCHANGE_IS_ENABLED",
+    MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED: "MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED",
   },
   apiKeyIP: process.env.API_IP_KEY || '',
   bodyTransferLimit: process.env.BODY_TRANSFER_LIMIT || '5mb',
@@ -303,6 +306,21 @@ const config = {
   webWallet: {
     apiUrl: process.env.WEB_WALLET_API_URL || "https://dev-staking-wallet-web.chainservices.info",
     trackingEmailApiToken: process.env.WEB_WALLET_TRACKING_EMAIL_API_TOKEN,
+  },
+  fiat: {
+    wyre: {
+      url: process.env.WYRE_URL,
+      apiKey: process.env.WYRE_API_KEY,
+      secretKey: process.env.WYRE_SECRET_KEY,
+      accountId: process.env.WYRE_ACCOUNT_ID
+    }
+  },
+  banking: {
+    nexo: {
+      usingIBP: process.env.NEXO_USING_IBP == "1",
+      url: process.env.NEXO_URL,
+      apiKey: process.env.NEXO_API_KEY,
+    }
   }
 };
 

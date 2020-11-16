@@ -54,6 +54,7 @@ module.exports = {
                         SUM(amount) AS staked, 
                         platform AS currency,
                         COUNT(platform) AS number_row,
+                        sum(cast(missed_daily as int)) > 0 as missed_daily,
                         ${timeFilter} AS ct 
                         FROM member_assets 
                         WHERE member_assets.address IN (
@@ -85,7 +86,8 @@ module.exports = {
         items[itemResults[i].currency].push({
           reward: parseFloat((new BigNumber(itemResults[i].reward))),
           staked: parseFloat((new BigNumber(itemResults[i].staked)).div(parseFloat(itemResults[i].number_row))),
-          date: itemResults[i].ct
+          date: itemResults[i].ct,
+          missed_daily: itemResults[i].missed_daily
         });
       }
 
@@ -103,7 +105,6 @@ module.exports = {
   },
   getAssetHistory: async (req, res, next) => {
     try {
-
       const validate = Joi.validate(req.query, historySchema);
       if (validate.error) {
         console.log(validate.error);
@@ -161,6 +162,7 @@ module.exports = {
                         platform AS currency, 
                         reward, 
                         amount AS staked, 
+                        missed_daily,
                         created_at,
                         updated_at
                         FROM member_assets 
@@ -187,7 +189,8 @@ module.exports = {
           symbol: item.currency,
           reward: parseFloat((new BigNumber(item.reward))),
           staked: parseFloat((new BigNumber(item.staked))),
-          create_at: item.created_at
+          create_at: item.created_at,
+          missed_daily: item.missed_daily,
         };
       });
 
@@ -258,9 +261,9 @@ function _getDateFilter(dateType, columnName) {
       query = `CONCAT(
             DATE_PART('YEAR', ${columnName}),
             '-',
-            DATE_PART('MONTH', ${columnName}), 
+            TRIM(to_char(DATE_PART('MONTH', ${columnName}),'00')), 
             '-',
-            DATE_PART('DAY', ${columnName}), 
+            TRIM(to_char(DATE_PART('DAY', ${columnName}),'00')), 
             ' ',
             DATE_PART('HOUR', ${columnName}),
             ':00')`;
@@ -271,9 +274,9 @@ function _getDateFilter(dateType, columnName) {
       query = `CONCAT(
                 DATE_PART('YEAR', ${columnName}),
                 '-',
-                DATE_PART('MONTH', ${columnName}), 
+                TRIM(to_char(DATE_PART('MONTH', ${columnName}),'00')), 
                 '-',
-                DATE_PART('DAY', ${columnName}))`;
+                TRIM(to_char(DATE_PART('DAY', ${columnName}),'00')))`;
       break;
 
     case 'YEAR':

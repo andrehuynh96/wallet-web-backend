@@ -3,6 +3,7 @@ const ExchangeFactory = require('app/service/exchange/factory');
 const ExchangeProvider = require('app/service/exchange/provider');
 const ExchangeTransaction = require('app/model/wallet').exchange_transactions;
 const Mapper = require("app/feature/response-schema/exchange/transaction.response-schema");
+const CoinGeckoPrice = require('app/lib/coin-gecko-client');
 
 module.exports = async (req, res, next) => {
   try {
@@ -23,6 +24,8 @@ module.exports = async (req, res, next) => {
       return res.badRequest(result.error.message, "EXCHANGE_PROVIDER_ERROR");
     }
     result = result.result;
+
+    let estimateAmountUSD = await _getAmountUSD(req.body.from_currency.toUpperCase(), result.amount_expected_from);
     let response = await ExchangeTransaction.create({
       member_id: req.user.id,
       from_currency: req.body.from_currency.toUpperCase(),
@@ -45,12 +48,23 @@ module.exports = async (req, res, next) => {
       amount_to: result.amount_to > 0 ? result.amount_to : result.amount_expected_to,
       payin_address: result.payin_address,
       payout_address: result.payout_address,
-      response: JSON.stringify(result)
+      response: JSON.stringify(result),
+      estimate_amount_usd: estimateAmountUSD
     });
     return res.ok(Mapper(response));
   }
   catch (err) {
     logger.error('estimate fail:', err);
     next(err);
+  }
+}
+
+async function _getAmountUSD(platform, amount) {
+  try {
+    const { price } = await CoinGeckoPrice.getPrice({ platform_name: platform, currency: 'usd' });
+    return price * amount;
+  }
+  catch (err) {
+    return 0;
   }
 }

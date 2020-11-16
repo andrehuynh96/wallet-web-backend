@@ -38,7 +38,7 @@ module.exports = {
       return res.ok(Mapper(transaction));
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('nexo witdraw fail:', err);
-      if (err.response.status == 400) {
+      if (err.response && err.response.status == 400) {
         return res.badRequest(err.response.data.error.detail, "NEXO_WITHDRAW_ERROR");
       }
       next(err);
@@ -74,7 +74,7 @@ module.exports = {
       return res.ok(true);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('verify nexo witdraw fail:', err);
-      if (err.response.status == 400) {
+      if (err.response && err.response.status == 400) {
         return res.badRequest(err.response.data.error.detail, "NEXO_VERIFY_WITHDRAW_ERROR");
       }
       next(err);

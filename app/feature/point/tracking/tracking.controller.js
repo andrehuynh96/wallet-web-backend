@@ -43,7 +43,7 @@ module.exports = {
           key: config.setting.MS_POINT_STAKING_IS_ENABLED
         }
       });
-      if (!setting || Boolean(setting.value) == false) {
+      if (!setting || setting.value == 'false') {
         return res.badRequest(res.__("POINT_STAKING_IS_DISABLE"), "POINT_STAKING_IS_DISABLE");
       }
 

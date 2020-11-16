@@ -25,7 +25,7 @@ module.exports = {
       return res.ok(result);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('get address deposit fail:', err);
-      if (err.response.status == 400) {
+      if (err.response && err.response.status == 400) {
         return res.badRequest(err.response.data.error.detail, "NEXO_GET_DEPOSIT_ERROR");
       }
       next(err);

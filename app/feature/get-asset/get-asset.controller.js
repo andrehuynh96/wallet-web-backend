@@ -54,7 +54,7 @@ module.exports = {
                         SUM(amount) AS staked, 
                         platform AS currency,
                         COUNT(platform) AS number_row,
-                        sum(cast(missed_daily as int)) > 0 as missed_daily,
+                        ${type.toUpperCase() === 'YEAR' ? 'sum(cast(missed_daily as int)) = COUNT(platform)' : ' (sum(cast(missed_daily as int))>0 AND SUM(amount)> 0)'} as missed_daily,
                         ${timeFilter} AS ct 
                         FROM member_assets 
                         WHERE member_assets.address IN (

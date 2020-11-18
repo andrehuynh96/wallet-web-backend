@@ -5,9 +5,9 @@ const router = express.Router();
 
 
 router.get(
-    '/active',
-    authenticate,
-    controller.getSurveys
+  '/active',
+  authenticate,
+  controller.getSurveys
 );
 
 module.exports = router;

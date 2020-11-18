@@ -1,6 +1,7 @@
 const logger = require('app/lib/logger');
 const Surveys = require('app/model/wallet').surveys;
 const Questions = require('app/model/wallet').questions;
+const Answers = require('app/model/wallet').question_answers;
 const surveyMapper = require('./survey.response-schema');
 const questionMapper = require('./question.response-schema');
 const sequelize = require('sequelize');
@@ -11,17 +12,30 @@ module.exports = {
                 where: sequelize.literal(
                     `start_date<NOW() AND NOW()<end_date AND created_at = (SELECT MAX(created_at) from surveys)`)
             });
-            survey = surveyMapper(survey);
-            if (!survey || !survey.id) return res.ok({})
+            let ret_survey = surveyMapper(survey);
+            if (!ret_survey || !ret_survey.id) return res.ok({})
             let questions = await Questions.findAll({
                 where: {
-                    survey_id: survey.id
-                }
+                    survey_id: ret_survey.id
+                },
+                include: [{
+                    model: Answers,
+                    as: "Answers"
+                }]
             })
-            questions = questionMapper(questions)
+            let ret_questions = questionMapper(questions)
+            if (req.user.current_language == 'ja') {
+                ret_survey.content = survey.content_ja;
+                for (let i = 0; i < ret_questions.length; i++) {
+                    ret_questions[i].title = questions[i].dataValues.title_ja
+                    for (let j = 0; j < ret_questions[i].Answers.length; j++) {
+                        ret_questions[i].Answers[j].text = questions[i].dataValues.Answers[j].text_ja
+                    }
+                }
+            }
             return res.ok({
-                ...survey,
-                questions: questions
+                ...ret_survey,
+                questions: ret_questions
             })
         } catch (err) {
             logger.error('get active surveys fail: ', err);

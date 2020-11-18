@@ -5,7 +5,6 @@ const destObject = {
     "id":"id",
     "name":"name",
     "content":"content",
-    "content_ja":"content_ja",
     "start_date":"start_date",
     "end_date":"end_date",
     "activated_flg":"activated_flg",

@@ -12,6 +12,7 @@ module.exports = {
                     `start_date<NOW() AND NOW()<end_date AND created_at = (SELECT MAX(created_at) from surveys)`)
             });
             survey = surveyMapper(survey);
+            if (!survey || !survey.id) return res.ok({})
             let questions = await Questions.findAll({
                 where: {
                     survey_id: survey.id

@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     survey_id: {
       type: DataTypes.UUID,
-      primaryKey: true,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4(),
     },

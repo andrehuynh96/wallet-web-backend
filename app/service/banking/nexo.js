@@ -51,9 +51,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
-      console.log(err);
-      console.log(err.response.data);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err); 
       throw err;
     }
   }

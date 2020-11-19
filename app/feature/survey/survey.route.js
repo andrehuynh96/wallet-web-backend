@@ -7,12 +7,12 @@ const router = express.Router();
 router.get(
   '/active',
   authenticate,
-  controller.getSurveys
+  controller.getInProcessSurvey
 );
 
 module.exports = router;
 
-/**********************************************************************/
+/** ********************************************************************/
 
 /**
  * @swagger

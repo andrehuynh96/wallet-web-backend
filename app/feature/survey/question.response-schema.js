@@ -1,10 +1,11 @@
 const objectMapper = require('object-mapper');
-const answersMapper = require('./answer.response-schema')
+const answersMapper = require('./answer.response-schema');
 
 const destObject = {
   array: {
     "[].id": "[].id",
     "[].title": "[].title",
+    "[].title_ja": "[].title_ja",
     "[].question_type": "[].question_type",
     "[].category_type": "[].category_type",
     "[].points": "[].points",
@@ -20,8 +21,10 @@ const destObject = {
 
 module.exports = srcObject => {
   let questions = objectMapper(srcObject, destObject.array);
+
   for (let i = 0; i < questions.length; i++) {
-    questions[i].answers = answersMapper(questions[i].answers)
+    questions[i].answers = answersMapper(questions[i].answers);
   }
-  return questions
+
+  return questions;
 };

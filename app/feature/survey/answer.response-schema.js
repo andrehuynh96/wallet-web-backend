@@ -4,6 +4,7 @@ const destObject = {
     "[].id": "[].id",
     "[].question_id": "[].question_id",
     "[].text": "[].text",
+    "[].text_ja": "[].text_ja",
     "[].createdAt": "[].created_at",
     "[].updatedAt": "[].updated_at"
   },

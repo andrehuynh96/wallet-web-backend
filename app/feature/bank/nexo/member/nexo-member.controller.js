@@ -13,12 +13,16 @@ module.exports = {
           email: req.body.email
         }
       });
-      if (member)
+      if (member) {
         return res.badRequest(res.__("EMAIL_EXISTED"), "EMAIL_EXISTED");
+      }
+
       const Service = BankFactory.create(BankProvider.Nexo, {});
       let account = await Service.createAccount(req.body);
-      if (account.error)
+      if (account.error) {
         return res.badRequest(account.error.message, "NEXO_CREATE_ACCOUNT_ERROR");
+      }
+
       let nexoMember = await NexoMember.create({
         ...req.body,
         member_id: req.user.id,
@@ -34,29 +38,69 @@ module.exports = {
       next(err);
     }
   },
+
+  resendActiveCode: async (req, res, next) => {
+    try {
+      let nexoMember = await NexoMember.findOne({
+        where: {
+          email: req.body.email
+        }
+      });
+      if (!nexoMember) {
+        return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
+      }
+      if (nexoMember.member_id && nexoMember.member_id != req.user.id) {
+        return res.badRequest(res.__("DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT"), "DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT");
+      }
+
+      const Service = BankFactory.create(BankProvider.Nexo, {});
+      let result = await Service.resendActiveCode({
+        email: req.body.email,
+        secret: nexoMember.user_secret,
+        first_name: nexoMember.first_name,
+        last_name: nexoMember.last_name,
+      });
+      if (result.error) {
+        return res.badRequest(result.error.message, "NEXO_RESEND_ACTIVE_CODE_ERROR");
+      }
+      return res.ok(true);
+    } catch (err) {
+      logger[err.canLogAxiosError ? 'error' : 'info']('resend active code nexo fail:', err);
+      if (err.response && err.response.status == 400) {
+        return res.badRequest(err.response.data.error.detail, "NEXO_RESEND_ACTIVE_CODE_ERROR");
+      }
+      next(err);
+    }
+  },
+
   verify: async (req, res, next) => {
     try {
       let member = await NexoMember.findOne({
         where: {
-          member_id: req.user.id,
           email: req.body.email
         }
       });
-      if (!member)
+      if (!member) {
         return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
+      }
+      if (member.member_id && member.member_id != req.user.id) {
+        return res.badRequest(res.__("DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT"), "DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT");
+      }
+
       const Service = BankFactory.create(BankProvider.Nexo, {});
       let result = await Service.verifyEmail({
         nexo_id: member.nexo_id,
         secret: member.user_secret,
         code: req.body.code
       });
-      if (result.error)
+      if (result.error) {
         return res.badRequest(result.error.message, "NEXO_VERIFY_ACCOUNT_ERROR");
+      }
       await NexoMember.update({
-        status: Status.ACTIVATED
+        status: Status.ACTIVATED,
+        member_id: req.user.id
       }, {
         where: {
-          member_id: req.user.id,
           email: req.body.email
         }
       });
@@ -69,6 +113,7 @@ module.exports = {
       next(err);
     }
   },
+
   recoveryRequest: async (req, res, next) => {
     try {
       let member = NexoMember.findOne({
@@ -76,14 +121,16 @@ module.exports = {
           email: req.body.email
         }
       });
-      if (!member)
+      if (!member) {
         return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
+      }
       const Service = BankFactory.create(BankProvider.Nexo, {});
       let result = await Service.requestRecoveryCode({
         email: req.body.email
       });
-      if (result.error)
+      if (result.error) {
         return res.badRequest(result.error.message, "NEXO_PROVIDER_ERROR");
+      }
       return res.ok(true);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('request recovery nexo account fail:', err);
@@ -93,6 +140,7 @@ module.exports = {
       next(err);
     }
   },
+
   verifyRecovery: async (req, res, next) => {
     try {
       let member = NexoMember.findOne({
@@ -100,19 +148,22 @@ module.exports = {
           email: req.body.email
         }
       });
-      if (!member)
+      if (!member) {
         return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
+      }
       const Service = BankFactory.create(BankProvider.Nexo, {});
       let result = await Service.verifyRecoveryCode({
         email: req.body.email,
         code: req.body.code
       });
-      if (result.error)
+      if (result.error) {
         return res.badRequest(result.error.message, "NEXO_PROVIDER_ERROR");
+      }
+
       await NexoMember.update({
         nexo_id: result.id,
         user_secret: result.secret,
-        member_id: req.user.id
+        //  member_id: req.user.id
       }, {
         where: {
           email: req.body.email

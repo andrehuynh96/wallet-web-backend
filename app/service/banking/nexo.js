@@ -37,6 +37,27 @@ class Nexo extends Banking {
     }
   }
 
+  async resendActiveCode({ first_name, last_name, email, secret }) {
+    try {
+      return await this._makeRequest({
+        path: "/v1/user",
+        method: "POST",
+        secret: secret,
+        body: {
+          email: email,
+          firstName: first_name,
+          lastName: last_name,
+        }
+      });
+    }
+    catch (err) {
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
+      console.log(err);
+      console.log(err.response.data);
+      throw err;
+    }
+  }
+
   async verifyEmail({ nexo_id, secret, code }) {
     try {
       return await this._makeRequest({

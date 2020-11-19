@@ -43,6 +43,16 @@ describe('Test NEXO', function () {
     result.should.have.property('secret');
   });
 
+  it.only('Resend Active Code', async () => {
+    let result = await instance.resendActiveCode({
+      email: "userdev001@mailinator.com",
+      first_name: "Hoai",
+      last_name: "Nam Nguyen",
+      secret: "e7284093638c9613a9c373a7490fab8469a395d8535a0c6656d01ecbdc1ad3606c14f89e128e19f066166d993a7d46d410fe86f73c0e1781c8689b08da2e8f90"
+    });
+    console.log({ result });
+  });
+
   it('Verify account', async () => {
     let result = await instance.verifyEmail({
       nexo_id: nexoId,

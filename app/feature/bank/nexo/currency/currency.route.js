@@ -39,7 +39,11 @@ module.exports = router;
                         "symbol": "symbol",
                         "name": "name",
                         "icon": "icon",
-                        "description": "description"
+                        "description": "description",
+                        "platform":"",
+                        "decimals":10,
+                        "contract_address":"",
+                        "contract_flg":true
  *                  }
  *                 ]
  *              }

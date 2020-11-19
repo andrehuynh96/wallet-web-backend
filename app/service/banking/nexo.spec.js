@@ -48,7 +48,81 @@ describe('Test NEXO', function () {
       email: "userdev001@mailinator.com",
       first_name: "Hoai",
       last_name: "Nam Nguyen",
-      secret: "e7284093638c9613a9c373a7490fab8469a395d8535a0c6656d01ecbdc1ad3606c14f89e128e19f066166d993a7d46d410fe86f73c0e1781c8689b08da2e8f90"
+      secret: "const Status = require("./value-object/nexo-currency-status");
+module.exports = (sequelize, DataTypes) => {
+  const Model = sequelize.define("nexo_currencies", {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    symbol: {
+      type: DataTypes.STRING(128),
+      allowNull: false
+    },
+    platform: {
+      type: DataTypes.STRING(128),
+      allowNull: false
+    },
+    decimals: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    contract_address: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    contract_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
+    name: {
+      type: DataTypes.STRING(128),
+      allowNull: true
+    },
+    icon: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    description: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true
+    },
+    order_index: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
+    status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: Status.ENABLED
+    },
+    created_by: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
+    updated_by: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    }
+  }, {
+    underscored: true,
+    timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['symbol']
+      }
+    ]
+  });
+
+  return Model;
+};
+"
     });
     console.log({ result });
   });

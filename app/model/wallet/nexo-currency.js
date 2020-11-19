@@ -10,6 +10,23 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: false
     },
+    platform: {
+      type: DataTypes.STRING(128),
+      allowNull: false
+    },
+    decimals: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    contract_address: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    contract_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
     name: {
       type: DataTypes.STRING(128),
       allowNull: true

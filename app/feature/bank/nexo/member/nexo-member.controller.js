@@ -124,6 +124,10 @@ module.exports = {
       if (!member) {
         return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
       }
+      if (member.member_id && member.member_id != req.user.id) {
+        return res.badRequest(res.__("DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT"), "DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT");
+      }
+
       const Service = BankFactory.create(BankProvider.Nexo, {});
       let result = await Service.requestRecoveryCode({
         email: req.body.email
@@ -151,6 +155,10 @@ module.exports = {
       if (!member) {
         return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
       }
+      if (member.member_id && member.member_id != req.user.id) {
+        return res.badRequest(res.__("DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT"), "DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT");
+      }
+
       const Service = BankFactory.create(BankProvider.Nexo, {});
       let result = await Service.verifyRecoveryCode({
         email: req.body.email,
@@ -178,6 +186,7 @@ module.exports = {
       next(err);
     }
   },
+
   getAccount: async (req, res, next) => {
     try {
       let account = await NexoMember.findOne({
@@ -193,6 +202,7 @@ module.exports = {
       next(err);
     }
   },
+
   getBalance: async (req, res, next) => {
     try {
       let account = await NexoMember.findOne({

@@ -12,7 +12,7 @@ module.exports = {
     try {
       let survey = await Surveys.findOne({
         where: sequelize.literal(
-          `actived_flg = true AND start_date<NOW() AND NOW()<end_date AND created_at = (SELECT MAX(created_at) from surveys)`)
+          `actived_flg = true AND deleted_flg=false AND start_date<NOW() AND NOW()<end_date AND created_at = (SELECT MAX(created_at) from surveys)`)
       });
       if (survey) {
         let surveyResult = await SurveyResult.findOne({

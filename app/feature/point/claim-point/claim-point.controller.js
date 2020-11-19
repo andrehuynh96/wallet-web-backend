@@ -1,3 +1,4 @@
+const moment = require('moment');
 const logger = require('app/lib/logger');
 const config = require('app/config');
 const ClaimPoint = require('app/model/wallet').point_histories;
@@ -9,6 +10,9 @@ const Member = require('app/model/wallet').members;
 const database = require('app/lib/database').db().wallet;
 const PointAction = require("app/model/wallet/value-object/point-action");
 const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-type");
+const Surveys = require('app/model/wallet').surveys;
+const SurveyResult = require('app/model/wallet').survey_results;
+const settingHelper = require('app/lib/utils/setting-helper');
 const Sequelize = require('sequelize');
 
 const Op = Sequelize.Op;
@@ -58,10 +62,10 @@ module.exports = {
           }
         }
       });
-      const msPointMode = getPropertyValue(settings, 'ms_point_mode', MsPointPhaseType.PHASE_1);
-      const msPointDelayTimeInSeconds = getPropertyValue(settings, 'ms_point_delay_time_in_seconds', null);
-      const msPointDelayTimeDuration = getPropertyValue(settings, 'ms_point_delay_time_duration', '');
-      const msPointClaimingIsEnabled = getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false');
+      const msPointMode = settingHelper.getPropertyValue(settings, 'ms_point_mode', MsPointPhaseType.PHASE_1);
+      const msPointDelayTimeInSeconds = settingHelper.getPropertyValue(settings, 'ms_point_delay_time_in_seconds', 0);
+      const msPointDelayTimeDuration = settingHelper.getPropertyValue(settings, 'ms_point_delay_time_duration', '');
+      const msPointClaimingIsEnabled = settingHelper.getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false');
 
       return res.ok({
         mode: msPointMode,
@@ -88,12 +92,48 @@ module.exports = {
           }
         }
       });
-      const msPointMode = getPropertyValue(settings, 'ms_point_mode', MsPointPhaseType.PHASE_1);
-      const msPointDelayTimeInSeconds = getPropertyValue(settings, 'ms_point_delay_time_in_seconds', null);
-      const msPointClaimingIsEnabled = getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false');
+      const msPointMode = settingHelper.getPropertyValue(settings, 'ms_point_mode', MsPointPhaseType.PHASE_1);
+      const msPointDelayTimeInSeconds = settingHelper.getPropertyValue(settings, 'ms_point_delay_time_in_seconds', 0);
+      const msPointClaimingIsEnabled = settingHelper.getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false');
+      if (msPointMode === MsPointPhaseType.PHASE_3_SURVEY) {
+        // Find active survey
+        const now = Date.now();
+        const cond = {
+          actived_flg: true,
+          deleted_flg: false,
+          start_date: {
+            [Op.lt]: now
+          },
+          end_date: {
+            [Op.gte]: now
+          },
+        };
+        const survey = await Surveys.findOne({
+          where: cond,
+          order: [['created_at', 'DESC']]
+        });
+
+        if (survey) {
+          const surveyResult = await SurveyResult.findOne({
+            where: {
+              survey_id: survey.id,
+              member_id: req.user.id,
+            }
+          });
+
+          // Member have not submited survey
+          if (!surveyResult) {
+            return res.forbidden(res.__("MEMBER_HAVE_NOT_SUBMITED_SURVEY"), "MEMBER_HAVE_NOT_SUBMITED_SURVEY", {
+              mode: msPointMode,
+              survey_id: survey.id,
+            });
+          }
+        }
+      }
+
       if (!msPointClaimingIsEnabled) {
-        return res.ok({
-          claimable: false
+        return res.forbidden(res.__("MS_POINT_CLAIMING_IS_DISABLED"), "MS_POINT_CLAIMING_IS_DISABLED", {
+          mode: msPointMode,
         });
       }
 
@@ -104,7 +144,10 @@ module.exports = {
         }
       });
       if (!membershipType) {
-        return res.ok(false);
+        return res.ok({
+          claimable: false,
+          code: 'NOT_FOUND_MEMBERSHIPSHIP',
+        });
       }
 
       const now = Date.now();
@@ -118,7 +161,8 @@ module.exports = {
       let next_time = claim ? Date.parse(claim.createdAt) / 1000 + msPointDelayTimeInSeconds : 0;
       if (now / 1000 < next_time) {
         return res.badRequest(res.__("CANNOT_CLAIM_POINT"), "CANNOT_CLAIM_POINT", {
-          next_time
+          next_time,
+          date: moment.utc().add(msPointDelayTimeInSeconds, 'second').format('YYYY-MM-DD HH:mm:ss UTC'),
         });
       }
 
@@ -139,7 +183,11 @@ module.exports = {
       });
 
       transaction.commit();
-      return res.ok(true);
+
+      return res.ok({
+        claimable: true,
+        claim_points: membershipType.claim_points,
+      });
     } catch (err) {
       logger.error("create claim point fail: ", err);
       if (transaction) {
@@ -157,9 +205,9 @@ module.exports = {
           }
         }
       });
-      const msPointDelayTimeInSeconds = getPropertyValue(settings, 'ms_point_delay_time_in_seconds', null);
-      const msPointDelayTimeDuration = getPropertyValue(settings, 'ms_point_delay_time_duration', '');
-      const msPointClaimingIsEnabled = getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false');
+      const msPointDelayTimeInSeconds = settingHelper.getPropertyValue(settings, 'ms_point_delay_time_in_seconds', 0);
+      const msPointDelayTimeDuration = settingHelper.getPropertyValue(settings, 'ms_point_delay_time_duration', '');
+      const msPointClaimingIsEnabled = settingHelper.getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false');
       if (!msPointClaimingIsEnabled) {
         return res.ok({
           claimable: false
@@ -200,38 +248,16 @@ module.exports = {
       return res.ok({
         claimable: claimable,
         next_time: next_time,
-        delay_time_in_seconds: msPointDelayTimeInSeconds,
-        duration: msPointDelayTimeDuration,
+        date: moment.utc().add(msPointDelayTimeInSeconds, 'second').format('YYYY-MM-DD HH:mm:ss UTC'),
+        claiming: {
+          is_enabled: msPointClaimingIsEnabled,
+          time: msPointDelayTimeInSeconds,
+          duration: msPointDelayTimeDuration,
+        },
       });
     } catch (err) {
       logger.error("check claim point fail: ", err);
       next(err);
     }
-  }
-};
-
-const getPropertyValue = (settings, propertyName, defaultValue) => {
-  const setting = settings.find(item => item.property === propertyName);
-  if (!setting) {
-    return defaultValue;
-  }
-
-  try {
-    const { value, type } = setting;
-    switch (type) {
-      case 'string':
-        return value;
-
-      case 'number':
-        return Number(value);
-
-      case 'boolean':
-        return value === 'true';
-    }
-
-    return value;
-  } catch (error) {
-    logger.info(error);
-    return defaultValue;
   }
 };

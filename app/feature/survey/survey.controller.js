@@ -6,6 +6,15 @@ const Questions = require('app/model/wallet').questions;
 const Answers = require('app/model/wallet').question_answers;
 const SurveyResult = require('app/model/wallet').survey_results;
 const Setting = require('app/model/wallet').settings;
+const SurveyAnswer = require('app/model/wallet').survey_answers;
+const PointHistory = require('app/model/wallet').point_histories;
+const Member = require('app/model/wallet').members;
+
+const QuestionType = require('app/model/wallet/value-object/question-type');
+const PointStatus = require('app/model/wallet/value-object/point-status');
+const PointAction = require('app/model/wallet/value-object/point-action');
+const SystemType = require('app/model/wallet/value-object/system-type');
+
 const surveyMapper = require('./survey.response-schema');
 const questionMapper = require('./question.response-schema');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
@@ -13,6 +22,9 @@ const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-t
 const settingHelper = require('app/lib/utils/setting-helper');
 const MembershipType = require('app/model/wallet').membership_types;
 const Sequelize = require('sequelize');
+
+
+const database = require('app/lib/database').db().wallet;
 
 const Op = Sequelize.Op;
 const keys = [
@@ -86,6 +98,114 @@ module.exports = {
       });
     } catch (err) {
       logger.error('get active surveys fail: ', err);
+      next(err);
+    }
+  },
+  submitSurveys: async (req, res, next) => {
+    let transaction;
+    try {
+      let { params: { id }, body: { items }, user } = req;
+      let survey = await Surveys.findOne({
+        where: {
+          id: id
+        }
+      });
+
+      if (!survey) return res.badRequest(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND");
+
+      let point = survey.dataValues.point;
+      let questions = await Questions.findAll({
+        where: {
+          survey_id: id,
+          actived_flg: true
+        },
+        include: [{
+          model: Answers,
+          as: "Answers"
+        }]
+      })
+
+      if (questions.length != items.length) {
+        return res.badRequest(res.__("MISS_SOME_QUESTION"), "MISS_SOME_QUESTION");
+      }
+
+      let totalCorrect = 0, totalAnswers = 0;
+
+      for (let i = 0; i < questions.length; i++) {
+        let idx = items.findIndex(x => x.question_id == questions[i].dataValues.id);
+        if (idx < 0)
+          return res.badRequest(res.__("QUESTIONS_NOT_MATCH"), "QUESTIONS_NOT_MATCH");
+        let userAns = items[idx], question = questions[i].dataValues, answer = questions[i].Answers;
+        totalAnswers += 1;
+        if ((question.question_type == QuestionType.OPEN_ENDED || questions.question_type == QuestionType.NUMERIC_OPEN_ENDED) && userAns.value.length > 0) {
+          totalCorrect += 1;
+          userAns.open = true;
+        }
+        else {
+          let result = true;
+          userAns.open = false;
+          for (let j = 0; j < userAns.answer_id.length; j++) {
+            let userAnsId = userAns.answer_id[j],
+              userAnsVal = userAns.value[j];
+            if (!answer[userAnsId].is_correct_flg || userAnsVal != answer[userAnsId].text) {
+              result = false;
+              break;
+            }
+          }
+          if (result) {
+            totalCorrect += 1;
+          }
+        }
+      }
+      transaction = await database.transaction();
+
+      items.map(item => {
+        new_value = {};
+        if (!item.open) {
+          item.answer_id.forEach(function (value, index) {
+            new_value[value] = item.value[index]
+          });
+          item.value = new_value;
+        };
+        item.member_id = user.id;
+        item.survey_id = id;
+
+      });
+
+      await Member.increment(
+        { points: +point},
+        { where: { id: user.id } },
+        { transaction }
+      );
+
+      await SurveyAnswer.bulkCreate({
+        items
+      }, { transaction });
+
+      await SurveyResult.create({
+        member_id: user.id,
+        survey_id: id,
+        total_answer: totalAnswers,
+        total_correct: totalCorrect,
+        point: point
+      }, { transaction });
+
+      await PointHistory.create({
+        member_id: user.id,
+        status: PointStatus.APPROVED,
+        action: PointAction.SURVEY,
+        currency_symbol: 'MS_POINT',
+        system_type: SystemType.MEMBERSHIP,
+        object_id: id,
+        amount: 0
+      }, { transaction });
+
+      await transaction.commit();
+
+      return res.ok(true);
+    } catch (err) {
+      logger.error('submit surveys fail: ', err);
+      if (transaction) await transaction.rollback();
       next(err);
     }
   }

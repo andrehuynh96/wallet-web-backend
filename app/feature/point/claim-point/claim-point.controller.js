@@ -197,9 +197,34 @@ module.exports = {
 
       const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
       if (survey) {
+        let points = 0;
+
+        switch (membershipType.name.trim().toUpperCase()) {
+          case 'SILVER':
+            points = survey.silver_membership_point;
+            break;
+
+          case 'GOLD':
+            points = survey.gold_membership_point;
+            break;
+
+          case 'PLATINUM':
+            points = survey.platinum_membership_point;
+            break;
+
+          // case 'DIAMOND':
+          //   points = 0;
+          //   break;
+        }
+
         return res.ok({
           claimable: true,
           mode: MsPointPhaseType.PHASE_3_SURVEY,
+          survey: {
+            id: survey.id,
+            membership_name: membershipType.name,
+            points,
+          },
         });
       }
 

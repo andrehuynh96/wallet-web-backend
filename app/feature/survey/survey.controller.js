@@ -5,6 +5,7 @@ const Answers = require('app/model/wallet').question_answers;
 const SurveyResult = require('app/model/wallet').survey_results;
 const SurveyAnswer = require('app/model/wallet').survey_answers;
 const PointHistory = require('app/model/wallet').point_histories;
+const Member = require('app/model/wallet').members;
 
 const QuestionType = require('app/model/wallet/value-object/question-type');
 const PointStatus = require('app/model/wallet/value-object/point-status');
@@ -73,7 +74,15 @@ module.exports = {
     let transaction;
     try {
       let { params: { id }, body: { items }, user } = req;
+      let survey = await Surveys.findOne({
+        where: {
+          id: id
+        }
+      });
 
+      if (!survey) return res.badRequest(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND");
+
+      let point = survey.dataValues.point;
       let questions = await Questions.findAll({
         where: {
           survey_id: id,
@@ -89,7 +98,7 @@ module.exports = {
         return res.badRequest(res.__("MISS_SOME_QUESTION"), "MISS_SOME_QUESTION");
       }
 
-      let totalCorrect = 0, totalAnswers = 0, point = 0;
+      let totalCorrect = 0, totalAnswers = 0;
 
       for (let i = 0; i < questions.length; i++) {
         let idx = items.findIndex(x => x.question_id == questions[i].dataValues.id);
@@ -99,10 +108,11 @@ module.exports = {
         totalAnswers += 1;
         if ((question.question_type == QuestionType.OPEN_ENDED || questions.question_type == QuestionType.NUMERIC_OPEN_ENDED) && userAns.value.length > 0) {
           totalCorrect += 1;
-          point += question.points;
+          userAns.open = true;
         }
         else {
           let result = true;
+          userAns.open = false;
           for (let j = 0; j < userAns.answer_id.length; j++) {
             let userAnsId = userAns.answer_id[j],
               userAnsVal = userAns.value[j];
@@ -113,7 +123,6 @@ module.exports = {
           }
           if (result) {
             totalCorrect += 1;
-            point += question.points;
           }
         }
       }
@@ -121,13 +130,22 @@ module.exports = {
 
       items.map(item => {
         new_value = {};
-        item.answer_id.forEach(function (value, index) {
-          new_value[value] = item.value[index]
-        });
+        if (!item.open) {
+          item.answer_id.forEach(function (value, index) {
+            new_value[value] = item.value[index]
+          });
+          item.value = new_value;
+        };
         item.member_id = user.id;
         item.survey_id = id;
-        item.value = new_value;
+
       });
+
+      await Member.increment(
+        { points: +point},
+        { where: { id: user.id } },
+        { transaction }
+      );
 
       await SurveyAnswer.bulkCreate({
         items

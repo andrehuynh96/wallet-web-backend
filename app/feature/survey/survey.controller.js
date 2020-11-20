@@ -12,6 +12,7 @@ const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 const SurveyType = require('app/model/wallet/value-object/survey-type');
 const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-type");
 const settingHelper = require('app/lib/utils/setting-helper');
+const MembershipType = require('app/model/wallet').membership_types;
 const Sequelize = require('sequelize');
 
 const Op = Sequelize.Op;
@@ -55,7 +56,16 @@ module.exports = {
         }]
       });
 
+      let membershipType = await MembershipType.findOne({
+        where: {
+          id: req.user.membership_type_id,
+          deleted_flg: false
+        }
+      });
+
       let ret_survey = surveyMapper(survey);
+      ret_survey.points = getSurveyPoint(survey, membershipType ? membershipType.name : '');
+
       let ret_questions = questionMapper(questions);
 
       if (req.user.current_language == 'ja') {
@@ -146,4 +156,28 @@ const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
   const notSubmitedList = surveys.filter(item => !submitedCache[item.id]);
 
   return notSubmitedList.length > 0 ? notSubmitedList[0] : null;
+};
+
+const getSurveyPoint = (survey, membershipTypeName) => {
+  let points = 0;
+
+  switch (membershipTypeName.trim().toUpperCase()) {
+    case 'SILVER':
+      points = survey.silver_membership_point;
+      break;
+
+    case 'GOLD':
+      points = survey.gold_membership_point;
+      break;
+
+    case 'PLATINUM':
+      points = survey.platinum_membership_point;
+      break;
+
+    // case 'DIAMOND':
+    //   points = 0;
+    //   break;
+  }
+
+  return points;
 };

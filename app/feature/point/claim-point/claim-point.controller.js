@@ -197,25 +197,7 @@ module.exports = {
 
       const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
       if (survey) {
-        let points = 0;
-
-        switch (membershipType.name.trim().toUpperCase()) {
-          case 'SILVER':
-            points = survey.silver_membership_point;
-            break;
-
-          case 'GOLD':
-            points = survey.gold_membership_point;
-            break;
-
-          case 'PLATINUM':
-            points = survey.platinum_membership_point;
-            break;
-
-          // case 'DIAMOND':
-          //   points = 0;
-          //   break;
-        }
+        const points = getSurveyPoint(survey, membershipType.name);
 
         return res.ok({
           claimable: true,
@@ -325,4 +307,28 @@ const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
   const notSubmitedList = surveys.filter(item => !submitedCache[item.id]);
 
   return notSubmitedList.length > 0 ? notSubmitedList[0] : null;
+};
+
+const getSurveyPoint = (survey, membershipTypeName) => {
+  let points = 0;
+
+  switch (membershipTypeName.trim().toUpperCase()) {
+    case 'SILVER':
+      points = survey.silver_membership_point;
+      break;
+
+    case 'GOLD':
+      points = survey.gold_membership_point;
+      break;
+
+    case 'PLATINUM':
+      points = survey.platinum_membership_point;
+      break;
+
+    // case 'DIAMOND':
+    //   points = 0;
+    //   break;
+  }
+
+  return points;
 };

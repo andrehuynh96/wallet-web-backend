@@ -191,8 +191,6 @@ module.exports = {
         item.answer_id = item.answer_id.join(',');
       });
 
-      console.log(items);
-
       await Member.increment({
         points: point
       }, {

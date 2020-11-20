@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     answer_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.TEXT('medium'),
       allowNull: true,
     },
     value: {

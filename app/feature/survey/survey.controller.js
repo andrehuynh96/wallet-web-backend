@@ -22,6 +22,7 @@ const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-t
 const settingHelper = require('app/lib/utils/setting-helper');
 const MembershipType = require('app/model/wallet').membership_types;
 const Sequelize = require('sequelize');
+const SurveyResultStatus = require("app/model/wallet/value-object/survey-result-status");
 
 
 const database = require('app/lib/database').db().wallet;
@@ -72,7 +73,7 @@ module.exports = {
       });
 
       let ret_survey = surveyMapper(survey);
-      ret_survey.points = getSurveyPoint(survey, membershipType ? membershipType.name : '');
+      ret_survey.points = getSurveyPoint(survey, membershipType ? membershipType.key : '');
 
       let ret_questions = questions.length > 0 ? questionMapper(questions) : [];
 
@@ -111,9 +112,21 @@ module.exports = {
         }
       });
 
-      if (!survey) return res.badRequest(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND");
+      if (!survey) {
+        return res.badRequest(res.__("SURVEY_NOT_FOUND"), "SURVEY_NOT_FOUND");
+      }
 
-      let point = survey.dataValues.point;
+      let membershipType = await MembershipType.findOne({
+        where: {
+          id: req.user.membership_type_id,
+          deleted_flg: false
+        }
+      });
+      if (!membershipType) {
+        return res.forbidden(res.__("NOT_FOUND_MEMBERSHIP_TYPE"), "NOT_FOUND_MEMBERSHIP_TYPE");
+      }
+
+      let point = getSurveyPoint(survey, membershipType ? membershipType.key : '');;
       let questions = await Questions.findAll({
         where: {
           survey_id: id,
@@ -136,6 +149,7 @@ module.exports = {
         if (idx < 0)
           return res.badRequest(res.__("QUESTIONS_NOT_MATCH"), "QUESTIONS_NOT_MATCH");
         let userAns = items[idx], question = questions[i].dataValues, answer = questions[i].Answers;
+        userAns.is_correct_flg = false;
         totalAnswers += 1;
         if ((question.question_type == QuestionType.OPEN_ENDED || questions.question_type == QuestionType.NUMERIC_OPEN_ENDED) && userAns.value.length > 0) {
           totalCorrect += 1;
@@ -147,7 +161,9 @@ module.exports = {
           for (let j = 0; j < userAns.answer_id.length; j++) {
             let userAnsId = userAns.answer_id[j],
               userAnsVal = userAns.value[j];
-            if (!answer[userAnsId].is_correct_flg || userAnsVal != answer[userAnsId].text) {
+
+            let currentAnswer = answer.find(x => x.id == userAnsId);
+            if (!currentAnswer.is_correct_flg || userAnsVal != currentAnswer.text) {
               result = false;
               break;
             }
@@ -155,39 +171,46 @@ module.exports = {
           if (result) {
             totalCorrect += 1;
           }
+          userAns.is_correct_flg = result;
         }
       }
       transaction = await database.transaction();
-
       items.map(item => {
         new_value = {};
         if (!item.open) {
           item.answer_id.forEach(function (value, index) {
             new_value[value] = item.value[index]
           });
-          item.value = new_value;
-        };
+          item.value = JSON.stringify(new_value);
+        }
+        else {
+          item.value = item.value.join(',');
+        }
         item.member_id = user.id;
         item.survey_id = id;
-
+        item.answer_id = item.answer_id.join(',');
       });
 
-      await Member.increment(
-        { points: +point},
-        { where: { id: user.id } },
-        { transaction }
-      );
+      console.log(items);
 
-      await SurveyAnswer.bulkCreate({
-        items
-      }, { transaction });
+      await Member.increment({
+        points: point
+      }, {
+        where: {
+          id: user.id
+        },
+        transaction
+      });
+
+      await SurveyAnswer.bulkCreate(items, { transaction: transaction });
 
       await SurveyResult.create({
         member_id: user.id,
         survey_id: id,
         total_answer: totalAnswers,
         total_correct: totalCorrect,
-        point: point
+        point: point,
+        status: SurveyResultStatus.COMPLETE
       }, { transaction });
 
       await PointHistory.create({
@@ -197,7 +220,7 @@ module.exports = {
         currency_symbol: 'MS_POINT',
         system_type: SystemType.MEMBERSHIP,
         object_id: id,
-        amount: 0
+        amount: point
       }, { transaction });
 
       await transaction.commit();
@@ -274,10 +297,10 @@ const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
   return notSubmitedList.length > 0 ? notSubmitedList[0] : null;
 };
 
-const getSurveyPoint = (survey, membershipTypeName) => {
+const getSurveyPoint = (survey, membershipTypeKey) => {
   let points = 0;
 
-  switch (membershipTypeName.trim().toUpperCase()) {
+  switch (membershipTypeKey.trim().toUpperCase()) {
     case 'SILVER':
       points = survey.silver_membership_point;
       break;
@@ -296,4 +319,4 @@ const getSurveyPoint = (survey, membershipTypeName) => {
   }
 
   return points;
-};
+}; 

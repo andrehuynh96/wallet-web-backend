@@ -49,6 +49,7 @@ module.exports = {
       next(err);
     }
   },
+
   setting: async (req, res, next) => {
     try {
       logger.info('claim-point::setting');
@@ -85,6 +86,7 @@ module.exports = {
       next(err);
     }
   },
+
   create: async (req, res, next) => {
     let transaction;
     try {
@@ -166,6 +168,7 @@ module.exports = {
       next(err);
     }
   },
+
   check: async (req, res, next) => {
     try {
       const {
@@ -197,7 +200,7 @@ module.exports = {
 
       const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
       if (survey) {
-        const points = getSurveyPoint(survey, membershipType.name);
+        const points = getSurveyPoint(survey, membershipType.key);
 
         return res.ok({
           claimable: true,
@@ -309,10 +312,10 @@ const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
   return notSubmitedList.length > 0 ? notSubmitedList[0] : null;
 };
 
-const getSurveyPoint = (survey, membershipTypeName) => {
+const getSurveyPoint = (survey, membershipTypeKey) => {
   let points = 0;
 
-  switch (membershipTypeName.trim().toUpperCase()) {
+  switch (membershipTypeKey.trim().toUpperCase()) {
     case 'SILVER':
       points = survey.silver_membership_point;
       break;

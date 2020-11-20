@@ -56,10 +56,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    key: {
+      type: DataTypes.STRING(250),
+      allowNull: false,
+      default: '',
+    },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   MembershipType.associate = (models) => { };
 

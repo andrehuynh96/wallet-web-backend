@@ -9,7 +9,6 @@ const Setting = require('app/model/wallet').settings;
 const surveyMapper = require('./survey.response-schema');
 const questionMapper = require('./question.response-schema');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
-const SurveyType = require('app/model/wallet/value-object/survey-type');
 const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-type");
 const settingHelper = require('app/lib/utils/setting-helper');
 const MembershipType = require('app/model/wallet').membership_types;
@@ -27,17 +26,21 @@ const keys = [
 module.exports = {
   getInProcessSurvey: async (req, res, next) => {
     try {
+      let membershipType = await MembershipType.findOne({
+        where: {
+          id: req.user.membership_type_id,
+          deleted_flg: false
+        }
+      });
+      if (!membershipType) {
+        return res.forbidden(res.__("NOT_FOUND_MEMBERSHIP_TYPE"), "NOT_FOUND_MEMBERSHIP_TYPE");
+      }
+
       const {
-        msPointClaimingIsEnabled,
         msPointSurveyIsEnabled,
       } = await getSettings();
-
       if (!msPointSurveyIsEnabled) {
-        return res.ok({
-          claimable: false,
-          claimingIsEnabled: msPointClaimingIsEnabled,
-          surveyIsEnabled: msPointSurveyIsEnabled,
-        });
+        return res.forbidden(res.__("MS_POINT_SURVEY_IS_DISABLED"), "MS_POINT_SURVEY_IS_DISABLED");
       }
 
       const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
@@ -56,17 +59,10 @@ module.exports = {
         }]
       });
 
-      let membershipType = await MembershipType.findOne({
-        where: {
-          id: req.user.membership_type_id,
-          deleted_flg: false
-        }
-      });
-
       let ret_survey = surveyMapper(survey);
       ret_survey.points = getSurveyPoint(survey, membershipType ? membershipType.name : '');
 
-      let ret_questions = questionMapper(questions);
+      let ret_questions = questions.length > 0 ? questionMapper(questions) : [];
 
       if (req.user.current_language == 'ja') {
         ret_survey.content = survey.content_ja || ret_survey.content;

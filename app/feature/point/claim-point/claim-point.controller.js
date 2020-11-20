@@ -97,7 +97,7 @@ module.exports = {
       if (!membershipType) {
         return res.ok({
           claimable: false,
-          code: 'NOT_FOUND_MEMBERSHIPSHIP',
+          code: 'NOT_FOUND_MEMBERSHIP_TYPE',
         });
       }
 

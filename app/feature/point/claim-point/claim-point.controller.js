@@ -97,7 +97,7 @@ module.exports = {
       if (!membershipType) {
         return res.ok({
           claimable: false,
-          code: 'NOT_FOUND_MEMBERSHIPSHIP',
+          code: 'NOT_FOUND_MEMBERSHIP_TYPE',
         });
       }
 
@@ -197,9 +197,16 @@ module.exports = {
 
       const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
       if (survey) {
+        const points = getSurveyPoint(survey, membershipType.name);
+
         return res.ok({
           claimable: true,
           mode: MsPointPhaseType.PHASE_3_SURVEY,
+          survey: {
+            id: survey.id,
+            membership_name: membershipType.name,
+            points,
+          },
         });
       }
 
@@ -300,4 +307,28 @@ const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
   const notSubmitedList = surveys.filter(item => !submitedCache[item.id]);
 
   return notSubmitedList.length > 0 ? notSubmitedList[0] : null;
+};
+
+const getSurveyPoint = (survey, membershipTypeName) => {
+  let points = 0;
+
+  switch (membershipTypeName.trim().toUpperCase()) {
+    case 'SILVER':
+      points = survey.silver_membership_point;
+      break;
+
+    case 'GOLD':
+      points = survey.gold_membership_point;
+      break;
+
+    case 'PLATINUM':
+      points = survey.platinum_membership_point;
+      break;
+
+    // case 'DIAMOND':
+    //   points = 0;
+    //   break;
+  }
+
+  return points;
 };

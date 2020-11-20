@@ -13,6 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: false,
     },
+    title: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      defaultValue: '',
+    },
+    title_ja: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+    },
     content: {
       type: DataTypes.TEXT('long'),
       allowNull: false,
@@ -29,11 +38,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    actived_flg: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      defaultValue: false
-    },
     description: {
       type: DataTypes.TEXT('medium'),
       allowNull: true
@@ -48,15 +52,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: SurveyType.SURVEY
     },
-    point: {
+    silver_membership_point: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    membership_point: {
-      type: DataTypes.JSON,
       allowNull: true
     },
-    estimate_time: {
+    gold_membership_point: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    platinum_membership_point: {
       type: DataTypes.INTEGER,
       allowNull: true
     },

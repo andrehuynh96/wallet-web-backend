@@ -9,7 +9,7 @@ const router = express.Router();
 router.get(
   '/active',
   authenticate,
-  controller.getSurveys
+  controller.getInProcessSurvey
 );
 
 router.post(
@@ -21,7 +21,7 @@ router.post(
 
 module.exports = router;
 
-/**********************************************************************/
+/** ********************************************************************/
 
 /**
  * @swagger

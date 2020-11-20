@@ -38,11 +38,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    actived_flg: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      defaultValue: false
-    },
     description: {
       type: DataTypes.TEXT('medium'),
       allowNull: true
@@ -59,15 +54,15 @@ module.exports = (sequelize, DataTypes) => {
     },
     silver_membership_point: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true
     },
     gold_membership_point: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true
     },
     platinum_membership_point: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true
     },
     deleted_flg: {
       type: DataTypes.BOOLEAN,

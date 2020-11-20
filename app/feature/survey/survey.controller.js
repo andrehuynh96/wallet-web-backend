@@ -25,7 +25,6 @@ const Sequelize = require('sequelize');
 
 
 const database = require('app/lib/database').db().wallet;
-const sequelize = require('sequelize');
 
 const Op = Sequelize.Op;
 const keys = [

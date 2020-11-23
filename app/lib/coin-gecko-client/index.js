@@ -10,9 +10,15 @@ const mappingCoin = {
 module.exports = {
   getPrice: async ({ platform_name, currency }) => {
     try {
-      if (platform_name == "USDT") {
-        return 1;
+      platform_name = (platform_name || '').trim();
+      let usd_24h_change;
+      if (platform_name === "USDT") {
+        return  {
+          price: 1,
+          usd_24h_change: 0,
+        };
       }
+
       platform_name = _getPlatform(platform_name);
       logger.info('getPrice: getPrice');
       const key = platform_name + '_' + currency;

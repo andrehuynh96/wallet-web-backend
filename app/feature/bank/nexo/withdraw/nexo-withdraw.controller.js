@@ -25,6 +25,13 @@ module.exports = {
         ...req.body,
         secret: member.user_secret
       });
+      // {                                                                                                                                                                                                            
+      //   id: 'NXThuKpGJTlF4',                                                                                                                                                                                       
+      //   currency_id: 1,                                                                                                                                                                                            
+      //   amount: 0.001,                                                                                                                                                                                             
+      //   wallet_address: 'moiKJLwVG3pRVRgcfQ8izq9LBV78uZ83BM',                                                                                                                                                      
+      //   status: 'wait_email_confirmation'                                                                                                                                                                          
+      // }
       if (result.error) 
         return res.badRequest(result.error.message, "NEXO_WITHDRAW_ERROR");
       let transaction = await NexoTransaction.create({
@@ -33,7 +40,8 @@ module.exports = {
         nexo_transaction_id: result.id,
         address: result.wallet_address,
         nexo_currency_id: result.currency_id,
-        memo: req.body.tag
+        memo: req.body.tag,
+        nexo_member_id: member.id
       });
       return res.ok(Mapper(transaction));
     } catch (err) {

@@ -1,6 +1,6 @@
-const Status = require("./value-object/fiat-currency-status");
+const Status = require("./value-object/nexo-currency-status");
 module.exports = (sequelize, DataTypes) => {
-  const Model = sequelize.define("fiat_cryptocurrencies", {
+  const Model = sequelize.define("nexo_currencies", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -14,6 +14,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(128),
       allowNull: false
     },
+    decimals: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    contract_address: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    contract_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
     name: {
       type: DataTypes.STRING(128),
       allowNull: true
@@ -22,16 +35,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: true
     },
-    decimals: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
     description: {
       type: DataTypes.TEXT('medium'),
-      allowNull: true
-    },
-    contract_address: {
-      type: DataTypes.STRING(256),
       allowNull: true
     },
     order_index: {
@@ -53,22 +58,17 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: 0
-    },
-    contract_flg: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
-      defaultValue: false
-    },
+    }
   }, {
     underscored: true,
     timestamps: true,
     indexes: [
       {
         unique: true,
-        fields: ['symbol', 'platform']
+        fields: ['symbol']
       }
     ]
   });
 
   return Model;
-} 
+};

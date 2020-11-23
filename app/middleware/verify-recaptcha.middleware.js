@@ -1,7 +1,11 @@
 const config = require('app/config');
 
 module.exports = async function (req, res, next) {
-  if (config.disableRecaptcha) return next();
+  const recaptcha = req.body['g-recaptcha-response'];
+  const isInWhiteListRecaptcha =  config.whitelistReCaptcha.includes(recaptcha);
+  if (config.disableRecaptcha || isInWhiteListRecaptcha) {
+    return next();
+  }
 
   if (!req.recaptcha.error) {
     next()

@@ -2,7 +2,7 @@ const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./nexo-member.controller');
 const validator = require('app/middleware/validator.middleware');
-const { create, verify, recovery_request, recovery_verify } = require('./validator');
+const { create, verify, recovery_request, recovery_verify, resend_active_code } = require('./validator');
 const router = express.Router();
 
 router.post(
@@ -10,6 +10,13 @@ router.post(
   authenticate,
   validator(create),
   controller.create
+);
+
+router.post(
+  '/members/resend-active-code',
+  authenticate,
+  validator(resend_active_code),
+  controller.resendActiveCode
 );
 
 router.post(
@@ -111,6 +118,61 @@ module.exports = router;
  *         schema:
  *           $ref: '#/definitions/500'
  */
+
+
+
+/**
+ * @swagger
+ * /web/bank/nexo/members/resend-active-code:
+ *   post:
+ *     summary: resend active code
+ *     tags:
+ *       - Bank
+ *     description: Time to resend is 30 minutes
+ *     parameters:
+ *       - in: body
+ *         name: data
+ *         description: Data.
+ *         schema:
+ *            type: object
+ *            required:
+ *            - email
+ *            - code
+ *            example:
+ *               {
+ *                  "email": "thangdv@deliomart.com"
+                  }
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Ok
+ *         examples:
+ *           application/json:
+ *             {
+ *                 "data": true
+ *             }
+ *       400:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/400'
+ *       401:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/401'
+ *       404:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/404'
+ *       500:
+ *         description: Error
+ *         schema:
+ *           $ref: '#/definitions/500'
+ */
+
+
+
+
 
 /**
  * @swagger
@@ -261,91 +323,91 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
- /**
- * @swagger
- * /web/bank/nexo/members:
- *   get:
- *     summary: get nexo account
- *     tags:
- *       - Bank
- *     description:
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                "data": {
-                        "id":"",
-                        "email":"",
-                        "first_name": "",
-                        "last_name": "",
-                        "nexo_id": "",
-                        "created_at": "",
-                        "updated_at": ""
-                    }
- *              }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/bank/nexo/members:
+*   get:
+*     summary: get nexo account
+*     tags:
+*       - Bank
+*     description:
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*                "data": {
+                       "id":"",
+                       "email":"",
+                       "first_name": "",
+                       "last_name": "",
+                       "nexo_id": "",
+                       "created_at": "",
+                       "updated_at": ""
+                   }
+*              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/
 
- /**
- * @swagger
- * /web/bank/nexo/members/balance:
- *   get:
- *     summary: get balance by current log in user nexo account
- *     tags:
- *       - Bank
- *     description:
- *     responses:
- *       200:
- *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *              "data": {
- *                "items": [
- *                  {
-                      'id': '',
-                      'name': '',
-                      'interest_rate': '',
-                      'interest_earned': '',
-                      'amount': '',
-                      'min_earnable': '',
-                      'deposit_enabled': '',
-                      'withdraw_enabled': '' 
- *                  }
- *                 ]
- *               }
- *              }
- *       400:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/400'
- *       401:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/401'
- *       404:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/404'
- *       500:
- *         description: Error
- *         schema:
- *           $ref: '#/definitions/500'
- */
+/**
+* @swagger
+* /web/bank/nexo/members/balance:
+*   get:
+*     summary: get balance by current log in user nexo account
+*     tags:
+*       - Bank
+*     description:
+*     responses:
+*       200:
+*         description: Ok
+*         examples:
+*           application/json:
+*             {
+*              "data": {
+*                "items": [
+*                  {
+                     'id': '',
+                     'name': '',
+                     'interest_rate': '',
+                     'interest_earned': '',
+                     'amount': '',
+                     'min_earnable': '',
+                     'deposit_enabled': '',
+                     'withdraw_enabled': ''
+*                  }
+*                 ]
+*               }
+*              }
+*       400:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/400'
+*       401:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/401'
+*       404:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/404'
+*       500:
+*         description: Error
+*         schema:
+*           $ref: '#/definitions/500'
+*/

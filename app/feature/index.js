@@ -34,6 +34,7 @@ router.use('/coin-gecko', require('./coin-gecko'));
 router.use(require('./point'));
 router.use('/fiat', require('./fiat'));
 router.use('/bank', require('./bank'));
+router.use('/surveys', require('./survey'));
 
 module.exports = router;
 

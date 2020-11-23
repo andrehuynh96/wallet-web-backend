@@ -20,6 +20,7 @@ const questionMapper = require('./question.response-schema');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-type");
 const settingHelper = require('app/lib/utils/setting-helper');
+const surveyHelper = require('app/lib/utils/survey-helper');
 const MembershipType = require('app/model/wallet').membership_types;
 const Sequelize = require('sequelize');
 const SurveyResultStatus = require("app/model/wallet/value-object/survey-result-status");
@@ -73,7 +74,7 @@ module.exports = {
       });
 
       let ret_survey = surveyMapper(survey);
-      ret_survey.points = getSurveyPoint(survey, membershipType ? membershipType.key : '');
+      ret_survey.points = surveyHelper.getSurveyPoint(survey, membershipType ? membershipType.key : '');
 
       let ret_questions = questions.length > 0 ? questionMapper(questions) : [];
 
@@ -126,7 +127,7 @@ module.exports = {
         return res.forbidden(res.__("NOT_FOUND_MEMBERSHIP_TYPE"), "NOT_FOUND_MEMBERSHIP_TYPE");
       }
 
-      let point = getSurveyPoint(survey, membershipType ? membershipType.key : '');;
+      let point = surveyHelper.getSurveyPoint(survey, membershipType ? membershipType.key : '');
       let questions = await Questions.findAll({
         where: {
           survey_id: id,
@@ -176,7 +177,7 @@ module.exports = {
       }
       transaction = await database.transaction();
       items.map(item => {
-        new_value = {};
+        let new_value = {};
         if (!item.open) {
           item.answer_id.forEach(function (value, index) {
             new_value[value] = item.value[index]
@@ -294,27 +295,3 @@ const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
 
   return notSubmitedList.length > 0 ? notSubmitedList[0] : null;
 };
-
-const getSurveyPoint = (survey, membershipTypeKey) => {
-  let points = 0;
-
-  switch (membershipTypeKey.trim().toUpperCase()) {
-    case 'SILVER':
-      points = survey.silver_membership_point;
-      break;
-
-    case 'GOLD':
-      points = survey.gold_membership_point;
-      break;
-
-    case 'PLATINUM':
-      points = survey.platinum_membership_point;
-      break;
-
-    // case 'DIAMOND':
-    //   points = 0;
-    //   break;
-  }
-
-  return points;
-}; 

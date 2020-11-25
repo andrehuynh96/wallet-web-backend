@@ -10,15 +10,15 @@ const assert = chai.assert;
 chai.should();
 
 let instance;
-const nexoId = '5fa8c4b95d23de26301dbbe4';
-const secret = 'bc8136a77f720c603ac06b11d3b76efb1bbccc1484915acc56fb5d441b3ffdd9ab9771ff1bc061d32e6be5bb31681c05d6d870694789242fc6815eb86305debd'
+const nexoId = '5fbb806290f9983e9a12d831';
+const secret = '817d7a22f42ba61de2c876915e53cee4987ec39bc0e5117c03675f7fc1377530510644511979a08fa58b28d5e6210909b8e229d2e69ce948287b0143ad44d766'
 const VerifyCode = '36132006';
 
 // const nexoId = '5fa90d3bde111a217326fc7f';
 // const secret = '15466502b28e9f2b619cbc7b1ff61b1a4e5a7be7ac1e59da4987ab41fb43e6a2b39e435b0c85d252e98dd849510cb4fcf028c6696974dffb0dab5123dcff6591'
 // const VerifyCode = '68536443';
 
-const nexoEmail = "huyht+1604914489519@blockchainlabs.asia";
+const nexoEmail = "huyht+1606123616371@blockchainlabs.asia";
 const currencyId = 'NXTcJinsNucsB'//BTC: 'NXTcJinsNucsB';
 const walletAddress = 'mxSb3XcRUURLthzA4GFvzyTu1jK5Uro4kS';
 
@@ -64,14 +64,14 @@ describe('Test NEXO', function () {
   it('verifyRecoveryCode account', async () => {
     let result = await instance.verifyRecoveryCode({
       email: nexoEmail,
-      code: '73327107'
+      code: '84299904'
     });
     console.log('verifyRecoveryCode account::', result);
     result.should.have.property('id');
     result.should.have.property('secret');
   });
 
-  it('getBalance', async () => {
+  it.only('getBalance', async () => {
     let result = await instance.getBalance({
       nexo_id: nexoId,
       secret: secret

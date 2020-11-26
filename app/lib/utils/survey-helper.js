@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const Surveys = require('app/model/wallet').surveys;
+const Quiz = require('app/model/wallet').quizzes;
 const SurveyResult = require('app/model/wallet').survey_results;
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
 const Sequelize = require('sequelize');
@@ -30,7 +30,7 @@ module.exports = {
       },
     };
 
-    const surveys = await Surveys.findAll({
+    const surveys = await Quiz.findAll({
       where: cond,
       order: [['created_at', 'DESC']]
     });

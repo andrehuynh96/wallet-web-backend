@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const logger = require('app/lib/logger');
 const config = require('app/config');
-const Surveys = require('app/model/wallet').surveys;
+const Quiz = require('app/model/wallet').quizzes;
 const Questions = require('app/model/wallet').questions;
 const Answers = require('app/model/wallet').question_answers;
 const SurveyResult = require('app/model/wallet').survey_results;
@@ -107,7 +107,7 @@ module.exports = {
     let transaction;
     try {
       let { params: { id }, body: { items }, user } = req;
-      let survey = await Surveys.findOne({
+      let survey = await Quiz.findOne({
         where: {
           id: id
         }
@@ -273,10 +273,11 @@ const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
     },
   };
 
-  const surveys = await Surveys.findAll({
+  const surveys = await Quiz.findAll({
     where: cond,
     order: [['created_at', 'DESC']]
   });
+
   if (!surveys.length) {
     return null;
   }

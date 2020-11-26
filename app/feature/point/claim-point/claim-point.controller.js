@@ -205,6 +205,7 @@ module.exports = {
             id: survey.id,
             membership_name: membershipType.name,
             points,
+            type: survey.type
           },
         });
       }

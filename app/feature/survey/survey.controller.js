@@ -69,7 +69,14 @@ module.exports = {
         },
         include: [{
           model: Answers,
-          as: "Answers"
+          as: "Answers",
+          order: [['is_other_flg','DESC']],
+          where: {
+            [Op.or]: {
+              text: {[Op.not]: ''},
+              is_other_flg: true
+            }
+          }
         }]
       });
 

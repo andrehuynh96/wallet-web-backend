@@ -64,7 +64,8 @@ module.exports = {
       let questions = await Questions.findAll({
         where: {
           survey_id: survey.id,
-          actived_flg: true
+          actived_flg: true,
+          deleted_flg: false
         },
         include: [{
           model: Answers,
@@ -139,7 +140,8 @@ module.exports = {
       let questions = await Questions.findAll({
         where: {
           survey_id: id,
-          actived_flg: true
+          actived_flg: true,
+          deleted_flg: false
         },
         include: [{
           model: Answers,

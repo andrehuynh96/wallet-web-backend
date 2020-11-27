@@ -70,15 +70,16 @@ module.exports = {
         include: [{
           model: Answers,
           as: "Answers",
-          order: [['is_other_flg','DESC']],
           where: {
             [Op.or]: {
               text: {[Op.not]: ''},
               is_other_flg: true
             }
-          }
-        }]
+          },
+        }],
+        order: [[{ model: Answers, as: 'Answers' }, 'is_other_flg', 'ASC']]
       });
+
 
       let ret_survey = surveyMapper(survey);
       ret_survey.points = surveyHelper.getSurveyPoint(survey, membershipType ? membershipType.key : '');

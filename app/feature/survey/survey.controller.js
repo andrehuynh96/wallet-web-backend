@@ -9,12 +9,10 @@ const Setting = require('app/model/wallet').settings;
 const SurveyAnswer = require('app/model/wallet').survey_answers;
 const PointHistory = require('app/model/wallet').point_histories;
 const Member = require('app/model/wallet').members;
-
 const QuestionType = require('app/model/wallet/value-object/question-type');
 const PointStatus = require('app/model/wallet/value-object/point-status');
 const PointAction = require('app/model/wallet/value-object/point-action');
 const SystemType = require('app/model/wallet/value-object/system-type');
-
 const surveyMapper = require('./survey.response-schema');
 const questionMapper = require('./question.response-schema');
 const SurveyStatus = require('app/model/wallet/value-object/survey-status');
@@ -24,6 +22,7 @@ const surveyHelper = require('app/lib/utils/survey-helper');
 const MembershipType = require('app/model/wallet').membership_types;
 const Sequelize = require('sequelize');
 const SurveyResultStatus = require("app/model/wallet/value-object/survey-result-status");
+const SurveyType = require('app/model/wallet/value-object/survey-type');
 
 
 const database = require('app/lib/database').db().wallet;
@@ -72,10 +71,11 @@ module.exports = {
           as: "Answers",
           where: {
             [Op.or]: {
-              text: {[Op.not]: ''},
+              text: { [Op.not]: '' },
               is_other_flg: true
             }
           },
+          required: false,
         }],
         order: [[{ model: Answers, as: 'Answers' }, 'is_other_flg', 'ASC']]
       });
@@ -143,7 +143,8 @@ module.exports = {
         },
         include: [{
           model: Answers,
-          as: "Answers"
+          as: "Answers",
+          required: false,
         }]
       })
 
@@ -152,7 +153,6 @@ module.exports = {
       }
 
       let totalCorrect = 0, totalAnswers = 0;
-
       for (let i = 0; i < questions.length; i++) {
         let idx = items.findIndex(x => x.question_id == questions[i].dataValues.id);
         if (idx < 0)
@@ -168,11 +168,9 @@ module.exports = {
           let result = true;
           userAns.open = false;
           for (let j = 0; j < userAns.answer_id.length; j++) {
-            let userAnsId = userAns.answer_id[j],
-              userAnsVal = userAns.value[j];
-
+            let userAnsId = userAns.answer_id[j];
             let currentAnswer = answer.find(x => x.id == userAnsId);
-            if (!currentAnswer.is_correct_flg || userAnsVal != currentAnswer.text) {
+            if (!currentAnswer.is_correct_flg) {
               result = false;
               break;
             }
@@ -200,17 +198,7 @@ module.exports = {
         item.answer_id = item.answer_id.join(',');
       });
 
-      await Member.increment({
-        points: point
-      }, {
-        where: {
-          id: user.id
-        },
-        transaction
-      });
-
       await SurveyAnswer.bulkCreate(items, { transaction: transaction });
-
       await SurveyResult.create({
         member_id: user.id,
         survey_id: id,
@@ -220,19 +208,33 @@ module.exports = {
         status: SurveyResultStatus.COMPLETE
       }, { transaction });
 
-      await PointHistory.create({
-        member_id: user.id,
-        status: PointStatus.APPROVED,
-        action: PointAction.SURVEY,
-        currency_symbol: 'MS_POINT',
-        system_type: SystemType.MEMBERSHIP,
-        object_id: id,
-        amount: point
-      }, { transaction });
-
+      if (SurveyType.QUIZ != survey.QUIZ ||
+        (SurveyType.QUIZ == survey.QUIZ && totalCorrect == totalAnswers)) {
+        await Member.increment({
+          points: point
+        }, {
+          where: {
+            id: user.id
+          },
+          transaction
+        });
+        await PointHistory.create({
+          member_id: user.id,
+          status: PointStatus.APPROVED,
+          action: PointAction.SURVEY,
+          currency_symbol: 'MS_POINT',
+          system_type: SystemType.MEMBERSHIP,
+          object_id: id,
+          amount: point
+        }, { transaction });
+      }
       await transaction.commit();
 
-      return res.ok(true);
+      return res.ok({
+        total_answer: totalAnswers,
+        total_correct: totalCorrect,
+        point: point
+      });
     } catch (err) {
       logger.error('submit surveys fail: ', err);
       if (transaction) await transaction.rollback();

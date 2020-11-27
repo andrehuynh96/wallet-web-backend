@@ -2,7 +2,7 @@ const express = require('express');
 const authenticate = require('app/middleware/authenticate.middleware');
 const controller = require('./survey.controller');
 const validator = require('app/middleware/validator.middleware');
-const {surveys} = require('./validator')
+const { surveys } = require('./validator')
 const router = express.Router();
 
 
@@ -13,10 +13,10 @@ router.get(
 );
 
 router.post(
-    '/:id',
-    authenticate,
-    validator(surveys),
-    controller.submitSurveys
+  '/:id',
+  authenticate,
+  validator(surveys),
+  controller.submitSurveys
 )
 
 module.exports = router;
@@ -119,59 +119,63 @@ module.exports = router;
  *           $ref: '#/definitions/500'
  */
 
-  /**
-  * @swagger
-  * /web/surveys/{id}:
-  *     post:
-  *         summary: submit survey
-  *         tags:
-  *             - Survey
-  *         description:
-  *         parameters:
-  *             - in: path
-  *               name: id
-  *               type: string
-  *               required: true
-  *             - in: body
-  *               name: data
-  *               schema:
-  *                 type: object
-  *                 required:
-  *                 - items
-  *                 example:
-  *                     { 
-                            "items":[
-                                {
-                                    "question_id":"1",
-                                    "answer_id":[1,2,3,4],
-                                    "value":["a","b","c","d"]
-                                }
-                            ]
-                        }
-  *         produces:
-  *             - application/json
-  *         responses:
-  *             200:
-  *                 description: Ok
-  *                 examples:
-  *                     application/json:
-  *                         {
-  *                             "data": true
-  *                         }
-  *             400:
-  *                 description: Error
-  *                 schema:
-  *                     $ref: '#/definitions/400'
-  *             401:
-  *                 description: Error
-  *                 schema:
-  *                     $ref: '#/definitions/401'
-  *             404:
-  *                 description: Error
-  *                 schema:
-  *                     $ref: '#/definitions/404'
-  *             500:
-  *                 description: Error
-  *                 schema:
-  *                     $ref: '#/definitions/500'
-  */
+/**
+* @swagger
+* /web/surveys/{id}:
+*     post:
+*         summary: submit survey
+*         tags:
+*             - Survey
+*         description:
+*         parameters:
+*             - in: path
+*               name: id
+*               type: string
+*               required: true
+*             - in: body
+*               name: data
+*               schema:
+*                 type: object
+*                 required:
+*                 - items
+*                 example:
+*                     {
+                          "items":[
+                              {
+                                  "question_id":"1",
+                                  "answer_id":[1,2,3,4],
+                                  "value":["a","b","c","d"]
+                              }
+                          ]
+                      }
+*         produces:
+*             - application/json
+*         responses:
+*             200:
+*                 description: Ok
+*                 examples:
+*                     application/json:
+*                         {
+*                             "data": {
+*                                 "total_answer": 10,
+                                  "total_correct": 10,
+                                  "point": 10
+*                             }
+*                         }
+*             400:
+*                 description: Error
+*                 schema:
+*                     $ref: '#/definitions/400'
+*             401:
+*                 description: Error
+*                 schema:
+*                     $ref: '#/definitions/401'
+*             404:
+*                 description: Error
+*                 schema:
+*                     $ref: '#/definitions/404'
+*             500:
+*                 description: Error
+*                 schema:
+*                     $ref: '#/definitions/500'
+*/

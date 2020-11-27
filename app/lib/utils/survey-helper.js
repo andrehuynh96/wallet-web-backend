@@ -23,7 +23,7 @@ module.exports = {
       status: SurveyStatus.READY,
       deleted_flg: false,
       start_date: {
-        [Op.lt]: now,
+        [Op.lte]: now,
       },
       end_date: {
         [Op.gte]: now,

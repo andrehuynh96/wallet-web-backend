@@ -14,6 +14,7 @@ module.exports = async () => {
         display_order: 1,
         deleted_flg: false,
         is_enabled: true,
+        key: 'SILVER'
       },
       {
         name: 'Gold',
@@ -23,6 +24,7 @@ module.exports = async () => {
         display_order: 2,
         deleted_flg: false,
         is_enabled: true,
+        key: 'GOLD'
       },
       {
         name: 'Platinum',
@@ -32,6 +34,7 @@ module.exports = async () => {
         display_order: 4,
         deleted_flg: false,
         is_enabled: false,
+        key: 'PLATINUM'
       },
       {
         name: 'Diamond',
@@ -41,9 +44,10 @@ module.exports = async () => {
         display_order: 5,
         deleted_flg: false,
         is_enabled: false,
+        key: 'DIAMOND'
       },
     ], {
-        returning: true
-      });
+      returning: true
+    });
   }
 };

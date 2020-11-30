@@ -172,7 +172,7 @@ module.exports = {
         where: {
           is_enabled: true,
           deleted_flg: false,
-          name: MembershipTypeId.Gold
+          key: MembershipTypeId.GOLD
         }
       })
       if (memberKyc.status == KycStatus.APPROVED &&

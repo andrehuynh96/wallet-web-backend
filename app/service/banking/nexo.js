@@ -123,6 +123,7 @@ class Nexo extends Banking {
     }
     catch (err) {
       // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getBalance error:`, err);
+      console.log(err.response.data);
       throw err;
     }
   }

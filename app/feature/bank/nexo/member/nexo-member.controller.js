@@ -121,10 +121,8 @@ module.exports = {
           email: req.body.email
         }
       });
-      if (!member) {
-        return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
-      }
-      if (member.member_id && member.member_id != req.user.id) {
+
+      if (member && member.member_id && member.member_id != req.user.id) {
         return res.badRequest(res.__("DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT"), "DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT");
       }
 
@@ -152,10 +150,7 @@ module.exports = {
           email: req.body.email
         }
       });
-      if (!member) {
-        return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
-      }
-      if (member.member_id && member.member_id != req.user.id) {
+      if (member && member.member_id && member.member_id != req.user.id) {
         return res.badRequest(res.__("DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT"), "DONT_HAVE_PERMISSION_TO_CHANGE_NEXO_ACCOUNT");
       }
 
@@ -168,7 +163,7 @@ module.exports = {
         return res.badRequest(result.error.message, "NEXO_PROVIDER_ERROR");
       }
 
-      await NexoMember.update({
+      if (member) await NexoMember.update({
         nexo_id: result.id,
         user_secret: result.secret,
         //  member_id: req.user.id
@@ -176,6 +171,13 @@ module.exports = {
         where: {
           email: req.body.email
         }
+      });
+      else await NexoMember.create({
+        email: req.body.email,
+        nexo_id: result.id,
+        user_secret: result.secret,
+        status: Status.ACTIVATED,
+        member_id: req.user.id
       });
       return res.ok(true);
     } catch (err) {

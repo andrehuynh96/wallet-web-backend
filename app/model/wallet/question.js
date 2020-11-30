@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     sub_type: {
       type: DataTypes.STRING(100),
-      allowNull: true,
+      allowNull: false,
       defaultValue: QuestionSubType.QUESTIONNAIRE
     }
   }, {

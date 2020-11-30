@@ -22,10 +22,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       default: false,
     },
+    is_other_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      default: false,
+    },
   }, {
     underscored: true,
     timestamps: true,
   });
+
+  QuestionAnswer.associate = (models) => {
+    QuestionAnswer.belongsTo(models.questions, { foreignKey: 'question_id', targetKey: 'id' });
+  };
 
   return QuestionAnswer;
 };

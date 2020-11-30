@@ -11,16 +11,12 @@ const Member = require('app/model/wallet').members;
 const database = require('app/lib/database').db().wallet;
 const PointAction = require("app/model/wallet/value-object/point-action");
 const MsPointPhaseType = require("app/model/wallet/value-object/ms-point-phase-type");
-const Surveys = require('app/model/wallet').surveys;
-const SurveyResult = require('app/model/wallet').survey_results;
 const settingHelper = require('app/lib/utils/setting-helper');
+const surveyHelper = require('app/lib/utils/survey-helper');
 const Sequelize = require('sequelize');
-const SurveyStatus = require('app/model/wallet/value-object/survey-status');
-const SurveyType = require('app/model/wallet/value-object/survey-type');
 
 const Op = Sequelize.Op;
 const keys = [
-  config.setting.MS_POINT_MODE,
   config.setting.MS_POINT_DELAY_TIME_IN_SECONDS,
   config.setting.MS_POINT_CLAIMING_IS_ENABLED,
   config.setting.MS_POINT_DELAY_TIME_DURATION,
@@ -60,13 +56,12 @@ module.exports = {
         }
       });
       const {
-        msPointMode,
         msPointDelayTimeInSeconds,
         msPointDelayTimeDuration,
         msPointClaimingIsEnabled,
         msPointSurveyIsEnabled,
       } = await getSettings();
-      const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
+      const survey = await surveyHelper.getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
 
       return res.ok({
         mode: survey ? MsPointPhaseType.PHASE_3_SURVEY : MsPointPhaseType.PHASE_1,
@@ -108,7 +103,7 @@ module.exports = {
         msPointClaimingIsEnabled,
         msPointSurveyIsEnabled,
       } = await getSettings();
-      const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
+      const survey = await surveyHelper.getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
       if (survey) {
         return res.forbidden(res.__("MEMBER_NEED_SUBMIT_SURVEY"), "MEMBER_NEED_SUBMIT_SURVEY", {
           mode: MsPointPhaseType.PHASE_3_SURVEY,
@@ -126,6 +121,7 @@ module.exports = {
       let claim = await ClaimPoint.findOne({
         where: {
           member_id: req.user.id,
+          action: [PointAction.CLAIM, PointAction.SURVEY],
         },
         order: [['created_at', 'DESC']]
       });
@@ -134,7 +130,7 @@ module.exports = {
       if (now / 1000 < next_time) {
         return res.badRequest(res.__("CANNOT_CLAIM_POINT"), "CANNOT_CLAIM_POINT", {
           next_time,
-          date: moment.utc().add(msPointDelayTimeInSeconds, 'second').format('YYYY-MM-DD HH:mm:ss UTC'),
+          date: moment(claim.createdAt).add(msPointDelayTimeInSeconds, 'second').utc().format('YYYY-MM-DD HH:mm:ss UTC'),
         });
       }
 
@@ -198,9 +194,9 @@ module.exports = {
         });
       }
 
-      const survey = await getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
+      const survey = await surveyHelper.getInProcessSurvey(msPointSurveyIsEnabled, req.user.id);
       if (survey) {
-        const points = getSurveyPoint(survey, membershipType.key);
+        const points = surveyHelper.getSurveyPoint(survey, membershipType.key);
 
         return res.ok({
           claimable: true,
@@ -209,6 +205,7 @@ module.exports = {
             id: survey.id,
             membership_name: membershipType.name,
             points,
+            type: survey.type
           },
         });
       }
@@ -216,7 +213,7 @@ module.exports = {
       let claim = await ClaimPoint.findOne({
         where: {
           member_id: req.user.id,
-          action: PointAction.CLAIM
+          action: [PointAction.CLAIM, PointAction.SURVEY],
         },
         order: [['created_at', 'DESC']]
       });
@@ -232,7 +229,7 @@ module.exports = {
         claimable: claimable,
         mode: MsPointPhaseType.PHASE_1,
         next_time: next_time,
-        date: moment.utc().add(msPointDelayTimeInSeconds, 'second').format('YYYY-MM-DD HH:mm:ss UTC'),
+        date: moment(claim.createdAt).add(msPointDelayTimeInSeconds, 'second').utc().format('YYYY-MM-DD HH:mm:ss UTC'),
         claiming: {
           is_enabled: msPointClaimingIsEnabled,
           time: msPointDelayTimeInSeconds,
@@ -257,14 +254,12 @@ const getSettings = async () => {
       }
     }
   });
-  const msPointMode = settingHelper.getPropertyValue(settings, 'ms_point_mode', MsPointPhaseType.PHASE_1);
   const msPointDelayTimeInSeconds = settingHelper.getPropertyValue(settings, 'ms_point_delay_time_in_seconds', 0);
   const msPointDelayTimeDuration = settingHelper.getPropertyValue(settings, 'ms_point_delay_time_duration', '');
   const msPointClaimingIsEnabled = settingHelper.getPropertyValue(settings, 'ms_point_claiming_is_enabled', 'false');
   const msPointSurveyIsEnabled = settingHelper.getPropertyValue(settings, 'ms_point_survey_is_enabled', 'false');
 
   return {
-    msPointMode,
     msPointDelayTimeInSeconds,
     msPointDelayTimeDuration,
     msPointClaimingIsEnabled,
@@ -272,66 +267,3 @@ const getSettings = async () => {
   };
 };
 
-const getInProcessSurvey = async (msPointSurveyIsEnabled, userId) => {
-  if (!msPointSurveyIsEnabled) {
-    return null;
-  }
-
-  const now = Date.now();
-  const cond = {
-    status: SurveyStatus.READY,
-    deleted_flg: false,
-    start_date: {
-      [Op.lt]: now,
-    },
-    end_date: {
-      [Op.gte]: now,
-    },
-  };
-
-  const surveys = await Surveys.findAll({
-    where: cond,
-    order: [['created_at', 'DESC']]
-  });
-  if (!surveys.length) {
-    return null;
-  }
-
-  const surveyIdList = surveys.map(item => item.id);
-  const surveyResults = await SurveyResult.findAll({
-    where: {
-      survey_id: {
-        [Op.in]: surveyIdList,
-      },
-      member_id: userId,
-    }
-  });
-  const submitedCache = _.keyBy(surveyResults, 'survey_id');
-  const notSubmitedList = surveys.filter(item => !submitedCache[item.id]);
-
-  return notSubmitedList.length > 0 ? notSubmitedList[0] : null;
-};
-
-const getSurveyPoint = (survey, membershipTypeKey) => {
-  let points = 0;
-
-  switch (membershipTypeKey.trim().toUpperCase()) {
-    case 'SILVER':
-      points = survey.silver_membership_point;
-      break;
-
-    case 'GOLD':
-      points = survey.gold_membership_point;
-      break;
-
-    case 'PLATINUM':
-      points = survey.platinum_membership_point;
-      break;
-
-    // case 'DIAMOND':
-    //   points = 0;
-    //   break;
-  }
-
-  return points;
-};

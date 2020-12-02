@@ -209,9 +209,7 @@ module.exports = {
         point: point,
         status: SurveyResultStatus.COMPLETE
       }, { transaction });
-
-      if (SurveyType.QUIZ != survey.QUIZ ||
-        (SurveyType.QUIZ == survey.QUIZ && totalCorrect == totalAnswers)) {
+      if (SurveyType.QUIZ != survey.type || (SurveyType.QUIZ == survey.type && totalCorrect == totalAnswers)) {
         await Member.increment({
           points: point
         }, {

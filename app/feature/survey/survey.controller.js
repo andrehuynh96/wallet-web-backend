@@ -228,7 +228,7 @@ module.exports = {
           amount: point
         }, { transaction });
       }
-      await transaction.rollback();
+      await transaction.commit();
 
       return res.ok({
         total_answer: totalAnswers,

@@ -17,6 +17,7 @@ router.put(
   validator(requestSchema),
   controller.update
 );
+
 module.exports = router;
 
 
@@ -28,7 +29,7 @@ module.exports = router;
  *   get:
  *     summary: Get member setting
  *     tags:
- *       - Accounts
+ *       - Member setting
  *     description: Get member setting
  *     parameters:
  *     produces:
@@ -39,12 +40,12 @@ module.exports = router;
  *         examples:
  *           application/json:
  *             {
-  *       "data": {
-  *            "member_id": "a87548d2-6275-4001-a0b8-20752f178710",
-  *            "is_allow_message_flg": true,
-  *            "created_at": "2020-09-29T06:13:21.033Z",
-  *            "updated_at": "2020-09-29T06:13:21.033Z"
-  *       }
+                "data": {
+                      "member_id": "a87548d2-6275-4001-a0b8-20752f178710",
+                      "is_allow_message_flg": true,
+                      "created_at": "2020-09-29T06:13:21.033Z",
+                      "updated_at": "2020-09-29T06:13:21.033Z"
+                  }
  *             }
  *       400:
  *         description: Error
@@ -70,7 +71,7 @@ module.exports = router;
 *   put:
 *     summary: update member setting
 *     tags:
-*       - Accounts
+*       - Member setting
 *     description: update member setting
 *     parameters:
 *       - in: body
@@ -80,16 +81,16 @@ module.exports = router;
 *            type: object
 *            example:
 *             {
-*                "is_allow_message_flg": false
+                "is_allow_message_flg": false
 *             }
 *     responses:
 *       200:
 *         description: Ok
- *         examples:
- *           application/json:
- *             {
- *                 "data": true
- *             }
+*         examples:
+*           application/json:
+*             {
+                "data": true
+*             }
 *       400:
 *         description: Error
 *         schema:

@@ -1,8 +1,8 @@
 const MembershipType = {
-  Silver: "Silver",
-  Gold: "Gold",
-  Platinum: "Platinum",
-  Diamond: "Diamond"
+  SILVER: "SILVER",
+  GOLD: "GOLD",
+  PLATINUM: "PLATINUM",
+  DIAMOND: "DIAMOND"
 };
 
 module.exports = MembershipType;

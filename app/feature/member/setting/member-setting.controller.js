@@ -37,6 +37,9 @@ module.exports = {
       if (body.is_allow_message_flg != undefined) {
         value.is_allow_message_flg = body.is_allow_message_flg;
       }
+      if (body.is_received_point_notification_flg != undefined ) {
+        value.is_received_point_notification_flg = body.is_received_point_notification_flg;
+      }
       const [_, response] = await MemberSetting.update(
         value,
         {

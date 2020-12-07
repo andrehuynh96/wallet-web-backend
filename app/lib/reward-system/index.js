@@ -1,10 +1,10 @@
 const config = require("app/config");
 const axios = require("axios");
-const logger = require("app/lib/logger")
+const logger = require("app/lib/logger");
 const redisResource = require("app/resource/redis");
 const redis = require("app/lib/redis");
 const cache = redis.client();
-const queryString = require('query-string')
+const queryString = require('query-string');
 
 class RewardSystem {
   constructor({ baseUrl, apiKey, secretKey, typeId }) {
@@ -35,7 +35,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -60,7 +60,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("unregister client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("unregister client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -86,7 +86,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -112,7 +112,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -136,7 +136,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("get available rewards fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get available rewards fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -160,7 +160,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("get available rewards fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get available rewards fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -186,7 +186,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("get reward history fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get reward history fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -206,7 +206,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("check referrer code for can-referer fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("check referrer code for can-referer fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -229,7 +229,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -258,7 +258,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -284,7 +284,7 @@ class RewardSystem {
       return { httpCode: 200, data: result.data };
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -310,7 +310,7 @@ class RewardSystem {
       return { httpCode: 200, data: result.data };
     }
     catch (err) {
-      logger.error("create client fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("create client fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -334,7 +334,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("get available rewards fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("get available rewards fail:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }
@@ -364,7 +364,7 @@ class RewardSystem {
 
     }
     catch (err) {
-      logger.error("Update Membership Type:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("Update Membership Type:", err);
       return { httpCode: err.response.status, data: err.response.data };
     }
   }

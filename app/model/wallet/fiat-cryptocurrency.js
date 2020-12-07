@@ -60,15 +60,15 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
   }, {
-      underscored: true,
-      timestamps: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ['symbol', 'platform']
-        }
-      ]
-    });
+    underscored: true,
+    timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['symbol', 'platform']
+      }
+    ]
+  });
 
   return Model;
 } 

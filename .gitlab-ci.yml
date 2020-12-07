@@ -8,6 +8,30 @@ variables:
  ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
  ANSIBLE_REPO: "/home/ubuntu/staking-iac/"
 
+stak-stage-ap-ms-wl-api:
+ stage: deploy
+ script:
+  - cd /home/ubuntu/staking-iac/ansible
+  - sudo su ubuntu -c "ansible-playbook stak-stage-ap-ms-wl-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
+ only:
+  - /^.*-ms-rc$/
+ except:
+  - branches
+ tags:
+  - stak-stage-ap-ms-bastion
+
+stage-stak-ap-ms-wl-api:
+ stage: deploy
+ script:
+  - cd /home/ubuntu/staking-iac/ansible
+  - sudo su ubuntu -c "ansible-playbook stage-stak-ap-ms-wl-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
+ only:
+  - /^.*-ms-rc$/
+ except:
+  - branches
+ tags:
+  - stage-stak-ap-ms-ansible
+
 .BuildJSApp:
  stage: build
  script:
@@ -55,14 +79,14 @@ StageBinaryStarDappApi:
  tags:
   - stage-stak-ap-bs-ansible
 
-StageMoonStakeDAppApi:
- variables:
-  _ENV: "stage" 
- extends:
-  - .BuildJSApp
-  - .OnlyStagingMS
- tags:
-  - stage-stak-ap-ms-ansible
+#StageMoonStakeDAppApi:
+# variables:
+#  _ENV: "stage" 
+# extends:
+#  - .BuildJSApp
+#  - .OnlyStagingMS
+# tags:
+#  - stage-stak-ap-ms-ansible
 
 ProdBinaryStarDappApi:
  variables:

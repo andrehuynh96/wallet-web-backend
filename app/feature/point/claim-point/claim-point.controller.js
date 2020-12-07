@@ -225,11 +225,13 @@ module.exports = {
         claimable = false;
       }
 
+      const date = claim ? moment(claim.createdAt).add(msPointDelayTimeInSeconds, 'second').utc().format('YYYY-MM-DD HH:mm:ss UTC') : new Date;
+
       return res.ok({
         claimable: claimable,
         mode: MsPointPhaseType.PHASE_1,
         next_time: next_time,
-        date: moment(claim.createdAt).add(msPointDelayTimeInSeconds, 'second').utc().format('YYYY-MM-DD HH:mm:ss UTC'),
+        date: date,
         claiming: {
           is_enabled: msPointClaimingIsEnabled,
           time: msPointDelayTimeInSeconds,

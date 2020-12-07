@@ -48,7 +48,7 @@ module.exports = {
       const off = parseInt(offset) || 0;
       const lim = parseInt(limit) || parseInt(config.appLimit);
 
-      const { count: total, rows: wallets } = await Wallet.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [['order_index', 'ASC'],['created_at','DESC']] });
+      const { count: total, rows: wallets } = await Wallet.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: [['order_index', 'ASC'], ['created_at', 'DESC']] });
       return res.ok({
         items: walletMapper(wallets),
         offset: off,
@@ -100,7 +100,11 @@ module.exports = {
         }
       ]
 
-      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
+      let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
+
+      //TODO: hard code for hotfix disable ['CENNZ', 'CPAY'];
+      let ignoreCoin = ['CENNZ', 'CPAY'];
+      wallet_priv_keys = wallet_priv_keys.filter(x => !ignoreCoin.includes(x.currency.symbol));
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),
         offset: off,
@@ -130,7 +134,7 @@ module.exports = {
       next(err);
     }
   },
-  saveIndex: async (req,res,next) => {
+  saveIndex: async (req, res, next) => {
     let transaction;
     try {
       const { items } = req.body;
@@ -159,10 +163,10 @@ module.exports = {
         });
       }
       const transaction = await database.transaction();
-      for(let item of items) {
+      for (let item of items) {
         await Wallet.update({
           order_index: item.index
-        },{
+        }, {
           where: {
             id: item.wallet_id
           },
@@ -173,10 +177,10 @@ module.exports = {
       return res.ok(true);
     }
     catch (error) {
-      if(transaction) {
+      if (transaction) {
         transaction.rollback();
       }
-      logger.error('save wallet index fail',error);
+      logger.error('save wallet index fail', error);
       next(error);
     }
   }

@@ -36,7 +36,7 @@ module.exports = {
           key: config.setting.MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED
         }
       });
-      if (!setting || Boolean(setting.value) == false) {
+      if (!setting || setting.value == 'false') {
         return;
       }
 

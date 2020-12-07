@@ -8,6 +8,8 @@ const walletMapper = require('app/feature/response-schema/wallet.response-schema
 const walletPrivateKeyMapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const Op = Sequelize.Op;
+
 module.exports = {
   getAll: async (req, res, next) => {
     try {
@@ -99,8 +101,12 @@ module.exports = {
           required: false,
         }
       ]
+      let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
+      console.log(wallet_priv_keys[0].currency);
 
-      const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
+      //TODO: hard code for hotfix disable ['CENNZ', 'CPAY']
+      let ignoreCoin = ['CENNZ', 'CPAY']
+      wallet_priv_keys = wallet_priv_keys.filter(x => !ignoreCoin.includes(x.currency.symbol))
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),
         offset: off,

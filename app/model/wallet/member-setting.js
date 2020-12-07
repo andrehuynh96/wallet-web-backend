@@ -34,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
+    is_received_point_notification_flg: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
   }, {
       underscored: true,
       timestamps: true,

@@ -26,7 +26,7 @@ const config = {
   app: {
     name: process.env.APP_NAME || 'staking-web-wallet-api',
     version: pkg.version,
-    buildNumber: process.env.BUILD_NUMBER || '',
+    buildNumber: process.env.BUILD_NUMBER || process.env.CI_JOB_ID || '',
     description: pkg.description,
     port: parseInt(process.env.PORT || process.env.APP_PORT),
   },
@@ -288,10 +288,14 @@ const config = {
     CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE: "CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE",
     CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE: "CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE",
     MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE: "MEMBERSHIP_COMMISSION_USDT_NETWORK_FEE",
+    MS_POINT_MODE: "MS_POINT_MODE",
+    MS_POINT_CLAIMING_IS_ENABLED: "MS_POINT_CLAIMING_IS_ENABLED",
     MS_POINT_DELAY_TIME_IN_SECONDS: "MS_POINT_DELAY_TIME_IN_SECONDS",
+    MS_POINT_DELAY_TIME_DURATION: "MS_POINT_DELAY_TIME_DURATION",
     MS_POINT_STAKING_IS_ENABLED: "MS_POINT_STAKING_IS_ENABLED",
     MS_POINT_EXCHANGE_IS_ENABLED: "MS_POINT_EXCHANGE_IS_ENABLED",
     MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED: "MS_POINT_UPGRADING_MEMBERSHIP_IS_ENABLED",
+    MS_POINT_SURVEY_IS_ENABLED: "MS_POINT_SURVEY_IS_ENABLED",
   },
   apiKeyIP: process.env.API_IP_KEY || '',
   bodyTransferLimit: process.env.BODY_TRANSFER_LIMIT || '5mb',
@@ -321,7 +325,13 @@ const config = {
       url: process.env.NEXO_URL,
       apiKey: process.env.NEXO_API_KEY,
     }
-  }
+  },
+  hangoutError: {
+    isEnabled: process.env.HANGOUT_ERROR_IS_ENABLED === 'true',
+    logLevel: process.env.HANGOUT_ERROR_LOG_LEVEL || 'error',
+    webhookUrl: process.env.HANGOUT_ERROR_CHANEL_WEBHOOK_URL,
+  },
+  whitelistReCaptcha: process.env.WHITELIST_RECAPTCHA ? process.env.WHITELIST_RECAPTCHA.split(',') : [],
 };
 
 module.exports = config;

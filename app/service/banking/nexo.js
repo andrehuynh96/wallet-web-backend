@@ -1,5 +1,6 @@
-const format = require("string-template")
-const config = require('app/config')
+/* eslint-disable no-useless-catch */
+const format = require("string-template");
+const config = require('app/config');
 const Banking = require("./base");
 const InfinitoApi = require('node-infinito-api');
 const { Http, TokenProvider } = require('node-infinito-util');
@@ -15,6 +16,7 @@ class Nexo extends Banking {
   constructor({ ibp = true }) {
     super();
     this.ibp = ibp;
+
   }
 
   async createAccount({ first_name, last_name, email }) {
@@ -27,10 +29,29 @@ class Nexo extends Banking {
           lastName: last_name,
           email: email
         }
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo createAccount error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
+      throw err;
+    }
+  }
+
+  async resendActiveCode({ first_name, last_name, email, secret }) {
+    try {
+      return await this._makeRequest({
+        path: "/v1/user",
+        method: "POST",
+        secret: secret,
+        body: {
+          email: email,
+          firstName: first_name,
+          lastName: last_name,
+        }
+      });
+    }
+    catch (err) {
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err); 
       throw err;
     }
   }
@@ -44,10 +65,10 @@ class Nexo extends Banking {
           code: code
         },
         secret: secret
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo verifyEmail error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyEmail error:`, err);
       throw err;
     }
   }
@@ -60,10 +81,10 @@ class Nexo extends Banking {
         body: {
           email: email
         }
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo requestRecoveryCode error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo requestRecoveryCode error:`, err);
       throw err;
     }
   }
@@ -82,24 +103,27 @@ class Nexo extends Banking {
           email: email,
           code: code
         }
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo verifyRecoveryCode error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyRecoveryCode error:`, err);
       throw err;
     }
   }
 
   async getBalance({ nexo_id, secret }) {
     try {
-      return await this._makeRequest({
+      let result = await this._makeRequest({
         path: `/v1/user/${nexo_id}/balance`,
         method: "GET",
         secret: secret
-      })
+      });
+
+      return result.balances;
     }
     catch (err) {
-      logger.error(`nexo getBalance error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getBalance error:`, err);
+      console.log(err.response.data);
       throw err;
     }
   }
@@ -110,10 +134,10 @@ class Nexo extends Banking {
         path: `/v1/user/${nexo_id}/deposit/${currency_id}/wallet`,
         method: "GET",
         secret: secret
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo getDepositAddress error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getDepositAddress error:`, err);
       throw err;
     }
   }
@@ -130,10 +154,10 @@ class Nexo extends Banking {
           tag
         },
         secret: secret
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo withdraw error:`, err);
+      //   logger[err.canLogAxiosError ? 'error' : 'info'](`nexo withdraw error:`, err);
       throw err;
     }
   }
@@ -147,10 +171,10 @@ class Nexo extends Banking {
           code,
         },
         secret: secret
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo verifyWithdraw error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyWithdraw error:`, err);
       throw err;
     }
   }
@@ -161,10 +185,10 @@ class Nexo extends Banking {
         path: `/v1/user/${nexo_id}/transactions/withdraw`,
         method: "GET",
         secret: secret
-      })
+      });
     }
     catch (err) {
-      logger.error(`nexo getWithdrawTransactions error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getWithdrawTransactions error:`, err);
       throw err;
     }
   }
@@ -174,12 +198,12 @@ class Nexo extends Banking {
     if (this.ibp) {
       response = await this._makeRequestThroughIBP({
         path, method, params: body, secret
-      })
+      });
     }
     else {
       response = await this._makeRequestThroughNexo({
         path, method, params: body, secret
-      })
+      });
     }
     return toSnakeCase(response);
   }
@@ -198,7 +222,7 @@ class Nexo extends Banking {
       url: config.banking.nexo.url + path,
       headers: headers,
       data: params
-    }
+    };
     const response = await axios(options);
     if (response.data.error) {
       logger.error(`Nexo service error:`, response.data.error);
@@ -229,7 +253,7 @@ class Nexo extends Banking {
       url: `${config.sdk.baseUrl}/nexo${path}`,
       headers: headers,
       data: params
-    }
+    };
     const response = await axios(options);
     if (response.data.error) {
       logger.error(`IBP service error: `, response.data.error);
@@ -251,14 +275,17 @@ class Nexo extends Banking {
         headers: headers,
         data: data || {},
       });
-    }
+    };
   }
 }
 
 async function _getIbpToken() {
-  let token = await cache.getAsync(CACHE_KEY);
-  if (token) {
-    return token;
+  let token;
+  if (cache) {
+    token = await cache.getAsync(CACHE_KEY);
+    if (token) {
+      return token;
+    }
   }
 
   const opts = {
@@ -268,7 +295,9 @@ async function _getIbpToken() {
   };
   let tokenProvider = new TokenProvider(opts);
   token = await tokenProvider.getLatestToken();
-  await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60);
+  if (cache) {
+    await cache.setAsync(CACHE_KEY, token, "EX", 60 * 60);
+  }
   return token;
 }
 
@@ -285,7 +314,7 @@ function _getChecksumIbp(method, url, body, time) {
     url: url,
     jsonEncodeBody: JSON.stringify(body),
     xTime: time
-  })
+  });
 }
 
 module.exports = Nexo;

@@ -12,7 +12,6 @@ stak-stage-ap-ms-wl-api:
  stage: deploy
  script:
   - cd /home/ubuntu/staking-iac/ansible
-  - sudo su ubuntu -c "export GIT_SSH_COMMAND='ssh -i /home/ubuntu/staking-iac/ansible/id_rsa';git pull ssh terraform"
   - sudo su ubuntu -c "ansible-playbook stak-stage-ap-ms-wl-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
  only:
   - /^.*-ms-rc$/
@@ -20,6 +19,18 @@ stak-stage-ap-ms-wl-api:
   - branches
  tags:
   - stak-stage-ap-ms-bastion
+
+stage-stak-ap-ms-wl-api:
+ stage: deploy
+ script:
+  - cd /home/ubuntu/staking-iac/ansible
+  - sudo su ubuntu -c "ansible-playbook stage-stak-ap-ms-wl-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
+ only:
+  - /^.*-ms-rc$/
+ except:
+  - branches
+ tags:
+  - stage-stak-ap-ms-ansible
 
 .BuildJSApp:
  stage: build
@@ -68,14 +79,14 @@ StageBinaryStarDappApi:
  tags:
   - stage-stak-ap-bs-ansible
 
-StageMoonStakeDAppApi:
- variables:
-  _ENV: "stage" 
- extends:
-  - .BuildJSApp
-  - .OnlyStagingMS
- tags:
-  - stage-stak-ap-ms-ansible
+#StageMoonStakeDAppApi:
+# variables:
+#  _ENV: "stage" 
+# extends:
+#  - .BuildJSApp
+#  - .OnlyStagingMS
+# tags:
+#  - stage-stak-ap-ms-ansible
 
 ProdBinaryStarDappApi:
  variables:

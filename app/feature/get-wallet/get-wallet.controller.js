@@ -8,6 +8,8 @@ const walletMapper = require('app/feature/response-schema/wallet.response-schema
 const walletPrivateKeyMapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const Op = Sequelize.Op;
+
 module.exports = {
   getAll: async (req, res, next) => {
     try {
@@ -97,9 +99,13 @@ module.exports = {
           model: Currency,
           as: "currency",
           required: false,
+          where: {
+            symbol: {
+              [Op.notIn]: ['CENNZ', 'CPAY']
+            }
+          }
         }
       ]
-
       const { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),

@@ -13,10 +13,9 @@ const cache = redis.client();
 const CACHE_KEY = 'INFINITO_TOKEN';
 
 class Nexo extends Banking {
-  constructor({ ibp = true }) {
+  constructor({ }) {
     super();
-    this.ibp = ibp;
-
+    this.ibp = config.banking.nexo.usingIBP;
   }
 
   async createAccount({ first_name, last_name, email }) {
@@ -137,7 +136,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getDepositAddress error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getDepositAddress error:`, err);
       throw err;
     }
   }
@@ -229,7 +228,7 @@ class Nexo extends Banking {
       throw response.data.error;
     }
 
-    return response.data;
+    return response.data.data;
   }
 
   async _makeRequestThroughIBP({ path, method, params, secret = null }) {

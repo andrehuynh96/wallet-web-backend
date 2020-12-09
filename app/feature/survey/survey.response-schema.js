@@ -4,7 +4,7 @@ const destObject = {
   single: {
     "id": "id",
     "name": "name",
-    "name_ja": "name_ja",
+    "name_ja": "name_ja?",
     "content": "content",
     "title": "title",
     "start_date": "start_date",

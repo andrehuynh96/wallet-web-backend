@@ -90,6 +90,7 @@ module.exports = {
       if (req.user.current_language == 'ja') {
         ret_survey.content = survey.content_ja || ret_survey.content;
         ret_survey.title = survey.title_ja || ret_survey.title;
+        ret_survey.name = survey.name_ja || ret_survey.name;
         delete survey.content_ja;
 
         ret_questions.forEach(question => {

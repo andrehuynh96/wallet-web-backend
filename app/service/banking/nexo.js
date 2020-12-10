@@ -31,7 +31,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
       throw err;
     }
   }
@@ -50,7 +50,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err); 
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
       throw err;
     }
   }
@@ -67,7 +67,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyEmail error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyEmail error:`, err);
       throw err;
     }
   }
@@ -83,7 +83,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo requestRecoveryCode error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo requestRecoveryCode error:`, err);
       throw err;
     }
   }
@@ -105,7 +105,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyRecoveryCode error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyRecoveryCode error:`, err);
       throw err;
     }
   }
@@ -118,11 +118,14 @@ class Nexo extends Banking {
         secret: secret
       });
 
+      result.balances.forEach(i => {
+        i.currency_id = i.currency_ids[i.name.toLowerCase()];
+      });
+
       return result.balances;
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getBalance error:`, err);
-      console.log(err.response.data);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getBalance error:`, err);
       throw err;
     }
   }
@@ -156,7 +159,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      //   logger[err.canLogAxiosError ? 'error' : 'info'](`nexo withdraw error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo withdraw error:`, err);
       throw err;
     }
   }
@@ -173,7 +176,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyWithdraw error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyWithdraw error:`, err);
       throw err;
     }
   }
@@ -187,7 +190,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getWithdrawTransactions error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getWithdrawTransactions error:`, err);
       throw err;
     }
   }

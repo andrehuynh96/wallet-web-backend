@@ -19,7 +19,7 @@ const VerifyCode = '97963846';
 // const VerifyCode = '68536443';
 
 const nexoEmail = "huyht+1607413506954@blockchainlabs.asia";
-const currencyId = 'CLBBE2lr8Gjm'//BTC: 'NXTcJinsNucsB';
+const currencyId = 'CRw2WgGIXV3B'//BTC: 'NXTcJinsNucsB';
 const walletAddress = 'mxSb3XcRUURLthzA4GFvzyTu1jK5Uro4kS';
 
 describe('Test NEXO', function () {
@@ -71,33 +71,25 @@ describe('Test NEXO', function () {
     result.should.have.property('secret');
   });
 
-  it('getBalance', async () => {
+  it.only('getBalance', async () => {
     let result = await instance.getBalance({
       nexo_id: nexoId,
       secret: secret
     });
+
     console.log('getBalance::', result);
     // [
-    //   {
-    //     id: 'NXTcJinsNucsB',
-    //     name: 'BTC',
-    //     interest_rate: 4,
-    //     interest_earned: '0.00000000',
-    //     amount: '0.00000000',
-    //     min_earnable: '0.001',
-    //     deposit_enabled: true,
-    //     withdraw_enabled: true
-    //   },
     // {
-    //   id: 'NXTYMFU8gS7vM',
-    //   name: 'USDT',
-    //   interest_rate: 8,
+    //   id: 'CLBBE2lr8Gjm',
+    //   currency_ids: { trx: 'CRw2WgGIXV3B' },
+    //   name: 'TRX',
+    //   interest_rate: 4,
     //   interest_earned: '0.00000000',
     //   amount: '0.00000000',
-    //   min_earnable: '1',
+    //   min_earnable: '100',
     //   deposit_enabled: true,
     //   withdraw_enabled: true
-    // },
+    // }
     // ]
   });
 

@@ -101,8 +101,6 @@ module.exports = {
           required: false,
         }
       ]
-      let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
-      console.log(wallet_priv_keys[0].currency);
 
       let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
 

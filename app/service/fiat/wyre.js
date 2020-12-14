@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 const config = require('app/config');
 const logger = require('app/lib/logger');
 const CryptoJS = require('crypto-js');
@@ -31,7 +32,7 @@ class Wyre extends Fiat {
         where: {
           symbol: destCurrency.toUpperCase()
         }
-      })
+      });
       let dest = destAddress;
       if (currency) {
         if (currency.symbol == currency.platform) {
@@ -41,7 +42,7 @@ class Wyre extends Fiat {
             where: {
               symbol: currency.platform
             }
-          })
+          });
           if (crypto) {
             dest = crypto.name.toLowerCase() + ":" + destAddress;
           }
@@ -54,12 +55,12 @@ class Wyre extends Fiat {
         dest: dest,
         accountId: config.fiat.wyre.accountId,
         country: country
-      }
+      };
       const method = "POST";
-      return await this._makeRequest({ path, method, params })
+      return await this._makeRequest({ path, method, params });
     }
     catch (err) {
-      logger.error(`Wyre estimate error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre estimate error:`, err);
       throw err;
     }
   }
@@ -73,7 +74,7 @@ class Wyre extends Fiat {
         where: {
           symbol: destCurrency.toUpperCase()
         }
-      })
+      });
       let dest = destAddress;
       if (currency) {
         if (currency.symbol == currency.platform) {
@@ -83,7 +84,7 @@ class Wyre extends Fiat {
             where: {
               symbol: currency.platform
             }
-          })
+          });
           if (crypto) {
             dest = crypto.name.toLowerCase() + ":" + destAddress;
           }
@@ -108,11 +109,11 @@ class Wyre extends Fiat {
         street1: address,
         lockFields: ['amount', 'sourceCurrency', 'destCurrency', 'dest'],
         hideTrackBtn: true
-      }
-      return await this._makeRequest({ path, method, params })
+      };
+      return await this._makeRequest({ path, method, params });
     }
     catch (err) {
-      logger.error(`Wyre make transaction error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre make transaction error:`, err);
       throw err;
     }
   }
@@ -124,7 +125,7 @@ class Wyre extends Fiat {
       return response.data;
     }
     catch (err) {
-      logger.error(`Wyre get transaction error:`, err);
+      // logger[err.canLogAxiosError ? 'error' : 'info'](`Wyre get transaction error:`, err);
       throw err;
     }
   }
@@ -136,7 +137,7 @@ class Wyre extends Fiat {
       return response.data;
     }
     catch (err) {
-      console.error(`Wyre get order error:`, err);
+      // console.error(`Wyre get order error:`, err);
       throw err;
     }
   }
@@ -153,7 +154,7 @@ class Wyre extends Fiat {
       url: url,
       headers: headers,
       data: details
-    }
+    };
     const response = await axios(options);
     if (response.data.error) {
       logger.error(`Wyre service error:`, response.data.error);

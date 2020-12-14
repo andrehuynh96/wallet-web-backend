@@ -1,6 +1,6 @@
 const moment = require('moment');
 module.exports = {
-  getDateRangeUnitTimeStamp: (dateType,dateNum) => {
+  getDateRangeUnitTimeStamp: (dateType, dateNum) => {
     const today = new Date();
     let fromDate = 0;
     const toDate = moment(today).valueOf();
@@ -14,11 +14,11 @@ module.exports = {
         break;
       }
       case 'DAY': {
-        fromDate = moment(today).subtract(24*dateNum, 'hour').valueOf();
+        fromDate = moment(today).subtract(24 * dateNum, 'hour').valueOf();
         break;
       }
       case 'WEEK': {
-        fromDate = moment(today).subtract(7*dateNum, 'day').valueOf();
+        fromDate = moment(today).subtract(7 * dateNum, 'day').valueOf();
         break;
       }
       case 'MONTH': {
@@ -34,7 +34,7 @@ module.exports = {
         break;
       }
       default: {
-        fromDate = moment(today).subtract(24*dateNum, 'hour').valueOf();
+        fromDate = moment(today).subtract(24 * dateNum, 'hour').valueOf();
         break;
       }
     }
@@ -43,6 +43,6 @@ module.exports = {
     return {
       from: from,
       to: to
-    }
+    };
   }
 };

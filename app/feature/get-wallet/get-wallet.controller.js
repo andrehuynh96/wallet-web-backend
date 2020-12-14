@@ -104,9 +104,11 @@ module.exports = {
       let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
       console.log(wallet_priv_keys[0].currency);
 
-      //TODO: hard code for hotfix disable ['CENNZ', 'CPAY']
-      let ignoreCoin = ['CENNZ', 'CPAY']
-      wallet_priv_keys = wallet_priv_keys.filter(x => !ignoreCoin.includes(x.currency.symbol))
+      let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
+
+      //TODO: hard code for hotfix disable ['CENNZ', 'CPAY'];
+      let ignoreCoin = ['CENNZ', 'CPAY'];
+      wallet_priv_keys = wallet_priv_keys.filter(x => !ignoreCoin.includes(x.currency.symbol));
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),
         offset: off,

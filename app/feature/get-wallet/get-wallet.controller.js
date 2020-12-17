@@ -68,9 +68,9 @@ module.exports = {
     try {
       logger.info('coins::all');
       const { query: { offset, limit, platform, order_by }, params: { wallet_id } } = req;
-      const schema = Joi.string().uuid();
-      const validateWalletId = Joi.validate(wallet_id,schema);
-      if (!wallet_id || validateWalletId.error) {
+      const schema = Joi.string().uuid().required();
+      const validateResult = Joi.validate(wallet_id,schema);
+      if (validateResult.error) {
         return res.badRequest(res.__("MISSING_PARAMETER"),"MISSING_PARAMETER",{field: ['wallet_id']});
       }
       const where = { deleted_flg: false, wallet_id: wallet_id };

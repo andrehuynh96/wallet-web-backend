@@ -116,7 +116,7 @@ module.exports = {
         from_currency: req.body.source_currency,
         to_cryptocurrency: req.body.dest_currency,
         from_amount: req.body.amount,
-        to_address: eq.body.dest_address,
+        to_address: req.body.dest_address,
         fe_redirect_url: req.body.redirect_url,
         fe_failure_redirect_url: req.body.failure_redirect_url,
         redirect_url: urlSuccess,

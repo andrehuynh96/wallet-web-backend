@@ -121,7 +121,8 @@ module.exports = {
         fe_failure_redirect_url: req.body.failure_redirect_url,
         redirect_url: urlSuccess,
         failure_redirect_url: urlFailure,
-        payment_url: result.url
+        payment_url: result.url,
+        fee_currency: ''
       });
 
       return res.ok(result);

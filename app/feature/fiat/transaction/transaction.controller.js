@@ -246,13 +246,13 @@ module.exports = {
 
       if (!orderid) {
         await updateFail();
-        return res.redirect(transaction.fe_failure_redirect_url);
+        return res.redirect(`${transaction.fe_failure_redirect_url}?`);
       }
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
       let result = await Service.getOrder({ orderId: orderid });
       if (!result) {
         await updateFail();
-        return res.redirect(transaction.fe_failure_redirect_url);
+        return res.redirect(`${transaction.fe_failure_redirect_url}?`);
       }
       let data = {
         order_id: result.id,

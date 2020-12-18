@@ -47,7 +47,7 @@ router.get(
 
 router.get(
   '/transactions/callback/:token',
-  authenticate,
+  //authenticate,
   controller.callback
 )
 

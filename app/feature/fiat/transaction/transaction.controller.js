@@ -283,7 +283,7 @@ module.exports = {
           id: transaction.id
         }
       });
-      let redurectUrl = (result.status == FiatStatus.FAILED ? transaction.fe_failure_redirect_url : `${transaction.fe_redirect_url}?orderId=${orderid}`);
+      let redurectUrl = (result.status == FiatStatus.FAILED ? `${transaction.fe_failure_redirect_url}?` : `${transaction.fe_redirect_url}?orderId=${orderid}`);
       return res.redirect(redurectUrl);
     }
     catch (err) {

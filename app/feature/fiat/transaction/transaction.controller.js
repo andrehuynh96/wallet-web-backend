@@ -6,6 +6,8 @@ const FiatTransaction = require('app/model/wallet').fiat_transactions;
 const Mapper = require('app/feature/response-schema/fiat-transaction.response-schema');
 const conf = require("app/config");
 const FiatStatus = require("app/model/wallet/value-object/fiat-transaction-status");
+const uuidV4 = require('uuid/v4');
+
 module.exports = {
   estmate: async (req, res, next) => {
     try {
@@ -27,6 +29,7 @@ module.exports = {
       next(err);
     }
   },
+
   create: async (req, res, next) => {
     try {
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
@@ -75,6 +78,7 @@ module.exports = {
       next(err);
     }
   },
+
   make: async (req, res, next) => {
     try {
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
@@ -83,14 +87,17 @@ module.exports = {
           id: req.user.id
         }
       });
+      let verifyToken = Buffer.from(uuidV4()).toString('base64');
+      let urlSuccess = `${req.baseurl}/web/fiat/transactions/callback/${verifyToken}`;
+      let urlFailure = `${req.baseurl}/web/fiat/transactions/callback/${verifyToken}`;
       let result = await Service.makeTransaction({
         amount: req.body.amount,
         sourceCurrency: req.body.source_currency,
         destCurrency: req.body.dest_currency,
         destAddress: req.body.dest_address,
         paymentMethod: req.body.payment_method,
-        failureRedirectUrl: req.body.failure_redirect_url,
-        redirectUrl: req.body.redirect_url,
+        failureRedirectUrl: urlFailure,// req.body.failure_redirect_url,
+        redirectUrl: urlSuccess,//req.body.redirect_url,
         email: member.email,
         phone: member.phone,
         firstName: member.first_name,
@@ -102,12 +109,29 @@ module.exports = {
       if (result.error) {
         return res.badRequest(result.error.message, "FIAT_PROVIDER_ERROR");
       }
+
+      await FiatTransaction.create({
+        token: verifyToken,
+        member_id: req.user.id,
+        from_currency: req.body.source_currency,
+        to_cryptocurrency: req.body.dest_currency,
+        from_amount: req.body.amount,
+        to_address: req.body.dest_address,
+        fe_redirect_url: req.body.redirect_url,
+        fe_failure_redirect_url: req.body.failure_redirect_url,
+        redirect_url: urlSuccess,
+        failure_redirect_url: urlFailure,
+        payment_url: result.url,
+        fee_currency: ''
+      });
+
       return res.ok(result);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('make fiat transaction fail:', err);
       next(err);
     }
   },
+
   update: async (req, res, next) => {
     try {
       const Service = FiatFactory.create(FiatProvider.Wyre, {});
@@ -145,6 +169,7 @@ module.exports = {
       next(err);
     }
   },
+
   getTxById: async (req, res, next) => {
     try {
       const where = { member_id: req.user.id, id: req.params.id };
@@ -164,6 +189,7 @@ module.exports = {
       next(err);
     }
   },
+
   getTxs: async (req, res, next) => {
     try {
       let { query: { offset, limit, sort_field, sort_by }, user } = req;
@@ -190,5 +216,79 @@ module.exports = {
       logger[err.canLogAxiosError ? 'error' : 'info']('get fiat transaction by user fail:', err);
       next(err);
     }
-  }
+  },
+
+  callback: async (req, res, next) => {
+    try {
+      let token = req.params.token;
+      let orderid = req.query.orderId;
+
+      let transaction = await FiatTransaction.findOne({
+        where: {
+          token: token
+        }
+      });
+      if (!transaction) {
+        return res.redirect(conf.webWallet.apiUrl);
+      };
+
+      let updateFail = async () => {
+        await FiatTransaction.update({
+          status: FiatStatus.FAILED
+        },
+          {
+            where: {
+              id: transaction.id
+            }
+          }
+        )
+      }
+
+      if (!orderid) {
+        await updateFail();
+        return res.redirect(`${transaction.fe_failure_redirect_url}?`);
+      }
+      const Service = FiatFactory.create(FiatProvider.Wyre, {});
+      let result = await Service.getOrder({ orderId: orderid });
+      if (!result) {
+        await updateFail();
+        return res.redirect(`${transaction.fe_failure_redirect_url}?`);
+      }
+      let data = {
+        order_id: result.id,
+        status: result.status,
+        from_amount: result.sourceAmount,
+        transaction_id: result.transferId,
+        payment_method_name: result.paymentMethodName,
+        order_type: result.orderType,
+        from_currency: result.sourceCurrency,
+        to_cryptocurrency: result.destCurrency,
+        to_address: result.dest
+      };
+      if (result.transferId) {
+        let wyreTransaction = await Service.getTransaction({ transferId: result.transferId });
+        if (wyreTransaction) {
+          data.tx_id = wyreTransaction.blockchainNetworkTx;
+          data.rate = wyreTransaction.rate;
+          data.to_amount = wyreTransaction.destAmount;
+          data.fee_currency = wyreTransaction.feeCurrency;
+          data.message = wyreTransaction.message;
+          data.fees = wyreTransaction.fees;
+          data.total_fee = wyreTransaction.fee;
+          data.response = JSON.stringify(wyreTransaction);
+        }
+      }
+      await FiatTransaction.update(data, {
+        where: {
+          id: transaction.id
+        }
+      });
+      let redurectUrl = (result.status == FiatStatus.FAILED ? `${transaction.fe_failure_redirect_url}?` : `${transaction.fe_redirect_url}?orderId=${orderid}`);
+      return res.redirect(redurectUrl);
+    }
+    catch (err) {
+      logger[err.canLogAxiosError ? 'error' : 'info']('callback transaction wyre fail:', err);
+      next(err);
+    }
+  },
 };

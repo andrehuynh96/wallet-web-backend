@@ -110,7 +110,6 @@ module.exports = {
         }
       ]
       let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
-      console.log(wallet_priv_keys[0].currency);
 
       //TODO: hard code for hotfix disable ['CENNZ', 'CPAY']
       // let ignoreCoin = ['CENNZ', 'CPAY']

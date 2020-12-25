@@ -15,6 +15,7 @@ const memberTrackingHisMapper = require('../response-schema/member-tracking-his.
 const Plutx = require('app/lib/plutx');
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
 const EmailTemplate = require('app/model/wallet').email_templates;
+const Currency = require('app/model/wallet').currencies;
 
 module.exports = {
   tracking: async (req, res, next) => {
@@ -259,21 +260,33 @@ const sendEmail = {
         })
       }
 
-      if (!template)
+      if (!template) {
         return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+      }
+
+      const currency = await Currency.findOne({
+        where: {
+          platform: content.platform,
+          symbol: content.symbol
+        }
+      });
+
+      if(!currency) {
+        return res.notFound(res.__("PLATFORM_NOT_FOUND"), "PLATFORM_NOT_FOUND", { fields: ["symbol","platform"] });
+      }
 
       let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
       let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
       let data = {
         banner: config.website.urlImages,
         imageUrl: config.website.urlIcon + (content.platform == 'XTZ' ? 'tezos' : content.platform.toLowerCase()) + '.png',
-        platform: config.explorer[content.platform].platformName,
+        platform: currency.name,
         tx_id: content.tx_id,
         address: content.to_address,
         amount: _formatAmount(content.amount),
         symbol: content.symbol,
-        txIdLink: config.explorer[content.platform].txIdLink + content.tx_id,
-        addressLink: config.explorer[content.platform].addressLink + content.to_address
+        txIdLink: currency.transaction_format_link ? currency.transaction_format_link + content.tx_id : '',
+        addressLink: currency.address_format_link ? currency.address_format_link + content.tx_id : ''
       }
       data = Object.assign({}, data, config.email);
       await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);

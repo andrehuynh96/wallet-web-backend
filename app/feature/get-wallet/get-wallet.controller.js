@@ -11,7 +11,6 @@ const database = require('app/lib/database').db().wallet;
 const Joi = require('joi');
 
 const Op = Sequelize.Op;
-const Joi = require('joi');
 
 module.exports = {
   getAll: async (req, res, next) => {

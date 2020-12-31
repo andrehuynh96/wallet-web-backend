@@ -8,6 +8,8 @@ const db = require("app/model/wallet");
 const BigNumber = require('bignumber.js');
 const EmailTemplateType = require('app/model/wallet/value-object/email-template-type')
 const EmailTemplate = require('app/model/wallet').email_templates;
+const Currency = require('app/model/wallet').currencies;
+const format = require('string-template');
 
 module.exports = async (req, res, next) => {
   try {
@@ -38,9 +40,42 @@ module.exports = async (req, res, next) => {
           ...data
         });
       }
+
+      let templateName = EmailTemplateType.TRANSACTION_RECEIVED
+      let template = await EmailTemplate.findOne({
+          where: {
+            name: templateName,
+            language: req.user ? req.user.current_language : 'en'
+          }
+        })
+
+        if (!template) {
+          template = await EmailTemplate.findOne({
+            where: {
+            name: templateName,
+            language: 'en'
+          }
+        })
+      }
+
+      if (!template) {
+        return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
+      }
+
+      const currency = await Currency.findOne({
+        where: {
+          platform: data.platform,
+          symbol: symbol.symbol
+        }
+      });
+
+      if(!currency) {
+        return res.notFound(res.__("PLATFORM_NOT_FOUND"), "PLATFORM_NOT_FOUND", { fields: ["symbol","platform"] });
+      }
+
       data.amount = _formatAmount(data.amount);
 
-      _sendEmail(member, data);
+      _sendEmail(member, data, template, currency);
     }
 
     return res.ok(true);
@@ -107,40 +142,22 @@ async function _getMemberFromAddress(platform, address) {
   return rs;
 }
 
-async function _sendEmail(member, content) {
+async function _sendEmail(member, content, template, currency) {
   try {
-    let templateName = EmailTemplateType.TRANSACTION_RECEIVED
-    let template = await EmailTemplate.findOne({
-      where: {
-        name: templateName,
-        language: member.current_language
-      }
-    })
 
-    if (!template) {
-      template = await EmailTemplate.findOne({
-        where: {
-          name: templateName,
-          language: 'en'
-        }
-      })
-    }
-
-    if (!template)
-      return res.notFound(res.__("EMAIL_TEMPLATE_NOT_FOUND"), "EMAIL_TEMPLATE_NOT_FOUND", { fields: ["id"] });
 
     let subject = `${config.emailTemplate.partnerName} - ${template.subject}`;
     let from = `${config.emailTemplate.partnerName} <${config.mailSendAs}>`;
     let data = {
       banner: config.website.urlImages,
       imageUrl: config.website.urlIcon + content.platform.toLowerCase() + '.png',
-      platform: config.explorer[content.platform].platformName,
+      platform: currency.name,
       tx_id: content.tx_id,
       address: content.from_address,
       amount: content.amount_actual,
       symbol: content.platform,
-      txIdLink: config.explorer[content.platform].txIdLink + content.tx_id,
-      addressLink: config.explorer[content.platform].addressLink + content.from_address
+      txIdLink: currency.transaction_format_link ? format(currency.transaction_format_link, content.tx_id) : '',
+      addressLink: currency.address_format_link ? format(currency.address_format_link, content.tx_id) : ''
     }
     data = Object.assign({}, data, config.email);
     await mailer.sendWithDBTemplate(subject, from, member.email, data, template.template);

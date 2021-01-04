@@ -22,7 +22,7 @@ describe('Register', function() {
         email: "abc123@mailinator.com",
         password: "Abc@123456",
         language: 'en',
-        country_phone_code: 'EN'
+        country: 'EN'
       }
       chai.request('http://127.0.0.1:3001')
         .post('/web/register')
@@ -39,7 +39,7 @@ describe('Register', function() {
         email: "abc123@mailinator.com",
         password: "Abc@123456",
         language: 'en',
-        country_phone_code: 'E'
+        country: 'E'
       }
       chai.request('http://127.0.0.1:3001')
         .post('/web/register')
@@ -56,7 +56,7 @@ describe('Register', function() {
         email: "abc123@mailinator.com",
         password: "Abc@123456",
         language: 'en',
-        country_phone_code: ''
+        country: ''
       }
       chai.request('http://127.0.0.1:3001')
         .post('/web/register')

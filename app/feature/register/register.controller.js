@@ -163,7 +163,7 @@ async function _createAccount(req, res, next) {
       plutx_userid_id: idOnPlutxUserID,
       membership_type_id: null,
       current_language: req.body.language,
-      country_phone_code: req.body.country_phone_code
+      country: req.body.country
     }, {
         transaction: transaction
       });

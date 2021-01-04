@@ -49,7 +49,7 @@ module.exports = router;
                         "password":"abc123456",
                         "phone":"0902907856",
                         "referrer_code":"WDRF3F1C",
-                        "language": "English"
+                        "language": "English",
                         "country": "EN"
                   }
  *     produces:

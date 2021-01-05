@@ -57,6 +57,7 @@ module.exports = async (req, res, next) => {
         return res.badRequest(res.__("NOT_FOUND_AFFILIATE_CODE"), "NOT_FOUND_AFFILIATE_CODE");
       }
     }
+
     let deactiveAccount = await Member.findOne({
       where: {
         deleted_flg: true,
@@ -161,7 +162,8 @@ async function _createAccount(req, res, next) {
       ...affiliateInfo,
       plutx_userid_id: idOnPlutxUserID,
       membership_type_id: null,
-      current_language: req.body.language
+      current_language: req.body.language,
+      country: req.body.country
     }, {
         transaction: transaction
       });

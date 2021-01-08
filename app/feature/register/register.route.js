@@ -41,6 +41,7 @@ module.exports = router;
  *            - email
  *            - password
  *            - phone
+ *            - country
  *            example:
  *               {
                         "g-recaptcha-response":"3f76680510bcca07e7e011dcc1effb079d1d0a34",
@@ -48,7 +49,8 @@ module.exports = router;
                         "password":"abc123456",
                         "phone":"0902907856",
                         "referrer_code":"WDRF3F1C",
-                        "language": "English"
+                        "language": "English",
+                        "country": "EN"
                   }
  *     produces:
  *       - application/json

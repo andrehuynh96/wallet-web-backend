@@ -142,5 +142,10 @@ module.exports = {
     "symbol": "FIL",
     "name": "Filecoin",
     "coingeckoId": "filecoin"
+  },
+  TON: {
+    "symbol": "TON",
+    "name": "TON Crystal",
+    "coingeckoId": "ton-crystal"
   }
 }

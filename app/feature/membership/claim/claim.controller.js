@@ -14,6 +14,7 @@ const SystemType = require('app/model/wallet/value-object/system-type');
 const BigNumber = require('bignumber.js');
 const MemberKyc = require('app/model/wallet').member_kycs;
 const KycLevel = require('app/model/wallet/value-object/kyc-level');
+const Kyc = require('app/model/wallet').kycs;
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {

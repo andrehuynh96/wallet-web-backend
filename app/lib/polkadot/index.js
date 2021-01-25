@@ -24,7 +24,7 @@ module.exports = {
     try {
       const client = await _getWssClient();
       let active = await client.query.staking.activeEra();
-      return parseFloat(JSON.parse(active.unwrap()).index);
+      return JSON.parse(active.unwrap());
     }
     catch (err) {
       logger.error('DOT activeEra failed::', err);
@@ -61,12 +61,12 @@ module.exports = {
 async function _getWssClient() {
   try {
     if (!__WSS_CLIENT__) {
-      __WSS_CLIENT__ = new WsProvider(config.dot_wss);
+      __WSS_CLIENT__ = new WsProvider(config.dotWss);
     }
     const api = await ApiPromise.create({ provider: __WSS_CLIENT__ });
     let isConnected = await api.isConnected;
     if (!isConnected) {
-      __WSS_CLIENT__ = new WsProvider(config.dot_wss);
+      __WSS_CLIENT__ = new WsProvider(config.dotWss);
     }
     await api.isReady;
     return api;

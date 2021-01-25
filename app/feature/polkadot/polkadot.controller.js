@@ -15,7 +15,7 @@ module.exports = {
         return res.badRequest(res.__('ADDRESS_INVALID'), 'ADDRESS_INVALID');
       }
 
-      const currentEra = await Polkadot.activeEra();
+      let currentEra = await _getCurrentEra();
       const keyReward = redisResource.polkadot.reward.withParams(address, currentEra);
       const reward = await cache.getAsync(keyReward);
       let eras = [];
@@ -83,4 +83,21 @@ async function _getRewards(assress, eras, currentEra) {
     reward: total,
     eras: res
   }
+}
+
+
+async function _getCurrentEra() {
+  const key = redisResource.polkadot.currentEra;
+  let currentEra = await cache.getAsync(key);
+  if (!currentEra) {
+    let eraActive = await Polkadot.activeEra();
+    currentEra = eraActive.index;
+    const today = Date.now();
+    const endEra = eraActive.start + (config.dotEraPeriod * 1000);
+    const cacheTime = Math.floor((endEra - today) / 1000);
+    if (cacheTime > 0) {
+      await cache.setAsync(key, currentEra, "EX", cacheTime);
+    }
+  }
+  return parseFloat(currentEra);
 }

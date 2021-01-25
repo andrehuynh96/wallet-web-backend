@@ -231,6 +231,8 @@ const config = {
     webhookUrl: process.env.HANGOUT_ERROR_CHANEL_WEBHOOK_URL,
   },
   whitelistReCaptcha: process.env.WHITELIST_RECAPTCHA ? process.env.WHITELIST_RECAPTCHA.split(',') : [],
+  dotWss: process.env.DOT_WSS,
+  dotEraPeriod: parseInt(process.env.DOT_ERA_PERIOD || '2'),
 };
 
 module.exports = config;

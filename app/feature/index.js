@@ -35,6 +35,7 @@ router.use(require('./point'));
 router.use('/fiat', require('./fiat'));
 router.use('/bank', require('./bank'));
 router.use('/surveys', require('./survey'));
+router.use('/polkadot', require('./polkadot/polkadot.route'))
 
 module.exports = router;
 

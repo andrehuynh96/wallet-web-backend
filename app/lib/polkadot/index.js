@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js');
 const config = require('app/config');
 const logger = require('app/lib/logger');
 let __WSS_CLIENT__;
+const __MAX_ERA_REQ__ = 40;
 
 module.exports = {
   checkAddress: (address) => {
@@ -35,7 +36,19 @@ module.exports = {
     try {
       const client = await _getWssClient();
       let index = eras.map(x => client.createType('EraIndex', x));
-      const validatorEras = await client.derive.staking.stakerRewardsMultiEras([address], index);
+
+      let validatorEras = [];
+      validatorEras[0] = [];
+      let ixs = [index];
+      if (index.length > __MAX_ERA_REQ__) {
+        ixs = [index.slice(0, __MAX_ERA_REQ__), index.slice(__MAX_ERA_REQ__, index.length)]
+      }
+      for (let i of ixs) {
+        const result = await client.derive.staking.stakerRewardsMultiEras([address], i);
+        if (result[0].length > 0) {
+          validatorEras[0].push(...result[0]);
+        }
+      }
       validatorEras[0].map(e => {
         e.era = e.era.toString();
         e.eraReward = e.eraReward.toString();
@@ -66,8 +79,12 @@ async function _getWssClient() {
     const api = await ApiPromise.create({ provider: __WSS_CLIENT__ });
     let isConnected = await api.isConnected;
     if (!isConnected) {
+      // await __WSS_CLIENT__.connect();
       __WSS_CLIENT__ = new WsProvider(config.dotWss);
     }
+    __WSS_CLIENT__.on('error', (err) => {
+      console.log('__WSS_CLIENT__::ERROR', err)
+    });
     await api.isReady;
     return api;
   }

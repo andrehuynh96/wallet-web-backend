@@ -109,6 +109,7 @@ module.exports = {
           required: false,
         }
       ]
+
       let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
 
       //TODO: hard code for hotfix disable ['CENNZ', 'CPAY']

@@ -181,6 +181,18 @@ const SETTINGS = [
     "type": "number",
     "property": "membership_commission_usdt_network_fee"
   },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_TADA",
+    "value": "1",
+    "type": "number",
+    "property": "minimun_claim_amount_tada"
+  },
+  {
+    "key": "CLAIM_AFFILIATE_REWARD_TADA_NETWORK_FEE",
+    "value": "0",
+    "type": "number",
+    "property": "claim_tada_network_fee"
+  }
 ];
 
 module.exports = async () => {

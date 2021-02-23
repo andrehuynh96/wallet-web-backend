@@ -2,13 +2,8 @@ stages:
  - build
  - test
  - deploy
- 
-variables:
- GIT_STRATEGY: none
- ANSIBLE_DIR: "/home/ubuntu/staking-iac/ansible"
- ANSIBLE_REPO: "/home/ubuntu/staking-iac/"
 
-stak-stage-ap-ms-wl-api:
+STAGING:
  stage: deploy
  script:
   - cd /home/ubuntu/staking-iac/ansible
@@ -20,31 +15,14 @@ stak-stage-ap-ms-wl-api:
  tags:
   - stak-stage-ap-ms-bastion
 
-.BuildJSApp:
- stage: build
- script:
-  # Update new ansible source
-#   - cd ${ANSIBLE_REPO}
-#   - sudo su ubuntu -c "git reset --hard HEAD"
-#   - sudo su ubuntu -c "git checkout terraform"
-#   - sudo su ubuntu -c "export GIT_SSH_COMMAND='ssh -i /home/ubuntu/staking-iac/ansible/id_rsa';git pull"
-  # Run ansible-playbook
-  - cd ${ANSIBLE_DIR}
-  - project=`echo ${CI_COMMIT_TAG} | awk -F'-' '{print $2}'`
-  - ansible_file=`grep ${CI_PROJECT_NAME}.git *.yml | awk '{print $1}'|awk -F':' '{print $1}' | grep ${_ENV} | grep $project`
-  - sudo su ubuntu -c "ansible-playbook $ansible_file --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
-
-.OnlyProductionMS:
- only:
-  - /^.*-ms$/
- except:
-  - branches
-
-ProdMoonStakeWebWalletpApi:
- variables:
-  _ENV: "prod" 
- extends:
-  - .BuildJSApp
-  - .OnlyProductionMS
- tags:
-  - prod-stak-ap-ms-ansible 
+PRODUCTION:
+  stage: deploy
+  script:
+    - cd /home/ubuntu/staking-iac/ansible
+    - sudo su ubuntu -c "ansible-playbook stak-prod-ap-ms-wl-api.yml --extra-vars=\"node_git_version=${CI_COMMIT_TAG}\""
+  only:
+    - /^.*-ms$/
+  except:
+    - branches
+  tags:
+    - stak-prod-ap-ms-bastion

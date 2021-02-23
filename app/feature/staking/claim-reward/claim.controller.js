@@ -164,11 +164,13 @@ module.exports = {
               config.setting.CLAIM_AFFILIATE_REWARD_ONG,
               config.setting.CLAIM_AFFILIATE_REWARD_XTZ,
               config.setting.CLAIM_AFFILIATE_REWARD_ONE,
+              config.setting.CLAIM_AFFILIATE_REWARD_TADA,
               config.setting.CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE,
               config.setting.CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE,
               config.setting.CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE,
               config.setting.CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE,
-              config.setting.CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE
+              config.setting.CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE,
+              config.setting.CLAIM_AFFILIATE_REWARD_TADA_NETWORK_FEE
             ]
           }
         }
@@ -181,12 +183,14 @@ module.exports = {
       let ong = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONG)[0];
       let xtz = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_XTZ)[0];
       let one = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONE)[0];
+      let ada = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_TADA)[0];
 
       let atomNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ATOM_NETWORK_FEE)[0];
       let irisNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_IRIS_NETWORK_FEE)[0];
       let ongNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONG_NETWORK_FEE)[0];
       let xtzNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_XTZ_NETWORK_FEE)[0];
       let oneNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_ONE_NETWORK_FEE)[0];
+      let adaNwFee = setting.filter(x => x.key == config.setting.CLAIM_AFFILIATE_REWARD_TADA_NETWORK_FEE)[0];
 
       return res.ok({
         minimun_claim_amount_atom: parseFloat(atom.value),
@@ -194,12 +198,14 @@ module.exports = {
         minimun_claim_amount_ong: parseFloat(ong.value),
         minimun_claim_amount_xtz: parseFloat(xtz.value),
         minimun_claim_amount_one: parseFloat(one.value),
+        minimun_claim_amount_tada: parseFloat(ada.value),
 
         claim_atom_network_fee: parseFloat(atomNwFee.value),
         claim_iris_network_fee: parseFloat(irisNwFee.value),
         claim_ong_network_fee: parseFloat(ongNwFee.value),
         claim_xtz_network_fee: parseFloat(xtzNwFee.value),
-        claim_one_network_fee: parseFloat(oneNwFee.value)
+        claim_one_network_fee: parseFloat(oneNwFee.value),
+        claim_tada_network_fee: parseFloat(adaNwFee.value)
 
       });
     } catch (err) {

@@ -51,11 +51,11 @@ module.exports = {
       if (!memberKyc) {
         return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
       }
-      const kyc = await Kyc.findOne({ where: { key: memberKyc.kyc_id } });
+      const kyc = await Kyc.findOne({ where: { id: memberKyc.kyc_id } });
       if (!kyc) {
         return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
       }
-      if(kyc.key != KycLevel.LEVEL_2) {
+      if (kyc.key != KycLevel.LEVEL_2) {
         return res.badRequest(res.__("MEMBER_KYC_NOT_LEVEL_2"), "MEMBER_KYC_NOT_LEVEL_2");
       }
       const settingMinClaimAmount = await Setting.findOne({

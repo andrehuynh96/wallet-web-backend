@@ -122,6 +122,7 @@ module.exports = {
         redirect_url: urlSuccess,
         failure_redirect_url: urlFailure,
         payment_url: result.url,
+        reservation: result.reservation,
         fee_currency: ''
       });
 

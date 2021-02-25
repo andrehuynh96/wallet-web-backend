@@ -16,12 +16,12 @@ module.exports = {
       if (!member)
         return res.badRequest(res.__("NEXO_MEMBER_NOT_EXISTED"), "NEXO_MEMBER_NOT_EXISTED");
       const Service = BankFactory.create(BankProvider.Nexo, {});
-      let result = await Service.getDepositAddress({ 
+      let result = await Service.getDepositAddress({
         ...req.params,
         secret: member.user_secret
-       });
+      });
       if (result.error)
-       return res.badRequest(result.error.message, "NEXO_GET_DEPOSIT_ERROR");
+        return res.badRequest(result.error.message, "NEXO_GET_DEPOSIT_ERROR");
       return res.ok(result);
     } catch (err) {
       logger[err.canLogAxiosError ? 'error' : 'info']('get address deposit fail:', err);
@@ -31,6 +31,7 @@ module.exports = {
       next(err);
     }
   },
+
   track: async (req, res, next) => {
     try {
       await NexoTransaction.create({

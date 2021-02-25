@@ -30,11 +30,11 @@ module.exports = {
           // twofa_secret: member.twofa_download_key_flg ? member.twofa_secret : null,
           twofa_enable_flg: false
         }, {
-            where: {
-              id: req.user.id
-            },
-            returning: true
-          });
+          where: {
+            id: req.user.id
+          },
+          returning: true
+        });
         if (!response || response.length == 0) {
           return res.serverInternalError();
         }
@@ -55,11 +55,11 @@ module.exports = {
           twofa_secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           twofa_enable_flg: true
         }, {
-            where: {
-              id: req.user.id
-            },
-            returning: true
-          });
+          where: {
+            id: req.user.id
+          },
+          returning: true
+        });
         if (!response || response.length == 0) {
           return res.serverInternalError();
         }
@@ -91,7 +91,7 @@ module.exports = {
           token: req.body.twofa_code,
           window: config.twofaStep
         });
-        var verified = true;
+        // var verified = true;
 
         if (!verified) {
           return res.badRequest(res.__("TWOFA_CODE_INCORRECT"), "TWOFA_CODE_INCORRECT");
@@ -101,11 +101,11 @@ module.exports = {
           //twofa_secret: member.twofa_enable_flg ? member.twofa_secret : null,
           twofa_download_key_flg: false
         }, {
-            where: {
-              id: req.user.id
-            },
-            returning: true
-          });
+          where: {
+            id: req.user.id
+          },
+          returning: true
+        });
         if (!response || response.length == 0) {
           return res.serverInternalError();
         }
@@ -126,11 +126,11 @@ module.exports = {
           twofa_secret: req.body.twofa_secret ? req.body.twofa_secret : member.twofa_secret,
           twofa_download_key_flg: true
         }, {
-            where: {
-              id: req.user.id
-            },
-            returning: true
-          });
+          where: {
+            id: req.user.id
+          },
+          returning: true
+        });
         if (!response || response.length == 0) {
           return res.serverInternalError();
         }

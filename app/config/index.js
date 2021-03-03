@@ -236,6 +236,7 @@ const config = {
   dotWss: process.env.DOT_WSS,
   dotEraPeriod: parseInt(process.env.DOT_ERA_PERIOD || '2'),
   mxcAPI: process.env.MXC_API || 'https://www.mxc.com/open/api',
+  adaGraphqlUrl: process.env.ADA_GRAPHQL_URL || 'http://3.133.24.6:3100/graphql'
 };
 
 module.exports = config;

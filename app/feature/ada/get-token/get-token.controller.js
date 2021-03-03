@@ -46,7 +46,16 @@ module.exports = {
         }
       }
       );
-      return res.ok(result.data.data.tokens);
+      if(result.data && result.data.data) {
+        const tokens = result.data.data.tokens;
+        if( tokens.length ) {
+          tokens.forEach(item=> {
+            item.assetName =  Buffer.from(item.assetName.replace('\\x',''), 'hex').toString('utf8');
+          });
+        }
+        return res.ok(tokens);
+      }
+      return res.ok([]);
     }
     catch (error) {
       logger.error('ADA:: get list token fail', error);

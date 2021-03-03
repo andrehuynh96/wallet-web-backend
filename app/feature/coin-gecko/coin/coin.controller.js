@@ -3,11 +3,18 @@ const coinGeckoClient = require('app/lib/coin-gecko-client');
 const TimeUnit = require('app/model/wallet/value-object/time-unit');
 const Platform = require('app/model/wallet/value-object/platform');
 const { getDateRangeUnitTimeStamp } = require('app/lib/utils');
+const mxcPrice = require('app/lib/mxc-price');
 
 module.exports = {
   getPrice: async (req, res, next) => {
     try {
       const platform = req.query.platform;
+
+      //:TODO hardcode CPAY call to mxc due to coingecko not yet support
+      if (platform.toUpperCase() === 'CPAY') {
+        const price = await mxcPrice.getPrice(platform);
+        return res.ok(price);
+      }
 
       if (!Platform[platform]) {
         return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
@@ -27,7 +34,7 @@ module.exports = {
       const { date_type, platform } = req.query;
       const date_num = req.query.date_num || 1;
       if (!date_type || !TimeUnit[date_type.toUpperCase()] || !Platform[platform]) {
-        if (date_type.toUpperCase()!= "ALL"){
+        if (date_type.toUpperCase() != "ALL") {
           return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
         }
       }
@@ -46,16 +53,16 @@ module.exports = {
       next(error);
     }
   },
-  getMultiPrice: async (req,res,next)=> {
+  getMultiPrice: async (req, res, next) => {
     try {
       const platforms = req.query.platforms;
       const platformList = platforms.split(',');
-      let supportPlatforms = Object.values(Platform).reduce((result,value)=> {
+      let supportPlatforms = Object.values(Platform).reduce((result, value) => {
         result[value.symbol] = value;
         return result;
-      },{});
+      }, {});
 
-      if(!platforms || platformList.length == 0) {
+      if (!platforms || platformList.length == 0) {
         return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER");
       }
 
@@ -67,10 +74,10 @@ module.exports = {
       });
 
       if (notFoundList.length > 0) {
-        return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER",{field: notFoundList });
+        return res.badRequest(res.__("MISSING_PARAMETER"), "MISSING_PARAMETER", { field: notFoundList });
       }
 
-      const coingeckoIds = platformList.map(item => supportPlatforms[item].coingeckoId );
+      const coingeckoIds = platformList.map(item => supportPlatforms[item].coingeckoId);
       const result = await coinGeckoClient.getMultiPrice(coingeckoIds);
       return res.ok(result);
     }
@@ -79,7 +86,7 @@ module.exports = {
       next(error);
     }
   },
-  getMarkets: async(req,res,next) => {
+  getMarkets: async (req, res, next) => {
     try {
       const platform = req.query.platform;
 

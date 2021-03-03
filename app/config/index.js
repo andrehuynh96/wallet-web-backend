@@ -235,6 +235,7 @@ const config = {
   whitelistReCaptcha: process.env.WHITELIST_RECAPTCHA ? process.env.WHITELIST_RECAPTCHA.split(',') : [],
   dotWss: process.env.DOT_WSS,
   dotEraPeriod: parseInt(process.env.DOT_ERA_PERIOD || '2'),
+  mxcAPI: process.env.MXC_API || 'https://www.mxc.com/open/api',
 };
 
 module.exports = config;

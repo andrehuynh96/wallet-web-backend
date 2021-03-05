@@ -17,7 +17,7 @@ module.exports = {
           $offset: Int!
           $where: Token_bool_exp
       ) {
-          tokens (limit: $limit,offset: $offset, where: $where)  {
+          tokens (limit: $limit,offset: $offset, where: $where, order_by: { assetName: asc })  {
             assetId,
             assetName,
             quantity,

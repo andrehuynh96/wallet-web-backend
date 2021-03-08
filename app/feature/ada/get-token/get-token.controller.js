@@ -1,7 +1,7 @@
 const config = require('app/config');
 const logger = require('app/lib/logger');
 const axios = require('axios');
-
+const AssetFingerprint = require('@emurgo/cip14-js').default;
 module.exports = {
   search: async (req, res, next) => {
     try {
@@ -10,8 +10,9 @@ module.exports = {
       let limit = query.limit ? parseInt(query.limit) : 10;
       let offset = query.offset ? parseInt(query.offset) : 0;
       let assetName = query.asset_name ? Buffer.from(query.asset_name, 'utf8').toString('hex') : '';
+      let policyId = query.policy_id || '';
       let address = query.address || '';
-      let result = await axios.post(`${config.adaGraphqlUrl}`,{
+      let result = await axios.post(`${config.adaGraphqlUrl}`, {
         query: `query assets (
           $limit: Int!
           $offset: Int!
@@ -30,27 +31,30 @@ module.exports = {
             }
           }
         }`,
-      variables: {
-        limit: limit,
-        offset: offset,
-        where: {
-          assetName: assetName ? { '_eq': `\\x${assetName}` } : {},
-          transactionOutput: {
-            address: address ? { '_like': `%${address}%` } : {}
+        variables: {
+          limit: limit,
+          offset: offset,
+          where: {
+            assetName: assetName ? { '_eq': `\\x${assetName}` } : {},
+            policyId: policyId ? { '_eq': `${policyId}` } : {},
+            transactionOutput: {
+              address: address ? { '_like': `%${address}%` } : {}
+            }
           }
         }
-      }
-      },{
+      }, {
         headers: {
           'Content-Type': 'Application/json'
         }
       }
       );
-      if(result.data && result.data.data) {
+      if (result.data && result.data.data) {
         const tokens = result.data.data.tokens;
-        if( tokens.length ) {
-          tokens.forEach(item=> {
-            item.assetName =  Buffer.from(item.assetName.replace('\\x',''), 'hex').toString('utf8');
+        if (tokens.length) {
+          tokens.forEach(item => {
+            item.assetName = Buffer.from(item.assetName.replace('\\x', ''), 'hex').toString('utf8');
+            const assetFingerprint = new AssetFingerprint(Buffer.from(item.policyId, 'hex'), Buffer.from(item.assetName));
+            item.fingerprint = assetFingerprint.fingerprint();
           });
         }
         return res.ok(tokens);

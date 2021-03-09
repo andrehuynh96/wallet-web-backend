@@ -7,6 +7,23 @@ const cache = redis.client();
 const { getToken } = require("./token");
 
 module.exports = {
+  getAllStakingPlatform: async () => {
+    try {
+      let accessToken = await getToken();
+      let result = await axios.get(`${config.stakingApi.url}/platform-votes`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      return result.data.data;
+    }
+    catch (err) {
+      logger[err.canLogAxiosError ? 'error' : 'info']("getAllPlatform fail:", err);
+      return err.response.data;
+    }
+  },
+
   getStakingPlatform: async (id) => {
     try {
       let accessToken = await getToken();
@@ -20,10 +37,11 @@ module.exports = {
       return result.data.data;
     }
     catch (err) {
-      logger[err.canLogAxiosError ? 'error' : 'info']("getAllPlatform fail:", err);
+      logger[err.canLogAxiosError ? 'error' : 'info']("getStakingPlatform fail:", err);
       return err.response.data;
     }
   },
+
   getStakingPlan: async (id) => {
     try {
       let accessToken = await getToken();
@@ -41,6 +59,7 @@ module.exports = {
       return err.response.data;
     }
   },
+
   getValidators: async (platform) => {
     try {
       let accessToken = await getToken();

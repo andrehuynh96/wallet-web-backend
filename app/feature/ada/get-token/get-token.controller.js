@@ -11,24 +11,17 @@ module.exports = {
       let offset = query.offset ? parseInt(query.offset) : 0;
       let assetName = query.asset_name ? Buffer.from(query.asset_name, 'utf8').toString('hex') : '';
       let policyId = query.policy_id || '';
-      let address = query.address || '';
       let result = await axios.post(`${config.adaGraphqlUrl}`, {
         query: `query assets (
           $limit: Int!
           $offset: Int!
-          $where: Token_bool_exp
+          $where: Token_bool_exp,
       ) {
-          tokens (limit: $limit,offset: $offset, where: $where, order_by: { assetName: asc })  {
+          tokens ( distinct_on: assetId, limit: $limit,offset: $offset, where: $where, order_by: { assetId: asc })  {
             assetId,
             assetName,
             quantity,
-            policyId,
-            transactionOutput {
-              address,
-              index,
-              txHash,
-              value
-            }
+            policyId
           }
         }`,
         variables: {
@@ -36,10 +29,7 @@ module.exports = {
           offset: offset,
           where: {
             assetName: assetName ? { '_eq': `\\x${assetName}` } : {},
-            policyId: policyId ? { '_eq': `${policyId}` } : {},
-            transactionOutput: {
-              address: address ? { '_like': `%${address}%` } : {}
-            }
+            policyId: policyId ? { '_eq': `${policyId}` } : {}
           }
         }
       }, {

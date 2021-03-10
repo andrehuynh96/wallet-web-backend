@@ -33,9 +33,6 @@ router.get('/ada/tokens',
  *       - name: policy_id
  *         in: query
  *         type: string
- *       - name: address
- *         in: query
- *         type: string
  *     produces:
  *       - application/json
  *     responses:

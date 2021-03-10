@@ -10,7 +10,6 @@ module.exports = {
       let limit = query.limit ? parseInt(query.limit) : 10;
       let offset = query.offset ? parseInt(query.offset) : 0;
       let assetName = query.asset_name ? Buffer.from(query.asset_name, 'utf8').toString('hex') : '';
-      let policyId = query.policy_id || '';
       let result = await axios.post(`${config.adaGraphqlUrl}`, {
         query: `query assets (
           $limit: Int!
@@ -29,7 +28,6 @@ module.exports = {
           offset: offset,
           where: {
             assetName: assetName ? { '_eq': `\\x${assetName}` } : {},
-            policyId: policyId ? { '_eq': `${policyId}` } : {}
           }
         }
       }, {

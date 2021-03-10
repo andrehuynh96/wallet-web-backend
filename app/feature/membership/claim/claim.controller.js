@@ -53,7 +53,7 @@ module.exports = {
         return res.badRequest(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND");
       }
 
-      if (member.key_level != KycLevel.LEVEL_2 || member.kyc_status != KycStatus.APPROVED) {
+      if (member.kyc_level != KycLevel.LEVEL_2 || member.kyc_status != KycStatus.APPROVED) {
         return res.badRequest(res.__("MEMBER_KYC_NOT_LEVEL_2"), "MEMBER_KYC_NOT_LEVEL_2");
       }
       const settingMinClaimAmount = await Setting.findOne({

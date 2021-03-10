@@ -106,7 +106,7 @@ module.exports = {
       const currency = await Currency.findOne({
         where: {
           platform: req.body.platform,
-          symbol: req.body.symbol
+          //symbol: req.body.symbol
         }
       });
       if(!currency) {

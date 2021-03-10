@@ -15,6 +15,7 @@ const BigNumber = require('bignumber.js');
 const MemberKyc = require('app/model/wallet').member_kycs;
 const KycLevel = require('app/model/wallet/value-object/kyc-level');
 const Kyc = require('app/model/wallet').kycs;
+const KycStatus = require('app/model/wallet/value-object/kyc-status');
 
 module.exports = {
   getClaimHistories: async (req, res, next) => {
@@ -43,19 +44,16 @@ module.exports = {
   create: async (req, res, next) => {
     let transaction;
     try {
-      const memberKyc = await MemberKyc.findOne({
+      const member = await Member.findOne({
         where: {
-          member_id: req.user.id
+          id: req.user.id
         }
       })
-      if (!memberKyc) {
-        return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
+      if (!member) {
+        return res.badRequest(res.__("MEMBER_NOT_FOUND"), "MEMBER_NOT_FOUND");
       }
-      const kyc = await Kyc.findOne({ where: { id: memberKyc.kyc_id } });
-      if (!kyc) {
-        return res.badRequest(res.__("MEMBER_KYC_NOT_FOUND"), "MEMBER_KYC_NOT_FOUND");
-      }
-      if (kyc.key != KycLevel.LEVEL_2) {
+
+      if (member.key_level != KycLevel.LEVEL_2 || member.kyc_status != KycStatus.APPROVED) {
         return res.badRequest(res.__("MEMBER_KYC_NOT_LEVEL_2"), "MEMBER_KYC_NOT_LEVEL_2");
       }
       const settingMinClaimAmount = await Setting.findOne({

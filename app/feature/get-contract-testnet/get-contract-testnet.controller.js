@@ -20,7 +20,7 @@ module.exports = {
           address: '0x8f30ee44258967e2554278e0eef5cc909badd89e',
           name: 'MSToken',
           symbol: 'MST',
-          decimals: 6,
+          decimals: 8,
           total_supply: '10000',
           offical_site: 'https://moonstake.io/',
           is_verified: true,

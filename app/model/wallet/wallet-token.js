@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     symbol: {
-      type: DataTypes.STRING(8),
+      type: DataTypes.STRING(128),
       allowNull: true
     },
     name: {
@@ -55,4 +55,4 @@ module.exports = (sequelize, DataTypes) => {
     WalletToken.belongsTo(models.wallets, { foreignKey: 'wallet_id', targetKey: 'id' })
   };
   return WalletToken;
-} 
+}

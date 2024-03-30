@@ -35,6 +35,8 @@ router.use(require('./point'));
 router.use('/fiat', require('./fiat'));
 router.use('/bank', require('./bank'));
 router.use('/surveys', require('./survey'));
+router.use('/polkadot', require('./polkadot/polkadot.route'))
+router.use(require('./ada/get-token/get-token.route'));
 
 module.exports = router;
 

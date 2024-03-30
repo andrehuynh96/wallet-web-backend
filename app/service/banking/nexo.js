@@ -13,10 +13,9 @@ const cache = redis.client();
 const CACHE_KEY = 'INFINITO_TOKEN';
 
 class Nexo extends Banking {
-  constructor({ ibp = true }) {
+  constructor({ }) {
     super();
-    this.ibp = ibp;
-
+    this.ibp = config.banking.nexo.usingIBP;
   }
 
   async createAccount({ first_name, last_name, email }) {
@@ -32,7 +31,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
       throw err;
     }
   }
@@ -51,7 +50,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err); 
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo createAccount error:`, err);
       throw err;
     }
   }
@@ -68,7 +67,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyEmail error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyEmail error:`, err);
       throw err;
     }
   }
@@ -84,7 +83,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo requestRecoveryCode error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo requestRecoveryCode error:`, err);
       throw err;
     }
   }
@@ -106,7 +105,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyRecoveryCode error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyRecoveryCode error:`, err);
       throw err;
     }
   }
@@ -119,11 +118,14 @@ class Nexo extends Banking {
         secret: secret
       });
 
+      result.balances.forEach(i => {
+        i.currency_id = Object.values(i.currency_ids)[0];
+      });
+
       return result.balances;
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getBalance error:`, err);
-      console.log(err.response.data);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getBalance error:`, err);
       throw err;
     }
   }
@@ -137,7 +139,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getDepositAddress error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getDepositAddress error:`, err);
       throw err;
     }
   }
@@ -157,7 +159,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      //   logger[err.canLogAxiosError ? 'error' : 'info'](`nexo withdraw error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo withdraw error:`, err);
       throw err;
     }
   }
@@ -174,7 +176,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyWithdraw error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo verifyWithdraw error:`, err);
       throw err;
     }
   }
@@ -188,7 +190,7 @@ class Nexo extends Banking {
       });
     }
     catch (err) {
-      // logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getWithdrawTransactions error:`, err);
+      logger[err.canLogAxiosError ? 'error' : 'info'](`nexo getWithdrawTransactions error:`, err);
       throw err;
     }
   }
@@ -229,7 +231,7 @@ class Nexo extends Banking {
       throw response.data.error;
     }
 
-    return response.data;
+    return response.data.data;
   }
 
   async _makeRequestThroughIBP({ path, method, params, secret = null }) {

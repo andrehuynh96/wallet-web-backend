@@ -128,10 +128,22 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(256),
       allowNull: true
     },
+    token: {
+      type: DataTypes.STRING(256),
+      allowNull: true
+    },
+    fe_redirect_url: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true
+    },
+    fe_failure_redirect_url: {
+      type: DataTypes.TEXT('medium'),
+      allowNull: true
+    },
   }, {
-      underscored: true,
-      timestamps: true,
-    });
+    underscored: true,
+    timestamps: true,
+  });
 
   Temporalize({
     model: Model,

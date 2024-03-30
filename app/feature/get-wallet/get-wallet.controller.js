@@ -8,6 +8,8 @@ const walletMapper = require('app/feature/response-schema/wallet.response-schema
 const walletPrivateKeyMapper = require('app/feature/response-schema/wallet-private-key.response-schema');
 const Sequelize = require('sequelize');
 const database = require('app/lib/database').db().wallet;
+const Joi = require('joi');
+
 const Op = Sequelize.Op;
 
 module.exports = {
@@ -67,6 +69,12 @@ module.exports = {
     try {
       logger.info('coins::all');
       const { query: { offset, limit, platform, order_by }, params: { wallet_id } } = req;
+      const schema = Joi.string().uuid().required();
+      const validateResult = Joi.validate(wallet_id,schema);
+      if (validateResult.error) {
+        return res.badRequest(res.__("MISSING_PARAMETER"),"MISSING_PARAMETER",{field: ['wallet_id']});
+      }
+
       const where = { deleted_flg: false, wallet_id: wallet_id };
       if (platform) {
         where.platform = platform.toUpperCase()
@@ -104,9 +112,10 @@ module.exports = {
 
       let { count: total, rows: wallet_priv_keys } = await WalletPrivateKey.findAndCountAll({ offset: off, limit: lim, where: where, include: include, order: order });
 
-      //TODO: hard code for hotfix disable ['CENNZ', 'CPAY'];
-      let ignoreCoin = ['CENNZ', 'CPAY'];
-      wallet_priv_keys = wallet_priv_keys.filter(x => !ignoreCoin.includes(x.currency.symbol));
+      //TODO: hard code for hotfix disable ['CENNZ', 'CPAY']
+      // let ignoreCoin = ['CENNZ', 'CPAY']
+      // wallet_priv_keys = wallet_priv_keys.filter(x => !ignoreCoin.includes(x.currency.symbol));
+
       return res.ok({
         items: walletPrivateKeyMapper(wallet_priv_keys),
         offset: off,

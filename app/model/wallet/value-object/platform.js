@@ -127,5 +127,25 @@ module.exports = {
     "symbol": "XQC",
     "name": "Quras",
     "coingeckoId": "quras-token"
+  },
+  SYLO: {
+    "symbol": "SYLO",
+    "name": "Sylo",
+    "coingeckoId": "sylo"
+  },
+  DOT: {
+    "symbol": "DOT",
+    "name": "Polkadot",
+    "coingeckoId": "polkadot"
+  },
+  FIL: {
+    "symbol": "FIL",
+    "name": "Filecoin",
+    "coingeckoId": "filecoin"
+  },
+  TON: {
+    "symbol": "TON",
+    "name": "TON Crystal",
+    "coingeckoId": "ton-crystal"
   }
 }

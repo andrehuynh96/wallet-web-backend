@@ -382,14 +382,15 @@ module.exports = router;
 *              "data": {
 *                "items": [
 *                  {
-                     'id': '',
-                     'name': '',
-                     'interest_rate': '',
-                     'interest_earned': '',
-                     'amount': '',
-                     'min_earnable': '',
-                     'deposit_enabled': '',
-                     'withdraw_enabled': ''
+                     'id': 'CLMMS5XiGXTY',
+                     'name': 'LINK',
+                     'currency_id':'CRjXTWuXaOf8',
+                     'interest_rate': 0,
+                     'interest_earned': '0.00000000',
+                     'amount': '0.00000000',
+                     'min_earnable': '0.3',
+                     'deposit_enabled': true,
+                     'withdraw_enabled': true
 *                  }
 *                 ]
 *               }
